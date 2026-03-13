@@ -8,9 +8,7 @@ import React, { ButtonHTMLAttributes, ReactNode } from 'react';
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;  // The content inside the button
   variant?:             // Optional custom styling
-    'primary' | 'secondary';  
-  onClick?:             // Optional click handler.
-    (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+    'primary' | 'secondary';
 }
 
 const Button: React.FC<ButtonProps> = ({
