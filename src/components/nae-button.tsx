@@ -2,8 +2,8 @@ import React, { ButtonHTMLAttributes, ReactNode } from 'react';
 
 /*
   Define the props interface by extending standard HTML button attributes.
-  This allows the component to accept all standard button props (like 'type', 'disabled', etc.)
-  while also allowing custom props.
+  This allows the component to accept all standard button props without 
+  explicit declaration, while also allowing custom props.
 */
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;  // The content inside the button
@@ -20,8 +20,6 @@ const Button: React.FC<ButtonProps> = ({
   className = '',
   ...rest // Collect any other standard HTML button props
 }) => {
-  // A basic way to handle styles using a class name, you can replace this 
-  // with a CSS module or styling library (e.g., Tailwind CSS, styled-components).
   const baseStyles = 'py-2 text-lg rounded-xl font-semibold transition-colors cursor-pointer';
   
   const variantStyles = variant === 'primary'
