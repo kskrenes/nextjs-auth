@@ -65,7 +65,7 @@ const SignupPage = () => {
             href="/login"
             className="text-purple-400 hover:text-purple-500 underline transition-colors"
           >
-            Log in here
+            Sign in here
           </Link>.
         </p>
       </form>
