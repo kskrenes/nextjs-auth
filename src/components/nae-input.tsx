@@ -2,7 +2,7 @@ import React, { InputHTMLAttributes } from 'react';
 
 /*
   Define the props interface by extending standard HTML input attributes.
-  This allows the component to accept all standard button props without 
+  This allows the component to accept all standard input props without 
   explicit declaration, while also allowing custom props.
 */
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
