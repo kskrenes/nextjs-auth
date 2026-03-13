@@ -62,8 +62,10 @@ const SignupPage = () => {
           />
         </div>
         <button 
-          className="w-full my-8 py-2 text-lg rounded-xl font-semibold bg-purple-900 hover:bg-purple-800 transition-colors cursor-pointer"
+          className="w-full my-8 py-2 text-lg rounded-xl font-semibold bg-purple-900 hover:bg-purple-800 transition-colors cursor-pointer 
+          disabled:bg-purple-900/50 disabled:text-gray-500/50 disabled:cursor-default"
           onClick={onSignup}
+          disabled={!user.username || !user.email || !user.password}
         >
           Sign Up
         </button>
