@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type SubmitEvent } from "react";
 
 const SignupPage = () => {
 
@@ -11,7 +11,8 @@ const SignupPage = () => {
     username: "",
   });
 
-  const onSignup = async () => {
+  const onSignup = async (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
     // TODO: Replace with real signup request.
     // Avoid silent no-op UX until backend wiring is ready.
     return;
@@ -19,7 +20,7 @@ const SignupPage = () => {
 
   return (
     <div className="flex justify-center min-h-screen">
-      <div className="flex flex-col items-center justify-center w-[300px] py-2">
+      <form className="flex flex-col items-center justify-center w-[300px] py-2" onSubmit={onSignup}>
         <h1 className="mb-6 text-3xl font-bold">Sign Up</h1>
         <div className="flex flex-col space-y-2 min-w-[300px]">
           <label className="text-sm" htmlFor="username">Username</label>
@@ -64,9 +65,9 @@ const SignupPage = () => {
           />
         </div>
         <button 
+          type="submit"
           className="w-full my-8 py-2 text-lg rounded-xl font-semibold bg-purple-900 hover:bg-purple-800 transition-colors cursor-pointer 
           disabled:bg-purple-900/50 disabled:text-gray-500/50 disabled:cursor-default"
-          onClick={onSignup}
           disabled={!user.username || !user.email || !user.password}
         >
           Sign Up
@@ -81,7 +82,7 @@ const SignupPage = () => {
           </Link>.
         </p>
         
-      </div>
+      </form>
     </div>
   )
 }
