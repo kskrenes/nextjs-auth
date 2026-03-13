@@ -12,7 +12,9 @@ const SignupPage = () => {
   });
 
   const onSignup = async () => {
-    //
+    // TODO: Replace with real signup request.
+    // Avoid silent no-op UX until backend wiring is ready.
+    return;
   };
 
   return (
