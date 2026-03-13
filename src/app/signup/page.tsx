@@ -47,6 +47,7 @@ const SignupPage = () => {
           label="Password"
           placeholder="password"
           type="password"
+          autoComplete="new-password"
           required
           value={user.password}
           onChange={(e) => setUser({...user, password: e.target.value})}
