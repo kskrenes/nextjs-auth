@@ -23,7 +23,10 @@ const SignupPage = () => {
           <label className="text-sm" htmlFor="username">Username</label>
           <input 
             id="username"
+            name="username"
             type="text"
+            required
+            autoComplete="username"
             value={user.username}
             className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-400"
             onChange={(e) => setUser({...user, username: e.target.value})}
@@ -34,7 +37,10 @@ const SignupPage = () => {
           <label className="text-sm" htmlFor="email">Email</label>
           <input 
             id="email"
+            name="email"
             type="email"
+            required
+            autoComplete="email"
             value={user.email}
             className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-400"
             onChange={(e) => setUser({...user, email: e.target.value})}
@@ -45,7 +51,10 @@ const SignupPage = () => {
           <label className="text-sm" htmlFor="password">Password</label>
           <input 
             id="password"
+            name="password"
             type="password"
+            required
+            autoComplete="new-password"
             value={user.password}
             className="p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-400"
             onChange={(e) => setUser({...user, password: e.target.value})}
