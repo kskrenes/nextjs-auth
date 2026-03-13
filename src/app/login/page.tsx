@@ -37,7 +37,7 @@ const LoginPage = () => {
           label="Password"
           placeholder="password"
           type="password"
-          autoComplete="new-password"
+          autoComplete="current-password"
           required
           value={user.password}
           onChange={(e) => setUser({...user, password: e.target.value})}
