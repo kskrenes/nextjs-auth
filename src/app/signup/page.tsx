@@ -1,5 +1,6 @@
 "use client";
 
+import Button from "@/components/nae-button";
 import Link from "next/link";
 import { useState, type SubmitEvent } from "react";
 
@@ -64,14 +65,13 @@ const SignupPage = () => {
             placeholder="password"
           />
         </div>
-        <button 
+        <Button
           type="submit"
-          className="w-full my-8 py-2 text-lg rounded-xl font-semibold bg-purple-900 hover:bg-purple-800 transition-colors cursor-pointer 
-          disabled:bg-purple-900/50 disabled:text-gray-500/50 disabled:cursor-default"
+          className="w-full my-8"
           disabled={!user.username || !user.email || !user.password}
         >
           Sign Up
-        </button>
+        </Button>
         <p className="text-xs">
           Already have an account?{' '}
           <Link 
