@@ -91,7 +91,12 @@ const SignupPage = () => {
           disabled={buttonDisabled}
         >
           {isLoading 
-            ? <Loader2 className="w-7 h-7 animate-spin text-purple-400" />
+            ? (
+              <>
+                <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
+                <span className="sr-only">Creating account</span>
+              </>
+            )
             : 'Sign Up'}
         </Button>
         <p className="text-xs">
