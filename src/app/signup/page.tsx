@@ -43,7 +43,8 @@ const SignupPage = () => {
       const response = await axios.post("/api/users/signup", user);
       router.push("/login");
     } catch (error: any) {
-      toast.error(error.message);
+      const message = error.response?.data?.error || error.message || "Signup failed";
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
