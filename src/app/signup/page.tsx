@@ -35,7 +35,7 @@ const SignupPage = () => {
   }, [user, isLoading]);
 
   const onSignup = async (e: SubmitEvent<HTMLFormElement>) => {
-    // prevent page reload/redirect, use router instead
+    // suppress native html form submit behavior
     e.preventDefault(); 
 
     try {
@@ -55,7 +55,6 @@ const SignupPage = () => {
       <form 
         className="flex flex-col items-center justify-center w-[300px] py-2" 
         onSubmit={onSignup} 
-        method="post"
       >
         <h1 className="mb-6 text-3xl font-bold">Sign Up</h1>
         <Input 
