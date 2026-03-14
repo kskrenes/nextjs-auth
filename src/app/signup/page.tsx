@@ -6,14 +6,13 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type SubmitEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import toast from "react-hot-toast";
 
 const SignupPage = () => {
 
   const router = useRouter();
 
-  const [buttonDisabled, setButtonDisabled] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState({
     email: "",
@@ -21,22 +20,17 @@ const SignupPage = () => {
     username: "",
   });
 
-  useEffect(() => {
-    if (
-      user.email.length > 0 && 
-      user.password.length > 0 && 
-      user.username.length > 0 &&
-      !isLoading
-    ) {
-      setButtonDisabled(false);
-    } else {
-      setButtonDisabled(true);
-    }
-  }, [user, isLoading]);
+  const buttonDisabled =
+    isLoading ||
+    user.email.trim().length === 0 ||
+    user.password.trim().length === 0 ||
+    user.username.trim().length === 0;
 
   const onSignup = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
     e.preventDefault(); 
+
+    if (isLoading) return;
 
     try {
       setIsLoading(true);
