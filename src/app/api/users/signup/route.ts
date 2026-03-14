@@ -45,10 +45,17 @@ export async function POST(request: NextRequest) {
     // store user in the database
     const storedUser = await user.save();
 
+    // return sanitized user
     return NextResponse.json({
       message: "User created successfully",
       success: true,
-      user: storedUser,
+      user: {
+        id: storedUser._id,
+        username: storedUser.username,
+        email: storedUser.email,
+        isVerified: storedUser.isVerified,
+        isAdmin: storedUser.isAdmin,
+      },
     });
 
   } catch (error: any) {
