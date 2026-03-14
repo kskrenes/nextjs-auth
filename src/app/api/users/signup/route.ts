@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
         isVerified: storedUser.isVerified,
         isAdmin: storedUser.isAdmin,
       },
-    });
+    }, { status: 201 });
 
   } catch (error: unknown) {
     console.error("Signup route error:", error);
