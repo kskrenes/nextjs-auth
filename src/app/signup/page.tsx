@@ -2,27 +2,54 @@
 
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState, type SubmitEvent } from "react";
+import toast from "react-hot-toast";
 
 const SignupPage = () => {
 
+  const router = useRouter();
+
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState({
     email: "",
     password: "",
     username: "",
   });
 
+  const buttonDisabled =
+    isLoading ||
+    user.email.trim().length === 0 ||
+    user.password.trim().length === 0 ||
+    user.username.trim().length === 0;
+
   const onSignup = async (e: SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // TODO: Replace with real signup request.
-    // Avoid silent no-op UX until backend wiring is ready.
-    return;
-  };
+    // suppress native html form submit behavior
+    e.preventDefault(); 
+
+    if (isLoading) return;
+
+    try {
+      setIsLoading(true);
+      const response = await axios.post("/api/users/signup", user);
+      router.push("/login");
+    } catch (error: any) {
+      const message = error.response?.data?.error || error.message || "Signup failed";
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
+  };  
 
   return (
     <div className="flex justify-center min-h-screen">
-      <form className="flex flex-col items-center justify-center w-[300px] py-2" onSubmit={onSignup}>
+      <form 
+        className="flex flex-col items-center justify-center w-[300px] py-2" 
+        onSubmit={onSignup} 
+      >
         <h1 className="mb-6 text-3xl font-bold">Sign Up</h1>
         <Input 
           id="username" 
@@ -55,9 +82,16 @@ const SignupPage = () => {
         <Button
           type="submit"
           className="w-full my-8"
-          disabled={!user.username || !user.email || !user.password}
+          disabled={buttonDisabled}
         >
-          Sign Up
+          {isLoading 
+            ? (
+              <>
+                <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
+                <span className="sr-only">Creating account</span>
+              </>
+            )
+            : 'Sign Up'}
         </Button>
         <p className="text-xs">
           Already have an account?{' '}
