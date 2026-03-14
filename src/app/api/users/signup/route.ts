@@ -12,23 +12,35 @@ export async function POST(request: NextRequest) {
 
     // throw if username is not provided
     if (!username) {
-      return NextResponse.json({ error: "Username is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Username is required" }, 
+        { status: 400 })
+      ;
     }
 
     // throw if email is not provided
     if (!email) {
-      return NextResponse.json({ error: "Email is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Email is required" }, 
+        { status: 400 }
+      );
     }
     
     // throw if password is not provided
     if (!password) {
-      return NextResponse.json({ error: "Password is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Password is required" },
+        { status: 400 }
+      );
     }
 
     // throw if user already exists
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) {
-      return NextResponse.json({ error: "User already exists" }, { status: 409 });
+      return NextResponse.json(
+        { error: "User already exists" }, 
+        { status: 409 }
+      );
     }
 
     // hash password
@@ -58,7 +70,11 @@ export async function POST(request: NextRequest) {
       },
     });
 
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    console.error("Signup route error:", error);
+    return NextResponse.json(
+      { error: "Unable to create user" }, 
+      { status: 500 }
+    );
   }
 };
