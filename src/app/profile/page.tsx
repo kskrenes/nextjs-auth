@@ -28,9 +28,10 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="flex justify-center min-h-screen">
-      <div className="flex flex-col items-center justify-center w-[300px] py-2" >
+    <div className="flex min-h-screen items-center justify-center">
+      <div className="flex w-[300px] flex-col items-center py-2" >
         <h1 className="mb-6 text-3xl font-bold">Profile Page</h1>
+        <p>Some kind of general profile stuff</p>
         <Button 
           className="w-full my-8"
           onClick={handleLogout}
