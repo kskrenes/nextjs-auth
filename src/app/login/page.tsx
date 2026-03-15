@@ -24,7 +24,7 @@ const LoginPage = () => {
     user.email.trim().length === 0 ||
     user.password.trim().length === 0;
 
-  const onLogin = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleLogin = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
     e.preventDefault(); 
 
@@ -46,7 +46,7 @@ const LoginPage = () => {
     <div className="flex justify-center min-h-screen">
       <form 
         className="flex flex-col items-center justify-center w-[300px] py-2" 
-        onSubmit={onLogin}
+        onSubmit={handleLogin}
       >
         <h1 className="mb-6 text-3xl font-bold">Sign In</h1>
         <Input 

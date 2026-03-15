@@ -26,7 +26,7 @@ const SignupPage = () => {
     user.password.trim().length === 0 ||
     user.username.trim().length === 0;
 
-  const onSignup = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
     e.preventDefault(); 
 
@@ -48,7 +48,7 @@ const SignupPage = () => {
     <div className="flex justify-center min-h-screen">
       <form 
         className="flex flex-col items-center justify-center w-[300px] py-2" 
-        onSubmit={onSignup} 
+        onSubmit={handleSignup} 
       >
         <h1 className="mb-6 text-3xl font-bold">Sign Up</h1>
         <Input 
