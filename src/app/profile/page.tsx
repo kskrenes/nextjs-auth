@@ -2,7 +2,7 @@
 
 import Button from "@/components/nae-button"
 import { getErrorMessage } from "@/helpers/error-message";
-import axios, { isAxiosError } from "axios";
+import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
