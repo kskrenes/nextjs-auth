@@ -2,7 +2,7 @@
 
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -36,10 +36,20 @@ const SignupPage = () => {
       setIsLoading(true);
       await axios.post("/api/users/signup", user);
       router.push("/login");
-    } catch (error: any) {
-      const message = error.response?.data?.error || error.message || "Signup failed";
+    } 
+    catch (error: unknown) {
+      // use axios's isAxiosError type guard for safer error handling
+      let message = "Signup failed";
+      if (isAxiosError(error)) {
+        // reference axios error structure or fallback
+        message = error.response?.data?.error || error.message;
+      } else if (error instanceof Error) {
+        // standard error structure
+        message = error.message;
+      }
       toast.error(message);
-    } finally {
+    } 
+    finally {
       setIsLoading(false);
     }
   };  

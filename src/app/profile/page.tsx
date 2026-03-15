@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/nae-button"
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -19,10 +19,20 @@ const ProfilePage = () => {
       setIsLoggingOut(true);
       await axios.post("/api/users/logout");
       router.push("/login");
-    } catch (error: any) {
-      const message = error.response?.data?.error || error.message || "Logout failed";
+    } 
+    catch (error: unknown) {
+      // use axios's isAxiosError type guard for safer error handling
+      let message = "Logout failed";
+      if (isAxiosError(error)) {
+        // reference axios error structure or fallback
+        message = error.response?.data?.error || error.message;
+      } else if (error instanceof Error) {
+        // standard error structure
+        message = error.message;
+      }
       toast.error(message);
-    } finally {
+    } 
+    finally {
       setIsLoggingOut(false);
     }
   }
