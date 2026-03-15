@@ -17,7 +17,7 @@ const ProfilePage = () => {
 
     try {
       setIsLoggingOut(true);
-      await axios.get("/api/users/logout");
+      await axios.post("/api/users/logout");
       router.push("/login");
     } catch (error: any) {
       const message = error.response?.data?.error || error.message || "Logout failed";
