@@ -27,21 +27,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // throw if user does not exist
+    // throw one error if user does not exist or if password is invalid
+    // to avoid account enumeration
     const user = await User.findOne({ email });
-    if (!user) {
-      return NextResponse.json(
-        { error: "User not found" }, 
-        { status: 404 }
-      );
-    }
-
-    // throw if invalid password
-    const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = user ? await bcrypt.compare(password, user.password) : false;
     if (!isValidPassword) {
       return NextResponse.json(
-        { error: "Invalid password" }, 
-        { status: 400 }
+        { error: "Invalid credentials" }, 
+        { status: 401 }
       );
     }
 
