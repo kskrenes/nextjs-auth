@@ -45,9 +45,9 @@ const SignupPage = () => {
   };  
 
   return (
-    <div className="flex justify-center min-h-screen">
+    <div className="flex min-h-screen items-center justify-center">
       <form 
-        className="flex flex-col items-center justify-center w-[300px] py-2" 
+        className="flex w-[300px] flex-col items-center py-2" 
         onSubmit={handleSignup} 
       >
         <h1 className="mb-6 text-3xl font-bold">Sign Up</h1>
