@@ -1,3 +1,4 @@
+import { TOKEN_COOKIE_NAME } from "@/helpers/token";
 import { NextResponse } from "next/server";
 
 export async function POST() {
@@ -9,7 +10,7 @@ export async function POST() {
 
     // empty session token and expire it immediately
     response.cookies.set(
-      "token", 
+      TOKEN_COOKIE_NAME, 
       "", 
       { 
         httpOnly: true,
