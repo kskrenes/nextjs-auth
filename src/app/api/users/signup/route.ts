@@ -7,8 +7,19 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    const reqBody = await request.json();
-    const { username, email, password } = reqBody;
+    // throw if request json is invalid
+    let reqBody: unknown;
+    try {
+      reqBody = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
+    if (!reqBody || typeof reqBody !== "object") {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
+
+    const { username, email, password } = reqBody as { username?: string; email?: string; password?: string };
 
     // throw if username is not provided
     if (!username) {
