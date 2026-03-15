@@ -2,6 +2,7 @@
 
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
+import { getErrorMessage } from "@/helpers/error-message";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -26,7 +27,7 @@ const SignupPage = () => {
     user.password.trim().length === 0 ||
     user.username.trim().length === 0;
 
-  const onSignup = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSignup = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
     e.preventDefault(); 
 
@@ -36,19 +37,20 @@ const SignupPage = () => {
       setIsLoading(true);
       await axios.post("/api/users/signup", user);
       router.push("/login");
-    } catch (error: any) {
-      const message = error.response?.data?.error || error.message || "Signup failed";
-      toast.error(message);
-    } finally {
+    } 
+    catch (error: unknown) {
+      toast.error(getErrorMessage(error, "Signup failed"));
+    } 
+    finally {
       setIsLoading(false);
     }
   };  
 
   return (
-    <div className="flex justify-center min-h-screen">
+    <div className="flex min-h-screen items-center justify-center">
       <form 
-        className="flex flex-col items-center justify-center w-[300px] py-2" 
-        onSubmit={onSignup} 
+        className="flex w-[300px] flex-col items-center py-2" 
+        onSubmit={handleSignup} 
       >
         <h1 className="mb-6 text-3xl font-bold">Sign Up</h1>
         <Input 
