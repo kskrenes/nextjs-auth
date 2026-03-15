@@ -65,9 +65,9 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if token secret is not configured
-    const tokenSecret = process.env.TOKEN_SECRET;
+    const tokenSecret = process.env.JWT_SECRET;
     if (!tokenSecret) {
-      console.error("TOKEN_SECRET is not configured");
+      console.error("JWT_SECRET is not configured");
       return NextResponse.json(
         { error: "Unable to log in" },
         { status: 500 }
