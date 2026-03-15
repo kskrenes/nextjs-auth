@@ -88,7 +88,25 @@ export async function POST(request: NextRequest) {
     });
 
     // store user in the database
-    const storedUser = await user.save();
+    let storedUser;
+    try {
+      storedUser = await user.save();
+
+    // throw if database rejects duplicate with 11000
+    } catch (error: unknown) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        (error as { code?: number }).code === 11000
+      ) {
+        return NextResponse.json(
+          { error: "User already exists" },
+          { status: 409 }
+        );
+      }
+      throw error;
+    }
 
     // return sanitized user
     return NextResponse.json({
