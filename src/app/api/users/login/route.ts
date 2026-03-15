@@ -38,6 +38,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // throw if token secret is not configured
+    const tokenSecret = process.env.TOKEN_SECRET;
+    if (!tokenSecret) {
+      console.error("TOKEN_SECRET is not configured");
+      return NextResponse.json(
+        { error: "Unable to log in" },
+        { status: 500 }
+      );
+    }
+
     // create token
     const tokenData = {
       id: user._id,
@@ -45,7 +55,8 @@ export async function POST(request: NextRequest) {
       email: user.email,
     }
     const token = await jwt.sign(
-      tokenData, process.env.TOKEN_SECRET!, 
+      tokenData, 
+      tokenSecret!, 
       { expiresIn: "1d" }
     );
 
