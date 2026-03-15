@@ -14,6 +14,9 @@ export async function POST() {
       { 
         httpOnly: true,
         expires: new Date(0),
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
       }
     );
 
