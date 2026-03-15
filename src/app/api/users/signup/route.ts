@@ -7,11 +7,39 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    const reqBody = await request.json();
-    const { username, email, password } = reqBody;
+    // throw if request json is invalid
+    let reqBody: unknown;
+    try {
+      reqBody = await request.json();
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    }
+
+    if (!reqBody || typeof reqBody !== "object") {
+      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
+
+    // typescript only enforces field types at compile-time...
+    const { username, email, password } = reqBody as { username?: string; email?: string; password?: string };
+
+    // throw if field types are invalid at runtime
+    if (
+      typeof username !== "string" ||
+      typeof email !== "string" ||
+      typeof password !== "string"
+    ) {
+      return NextResponse.json(
+        { error: "Username, email, and password must be strings" },
+        { status: 400 }
+      );
+    }
+
+    const normalizedUsername = username.trim();
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPassword = password;
 
     // throw if username is not provided
-    if (!username) {
+    if (!normalizedUsername) {
       return NextResponse.json(
         { error: "Username is required" }, 
         { status: 400 })
@@ -19,7 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if email is not provided
-    if (!email) {
+    if (!normalizedEmail) {
       return NextResponse.json(
         { error: "Email is required" }, 
         { status: 400 }
@@ -27,7 +55,7 @@ export async function POST(request: NextRequest) {
     }
     
     // throw if password is not provided
-    if (!password) {
+    if (!normalizedPassword) {
       return NextResponse.json(
         { error: "Password is required" },
         { status: 400 }
@@ -35,7 +63,12 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if user already exists
-    const existingUser = await User.findOne({ $or: [{ email }, { username }] });
+    const existingUser = await User.findOne(
+      { $or: [
+        { email: normalizedEmail }, 
+        { username: normalizedUsername }
+      ]}
+    );
     if (existingUser) {
       return NextResponse.json(
         { error: "User already exists" }, 
@@ -45,17 +78,35 @@ export async function POST(request: NextRequest) {
 
     // hash password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(normalizedPassword, salt);
 
     // create new user
     const user = new User({
-      username, 
-      email, 
+      username: normalizedUsername, 
+      email: normalizedEmail, 
       password: hashedPassword,
     });
 
     // store user in the database
-    const storedUser = await user.save();
+    let storedUser;
+    try {
+      storedUser = await user.save();
+
+    // throw if database rejects duplicate with 11000
+    } catch (error: unknown) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        (error as { code?: number }).code === 11000
+      ) {
+        return NextResponse.json(
+          { error: "User already exists" },
+          { status: 409 }
+        );
+      }
+      throw error;
+    }
 
     // return sanitized user
     return NextResponse.json({
