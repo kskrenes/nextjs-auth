@@ -20,10 +20,25 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
 
+    // typescript only enforces field types at compile-time...
     const { email, password } = reqBody as { email?: string; password?: string };
 
+    // throw if field types are invalid at runtime
+    if (
+      typeof email !== "string" ||
+      typeof password !== "string"
+    ) {
+      return NextResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedPassword = password;
+
     // throw if email is not provided
-    if (!email) {
+    if (!normalizedEmail) {
       return NextResponse.json(
         { error: "Email is required" }, 
         { status: 400 }
@@ -31,7 +46,7 @@ export async function POST(request: NextRequest) {
     }
     
     // throw if password is not provided
-    if (!password) {
+    if (!normalizedPassword) {
       return NextResponse.json(
         { error: "Password is required" },
         { status: 400 }
@@ -40,11 +55,11 @@ export async function POST(request: NextRequest) {
 
     // throw one error if user does not exist or if password is invalid
     // to avoid account enumeration
-    const user = await User.findOne({ email });
-    const isValidPassword = user ? await bcrypt.compare(password, user.password) : false;
+    const user = await User.findOne({ email: normalizedEmail });
+    const isValidPassword = user ? await bcrypt.compare(normalizedPassword, user.password) : false;
     if (!isValidPassword) {
       return NextResponse.json(
-        { error: "Invalid credentials" }, 
+        { error: "Invalid email or password" }, 
         { status: 401 }
       );
     }
