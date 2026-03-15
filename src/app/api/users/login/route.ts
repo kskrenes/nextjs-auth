@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { TOKEN_COOKIE_NAME } from "@/helpers/token";
 
 export async function POST(request: NextRequest) {
   try {
@@ -65,9 +66,9 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if token secret is not configured
-    const tokenSecret = process.env.TOKEN_SECRET;
+    const tokenSecret = process.env.JWT_SECRET;
     if (!tokenSecret) {
-      console.error("TOKEN_SECRET is not configured");
+      console.error("JWT_SECRET is not configured");
       return NextResponse.json(
         { error: "Unable to log in" },
         { status: 500 }
@@ -92,7 +93,7 @@ export async function POST(request: NextRequest) {
       success: true,
     });
     response.cookies.set(
-      "token", 
+      TOKEN_COOKIE_NAME, 
       token, 
       { 
         httpOnly: true,
