@@ -11,13 +11,31 @@ import toast from "react-hot-toast";
 const ProfilePage = () => {
 
   const router = useRouter();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogout = async () => {
-    if (isLoggingOut) return;
+  const getUserDetails = async () => {
+    if (isLoading) return;
 
     try {
-      setIsLoggingOut(true);
+      setIsLoading(true);
+      const response = await axios.get('/api/users/me');
+      router.push(`/profile/${response.data.user._id}`);
+    } 
+    catch (error: unknown) {
+      const errorMessage = getErrorMessage(error, "Get user data failed");
+      console.error(errorMessage);
+      toast.error(errorMessage);
+    } 
+    finally {
+      setIsLoading(false);
+    }
+  }
+
+  const handleLogout = async () => {
+    if (isLoading) return;
+
+    try {
+      setIsLoading(true);
       await axios.post("/api/users/logout");
       router.push("/login");
     } 
@@ -25,7 +43,7 @@ const ProfilePage = () => {
       toast.error(getErrorMessage(error, "Logout failed"));
     } 
     finally {
-      setIsLoggingOut(false);
+      setIsLoading(false);
     }
   }
 
@@ -33,13 +51,23 @@ const ProfilePage = () => {
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex w-[300px] flex-col items-center py-2" >
         <h1 className="mb-6 text-3xl font-bold">Profile Page</h1>
-        <p>Some kind of general profile stuff</p>
+        <div>
+          <p>This should really be a dashboard page...</p>
+        </div>
+        
+        <Button 
+          className="w-full mt-8"
+          onClick={getUserDetails}
+          disabled={isLoading}
+        >
+          User Profile
+        </Button>
         <Button 
           className="w-full my-8"
           onClick={handleLogout}
-          disabled={isLoggingOut}
+          disabled={isLoading}
         >
-          {isLoggingOut 
+          {isLoading 
             ? (
               <>
                 <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
