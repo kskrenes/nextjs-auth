@@ -41,6 +41,9 @@ export const getIdFromToken = async (request: NextRequest) => {
         401
       );
     }
+
+    // re-throw unexpected errors as server errors
+    throw error;
   }
 
   // throw if token is missing or malformed 
