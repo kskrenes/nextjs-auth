@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const ProfilePage = () => {
+const DashboardPage = () => {
 
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -50,9 +50,9 @@ const ProfilePage = () => {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex w-[300px] flex-col items-center py-2" >
-        <h1 className="mb-6 text-3xl font-bold">Profile Page</h1>
+        <h1 className="mb-6 text-3xl font-bold">Dashboard Page</h1>
         <div>
-          <p>This should really be a dashboard page...</p>
+          <p>Various data that's displayed on the dashboard page...</p>
         </div>
         
         <Button 
@@ -81,4 +81,4 @@ const ProfilePage = () => {
   )
 }
 
-export default ProfilePage
+export default DashboardPage

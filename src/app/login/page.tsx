@@ -34,7 +34,7 @@ const LoginPage = () => {
     try {
       setIsLoading(true);
       await axios.post("/api/users/login", user);
-      router.push("/profile");
+      router.push("/dashboard");
     } 
     catch (error: unknown) {
       toast.error(getErrorMessage(error, "Login failed"));
