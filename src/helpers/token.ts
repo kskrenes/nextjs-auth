@@ -1,4 +1,4 @@
-import jwt from "jsonwebtoken";
+import jwt, { type JwtPayload } from "jsonwebtoken";
 import type { NextRequest } from "next/server";
 
 export const TOKEN_COOKIE_NAME = "naetoken" as const;
@@ -26,12 +26,29 @@ export const getIdFromToken = async (request: NextRequest) => {
     throw new Error("JWT_SECRET is not configured");
   }
 
-  // throw if auth token is invalid
-  const decodedToken = jwt.verify(token, secret);
+  let decodedToken: string | JwtPayload | undefined;
+  try {
+    // verify auth token
+    decodedToken = jwt.verify(token, secret) as string | JwtPayload;
+  } catch (error: unknown) {
+    // throw if auth token is invalid or expired
+    if (
+      error instanceof jwt.TokenExpiredError || 
+      error instanceof jwt.JsonWebTokenError
+    ) {
+      throw new AuthTokenError(
+        "Invalid or expired auth token",
+        401
+      );
+    }
+  }
+
+  // throw if token is missing or malformed 
   if (
-    !decodedToken || 
-    typeof decodedToken !== "object" || 
-    typeof decodedToken.id !== "string"
+    !decodedToken ||
+    typeof decodedToken !== "object" ||
+    Array.isArray(decodedToken) ||
+    typeof (decodedToken as JwtPayload).id !== "string"
   ) {
     throw new AuthTokenError(
       "Invalid auth token payload",
@@ -39,5 +56,5 @@ export const getIdFromToken = async (request: NextRequest) => {
     );
   }
 
-  return decodedToken.id;
+  return (decodedToken as JwtPayload).id;
 }
