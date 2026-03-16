@@ -11,13 +11,14 @@ import toast from "react-hot-toast";
 const DashboardPage = () => {
 
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isFetchingProfile, setIsFetchingProfile] = useState(false);
 
   const getUserDetails = async () => {
-    if (isLoading) return;
+    if (isFetchingProfile) return;
 
     try {
-      setIsLoading(true);
+      setIsFetchingProfile(true);
       const response = await axios.get('/api/users/me');
       router.push(`/profile/${response.data.user._id}`);
     } 
@@ -27,15 +28,15 @@ const DashboardPage = () => {
       toast.error(errorMessage);
     } 
     finally {
-      setIsLoading(false);
+      setIsFetchingProfile(false);
     }
   }
 
   const handleLogout = async () => {
-    if (isLoading) return;
+    if (isLoggingOut) return;
 
     try {
-      setIsLoading(true);
+      setIsLoggingOut(true);
       await axios.post("/api/users/logout");
       router.push("/login");
     } 
@@ -43,7 +44,7 @@ const DashboardPage = () => {
       toast.error(getErrorMessage(error, "Logout failed"));
     } 
     finally {
-      setIsLoading(false);
+      setIsLoggingOut(false);
     }
   }
 
@@ -58,23 +59,24 @@ const DashboardPage = () => {
         <Button 
           className="w-full mt-8"
           onClick={getUserDetails}
-          disabled={isLoading}
+          disabled={isFetchingProfile || isLoggingOut}
         >
           User Profile
         </Button>
         <Button 
           className="w-full my-8"
           onClick={handleLogout}
-          disabled={isLoading}
+          disabled={isFetchingProfile || isLoggingOut}
         >
-          {isLoading 
+          {isFetchingProfile || isLoggingOut 
             ? (
               <>
                 <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
-                <span className="sr-only">Signing out</span>
+                <span className="sr-only">{isLoggingOut ? "Signing out" : "Fetching profile"}</span>
               </>
-            )
-            : 'Sign Out'}
+            ) 
+            : "Sign Out"
+          }
         </Button>
       </div>
     </div>
