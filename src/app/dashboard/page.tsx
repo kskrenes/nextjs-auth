@@ -8,10 +8,29 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-const ProfilePage = () => {
+const DashboardPage = () => {
 
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isFetchingProfile, setIsFetchingProfile] = useState(false);
+
+  const getUserDetails = async () => {
+    if (isFetchingProfile) return;
+
+    try {
+      setIsFetchingProfile(true);
+      const response = await axios.get('/api/users/me');
+      router.push(`/profile/${response.data.user._id}`);
+    } 
+    catch (error: unknown) {
+      const errorMessage = getErrorMessage(error, "Get user data failed");
+      console.error(errorMessage);
+      toast.error(errorMessage);
+    } 
+    finally {
+      setIsFetchingProfile(false);
+    }
+  }
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -32,8 +51,26 @@ const ProfilePage = () => {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex w-[300px] flex-col items-center py-2" >
-        <h1 className="mb-6 text-3xl font-bold">Profile Page</h1>
-        <p>Some kind of general profile stuff</p>
+        <h1 className="mb-6 text-3xl font-bold">Dashboard Page</h1>
+        <div>
+          <p>Various data that's displayed on the dashboard page...</p>
+        </div>
+        
+        <Button 
+          className="w-full mt-8"
+          onClick={getUserDetails}
+          disabled={isFetchingProfile}
+        >
+          {isFetchingProfile 
+            ? (
+              <>
+                <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
+                <span className="sr-only">Fetching profile</span>
+              </>
+            ) 
+            : "User Profile"
+          }
+        </Button>
         <Button 
           className="w-full my-8"
           onClick={handleLogout}
@@ -45,12 +82,13 @@ const ProfilePage = () => {
                 <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
                 <span className="sr-only">Signing out</span>
               </>
-            )
-            : 'Sign Out'}
+            ) 
+            : "Sign Out"
+          }
         </Button>
       </div>
     </div>
   )
 }
 
-export default ProfilePage
+export default DashboardPage
