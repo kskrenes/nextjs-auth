@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
     // throw if request json is invalid
     let reqBody: any;
     try {
-      reqBody = getRequestBody(request);
+      reqBody = await getRequestBody(request);
     } catch(error:any) {
       return NextResponse.json(
         { error: error.message }, 
