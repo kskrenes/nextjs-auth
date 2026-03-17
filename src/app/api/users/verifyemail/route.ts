@@ -18,8 +18,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // throw if token is invalid
+    const token = reqBody.token;
+    if (typeof token !== "string" || token.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Invalid token" }, 
+        { status: 400 }
+      );
+    }
+
     // fetch user associated with the token
-    const { token } = reqBody;
     const user = await User.findOne({
       verifyToken: token,
       verifyTokenExpiry: {$gt: Date.now()}
@@ -27,7 +35,10 @@ export async function POST(request: NextRequest) {
 
     // throw if user not found
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "User not found" }, 
+        { status: 404 }
+      );
     }
 
     // set user as verified and clear token data
