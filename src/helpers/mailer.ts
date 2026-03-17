@@ -73,10 +73,7 @@ export const sendEmail = async ({
     return mailResponse;
     
   } catch (error: unknown) {
-    let errorMessage: string = "Error sending email";
-    if (error && typeof error === "object" && 'message' in error) {
-      errorMessage = error.message as string;
-    }
-    throw new Error(errorMessage);
+    const message = error instanceof Error ? error.message : "Error sending email";
+    throw new Error(message, { cause: error });
   }
 }
