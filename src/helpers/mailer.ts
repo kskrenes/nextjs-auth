@@ -1,5 +1,6 @@
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
+import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 
@@ -10,7 +11,7 @@ export const sendEmail = async ({
 } : {
   email: string;
   emailType: 'VERIFY' | 'RESET';
-  userId: object;
+  userId: string | mongoose.Types.ObjectId;
 }): Promise<SMTPTransport.SentMessageInfo> => {
   try {
     // create hashed token
