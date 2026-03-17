@@ -52,24 +52,40 @@ export const sendEmail = async ({
 
     // throw if smtp env variables are not configured
     const smtpHost = process.env.SMTP_HOST;
-    const smtpPort = Number(process.env.SMTP_PORT);  
-    if (!smtpHost || isNaN(smtpPort)) {
-      throw new Error("Missing or invalid SMTP configuration (SMTP_HOST, SMTP_PORT)");
+    const smtpPort = Number(process.env.SMTP_PORT);
+    const smtpUser = process.env.MAILER_USER;
+    const smtpPass = process.env.MAILER_PASS;
+    const mailFrom = process.env.MAILER_FROM;
+    const domain = process.env.DOMAIN;
+    if (
+      !smtpHost ||
+      !Number.isInteger(smtpPort) ||
+      smtpPort < 1 ||
+      smtpPort > 65535 ||
+      !smtpUser ||
+      !smtpPass ||
+      !mailFrom ||
+      !domain
+    ) {
+      throw new Error(
+        "Missing or invalid mail configuration (SMTP_HOST, SMTP_PORT, MAILER_USER, MAILER_PASS, MAILER_FROM, DOMAIN)"
+      );
     }
 
+    // configure transport
     const transport = nodemailer.createTransport({
       host: smtpHost,
       port: smtpPort,
       auth: {
-        user: process.env.MAILER_USER,
-        pass: process.env.MAILER_PASS,
+        user: smtpUser,
+        pass: smtpPass,
       }
     });
 
-    const verificationUrl = `${process.env.DOMAIN}/${route}?token=${encodeURIComponent(hashedToken)}`;
-
+    // configure mail options
+    const verificationUrl = `${domain}/${route}?token=${encodeURIComponent(hashedToken)}`;
     const mailOptions = {
-      from: process.env.MAILER_FROM,
+      from: mailFrom,
       to: email,
       subject: action,
       html: `<p>Click <a href="${verificationUrl}">here</a> to ${action.toLowerCase()}</p>`,
