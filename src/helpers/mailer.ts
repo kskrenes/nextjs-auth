@@ -62,7 +62,7 @@ export const sendEmail = async ({
     const verificationUrl = `${process.env.DOMAIN}/${route}?token=${encodeURIComponent(hashedToken)}`;
 
     const mailOptions = {
-      from: 'test.mailer@gmail.com',
+      from: process.env.MAILER_FROM,
       to: email,
       subject: action,
       html: `<p>Click <a href="${verificationUrl}">here</a> to ${action.toLowerCase()}</p>`,
