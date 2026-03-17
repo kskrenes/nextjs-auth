@@ -50,9 +50,16 @@ export const sendEmail = async ({
       throw new Error("User not found");
     }
 
+    // throw if smtp env variables are not configured
+    const smtpHost = process.env.SMTP_HOST;
+    const smtpPort = Number(process.env.SMTP_PORT);  
+    if (!smtpHost || isNaN(smtpPort)) {
+      throw new Error("Missing or invalid SMTP configuration (SMTP_HOST, SMTP_PORT)");
+    }
+
     const transport = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT),
+      host: smtpHost,
+      port: smtpPort,
       auth: {
         user: process.env.MAILER_USER,
         pass: process.env.MAILER_PASS,
