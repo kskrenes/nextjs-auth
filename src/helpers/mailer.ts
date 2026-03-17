@@ -17,39 +17,36 @@ export const sendEmail = async ({
     const idString: string = userId.toString();
     const hashedToken: string = await bcrypt.hash(idString, 10);
 
+    // set data based on emailType
     let route: string = "verifyemail";
     let action: string = "Verify your email";
+    let userUpdate: object = {
+      verifyToken: hashedToken,
+      verifyTokenExpiry: Date.now() + (1000 * 60 * 60), // 1 hour
+    };
 
-    if (emailType === "VERIFY") {
-      // set the user's verify token
-      await User.findByIdAndUpdate(
-        idString, 
-        {
-          verifyToken: hashedToken,
-          verifyTokenExpiry: Date.now() + (1000 * 60 * 60), // 1 hour
-        },
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
-    }
-    else if (emailType === "RESET") {
+    if (emailType === "RESET") {
       route = "resetpassword";
       action = "Reset your password";
+      userUpdate = {
+        forgotPasswordToken: hashedToken,
+        forgotPasswordTokenExpiry: Date.now() + (1000 * 60 * 60), // 1 hour
+      };
+    }
 
-      // set the user's forgot password token
-      await User.findByIdAndUpdate(
-        idString, 
-        {
-          forgotPasswordToken: hashedToken,
-          forgotPasswordTokenExpiry: Date.now() + (1000 * 60 * 60), // 1 hour
-        },
-        {
-          new: true,
-          runValidators: true,
-        }
-      );
+    // update the user
+    const updatedUser = await User.findByIdAndUpdate(
+      idString, 
+      userUpdate,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    // throw if no user found
+    if (!updatedUser) {
+      throw new Error("User not found");
     }
 
     const transport = nodemailer.createTransport({
