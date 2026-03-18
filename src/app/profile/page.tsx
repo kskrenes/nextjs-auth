@@ -9,13 +9,16 @@ import toast from "react-hot-toast";
 import type User from "@/models/user-interface"
 import Button from "@/components/nae-button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const ProfilePage = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
-  const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
+  // const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
   const [user, setUser] = useState<User | null>(null);
+
+  const router = useRouter();
 
   useEffect(() => {
     setIsLoading(true);
@@ -44,13 +47,13 @@ const ProfilePage = () => {
   }
 
   const handleVerifyEmailClick = async () => {
+    if (!user) return;
     if (isSendingVerifyEmail) return;
-    triggerEmail(user, "VERIFY", setIsSendingVerifyEmail);
+    triggerEmail(user.email, "VERIFY", setIsSendingVerifyEmail);
   }
 
   const handleResetPasswordClick = () => {
-    if (isSendingResetEmail) return;
-    triggerEmail(user, "RESET", setIsSendingResetEmail);
+    router.push("/triggerpasswordreset");
   }
 
   return (
@@ -85,7 +88,7 @@ const ProfilePage = () => {
           <Button 
             className="w-full my-8"
             onClick={handleResetPasswordClick}
-            disabled={isSendingResetEmail}
+            // disabled={isSendingResetEmail}
           >
             Reset Password
           </Button>
