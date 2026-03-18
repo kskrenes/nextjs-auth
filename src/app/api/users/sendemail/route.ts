@@ -17,10 +17,10 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if user is invalid
-    const user = reqBody.user as User;
-    if (!user || !user.email || !user._id) {
+    const email = reqBody.email as string;
+    if (!email) {
       return NextResponse.json(
-        { error: "Invalid user" }, 
+        { error: "Invalid email" }, 
         { status: 400 }
       );
     }
@@ -38,9 +38,8 @@ export async function POST(request: NextRequest) {
     let mailResponse;
     try {
       mailResponse = await sendEmail({ 
-        email: user.email, 
+        email, 
         emailType: type, 
-        userId: user._id, 
       });
     } catch (error: unknown) {
       const eMessage = error instanceof Error ? error.message : "Error sending email";

@@ -3,14 +3,14 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "./error-message";
 
-export const triggerEmail = async (user: User | null, type: string, stateSetter: Function) => {
-  if (!user) return;
-  
+export const triggerEmail = async (email: string, type: string, stateSetter: Function) => {
+  if (!email) return;
+
   try {
     stateSetter(true);
     const mailerResponse = await axios.post(
       "/api/users/sendemail", 
-      { user, type }
+      { email, type }
     );
     toast.success("Email sent.");
   } 

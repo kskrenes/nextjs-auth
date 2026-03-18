@@ -7,11 +7,9 @@ import SMTPTransport from "nodemailer/lib/smtp-transport";
 export const sendEmail = async ({ 
   email, 
   emailType, 
-  userId 
 } : {
   email: string;
   emailType: 'VERIFY' | 'RESET';
-  userId: string | mongoose.Types.ObjectId;
 }): Promise<SMTPTransport.SentMessageInfo> => {
   try {
     // validate smtp env variables first to avoid orphaning tokens
@@ -61,18 +59,18 @@ export const sendEmail = async ({
     }
 
     // update the user
-    const updatedUser = await User.findByIdAndUpdate(
-      userId.toString(), 
+    const updatedUser = await User.findOneAndUpdate( 
+      { email },
       userUpdate,
       {
         new: true,
         runValidators: true,
       }
-    );
+    );    
 
     // throw if no user found
     if (!updatedUser) {
-      throw new Error("User not found");
+      throw new Error("No user found with that email");
     }
 
     // configure transport
