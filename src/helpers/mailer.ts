@@ -14,6 +14,29 @@ export const sendEmail = async ({
   userId: string | mongoose.Types.ObjectId;
 }): Promise<SMTPTransport.SentMessageInfo> => {
   try {
+    // validate smtp env variables first to avoid orphaning tokens
+    const smtpHost = process.env.SMTP_HOST;
+    const smtpPort = Number(process.env.SMTP_PORT);
+    const smtpUser = process.env.MAILER_USER;
+    const smtpPass = process.env.MAILER_PASS;
+    const mailFrom = process.env.MAILER_FROM;
+    const domain = process.env.DOMAIN;
+    if (
+      !smtpHost ||
+      !Number.isInteger(smtpPort) ||
+      smtpPort < 1 ||
+      smtpPort > 65535 ||
+      !smtpUser ||
+      !smtpPass ||
+      !mailFrom ||
+      !domain
+    ) {
+      // throw if smtp env variables are not configured
+      throw new Error(
+        "Missing or invalid mail configuration (SMTP_HOST, SMTP_PORT, MAILER_USER, MAILER_PASS, MAILER_FROM, DOMAIN)"
+      );
+    }
+
     // generate a cryptographically random raw token (32 bytes → 64-char hex string)
     const rawToken: string = crypto.randomBytes(32).toString("hex");
 
@@ -52,28 +75,6 @@ export const sendEmail = async ({
       throw new Error("User not found");
     }
 
-    // throw if smtp env variables are not configured
-    const smtpHost = process.env.SMTP_HOST;
-    const smtpPort = Number(process.env.SMTP_PORT);
-    const smtpUser = process.env.MAILER_USER;
-    const smtpPass = process.env.MAILER_PASS;
-    const mailFrom = process.env.MAILER_FROM;
-    const domain = process.env.DOMAIN;
-    if (
-      !smtpHost ||
-      !Number.isInteger(smtpPort) ||
-      smtpPort < 1 ||
-      smtpPort > 65535 ||
-      !smtpUser ||
-      !smtpPass ||
-      !mailFrom ||
-      !domain
-    ) {
-      throw new Error(
-        "Missing or invalid mail configuration (SMTP_HOST, SMTP_PORT, MAILER_USER, MAILER_PASS, MAILER_FROM, DOMAIN)"
-      );
-    }
-
     // configure transport
     const transport = nodemailer.createTransport({
       host: smtpHost,
@@ -97,9 +98,9 @@ export const sendEmail = async ({
 
     // send the email and return the transport response
     const mailResponse:SMTPTransport.SentMessageInfo = await transport.sendMail(mailOptions);
-    return mailResponse;
-    
-  } catch (error: unknown) {
+    return mailResponse;  
+  } 
+  catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Error sending email";
     throw new Error(message, { cause: error });
   }
