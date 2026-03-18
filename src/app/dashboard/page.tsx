@@ -58,19 +58,12 @@ const DashboardPage = () => {
         
         <Button 
           className="w-full mt-8"
-          onClick={getUserDetails}
+          onClick={() => router.push("/profile")}
           disabled={isFetchingProfile}
         >
-          {isFetchingProfile 
-            ? (
-              <>
-                <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
-                <span className="sr-only">Fetching profile</span>
-              </>
-            ) 
-            : "User Profile"
-          }
+          User Profile
         </Button>
+        
         <Button 
           className="w-full my-8"
           onClick={handleLogout}
