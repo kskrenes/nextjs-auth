@@ -2,21 +2,21 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
+import { getRequestBody } from "@/helpers/validate-request";
 
 export async function POST(request: NextRequest) {
   try {
     await connect();
 
     // throw if request json is invalid
-    let reqBody: unknown;
+    let reqBody: any;
     try {
-      reqBody = await request.json();
-    } catch {
-      return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
-    }
-
-    if (!reqBody || typeof reqBody !== "object") {
-      return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+      reqBody = await getRequestBody(request);
+    } catch(error:any) {
+      return NextResponse.json(
+        { error: error.message }, 
+        { status: 400 }
+      );
     }
 
     // typescript only enforces field types at compile-time...
