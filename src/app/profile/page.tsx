@@ -1,6 +1,7 @@
 "use client";
 
 import { getErrorMessage } from "@/helpers/error-message";
+import { triggerEmail } from "@/helpers/trigger-email";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -42,34 +43,14 @@ const ProfilePage = () => {
     );
   }
 
-  const sendEmail = async (type: string, stateSetter: Function) => {
-    try {
-      stateSetter(true);
-      const mailerResponse = await axios.post(
-        "/api/users/sendemail", 
-        { user, type }
-      );
-      console.log("Mailer success!");
-      console.log(mailerResponse);
-    } 
-    catch (error: unknown) {
-      const errorMessage = getErrorMessage(error, `Error sending ${type} email`);
-      console.error(errorMessage);
-      toast.error(errorMessage);
-    }
-    finally {
-      stateSetter(false);
-    }
-  }
-
   const handleVerifyEmailClick = async () => {
     if (isSendingVerifyEmail) return;
-    sendEmail("VERIFY", setIsSendingVerifyEmail);
+    triggerEmail(user, "VERIFY", setIsSendingVerifyEmail);
   }
 
   const handleResetPasswordClick = () => {
     if (isSendingResetEmail) return;
-    sendEmail("RESET", setIsSendingResetEmail);
+    triggerEmail(user, "RESET", setIsSendingResetEmail);
   }
 
   return (
