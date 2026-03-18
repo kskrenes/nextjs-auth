@@ -3,7 +3,7 @@
 import Button from "@/components/nae-button";
 import { getErrorMessage } from "@/helpers/error-message";
 import { triggerEmail } from "@/helpers/trigger-email";
-import User from "@/models/user-interface";
+import type NaeUser from "@/models/user-interface";
 import axios from "axios";
 import { BadgeCheck, Loader, Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
@@ -47,7 +47,8 @@ const VerifyEmailPage = () => {
     try {
       setIsSendingEmail(true);
       const res = await axios.get('/api/users/me');
-      triggerEmail(res.data.user as User, "VERIFY", setIsSendingEmail);
+      const user = res.data.user as NaeUser;
+      triggerEmail(user.email, "VERIFY", setIsSendingEmail);
       setIsEmailSent(true);
     }
     catch (error: unknown) {

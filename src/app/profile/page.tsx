@@ -6,7 +6,7 @@ import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import type User from "@/models/user-interface"
+import type NaeUser from "@/models/user-interface"
 import Button from "@/components/nae-button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,7 +16,7 @@ const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
   // const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<NaeUser | null>(null);
 
   const router = useRouter();
 
@@ -25,7 +25,7 @@ const ProfilePage = () => {
     (async () => {
       try {
         const res = await axios.get('/api/users/me');
-        setUser(res.data.user as User);
+        setUser(res.data.user as NaeUser);
       }
       catch (error: unknown) {
         const errorMessage = getErrorMessage(error, "Get user data failed");

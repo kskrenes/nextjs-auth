@@ -1,6 +1,5 @@
 import { sendEmail } from "@/helpers/mailer";
 import { getRequestBody } from "@/helpers/validate-request";
-import User from "@/models/user-interface";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {

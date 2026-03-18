@@ -4,7 +4,7 @@ import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import { getErrorMessage } from "@/helpers/error-message";
 import { triggerEmail } from "@/helpers/trigger-email";
-import User from "@/models/user-interface";
+import type NaeUser from "@/models/user-interface";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -12,14 +12,11 @@ import { useEffect, useState } from "react";
 
 const TriggerPasswordResetPage = () => {
 
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<NaeUser | null>(null);
   const [fetchingUser, setFetchingUser] = useState<boolean>(false);
   const [pendingReset, setPendingReset] = useState<boolean>(false);
   // const [emailSent, setEmailSent] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
-  // const [oldPassword, setOldPassword] = useState<string>("");
-  // const [newPassword, setNewPassword] = useState<string>("");
-  // const [confirmPassword, setConfirmPassword] = useState<string>("");
 
   useEffect(() => {
     if (fetchingUser) return;
@@ -28,7 +25,7 @@ const TriggerPasswordResetPage = () => {
       try {
         setFetchingUser(true);
         const res = await axios.get('/api/users/me');
-        const user = res.data.user as User
+        const user = res.data.user as NaeUser
         setUser(user);
         setEmail(user.email);
       } catch (error: unknown) {

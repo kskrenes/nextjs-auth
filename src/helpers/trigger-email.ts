@@ -1,4 +1,3 @@
-import User from "@/models/user-interface";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "./error-message";
