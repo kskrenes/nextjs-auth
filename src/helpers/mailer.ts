@@ -1,6 +1,5 @@
 import User from "@/models/user-model";
 import crypto from "crypto";
-import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 
