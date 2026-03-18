@@ -17,7 +17,7 @@ const VerifyEmailPage = () => {
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
   const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
-  
+
   const router = useRouter();
 
   useEffect(() => {
@@ -45,6 +45,7 @@ const VerifyEmailPage = () => {
   const handleResendClick = async () => {
     if (isSendingEmail || isEmailSent) return;
     try {
+      setIsSendingEmail(true);
       const res = await axios.get('/api/users/me');
       triggerEmail(res.data.user as User, "VERIFY", setIsSendingEmail);
       setIsEmailSent(true);
