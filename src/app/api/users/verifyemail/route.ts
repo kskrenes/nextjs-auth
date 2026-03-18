@@ -1,6 +1,7 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { getRequestBody } from "@/helpers/validate-request";
 import User from "@/models/user-model";
+import crypto from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -27,21 +28,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // fetch user associated with the token
+    // hash incoming raw token with SHA-256 just like when it was stored
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    // find the user matching the hashed token as long it is not expired
     const user = await User.findOne({
-      verifyToken: token,
-      verifyTokenExpiry: {$gt: Date.now()}
+      verifyToken: hashedToken,
+      verifyTokenExpiry: { $gt: Date.now() },
     });
 
-    // throw if user not found
+    // throw if user not found with non-expired matching token
     if (!user) {
       return NextResponse.json(
-        { error: "User not found" }, 
-        { status: 404 }
+        { error: "Invalid or expired token" }, 
+        { status: 400 }
       );
     }
 
-    // set user as verified and clear token data
+    // mark user as verified and clear token fields
     user.isVerified = true;
     user.verifyToken = undefined;
     user.verifyTokenExpiry = undefined;
@@ -51,8 +55,8 @@ export async function POST(request: NextRequest) {
       message: "Email verified successfully",
       success: true,
     })
-
-  } catch (error: unknown) {
+  } 
+  catch (error: unknown) {
     console.error("Email verification error:", error);
     return NextResponse.json(
       { error: "Unable to verify email" }, 

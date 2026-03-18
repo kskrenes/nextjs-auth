@@ -1,5 +1,5 @@
 import User from "@/models/user-model";
-import bcrypt from "bcryptjs";
+import crypto from "crypto";
 import mongoose from "mongoose";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
@@ -14,15 +14,17 @@ export const sendEmail = async ({
   userId: string | mongoose.Types.ObjectId;
 }): Promise<SMTPTransport.SentMessageInfo> => {
   try {
-    // create hashed token
-    const idString: string = userId.toString();
-    const hashedToken: string = await bcrypt.hash(idString, 10);
+    // generate a cryptographically random raw token (32 bytes → 64-char hex string)
+    const rawToken: string = crypto.randomBytes(32).toString("hex");
+
+    // hash with SHA-256 for DB storage (deterministic, fast, secure for high-entropy tokens)
+    const hashedToken: string = crypto.createHash("sha256").update(rawToken).digest("hex");
 
     // set data based on emailType
     let route: string = "verifyemail";
     let action: string = "Verify your email";
     let userUpdate: object = {
-      verifyToken: hashedToken,
+      verifyToken: hashedToken,  // only the hash goes in the DB                
       verifyTokenExpiry: Date.now() + (1000 * 60 * 60), // 1 hour
     };
 
@@ -30,14 +32,14 @@ export const sendEmail = async ({
       route = "resetpassword";
       action = "Reset your password";
       userUpdate = {
-        forgotPasswordToken: hashedToken,
+        forgotPasswordToken: hashedToken,  // only the hash goes in the DB
         forgotPasswordTokenExpiry: Date.now() + (1000 * 60 * 60), // 1 hour
       };
     }
 
     // update the user
     const updatedUser = await User.findByIdAndUpdate(
-      idString, 
+      userId.toString(), 
       userUpdate,
       {
         new: true,
@@ -82,8 +84,10 @@ export const sendEmail = async ({
       }
     });
 
+    // expose only the raw token in the url
+    const verificationUrl = `${domain}/${route}?token=${encodeURIComponent(rawToken)}`;
+
     // configure mail options
-    const verificationUrl = `${domain}/${route}?token=${encodeURIComponent(hashedToken)}`;
     const mailOptions = {
       from: mailFrom,
       to: email,
