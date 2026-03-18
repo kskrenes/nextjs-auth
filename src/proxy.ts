@@ -57,6 +57,8 @@ export const config = {
     "/dashboard",
     "/login",
     "/signup",
-    "/verifyemail"
+    "/verifyemail",
+    "/resetpassword",
+    "/triggerpasswordreset",
   ],
 }
