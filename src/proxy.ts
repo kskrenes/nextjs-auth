@@ -35,12 +35,12 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  const authReqired = requireAuth(path);
+  const authRequired = requireAuth(path);
   const authRejected = rejectAuth(path);
   const isAuthed = await isAuthenticated(request);
 
   // redirect unauthenticated users away from protected pages
-  if (authReqired && !isAuthed) {
+  if (authRequired && !isAuthed) {
     return NextResponse.redirect(new URL('/login', request.nextUrl));
   }
 
