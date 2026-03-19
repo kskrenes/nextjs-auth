@@ -14,6 +14,7 @@ const VerifyEmailPage = () => {
 
   const [token, setToken] = useState<string>("");
   const [isVerified, setIsVerified] = useState<boolean>(false);
+  const [isRetrievingData, setIsRetrievingData] = useState<boolean>(false);
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
   const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
   const [isVerificationError, setIsVerificationError] = useState<boolean>(false);
@@ -46,9 +47,9 @@ const VerifyEmailPage = () => {
   }, [token]);
 
   const handleResendClick = async () => {
-    if (isSendingEmail || isEmailSent) return;
+    if (isRetrievingData || isSendingEmail || isEmailSent) return;
     try {
-      setIsSendingEmail(true);
+      setIsRetrievingData(true);
       const res = await axios.get('/api/users/me');
       const user = res.data.user as NaeUser;
       try {
@@ -60,6 +61,9 @@ const VerifyEmailPage = () => {
     }
     catch (error: unknown) {
       router.push("/login");
+    }
+    finally {
+      setIsRetrievingData(false);
     }
   }
 
