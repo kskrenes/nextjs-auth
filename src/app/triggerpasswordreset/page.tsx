@@ -57,9 +57,6 @@ const TriggerPasswordResetPage = () => {
       await triggerEmail(email, "RESET", setIsSending);  
       setIsSent(true);
     } catch (error: unknown) {
-      const message = getErrorMessage(error, "Failed to send email");
-      console.error(message);
-      toast.error(message);
       setIsError(true);
     }
   }
