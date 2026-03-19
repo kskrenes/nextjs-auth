@@ -9,9 +9,14 @@ login page
 
 signup page
 - add confirm password
-- add password instructions
+- add password instructions & validation
+- add username instructions & validation
+- add email validation
 - add check for duplicate username (username already exists)
 - add check for duplicate email (account already exists)
+
+resetpassword page
+- add email validation
 
 profile
 - add success and error states after send email
