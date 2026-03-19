@@ -62,6 +62,8 @@ export async function POST(request: NextRequest) {
     // set new values
     const update: any = {
       password: hashedPassword,
+      forgotPasswordToken: null,
+      forgotPasswordTokenExpiry: null,
     }
 
     // update user
