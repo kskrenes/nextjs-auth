@@ -5,7 +5,7 @@ import { getErrorMessage } from "@/helpers/error-message";
 import { triggerEmail } from "@/helpers/trigger-email";
 import type NaeUser from "@/models/user-interface";
 import axios from "axios";
-import { BadgeCheck, Loader, Loader2, ShieldAlert } from "lucide-react";
+import { BadgeCheck, Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -16,14 +16,15 @@ const VerifyEmailPage = () => {
   const [isVerified, setIsVerified] = useState<boolean>(false);
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
   const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
+  const [isVerificationError, setIsVerificationError] = useState<boolean>(false);
+  const [isEmailSentError, setIsEmailSentError] = useState<boolean>(false);
 
   const router = useRouter();
 
   useEffect(() => {
     const urlToken = new URLSearchParams(window.location.search).get("token") ?? "";
     if (!urlToken) {
-      setIsError(true);
+      setIsVerificationError(true);
       return;
     }
     setToken(urlToken);
@@ -40,7 +41,7 @@ const VerifyEmailPage = () => {
       await axios.post('/api/users/verifyemail', { token });
       setIsVerified(true);
     } catch (error: any) {
-      setIsError(true);
+      setIsVerificationError(true);
       const message = getErrorMessage(error, "Email verification failed");
       console.error(message);
     }
@@ -52,12 +53,15 @@ const VerifyEmailPage = () => {
       setIsSendingEmail(true);
       const res = await axios.get('/api/users/me');
       const user = res.data.user as NaeUser;
-      await triggerEmail(user.email, "VERIFY", setIsSendingEmail);
-      setIsEmailSent(true);
+      try {
+        await triggerEmail(user.email, "VERIFY", setIsSendingEmail);
+        setIsEmailSent(true);  
+      } catch (error: unknown) {
+        setIsEmailSentError(true);
+      }
     }
     catch (error: unknown) {
       router.push("/login");
-      return;
     }
   }
 
@@ -67,7 +71,7 @@ const VerifyEmailPage = () => {
           ? (
             <BadgeCheck className="w-10 h-10 text-purple-600" />
           ) 
-          : isError 
+          : isVerificationError 
             ? (
               <ShieldAlert className="w-10 h-10 text-red-600" />
             ) 
@@ -78,19 +82,19 @@ const VerifyEmailPage = () => {
       <h1 className="mb-6 text-3xl font-bold">
         {isVerified ? 
           "Your email has been verified." 
-          : isError ? 
+          : isVerificationError ? 
             "Error verifying email" : 
             "Waiting for verification..."
         }
       </h1>
-      {isError && !isEmailSent && (
+      {isVerificationError && !isEmailSent && (
         <Button
           onClick={handleResendClick}
         >
           Resend Email
         </Button>
       )}
-      {isError && isEmailSent && (
+      {isVerificationError && isEmailSent && (
         <p>Email sent.</p>
       )}
       <div className="pt-8">
