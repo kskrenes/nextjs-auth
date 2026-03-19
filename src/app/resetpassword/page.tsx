@@ -22,8 +22,12 @@ const ResetPasswordPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const urlToken = window.location.search.split("=")[1] as string;
-    setToken(urlToken || "");
+    const urlToken = new URLSearchParams(window.location.search).get("token") ?? "";
+    if (!urlToken) {
+      setIsError(true);
+      return;
+    }
+    setToken(urlToken);
   }, [])
 
   const handleReset = async (e: SubmitEvent<HTMLFormElement>) => {
