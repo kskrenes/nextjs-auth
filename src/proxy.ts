@@ -3,6 +3,22 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { TOKEN_COOKIE_NAME } from "./helpers/token";
 
+function requireAuth(path: string) {
+  // include all pages that require authorized users
+  return (
+    path === "/dashboard" ||
+    path === "/profile"
+  );
+}
+
+function rejectAuth(path: string) {
+  // include all pages that should redirect authorized users
+  return (
+    path === "/login" ||
+    path === "/signup"
+  );
+}
+
 async function isAuthenticated(request: NextRequest): Promise<boolean> {
   // verify token exists
   const token = request.cookies.get(TOKEN_COOKIE_NAME)?.value;
@@ -19,26 +35,30 @@ async function isAuthenticated(request: NextRequest): Promise<boolean> {
 
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
-  const isPublicPath = path === "/login" || path === "/signup";
+  const authRequired = requireAuth(path);
+  const authRejected = rejectAuth(path);
   const isAuthed = await isAuthenticated(request);
 
-  // redirect authenticated users away from signup/login pages
-  if (isPublicPath && isAuthed) {
-    return NextResponse.redirect(new URL('/', request.nextUrl));
+  // redirect unauthenticated users away from protected pages
+  if (authRequired && !isAuthed) {
+    return NextResponse.redirect(new URL('/login', request.nextUrl));
   }
 
-  // redirect unauthenticated users away from protected pages
-  if (!isPublicPath && !isAuthed) {
-    return NextResponse.redirect(new URL('/login', request.nextUrl));
+  // redirect authenticated users away from signup/login pages
+  if (authRejected && isAuthed) {
+    return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
   }
 }
 
 export const config = {
   matcher: [
     "/",
-    "/profile/:path*",
+    "/profile",
     "/dashboard",
     "/login",
     "/signup",
+    "/verifyemail",
+    "/resetpassword",
+    "/triggerpasswordreset",
   ],
 }

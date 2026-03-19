@@ -9,27 +9,26 @@ export async function POST(request: NextRequest) {
     await connect();
 
     // throw if request json is invalid
-    let reqBody: any;
+    let reqBody: object;
     try {
       reqBody = await getRequestBody(request);
-    } catch(error:any) {
+    } catch(error: unknown) {
+      const message = error instanceof Error ? error.message : "Invalid request";
       return NextResponse.json(
-        { error: error.message }, 
+        { error: message }, 
         { status: 400 }
       );
     }
 
-    // typescript only enforces field types at compile-time...
-    const { username, email, password } = reqBody as { username?: string; email?: string; password?: string };
-
     // throw if field types are invalid at runtime
+    const { username, email, password } = reqBody as { username?: string; email?: string; password?: string };
     if (
       typeof username !== "string" ||
       typeof email !== "string" ||
       typeof password !== "string"
     ) {
       return NextResponse.json(
-        { error: "Username, email, and password must be strings" },
+        { error: "Invalid request" },
         { status: 400 }
       );
     }
@@ -122,7 +121,8 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
 
   } catch (error: unknown) {
-    console.error("Signup route error:", error);
+    const message = error instanceof Error ? error.message : "Unable to create user";
+    console.error(message);
     return NextResponse.json(
       { error: "Unable to create user" }, 
       { status: 500 }

@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-export const getRequestBody = async (request: NextRequest) => {
+export const getRequestBody = async (request: NextRequest):Promise<object> => {
   let reqBody: unknown;
   try {
     reqBody = await request.json();

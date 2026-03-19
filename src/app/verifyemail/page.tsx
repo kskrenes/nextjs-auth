@@ -1,0 +1,117 @@
+"use client";
+
+import Button from "@/components/nae-button";
+import { getErrorMessage } from "@/helpers/error-message";
+import { triggerEmail } from "@/helpers/trigger-email";
+import type NaeUser from "@/models/user-interface";
+import axios from "axios";
+import { BadgeCheck, Loader2, ShieldAlert } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+const VerifyEmailPage = () => {
+
+  const [token, setToken] = useState<string>("");
+  const [isVerified, setIsVerified] = useState<boolean>(false);
+  const [isRetrievingData, setIsRetrievingData] = useState<boolean>(false);
+  const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
+  const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
+  const [isVerificationError, setIsVerificationError] = useState<boolean>(false);
+  const [isEmailSentError, setIsEmailSentError] = useState<boolean>(false); // TODO: add resend error state (in upcoming feature)
+
+  const router = useRouter();
+
+  useEffect(() => {
+    const urlToken = new URLSearchParams(window.location.search).get("token") ?? "";
+    if (!urlToken) {
+      setIsVerificationError(true);
+      return;
+    }
+    setToken(urlToken);
+  }, []);
+
+  useEffect(() => {
+    if (token?.length > 0) {
+      (async () => {
+        try {
+          await axios.post('/api/users/verifyemail', { token });
+          setIsVerified(true);
+        } catch (error: any) {
+          setIsVerificationError(true);
+          const message = getErrorMessage(error, "Email verification failed");
+          console.error(message);
+        }
+      })();
+    }
+  }, [token]);
+
+  const handleResendClick = async () => {
+    if (isRetrievingData || isSendingEmail || isEmailSent) return;
+    try {
+      setIsRetrievingData(true);
+      const res = await axios.get('/api/users/me');
+      const user = res.data.user as NaeUser;
+      try {
+        await triggerEmail(user.email, "VERIFY", setIsSendingEmail);
+        setIsEmailSent(true);  
+      } catch (error: unknown) {
+        setIsEmailSentError(true);
+      }
+    }
+    catch (error: unknown) {
+      router.push("/login");
+    }
+    finally {
+      setIsRetrievingData(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
+      {isVerified 
+          ? (
+            <BadgeCheck className="w-10 h-10 text-purple-600" />
+          ) 
+          : isVerificationError 
+            ? (
+              <ShieldAlert className="w-10 h-10 text-red-600" />
+            ) 
+            : (
+              <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
+            )
+      }
+      <h1 className="mb-6 text-3xl font-bold">
+        {isVerified ? 
+          "Your email has been verified." 
+          : isVerificationError ? 
+            "Error verifying email" : 
+            "Waiting for verification..."
+        }
+      </h1>
+      {isVerificationError && !isEmailSent && (
+        <Button
+          onClick={handleResendClick}
+        >
+          Resend Email
+        </Button>
+      )}
+      {isVerificationError && isEmailSent && (
+        <p>Email sent.</p>
+      )}
+      <div className="pt-8">
+        <p className="text-xs">
+          {'Go to '}
+          <Link 
+            href="/login"
+            className="text-purple-400 hover:text-purple-500 underline transition-colors"
+          >
+            Sign in
+          </Link>{' page.'}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+export default VerifyEmailPage

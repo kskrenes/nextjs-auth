@@ -93,6 +93,12 @@ const LoginPage = () => {
             Sign up here
           </Link>.
         </p>
+        <Link 
+          href="/triggerpasswordreset"
+          className="text-xs mt-2 text-purple-400 hover:text-purple-500 underline transition-colors"
+        >
+          Forgot password
+        </Link>
       </form>
     </div>
   )

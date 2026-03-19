@@ -24,7 +24,8 @@ export async function POST() {
     return response;
 
   } catch (error: unknown) {
-    console.error("Logout route error:", error);
+    const message = error instanceof Error ? error.message : "Unable to log out";
+    console.error(message);
     return NextResponse.json(
       { error: "Unable to log out" }, 
       { status: 500 }

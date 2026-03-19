@@ -27,8 +27,11 @@ export async function GET(request: NextRequest) {
     });
   } 
   catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unable to retrieve user";
+    console.error(message)
+
     // check for authorization error
-    if (error instanceof Error && /token|jwt|auth/i.test(error.message)) {
+    if (/token|jwt|auth/i.test(message)) {
       return NextResponse.json(
         { error: "Unauthorized" }, 
         { status: 401 }
@@ -36,7 +39,6 @@ export async function GET(request: NextRequest) {
     }
 
     // throw general route error
-    console.error("Get current user route error:", error);
     return NextResponse.json(
       { error: "Unable to retrieve user" }, 
       { status: 500 }

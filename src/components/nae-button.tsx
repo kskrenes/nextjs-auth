@@ -18,7 +18,7 @@ const Button: React.FC<ButtonProps> = ({
   className = '',
   ...rest // Collect any other standard HTML button props
 }) => {
-  const baseStyles = 'py-2 text-lg rounded-xl font-semibold transition-colors cursor-pointer flex justify-center items-center';
+  const baseStyles = 'py-2 px-4 text-lg rounded-xl font-semibold transition-colors cursor-pointer flex justify-center items-center';
   
   const variantStyles = variant === 'primary'
     ? 'bg-purple-900 hover:bg-purple-800 disabled:bg-purple-900/50 disabled:text-gray-500/50 disabled:cursor-not-allowed'
