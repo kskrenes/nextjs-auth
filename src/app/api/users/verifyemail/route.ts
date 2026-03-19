@@ -9,21 +9,25 @@ export async function POST(request: NextRequest) {
     await connect();
     
     // throw if request json is invalid
-    let reqBody: any;
+    let reqBody: object;
     try {
       reqBody = await getRequestBody(request);
-    } catch(error:any) {
+    } catch(error: unknown) {
+      const message = error instanceof Error ? error.message : "Invalid request";
       return NextResponse.json(
-        { error: error.message }, 
+        { error: message }, 
         { status: 400 }
       );
     }
 
-    // throw if token is invalid
-    const token = reqBody.token;
-    if (typeof token !== "string" || token.trim().length === 0) {
+    // throw if field types are invalid at runtime
+    const { token } = reqBody as { token?: string; };
+    if (
+      typeof token !== "string" || 
+      token.trim().length === 0
+    ) {
       return NextResponse.json(
-        { error: "Invalid token" }, 
+        { error: "Invalid token" },
         { status: 400 }
       );
     }

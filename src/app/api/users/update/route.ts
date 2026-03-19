@@ -27,9 +27,10 @@ export async function POST(request: NextRequest) {
     let reqBody: any;
     try {
       reqBody = await getRequestBody(request);
-    } catch(error: any) {
+    } catch(error: unknown) {
+      const message = error instanceof Error ? error.message : "Invalid request";
       return NextResponse.json(
-        { error: error.message }, 
+        { error: message }, 
         { status: 400 }
       );
     }

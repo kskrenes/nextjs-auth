@@ -5,30 +5,26 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function POST(request: NextRequest) {
   try {
     // throw if request json is invalid
-    let reqBody: any;
+    let reqBody: object;
     try {
       reqBody = await getRequestBody(request);
-    } catch(error: any) {
+    } catch(error: unknown) {
+      const message = error instanceof Error ? error.message : "Invalid request";
       return NextResponse.json(
-        { error: error.message }, 
+        { error: message }, 
         { status: 400 }
       );
     }
 
-    // throw if user is invalid
-    const email = reqBody.email as string;
-    if (!email) {
+    // throw if field types are invalid at runtime
+    const { email, type } = reqBody as { email?: string; type?: "VERIFY" | "RESET" };
+    if (
+      typeof email !== "string" ||
+      typeof type !== "string" ||
+      (type !== "VERIFY" && type !== "RESET")
+    ) {
       return NextResponse.json(
-        { error: "Invalid email" }, 
-        { status: 400 }
-      );
-    }
-
-    // throw if type is invalid
-    const type = reqBody.type as string;
-    if (type !== "VERIFY" && type !== "RESET") {
-      return NextResponse.json(
-        { error: "Invalid email type" }, 
+        { error: "Invalid request" },
         { status: 400 }
       );
     }
