@@ -10,27 +10,9 @@ import toast from "react-hot-toast";
 
 const DashboardPage = () => {
 
-  const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const [isFetchingProfile, setIsFetchingProfile] = useState(false);
 
-  const getUserDetails = async () => {
-    if (isFetchingProfile) return;
-
-    try {
-      setIsFetchingProfile(true);
-      const response = await axios.get('/api/users/me');
-      router.push(`/profile/${response.data.user._id}`);
-    } 
-    catch (error: unknown) {
-      const errorMessage = getErrorMessage(error, "Get user data failed");
-      console.error(errorMessage);
-      toast.error(errorMessage);
-    } 
-    finally {
-      setIsFetchingProfile(false);
-    }
-  }
+  const router = useRouter();
 
   const handleLogout = async () => {
     if (isLoggingOut) return;
@@ -59,7 +41,6 @@ const DashboardPage = () => {
         <Button 
           className="w-full mt-8"
           onClick={() => router.push("/profile")}
-          disabled={isFetchingProfile}
         >
           User Profile
         </Button>
