@@ -1,0 +1,98 @@
+import { connect } from "@/dbconfig/dbconfig";
+import { getRequestBody } from "@/helpers/validate-request";
+import User from "@/models/user-model";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(request: NextRequest) {
+  try {
+    await connect();
+
+    // throw if request json is invalid
+    let reqBody: any;
+    try {
+      reqBody = await getRequestBody(request);
+    } catch(error:any) {
+      return NextResponse.json(
+        { error: error.message }, 
+        { status: 400 }
+      );
+    }
+
+    // throw if token is invalid
+    const token = reqBody.token;
+    if (typeof token !== "string" || token.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Invalid token" }, 
+        { status: 400 }
+      );
+    }
+
+    // throw if no new password provided
+    const password = reqBody.password as string;
+    if (!password) {
+      return NextResponse.json(
+        { error: "No password value found" }, 
+        { status: 400 }
+      );
+    }
+
+    // hash incoming raw token with SHA-256 just like when it was stored
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+
+    // find the user matching the hashed token as long it is not expired
+    const user = await User.findOne({
+      forgotPasswordToken: hashedToken,
+      forgotPasswordTokenExpiry: { $gt: Date.now() },
+    });
+
+    // throw if user not found with non-expired matching token
+    if (!user) {
+      return NextResponse.json(
+        { error: "Invalid or expired token" }, 
+        { status: 400 }
+      );
+    }
+
+    // hash password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // set new values
+    const update: any = {
+      password: hashedPassword,
+    }
+
+    // update user
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      update,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    // return sanitized user
+    return NextResponse.json({
+      message: "Password reset successfully",
+      success: true,
+      user: {
+        id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        isVerified: updatedUser.isVerified,
+        isAdmin: updatedUser.isAdmin,
+      },
+    }, { status: 201 });
+
+  } 
+  catch (error: unknown) {
+    console.error("Failed to reset password:", error);
+    return NextResponse.json(
+      { error: "Unable to reset password" }, 
+      { status: 500 }
+    );
+  }
+};
