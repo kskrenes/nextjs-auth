@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         isVerified: updatedUser.isVerified,
         isAdmin: updatedUser.isAdmin,
       },
-    }, { status: 201 });
+    }, { status: 200 });
 
   } 
   catch (error: unknown) {
