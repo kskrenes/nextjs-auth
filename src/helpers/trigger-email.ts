@@ -2,7 +2,11 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "./error-message";
 
-export const triggerEmail = async (email: string, type: string, stateSetter: Function) => {
+export const triggerEmail = async (
+  email: string, 
+  type: string, 
+  stateSetter: (loading: boolean) => void
+) => {
   if (!email) return;
 
   try {
