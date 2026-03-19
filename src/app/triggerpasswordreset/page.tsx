@@ -25,6 +25,8 @@ const TriggerPasswordResetPage = () => {
 
     (async () => {
       try {
+        // check for authed user, but fail silently and let the user
+        // manually enter email if no authed user is found
         setFetchingUser(true);
         const res = await axios.get('/api/users/me');
         const user = res.data.user as NaeUser
