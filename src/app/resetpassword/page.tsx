@@ -32,7 +32,12 @@ const ResetPasswordPage = () => {
 
   const handleReset = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
-    e.preventDefault(); 
+    e.preventDefault();
+
+    if (!token) {
+      setIsError(true);
+      return;
+    }
 
     if (isPendingReset) return;
 
@@ -116,7 +121,12 @@ const ResetPasswordPage = () => {
           <Button
             type="submit"
             className="w-full mt-8"
-            disabled={newPassword.length < 8 || newPassword !== confirmPassword}
+            disabled={
+              isPendingReset ||
+              !token ||
+              newPassword.length < 8 || 
+              newPassword !== confirmPassword
+            }
           >
             {isPendingReset 
               ? (
