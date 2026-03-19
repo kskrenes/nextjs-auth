@@ -1,4 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { AuthTokenError, getIdFromToken } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
 import type NaeUser from "@/models/user-interface";
 import User from "@/models/user-model";
@@ -8,11 +9,25 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
+    // throw if user is not authenticated
+    let authenticatedUserId: string;
+    try {
+      authenticatedUserId = await getIdFromToken(request);
+    } catch (error: unknown) {
+      if (error instanceof AuthTokenError) {
+        return NextResponse.json(
+          { error: error.message }, 
+          { status: 401 }
+        );
+      }
+      throw error;
+    }
+
     // throw if request json is invalid
     let reqBody: any;
     try {
       reqBody = await getRequestBody(request);
-    } catch(error:any) {
+    } catch(error: any) {
       return NextResponse.json(
         { error: error.message }, 
         { status: 400 }
@@ -40,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     // update user
     const updatedUser = await User.findByIdAndUpdate(
-      user._id,
+      authenticatedUserId,
       update,
       {
         new: true,
