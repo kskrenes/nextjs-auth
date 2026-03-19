@@ -28,24 +28,22 @@ const VerifyEmailPage = () => {
       return;
     }
     setToken(urlToken);
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (token?.length > 0) {
-      verifyUserEmail();
+      (async () => {
+        try {
+          await axios.post('/api/users/verifyemail', { token });
+          setIsVerified(true);
+        } catch (error: any) {
+          setIsVerificationError(true);
+          const message = getErrorMessage(error, "Email verification failed");
+          console.error(message);
+        }
+      })();
     }
-  }, [token])
-
-  const verifyUserEmail = async () => {
-    try {
-      await axios.post('/api/users/verifyemail', { token });
-      setIsVerified(true);
-    } catch (error: any) {
-      setIsVerificationError(true);
-      const message = getErrorMessage(error, "Email verification failed");
-      console.error(message);
-    }
-  }
+  }, [token]);
 
   const handleResendClick = async () => {
     if (isSendingEmail || isEmailSent) return;
