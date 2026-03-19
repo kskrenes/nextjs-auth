@@ -94,12 +94,13 @@ const ProfilePage = () => {
           </Button>
         )}
         <p className="text-xs">
+          Return to{' '}
           <Link 
             href="/dashboard"
             className="text-purple-400 hover:text-purple-500 underline transition-colors"
           >
-            Back to dashboard
-          </Link>
+            dashboard page
+          </Link>.
         </p>
       </div>
     </div>
