@@ -75,7 +75,7 @@ const TriggerPasswordResetPage = () => {
         <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
           <MailCheck className="w-10 h-10 text-purple-600" />
           <h1 className="mb-6 text-3xl font-bold">An email has been sent.</h1>
-          <p className="max-w-[300] text-sm text-center">
+          <p className="max-w-[300px] text-sm text-center">
             Check your email for instructions you can follow to reset your password.
           </p>
           <p className="text-xs">
