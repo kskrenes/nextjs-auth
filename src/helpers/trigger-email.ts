@@ -7,7 +7,7 @@ export const triggerEmail = async (email: string, type: string, stateSetter: Fun
 
   try {
     stateSetter(true);
-    const mailerResponse = await axios.post(
+    await axios.post(
       "/api/users/sendemail", 
       { email, type }
     );
