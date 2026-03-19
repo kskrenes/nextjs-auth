@@ -60,13 +60,13 @@ const LoginPage = () => {
       >
         <h1 className="mb-6 text-3xl font-bold">Sign In</h1>
         {isInvalid && (
-          <div className="flex items-center space-x-2 mb-4 text-sm text-red-500">
+          <div role="alert" className="flex items-center space-x-2 mb-4 text-sm text-red-500">
             <ShieldAlert className="w-4 h-4" />
             <span>Invalid email or password</span>
           </div>
         )}
         {isServerError && (
-          <div className="flex items-center space-x-2 mb-4 text-sm text-red-500">
+          <div role="alert" className="flex items-center space-x-2 mb-4 text-sm text-red-500">
             <ShieldAlert className="w-4 h-4" />
             <span>Server error. Please try again later.</span>
           </div>
