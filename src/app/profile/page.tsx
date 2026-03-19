@@ -13,9 +13,8 @@ import { useRouter } from "next/navigation";
 
 const ProfilePage = () => {
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
-  // const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
   const [user, setUser] = useState<NaeUser | null>(null);
 
   const router = useRouter();
@@ -88,7 +87,6 @@ const ProfilePage = () => {
           <Button 
             className="w-full my-8"
             onClick={handleResetPasswordClick}
-            // disabled={isSendingResetEmail}
           >
             Reset Password
           </Button>
