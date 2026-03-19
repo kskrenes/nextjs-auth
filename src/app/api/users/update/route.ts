@@ -19,11 +19,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // typescript only enforces field types at compile-time...
-    const user = reqBody as NaeUser;
-    if (!user) {
+    // check for valid required fields at runtime
+    const user = reqBody as Partial<NaeUser>;
+    if (
+      typeof user._id !== "string" ||
+      typeof user.username !== "string" ||
+      typeof user.email !== "string"
+    ) {
       return NextResponse.json(
-        { error: "User is required" }, 
+        { error: "Missing required user fields (_id, username, email)" }, 
         { status: 400 }
       );
     }
