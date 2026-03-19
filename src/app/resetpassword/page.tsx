@@ -116,7 +116,7 @@ const ResetPasswordPage = () => {
           <Button
             type="submit"
             className="w-full mt-8"
-            disabled={newPassword.length === 0 || newPassword !== confirmPassword}
+            disabled={newPassword.length < 8 || newPassword !== confirmPassword}
           >
             {isPendingReset 
               ? (
