@@ -4,14 +4,14 @@ triggerpasswordreset page
 x success state
 
 login page
-- error state
-- improve password validation (re-enforce on api)
+x error state
 
 signup page
 - add confirm password
 - add password instructions & validation
 - add username instructions & validation
 - add email validation
+- reinforce username, password, email validation on api
 - add check for duplicate username (username already exists)
 - add check for duplicate email (account already exists)
 
