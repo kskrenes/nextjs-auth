@@ -2,13 +2,11 @@
 
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
-import { getErrorMessage } from "@/helpers/error-message";
 import axios, { AxiosError } from "axios";
 import { Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type SubmitEvent } from "react";
-import toast from "react-hot-toast";
 
 const LoginPage = () => {
 
