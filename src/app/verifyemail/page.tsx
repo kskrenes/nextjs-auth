@@ -52,7 +52,7 @@ const VerifyEmailPage = () => {
       setIsSendingEmail(true);
       const res = await axios.get('/api/users/me');
       const user = res.data.user as NaeUser;
-      triggerEmail(user.email, "VERIFY", setIsSendingEmail);
+      await triggerEmail(user.email, "VERIFY", setIsSendingEmail);
       setIsEmailSent(true);
     }
     catch (error: unknown) {

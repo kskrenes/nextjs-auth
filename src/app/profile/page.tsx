@@ -15,6 +15,8 @@ const ProfilePage = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
+  const [isSent, setIsSent] = useState<boolean>(false);
+  const [isSendError, setIsSendError] = useState<boolean>(false);
   const [user, setUser] = useState<NaeUser | null>(null);
 
   const router = useRouter();
@@ -48,7 +50,13 @@ const ProfilePage = () => {
   const handleVerifyEmailClick = async () => {
     if (!user) return;
     if (isSendingVerifyEmail) return;
-    triggerEmail(user.email, "VERIFY", setIsSendingVerifyEmail);
+    try {
+      await triggerEmail(user.email, "VERIFY", setIsSendingVerifyEmail);
+      setIsSent(true);
+    }
+    catch (error: unknown) {
+      setIsSendError(true);
+    }
   }
 
   const handleResetPasswordClick = () => {

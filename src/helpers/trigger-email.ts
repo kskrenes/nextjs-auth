@@ -21,6 +21,7 @@ export const triggerEmail = async (
     const errorMessage = getErrorMessage(error, `Error sending ${type} email`);
     console.error(errorMessage);
     toast.error(errorMessage);
+    throw new Error(errorMessage);
   }
   finally {
     stateSetter(false);
