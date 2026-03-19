@@ -32,7 +32,7 @@ const TriggerPasswordResetPage = () => {
         setEmail(user.email);
       } catch (error: unknown) {
         const message = getErrorMessage(error, "Failed to fetch user");
-        console.log(message);
+        console.error(message);
       } finally {
         setFetchingUser(false);
       }
