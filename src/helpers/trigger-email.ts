@@ -4,7 +4,7 @@ import { getErrorMessage } from "./error-message";
 
 export const triggerEmail = async (
   email: string, 
-  type: string, 
+  type: 'VERIFY' | 'RESET', 
   stateSetter: (loading: boolean) => void
 ) => {
   if (!email) return;
