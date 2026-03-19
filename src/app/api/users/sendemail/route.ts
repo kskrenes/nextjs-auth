@@ -41,11 +41,14 @@ export async function POST(request: NextRequest) {
         emailType: type, 
       });
     } catch (error: unknown) {
-      const eMessage = error instanceof Error ? error.message : "Error sending email";
-      return NextResponse.json(
-        { error: eMessage }, 
-        { status: 400 }
-      );
+      // log the real error server-side but don't expose user existence
+      console.error("sendEmail error:", error);
+
+      // return generic success to prevent user enumeration
+      return NextResponse.json({
+        message: "An email has been sent if the address matches an existing account",
+        success: true,
+      });
     }
 
     // throw if no response
@@ -66,7 +69,7 @@ export async function POST(request: NextRequest) {
     
     // return success
     return NextResponse.json({
-      message: "Email sent successfully",
+      message: "An email has been sent if the address matches an existing account",
       success: true,
     })
   }
