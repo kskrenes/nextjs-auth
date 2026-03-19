@@ -127,7 +127,7 @@ const TriggerPasswordResetPage = () => {
             <Button
               type="submit"
               className="w-full"
-              disabled={fetchingUser || email.length === 0}
+              disabled={fetchingUser || isSending || email.length === 0}
             >
               {isSending 
                 ? (
