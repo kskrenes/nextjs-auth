@@ -18,7 +18,7 @@ const VerifyEmailPage = () => {
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
   const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
   const [isVerificationError, setIsVerificationError] = useState<boolean>(false);
-  const [isEmailSentError, setIsEmailSentError] = useState<boolean>(false);
+  const [isEmailSentError, setIsEmailSentError] = useState<boolean>(false); // TODO: add resend error state (in upcoming feature)
 
   const router = useRouter();
 
