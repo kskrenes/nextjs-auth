@@ -8,7 +8,7 @@ import type NaeUser from "@/models/user-interface";
 import axios from "axios";
 import { Loader2, MailCheck, ShieldAlert } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type SubmitEvent } from "react";
 import toast from "react-hot-toast";
 
 const TriggerPasswordResetPage = () => {
@@ -47,7 +47,7 @@ const TriggerPasswordResetPage = () => {
     );
   }
   
-  const handleReset = async (e: any) => {
+  const handleReset = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
     e.preventDefault();
 
