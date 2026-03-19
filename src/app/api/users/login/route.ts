@@ -106,7 +106,8 @@ export async function POST(request: NextRequest) {
     return response;
 
   } catch (error: unknown) {
-    console.error("Login route error:", error);
+    const message = error instanceof Error ? error.message : "Unable to log in";
+    console.error(message);
     return NextResponse.json(
       { error: "Unable to log in" }, 
       { status: 500 }

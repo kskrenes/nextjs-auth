@@ -121,7 +121,8 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
 
   } catch (error: unknown) {
-    console.error("Signup route error:", error);
+    const message = error instanceof Error ? error.message : "Unable to create user";
+    console.error(message);
     return NextResponse.json(
       { error: "Unable to create user" }, 
       { status: 500 }

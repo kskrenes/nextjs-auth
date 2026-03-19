@@ -78,7 +78,8 @@ export async function POST(request: NextRequest) {
 
   } 
   catch (error: unknown) {
-    console.error("Failed to update user:", error);
+    const message = error instanceof Error ? error.message : "Unable to update user";
+    console.error(message);
     return NextResponse.json(
       { error: "Unable to update user" }, 
       { status: 500 }
