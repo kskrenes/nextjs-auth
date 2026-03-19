@@ -1,0 +1,68 @@
+import { connect } from "@/dbconfig/dbconfig";
+import { getRequestBody } from "@/helpers/validate-request";
+import type NaeUser from "@/models/user-interface";
+import User from "@/models/user-model";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(request: NextRequest) {
+  try {
+    await connect();
+
+    // throw if request json is invalid
+    let reqBody: any;
+    try {
+      reqBody = await getRequestBody(request);
+    } catch(error:any) {
+      return NextResponse.json(
+        { error: error.message }, 
+        { status: 400 }
+      );
+    }
+
+    // typescript only enforces field types at compile-time...
+    const user = reqBody as NaeUser;
+    if (!user) {
+      return NextResponse.json(
+        { error: "User is required" }, 
+        { status: 400 }
+      );
+    }
+
+    // set new values
+    const update: any = {
+      username: user.username.trim(),
+      email: user.email.trim().toLowerCase(),
+    }
+
+    // update user
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      update,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+
+    // return sanitized user
+    return NextResponse.json({
+      message: "User updated successfully",
+      success: true,
+      user: {
+        id: updatedUser._id,
+        username: updatedUser.username,
+        email: updatedUser.email,
+        isVerified: updatedUser.isVerified,
+        isAdmin: updatedUser.isAdmin,
+      },
+    }, { status: 201 });
+
+  } 
+  catch (error: unknown) {
+    console.error("Failed to update user:", error);
+    return NextResponse.json(
+      { error: "Unable to update user" }, 
+      { status: 500 }
+    );
+  }
+};
