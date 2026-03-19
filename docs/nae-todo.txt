@@ -36,6 +36,7 @@ home page
 
 multiple pages
 - improve style
+- either display or discard toast
 
 sendemail api and resetpassword api
 - console error
