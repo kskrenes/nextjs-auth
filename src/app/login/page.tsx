@@ -40,7 +40,6 @@ const LoginPage = () => {
       router.push("/dashboard");
     } 
     catch (error: unknown) {
-      console.log(error)
       if (error instanceof AxiosError && error.status === 401) {
         setIsInvalid(true);
       } else {
