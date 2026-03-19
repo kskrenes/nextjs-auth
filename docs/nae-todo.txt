@@ -1,0 +1,38 @@
+NAE TODO
+
+triggerpasswordreset page
+x success state
+
+login page
+- error state
+- improve password validation (re-enforce on api)
+
+signup page
+- add confirm password
+- add password instructions
+- add check for duplicate username (username already exists)
+- add check for duplicate email (account already exists)
+
+profile
+- add success and error states after send email
+
+verifyemail page
+- add resend error state
+
+sendemail
+- improve email message
+- improve email style
+
+dashboard page
+- layout page
+
+home page
+- layout page
+
+multiple pages
+- improve style
+
+sendemail api and resetpassword api
+- console error
+
+DEPLOY
