@@ -10,12 +10,21 @@ export async function POST(request: NextRequest) {
     await connect();
 
     // throw if request json is invalid
-    let reqBody: any;
+    let reqBody: object;
     try {
       reqBody = await getRequestBody(request);
-    } catch(error:any) {
+    } catch(error: unknown) {
+      const message = error instanceof Error ? error.message : "Invalid request";
       return NextResponse.json(
-        { error: error.message }, 
+        { error: message }, 
+        { status: 400 }
+      );
+    }
+
+    // throw if required params don't exist
+    if (!("token" in reqBody) || !("password" in reqBody)) {
+      return NextResponse.json(
+        { error: "Invalid request" }, 
         { status: 400 }
       );
     }
@@ -60,7 +69,7 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(password, salt);
 
     // set new values
-    const update: any = {
+    const update: object = {
       password: hashedPassword,
       forgotPasswordToken: null,
       forgotPasswordTokenExpiry: null,
@@ -91,9 +100,10 @@ export async function POST(request: NextRequest) {
 
   } 
   catch (error: unknown) {
-    console.error("Failed to reset password:", error);
+    const message = error instanceof Error ? error.message : "Failed to reset password";
+    console.error(message);
     return NextResponse.json(
-      { error: "Unable to reset password" }, 
+      { error: message }, 
       { status: 500 }
     );
   }
