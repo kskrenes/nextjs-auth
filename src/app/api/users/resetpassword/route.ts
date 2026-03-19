@@ -30,10 +30,10 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if no new password provided
-    const password = reqBody.password as string;
-    if (!password) {
+    const password = reqBody.password;
+    if (typeof password !== "string" || password.length < 8) {
       return NextResponse.json(
-        { error: "No password value found" }, 
+        { error: "Password must be at least 8 characters" }, 
         { status: 400 }
       );
     }
