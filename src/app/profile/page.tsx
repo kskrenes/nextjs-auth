@@ -15,14 +15,13 @@ const ProfilePage = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
-  const [isSent, setIsSent] = useState<boolean>(false);
-  const [isSendError, setIsSendError] = useState<boolean>(false);
+  const [isSent, setIsSent] = useState<boolean>(false);           // TODO: add success and error states after send email (in upcoming feature)
+  const [isSendError, setIsSendError] = useState<boolean>(false); // TODO: add success and error states after send email (in upcoming feature)
   const [user, setUser] = useState<NaeUser | null>(null);
 
   const router = useRouter();
 
   useEffect(() => {
-    setIsLoading(true);
     (async () => {
       try {
         const res = await axios.get('/api/users/me');
