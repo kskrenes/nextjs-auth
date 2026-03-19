@@ -37,12 +37,11 @@ export async function POST(request: NextRequest) {
     // check for valid required fields at runtime
     const user = reqBody as Partial<NaeUser>;
     if (
-      typeof user._id !== "string" ||
       typeof user.username !== "string" ||
       typeof user.email !== "string"
     ) {
       return NextResponse.json(
-        { error: "Missing required user fields (_id, username, email)" }, 
+        { error: "Missing required user fields (username, email)" }, 
         { status: 400 }
       );
     }
