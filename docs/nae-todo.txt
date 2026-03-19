@@ -35,4 +35,6 @@ multiple pages
 sendemail api and resetpassword api
 - console error
 
+- add oauth
+
 DEPLOY
