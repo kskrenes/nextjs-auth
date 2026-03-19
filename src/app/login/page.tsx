@@ -2,7 +2,7 @@
 
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -41,7 +41,7 @@ const LoginPage = () => {
     } 
     catch (error: unknown) {
       if (
-        error instanceof AxiosError && 
+        axios.isAxiosError(error) && 
         error.response?.status === 401
       ) {
         setIsInvalid(true);
