@@ -41,32 +41,15 @@ export async function POST(request: NextRequest) {
         emailType: type, 
       });
     } catch (error: unknown) {
-      // log the real error server-side but don't expose user existence
-      console.error("sendEmail error:", error);
-
-      // return generic success to prevent user enumeration
-      return NextResponse.json({
-        message: "An email has been sent if the address matches an existing account",
-        success: true,
-      });
+      // log the real error server-side but return generic success to prevent enumeration
+      console.error("Mail send failed:", error);
     }
 
-    // throw if no response
-    if (!mailResponse) {
-      return NextResponse.json(
-        { error: "No response received" }, 
-        { status: 400 }
-      );
+    // log failures server-side but return generic success to prevent enumeration
+    if (!mailResponse || !mailResponse.response.includes("250")) {
+      console.error("Mail send failed:", mailResponse?.response ?? "No response");
     }
 
-    // throw if no success status
-    if (!mailResponse.response.includes("250")) {
-      return NextResponse.json(
-        { error: "Unsuccessful response:" + mailResponse.response }, 
-        { status: 400 }
-      );
-    }
-    
     // return success
     return NextResponse.json({
       message: "An email has been sent if the address matches an existing account",
@@ -74,9 +57,10 @@ export async function POST(request: NextRequest) {
     })
   }
   catch (error: unknown) {
-    console.error("Error sending email:", error);
+    const message = error instanceof Error ? error.message : "Failed to send email";
+    console.error(message);
     return NextResponse.json(
-      { error: "Error sending email" }, 
+      { error: message }, 
       { status: 500 }
     );
   }
