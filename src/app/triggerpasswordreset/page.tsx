@@ -15,7 +15,6 @@ const TriggerPasswordResetPage = () => {
   const [user, setUser] = useState<NaeUser | null>(null);
   const [fetchingUser, setFetchingUser] = useState<boolean>(false);
   const [pendingReset, setPendingReset] = useState<boolean>(false);
-  // const [emailSent, setEmailSent] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
 
   useEffect(() => {
@@ -61,93 +60,49 @@ const TriggerPasswordResetPage = () => {
         onSubmit={handleReset} 
       >
         <h1 className="mb-6 text-3xl font-bold">Reset Password</h1>
-        {/* {user ? (
-          <>
-            <Input 
-              id="oldpassword" 
-              label="Old Password"
-              // placeholder="Old Password"
-              type="password"
-              required
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
-            />
-            <Input 
-              id="newpassword" 
-              label="New Password"
-              // placeholder="email@example.com"
-              type="password"
-              required
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-            />
-            <Input 
-              id="confirmpassword" 
-              label="Confirm New Password"
-              // placeholder="password"
-              type="password"
-              required
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </>
+        <Input 
+          id="email" 
+          label="Email"
+          placeholder="email@example.com"
+          type="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <div className="mt-4 mb-8">
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={fetchingUser || email.length === 0}
+          >
+            {pendingReset 
+              ? (
+                <>
+                  <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
+                  <span className="sr-only">Resetting password</span>
+                </>
+              )
+              : 'Send Reset Email'}
+          </Button>
+        </div>
+        {user ? (
+          <Link 
+            href="/profile"
+            className="text-xs text-purple-400 hover:text-purple-500 underline transition-colors"
+          >
+            Back to profile
+          </Link>
         ) : (
-          <> */}
-            <Input 
-              id="email" 
-              label="Email"
-              placeholder="email@example.com"
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <div className="mt-4 mb-8">
-              {/* {emailSent 
-                ? (
-                  <p className="mt-2 mb-3">Email sent.</p>
-                ) 
-                : ( */}
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={fetchingUser || email.length === 0}
-                  >
-                    {pendingReset 
-                      ? (
-                        <>
-                          <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
-                          <span className="sr-only">Resetting password</span>
-                        </>
-                      )
-                      : 'Send Reset Email'}
-                  </Button>
-                {/* )
-              } */}
-            </div>
-            {user ? (
-              <Link 
-                href="/profile"
-                className="text-xs text-purple-400 hover:text-purple-500 underline transition-colors"
-              >
-                Back to profile
-              </Link>
-            ) : (
-              <p className="text-xs">
-                Already have a password?{' '}
-                <Link 
-                  href="/login"
-                  className="text-purple-400 hover:text-purple-500 underline transition-colors"
-                >
-                  Sign in here
-                </Link>.
-              </p>
-            )}
-            
-          {/* </>
-        )} */}
-        
-        
+          <p className="text-xs">
+            Already have a password?{' '}
+            <Link 
+              href="/login"
+              className="text-purple-400 hover:text-purple-500 underline transition-colors"
+            >
+              Sign in here
+            </Link>.
+          </p>
+        )}
       </form>
     </div>
   )
