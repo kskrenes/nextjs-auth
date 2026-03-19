@@ -3,8 +3,8 @@
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import { getErrorMessage } from "@/helpers/error-message";
-import axios from "axios";
-import { Loader2 } from "lucide-react";
+import axios, { AxiosError } from "axios";
+import { Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type SubmitEvent } from "react";
@@ -14,7 +14,9 @@ const LoginPage = () => {
 
   const router = useRouter();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isServerError, setIsServerError] = useState<boolean>(false);
+  const [isInvalid, setIsInvalid] = useState<boolean>(false);
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -31,13 +33,21 @@ const LoginPage = () => {
 
     if (isLoading) return;
 
+    setIsInvalid(false);
+    setIsServerError(false);
+
     try {
       setIsLoading(true);
       await axios.post("/api/users/login", user);
       router.push("/dashboard");
     } 
     catch (error: unknown) {
-      toast.error(getErrorMessage(error, "Login failed"));
+      console.log(error)
+      if (error instanceof AxiosError && error.status === 401) {
+        setIsInvalid(true);
+      } else {
+        setIsServerError(true);
+      }
     } 
     finally {
       setIsLoading(false);
@@ -51,6 +61,18 @@ const LoginPage = () => {
         onSubmit={handleLogin}
       >
         <h1 className="mb-6 text-3xl font-bold">Sign In</h1>
+        {isInvalid && (
+          <div className="flex items-center space-x-2 mb-4 text-sm text-red-500">
+            <ShieldAlert className="w-4 h-4" />
+            <span>Invalid email or password</span>
+          </div>
+        )}
+        {isServerError && (
+          <div className="flex items-center space-x-2 mb-4 text-sm text-red-500">
+            <ShieldAlert className="w-4 h-4" />
+            <span>Server error. Please try again later.</span>
+          </div>
+        )}
         <Input 
           id="email" 
           label="Email"
