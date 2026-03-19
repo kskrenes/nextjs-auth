@@ -64,11 +64,10 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // return success and include the mail response object
+    // return success
     return NextResponse.json({
       message: "Email sent successfully",
       success: true,
-      mailResponse,
     })
   }
   catch (error: unknown) {
