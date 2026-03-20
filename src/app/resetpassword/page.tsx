@@ -1,7 +1,7 @@
 "use client";
 
 import Button from "@/components/nae-button";
-import Input from "@/components/nae-input";
+import SetPasswordInputs from "@/components/nae-set-password";
 import { getErrorMessage } from "@/helpers/error-message";
 import axios from "axios";
 import { LaptopMinimalCheck, Loader2, ShieldAlert } from "lucide-react";
@@ -102,21 +102,12 @@ const ResetPasswordPage = () => {
           onSubmit={handleReset} 
         >
           <h1 className="mb-6 text-3xl font-bold">Reset Password</h1>
-          <Input 
-            id="newpassword" 
+          <SetPasswordInputs 
             label="New Password"
-            type="password"
-            required
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
-          <Input 
-            id="confirmpassword" 
-            label="Confirm New Password"
-            type="password"
-            required
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            password={newPassword}
+            confirmPassword={confirmPassword}
+            onPasswordChange={setNewPassword}
+            onConfirmPasswordChange={setConfirmPassword}
           />
           <Button
             type="submit"
