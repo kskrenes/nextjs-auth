@@ -25,6 +25,7 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
         id="password-input" 
         label={label}
         type="password"
+        instruction='8 character minimum'
         required
         value={password}
         onChange={(e) => onPasswordChange(e.target.value)}
@@ -37,9 +38,6 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
         value={confirmPassword}
         onChange={(e) => onConfirmPasswordChange(e.target.value)}
       />
-      <label className='text-xs text-center'>
-        Password must be at least 8 characters,<br/>and can contain letters, numbers, and symbols.
-      </label>
     </>
   );
 };
