@@ -28,41 +28,46 @@ export async function POST(request: NextRequest) {
       typeof token !== "string" ||
       typeof password !== "string"
     ) {
+      console.error("Invalid request");
       return NextResponse.json(
-        { error: "Invalid request" },
+        { error: "Unable to reset password" },
         { status: 400 }
       );
     }
-
-    const normalizedPassword = password;
 
     // throw if valid token is not provided
     if (typeof token !== "string" || token.trim().length === 0) {
+      console.error("Invalid token");
       return NextResponse.json(
-        { error: "Invalid token" }, 
+        { error: "Please follow the link from your email" }, 
         { status: 400 }
       );
     }
 
+    const normalizedPassword = password.trim();
+
     // throw if valid password is not provided
     if (!normalizedPassword) {
+      console.error("Invalid password");
       return NextResponse.json(
-        { error: "Invalid password" },
+        { error: "Unable to reset password" },
         { status: 400 }
       );
     }
 
     if (!meetsMinimum(normalizedPassword, 8)) {
+      console.error("Password failed minimum character test");
       return NextResponse.json(
         { error: "Password must meet minimum character requirement" }, 
-        { status: 400 }
+        { status: 422 }
       );
     }
 
     if (!excludesSpaces(normalizedPassword)) {
+      console.error("Password contains spaces");
       return NextResponse.json(
         { error: "Password cannot contain spaces" }, 
-        { status: 400 }
+        { status: 422 }
       );
     }
 
@@ -77,8 +82,9 @@ export async function POST(request: NextRequest) {
 
     // throw if user not found with non-expired matching token
     if (!user) {
+      console.error("Invalid or expired token");
       return NextResponse.json(
-        { error: "Invalid or expired token" }, 
+        { error: "Your token has expired" }, 
         { status: 400 }
       );
     }
