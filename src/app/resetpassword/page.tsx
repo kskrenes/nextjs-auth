@@ -3,6 +3,7 @@
 import Button from "@/components/nae-button";
 import SetPasswordInputs from "@/components/nae-set-password";
 import { getErrorMessage } from "@/helpers/error-message";
+import { excludesSpaces } from "@/helpers/expression-validation";
 import axios from "axios";
 import { LaptopMinimalCheck, Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +16,8 @@ const ResetPasswordPage = () => {
   const [token, setToken] = useState<string>("");
   const [isReset, setIsReset] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
+  const [isValidationError, setIsValidationError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [isPendingReset, setIsPendingReset] = useState<boolean>(false);
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -24,6 +27,7 @@ const ResetPasswordPage = () => {
   useEffect(() => {
     const urlToken = new URLSearchParams(window.location.search).get("token") ?? "";
     if (!urlToken) {
+      setErrorMessage("Please follow the link from your email")
       setIsError(true);
       return;
     }
@@ -34,6 +38,9 @@ const ResetPasswordPage = () => {
     // suppress native html form submit behavior
     e.preventDefault();
 
+    setIsError(false);
+    setIsValidationError(false);
+
     if (!token) {
       setIsError(true);
       return;
@@ -41,16 +48,35 @@ const ResetPasswordPage = () => {
 
     if (isPendingReset) return;
 
+    // enforce password confirmation match
+    if (newPassword !== confirmPassword) {
+      setErrorMessage("Passwords do not match");
+      setIsValidationError(true);
+      return;
+    }
+
+    if (!excludesSpaces(newPassword)) {
+      setErrorMessage("Password cannot contain spaces");
+      setIsValidationError(true);
+      return;
+    }
+
     try {
       setIsPendingReset(true);
       await axios.post("/api/users/resetpassword", { token, password: newPassword });
       setIsReset(true);
     } 
     catch (error: unknown) {
-      const message = getErrorMessage(error, "Password reset failed");
-      console.error(message);
-      toast.error(message);
-      setIsError(true);
+      const message = getErrorMessage(error, "Unable to reset password");
+      setErrorMessage(message);
+      if (
+        axios.isAxiosError(error) && 
+        error.response?.status === 422
+      ) {
+        setIsValidationError(true);
+      } else {
+        setIsError(true);
+      }
     } 
     finally {
       setIsPendingReset(false);
@@ -80,8 +106,9 @@ const ResetPasswordPage = () => {
       ) : isError ? (
         <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
           <ShieldAlert className="w-10 h-10 text-red-600" />
-          <h1 className="mb-6 text-3xl font-bold">Unable to reset password</h1>
+          <h1 className="mb-6 text-3xl font-bold">{errorMessage}</h1>
           <Button
+            className="mt-4"
             onClick={handleResendClick}
           >
             Resend Email
@@ -102,6 +129,12 @@ const ResetPasswordPage = () => {
           onSubmit={handleReset} 
         >
           <h1 className="mb-6 text-3xl font-bold">Reset Password</h1>
+          {isValidationError && (
+            <div role="alert" className="flex items-center space-x-2 mb-4 text-sm text-red-500">
+              <ShieldAlert className="w-4 h-4" />
+              <span className="text-center">{errorMessage}</span>
+            </div>
+          )}
           <SetPasswordInputs 
             label="New Password"
             password={newPassword}
@@ -115,8 +148,8 @@ const ResetPasswordPage = () => {
             disabled={
               isPendingReset ||
               !token ||
-              newPassword.length < 8 || 
-              newPassword !== confirmPassword
+              newPassword.length === 0 || 
+              confirmPassword.length === 0
             }
           >
             {isPendingReset 
