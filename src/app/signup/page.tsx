@@ -70,10 +70,13 @@ const SignupPage = () => {
           label="Username"
           placeholder="username"
           type="text"
+          instruction="4 character minimum"
           required
           value={user.username}
           onChange={(e) => setUser({...user, username: e.target.value})}
         />
+          {/* <span className="absolute right-0 top-1 text-xs">4 character minimum</span> */}
+        {/* </Input> */}
         <Input 
           id="email" 
           label="Email"
