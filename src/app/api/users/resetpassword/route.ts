@@ -1,4 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { excludesSpaces, meetsMinimum } from "@/helpers/expression-validation";
 import { getRequestBody } from "@/helpers/validate-request";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
@@ -21,16 +22,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // throw if required params don't exist
-    if (!("token" in reqBody) || !("password" in reqBody)) {
+    // throw if field types are invalid at runtime
+    const { token, password } = reqBody as { token?: string; password?: string };
+    if (
+      typeof token !== "string" ||
+      typeof password !== "string"
+    ) {
       return NextResponse.json(
-        { error: "Invalid request" }, 
+        { error: "Invalid request" },
         { status: 400 }
       );
     }
 
-    // throw if token is invalid
-    const token = reqBody.token;
+    const normalizedPassword = password;
+
+    // throw if valid token is not provided
     if (typeof token !== "string" || token.trim().length === 0) {
       return NextResponse.json(
         { error: "Invalid token" }, 
@@ -38,11 +44,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // throw if no new password provided
-    const password = reqBody.password;
-    if (typeof password !== "string" || password.length < 8) {
+    // throw if valid password is not provided
+    if (!normalizedPassword) {
       return NextResponse.json(
-        { error: "Password must be at least 8 characters" }, 
+        { error: "Invalid password" },
+        { status: 400 }
+      );
+    }
+
+    if (!meetsMinimum(normalizedPassword, 8)) {
+      return NextResponse.json(
+        { error: "Password must meet minimum character requirement" }, 
+        { status: 400 }
+      );
+    }
+
+    if (!excludesSpaces(normalizedPassword)) {
+      return NextResponse.json(
+        { error: "Password cannot contain spaces" }, 
         { status: 400 }
       );
     }
@@ -64,9 +83,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // hash password
+    // hash normalized password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(normalizedPassword, salt);
 
     // set new values
     const update: object = {

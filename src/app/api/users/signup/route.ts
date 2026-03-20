@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
 import { getRequestBody } from "@/helpers/validate-request";
+import { excludesSpaces, meetsMinimum, validateEmail } from "@/helpers/expression-validation";
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,36 +38,79 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedPassword = password;
 
-    // throw if username is not provided
+    // throw if valid username is not provided
     if (!normalizedUsername) {
       return NextResponse.json(
-        { error: "Username is required" }, 
-        { status: 400 })
-      ;
+        { error: "Invalid username" }, 
+        { status: 400 }
+      );
     }
 
-    // throw if email is not provided
-    if (!normalizedEmail) {
+    if (!meetsMinimum(normalizedUsername, 4)) {
       return NextResponse.json(
-        { error: "Email is required" }, 
+        { error: "Username must meet minimum character requirement" }, 
+        { status: 400 }
+      );
+    }
+
+    if (!excludesSpaces(normalizedUsername)) {
+      return NextResponse.json(
+        { error: "Username cannot contain spaces" }, 
+        { status: 400 }
+      );
+    }
+
+    // throw if valid email is not provided
+    if (!normalizedEmail || !validateEmail(normalizedEmail)) {
+      return NextResponse.json(
+        { error: "Invalid email" }, 
+        { status: 400 }
+      );
+    }
+
+    if (!excludesSpaces(normalizedEmail)) {
+      return NextResponse.json(
+        { error: "Email cannot contain spaces" }, 
         { status: 400 }
       );
     }
     
-    // throw if password is not provided
+    // throw if valid password is not provided
     if (!normalizedPassword) {
       return NextResponse.json(
-        { error: "Password is required" },
+        { error: "Invalid password" },
         { status: 400 }
+      );
+    }
+
+    if (!meetsMinimum(normalizedPassword, 8)) {
+      return NextResponse.json(
+        { error: "Password must meet minimum character requirement" }, 
+        { status: 400 }
+      );
+    }
+
+    if (!excludesSpaces(normalizedPassword)) {
+      return NextResponse.json(
+        { error: "Password cannot contain spaces" }, 
+        { status: 400 }
+      );
+    }
+
+    // throw if username already exists
+    const existingUsername = await User.findOne(
+      { username: normalizedUsername }
+    );
+    if (existingUsername) {
+      return NextResponse.json(
+        { error: "Username already exists" }, 
+        { status: 409 }
       );
     }
 
     // throw if user already exists
     const existingUser = await User.findOne(
-      { $or: [
-        { email: normalizedEmail }, 
-        { username: normalizedUsername }
-      ]}
+      { email: normalizedEmail }
     );
     if (existingUser) {
       return NextResponse.json(
