@@ -15,7 +15,7 @@ x add email validation
 x reinforce username, password, email validation on api
 x add check for duplicate username (username already exists)
 x add check for duplicate email (account already exists)
-- show success (toast?)
+x show success (toast?)
 
 resetpassword page
 x show better error messaging
