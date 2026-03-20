@@ -7,9 +7,9 @@ login page
 x error state
 
 signup page
-- add confirm password
-- add password instructions & validation
-- add username instructions & validation
+x add confirm password
+x add password instructions & validation
+x add username instructions & validation
 - add email validation
 - reinforce username, password, email validation on api
 - add check for duplicate username (username already exists)
