@@ -25,7 +25,8 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
         id="password-input" 
         label={label}
         type="password"
-        instruction='8 character minimum'
+        instruction='8 character minimum, no spaces'
+        minLength={8}
         required
         value={password}
         onChange={(e) => onPasswordChange(e.target.value)}
@@ -34,6 +35,7 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
         id="confirm-password-input" 
         label={`Confirm ${label}`}
         type="password"
+        minLength={8}
         required
         value={confirmPassword}
         onChange={(e) => onConfirmPasswordChange(e.target.value)}
