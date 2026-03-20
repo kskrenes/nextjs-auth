@@ -3,6 +3,7 @@
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import SetPasswordInputs from "@/components/nae-set-password";
+import { getErrorMessage } from "@/helpers/error-message";
 import axios from "axios";
 import { Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
@@ -15,6 +16,7 @@ const SignupPage = () => {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [user, setUser] = useState({
     email: "",
@@ -22,12 +24,16 @@ const SignupPage = () => {
     username: "",
   });
 
+  // allow button to enable as long as all fields have input.
+  // this gives more feedback to the user, since each field
+  // will enforce its own minimum requirements, and password matching
+  // will show a dedicated error instead of silently dissallowing submit.
   const buttonDisabled =
     isLoading ||
     user.username.trim().length === 0 ||
     user.email.trim().length === 0 ||
-    user.password.trim().length < 8 ||
-    confirmPassword.trim() !== user.password.trim();
+    user.password.trim().length === 0 ||
+    confirmPassword.trim().length === 0;
 
   const handleSignup = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
@@ -36,6 +42,14 @@ const SignupPage = () => {
     if (isLoading) return;
 
     setIsError(false);
+    setErrorMessage("");
+
+    // enforce password confirmation match
+    if (user.password.trim() !== confirmPassword.trim()) {
+      setErrorMessage("Passwords do not match");
+      setIsError(true);
+      return;
+    }
 
     try {
       setIsLoading(true);
@@ -43,6 +57,7 @@ const SignupPage = () => {
       router.push("/login");
     } 
     catch (error: unknown) {
+      setErrorMessage(getErrorMessage(error, "An error occurred. Please try again."));
       setIsError(true);
     } 
     finally {
@@ -60,9 +75,7 @@ const SignupPage = () => {
         {isError && (
           <div role="alert" className="flex items-center space-x-2 mb-4 text-sm text-red-500">
             <ShieldAlert className="w-4 h-4" />
-            <span>
-              An error occurred. Please try again.
-            </span>
+            <span className="text-center">{errorMessage}</span>
           </div>
         )}
         <Input 
@@ -70,7 +83,8 @@ const SignupPage = () => {
           label="Username"
           placeholder="username"
           type="text"
-          instruction="4 character minimum"
+          instruction="4 character minimum, no spaces"
+          minLength={4}
           required
           value={user.username}
           onChange={(e) => setUser({...user, username: e.target.value})}
