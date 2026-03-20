@@ -2,6 +2,7 @@ NAE TODO
 
 triggerpasswordreset page
 x success state
+x add email validation
 
 login page
 x error state
@@ -10,13 +11,14 @@ signup page
 x add confirm password
 x add password instructions & validation
 x add username instructions & validation
-- add email validation
-- reinforce username, password, email validation on api
-- add check for duplicate username (username already exists)
-- add check for duplicate email (account already exists)
+x add email validation
+x reinforce username, password, email validation on api
+x add check for duplicate username (username already exists)
+x add check for duplicate email (account already exists)
+- show success (toast?)
 
 resetpassword page
-- add email validation
+x show better error messaging
 
 profile
 - add success and error states after send email
