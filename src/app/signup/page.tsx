@@ -9,6 +9,7 @@ import { Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type SubmitEvent } from "react";
+import toast from "react-hot-toast";
 
 const SignupPage = () => {
 
@@ -54,6 +55,7 @@ const SignupPage = () => {
     try {
       setIsLoading(true);
       await axios.post("/api/users/signup", user);
+      toast.success("Your account has been created!")
       router.push("/login");
     } 
     catch (error: unknown) {
