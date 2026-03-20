@@ -2,19 +2,20 @@
 
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
-import { getErrorMessage } from "@/helpers/error-message";
+import SetPasswordInputs from "@/components/nae-set-password";
 import axios from "axios";
-import { Loader2 } from "lucide-react";
+import { Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type SubmitEvent } from "react";
-import toast from "react-hot-toast";
 
 const SignupPage = () => {
 
   const router = useRouter();
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isError, setIsError] = useState<boolean>(false);
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [user, setUser] = useState({
     email: "",
     password: "",
@@ -23,9 +24,10 @@ const SignupPage = () => {
 
   const buttonDisabled =
     isLoading ||
+    user.username.trim().length === 0 ||
     user.email.trim().length === 0 ||
-    user.password.trim().length === 0 ||
-    user.username.trim().length === 0;
+    user.password.trim().length < 8 ||
+    confirmPassword.trim() !== user.password.trim();
 
   const handleSignup = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
@@ -33,18 +35,20 @@ const SignupPage = () => {
 
     if (isLoading) return;
 
+    setIsError(false);
+
     try {
       setIsLoading(true);
       await axios.post("/api/users/signup", user);
       router.push("/login");
     } 
     catch (error: unknown) {
-      toast.error(getErrorMessage(error, "Signup failed"));
+      setIsError(true);
     } 
     finally {
       setIsLoading(false);
     }
-  };  
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -53,6 +57,14 @@ const SignupPage = () => {
         onSubmit={handleSignup} 
       >
         <h1 className="mb-6 text-3xl font-bold">Sign Up</h1>
+        {isError && (
+          <div role="alert" className="flex items-center space-x-2 mb-4 text-sm text-red-500">
+            <ShieldAlert className="w-4 h-4" />
+            <span>
+              An error occurred. Please try again.
+            </span>
+          </div>
+        )}
         <Input 
           id="username" 
           label="Username"
@@ -71,15 +83,12 @@ const SignupPage = () => {
           value={user.email}
           onChange={(e) => setUser({...user, email: e.target.value})}
         />
-        <Input 
-          id="password" 
+        <SetPasswordInputs 
           label="Password"
-          placeholder="password"
-          type="password"
-          autoComplete="new-password"
-          required
-          value={user.password}
-          onChange={(e) => setUser({...user, password: e.target.value})}
+          password={user.password}
+          confirmPassword={confirmPassword}
+          onPasswordChange={(v:string) => setUser({...user, password: v})}
+          onConfirmPasswordChange={setConfirmPassword}
         />
         <Button
           type="submit"
