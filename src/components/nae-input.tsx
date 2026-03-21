@@ -29,7 +29,7 @@ const Input: React.FC<InputProps> = ({
         {/* Use the 'htmlFor' attribute to link the label to the input via their IDs */}
         <label className='text-sm' htmlFor={id}>{label}</label>
         {/* Show instruction text top right */}
-        <p className='text-xs text-gray-500'>{instruction}</p>
+        {instruction && <p className='text-xs text-gray-500'>{instruction}</p>}
       </div>
       
       {/* Spread the rest of the props onto the native input element */}
