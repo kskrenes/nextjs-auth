@@ -97,30 +97,33 @@ export async function POST(request: NextRequest) {
         { email: normalizedEmail }
       ]
     });
-    if (existingUsers.length === 1) {
-      const existingEmail = existingUsers[0].email;
-      const existingUsername = existingUsers[0].username;
-      if (
-        existingUsers.length > 1 ||
-        (
-          existingEmail === normalizedEmail &&
-          existingUsername === normalizedUsername
-        )
-      ) {
-        // throw if both already exist
-        return NextResponse.json(
-          { error: "Username and email both in use" }, 
-          { status: 409 }
-        );
-      }
-      // throw if username already exists
-      if (existingUsername === normalizedUsername) {
-        return NextResponse.json(
-          { error: "Username already in use" }, 
-          { status: 409 }
-        );
-      }
-      // throw if email already exists
+
+    const usernameInUse = existingUsers.some(
+      (existingUser) => existingUser.username === normalizedUsername
+    );
+
+    const emailInUse = existingUsers.some(
+      (existingUser) => existingUser.email === normalizedEmail
+    );
+
+    // throw if both already exist
+    if (usernameInUse && emailInUse) {
+      return NextResponse.json(
+        { error: "Username and email both in use" }, 
+        { status: 409 }
+      );
+    }
+
+    // throw if username already exists
+    if (usernameInUse) {
+      return NextResponse.json(
+        { error: "Username already in use" }, 
+        { status: 409 }
+      );
+    }
+
+    // throw if email already exists
+    if (emailInUse) {
       return NextResponse.json(
         { error: "Email already in use" }, 
         { status: 409 }
