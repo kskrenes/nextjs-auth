@@ -4,6 +4,7 @@ import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import SetPasswordInputs from "@/components/nae-set-password";
 import { getErrorMessage } from "@/helpers/error-message";
+import { excludesSpaces } from "@/helpers/expression-validation";
 import axios from "axios";
 import { Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
@@ -33,8 +34,8 @@ const SignupPage = () => {
     isLoading ||
     user.username.trim().length === 0 ||
     user.email.trim().length === 0 ||
-    user.password.trim().length === 0 ||
-    confirmPassword.trim().length === 0;
+    user.password.length === 0 ||
+    confirmPassword.length === 0;
 
   const handleSignup = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
@@ -46,12 +47,18 @@ const SignupPage = () => {
     setErrorMessage("");
 
     // enforce password confirmation match
-    if (user.password.trim() !== confirmPassword.trim()) {
+    if (user.password !== confirmPassword) {
       setErrorMessage("Passwords do not match");
       setIsError(true);
       return;
     }
 
+    if (!excludesSpaces(user.password)) {
+      setErrorMessage("Password cannot contain spaces");
+      setIsError(true);
+      return;
+    }
+    
     try {
       setIsLoading(true);
       await axios.post("/api/users/signup", user);
