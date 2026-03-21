@@ -8,6 +8,7 @@ interface SetPasswordInputsProps {
   confirmPassword: string;
   onPasswordChange: Function;
   onConfirmPasswordChange: Function;
+  idPrefix?: string;
 }
 
 // Use React.FC (Function Component) or the arrow function syntax with the InputProps type.
@@ -17,12 +18,16 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
   confirmPassword,
   onPasswordChange,
   onConfirmPasswordChange,
+  idPrefix = '',
 }) => {
+
+  const passwordId = idPrefix ? `${idPrefix}-password-input` : 'password-input';
+  const confirmId = idPrefix ? `${idPrefix}-confirm-password-input` : 'confirm-password-input';
   
   return (
     <>
       <Input 
-        id="password-input" 
+        id={passwordId}
         label={label}
         type="password"
         instruction='8 character minimum, no spaces'
@@ -32,7 +37,7 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
         onChange={(e) => onPasswordChange(e.target.value)}
       />
       <Input 
-        id="confirm-password-input" 
+        id={confirmId}
         label={`Confirm ${label}`}
         type="password"
         minLength={8}
