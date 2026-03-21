@@ -10,6 +10,5 @@ export const excludesSpaces = (value: string): boolean => {
 }
 
 export const meetsMinimum = (value: string, min: number): boolean => {
-  const expression = new RegExp(`^.{${min},}$`);
-  return expression.test(value);
+  return value.length >= min;
 }
