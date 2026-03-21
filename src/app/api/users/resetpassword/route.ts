@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     if (!password) {
       console.error("Invalid password");
       return NextResponse.json(
-        { error: "Unable to reset password" },
+        { error: "Invalid password" },
         { status: 400 }
       );
     }
