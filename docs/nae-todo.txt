@@ -21,7 +21,8 @@ resetpassword page
 x show better error messaging
 
 profile
-- add success and error states after send email
+x add success state after send verify email (toast handled in triggerEmail)
+x add error state after send verify email (toast handled in triggerEmail)
 
 verifyemail page
 - add resend error state
