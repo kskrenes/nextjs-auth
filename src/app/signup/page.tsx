@@ -90,6 +90,34 @@ const SignupPage = () => {
     }
   };
 
+  // clear inline errors when fields change
+  const clearInlineError = () => {
+    if (isError) {
+      setIsError(false);
+      setErrorMessage("");
+    }
+  }
+
+  const handleUsernameChange = (value: string) => {
+    clearInlineError();
+    setUser((current) => ({ ...current, username: value }));
+  }
+
+  const handleEmailChange = (value: string) => {
+    clearInlineError();
+    setUser((current) => ({ ...current, email: value }));
+  }
+
+  const handlePasswordChange = (value: string) => {
+    clearInlineError();
+    setUser((current) => ({ ...current, password: value }));
+  }
+
+  const handleConfirmPasswordChange = (value: string) => {
+    clearInlineError();
+    setConfirmPassword(value);
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center">
       <form 
@@ -112,7 +140,7 @@ const SignupPage = () => {
           minLength={4}
           required
           value={user.username}
-          onChange={(e) => setUser({...user, username: e.target.value})}
+          onChange={(e) => handleUsernameChange(e.target.value)}
         />
         <Input 
           id="email" 
@@ -121,14 +149,14 @@ const SignupPage = () => {
           type="email"
           required
           value={user.email}
-          onChange={(e) => setUser({...user, email: e.target.value})}
+          onChange={(e) => handleEmailChange(e.target.value)}
         />
         <SetPasswordInputs 
           label="Password"
           password={user.password}
           confirmPassword={confirmPassword}
-          onPasswordChange={(v) => setUser({...user, password: v})}
-          onConfirmPasswordChange={setConfirmPassword}
+          onPasswordChange={handlePasswordChange}
+          onConfirmPasswordChange={handleConfirmPasswordChange}
         />
         <Button
           type="submit"
