@@ -1,5 +1,3 @@
-import { verify } from "crypto";
-
 // styles
 const OUTER_BG_COLOR = '#f4f4f4';
 const INNER_BG_COLOR = '#ffffff';
