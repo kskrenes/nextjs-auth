@@ -47,7 +47,7 @@ const SignupPage = () => {
     setErrorMessage("");
 
     // validate username
-    if (!excludesSpaces(user.username)) {
+    if (!excludesSpaces(user.username.trim())) {
       setErrorMessage("Username cannot contain spaces");
       setIsError(true);
       return;
