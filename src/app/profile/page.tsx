@@ -5,7 +5,6 @@ import { triggerEmail } from "@/helpers/trigger-email";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import type NaeUser from "@/models/user-interface"
 import Button from "@/components/nae-button";
 import Link from "next/link";
@@ -15,8 +14,6 @@ const ProfilePage = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
-  const [isSent, setIsSent] = useState<boolean>(false);           // TODO: add success and error states after send email (in upcoming feature)
-  const [isSendError, setIsSendError] = useState<boolean>(false); // TODO: add success and error states after send email (in upcoming feature)
   const [user, setUser] = useState<NaeUser | null>(null);
 
   const router = useRouter();
@@ -30,7 +27,6 @@ const ProfilePage = () => {
       catch (error: unknown) {
         const errorMessage = getErrorMessage(error, "Get user data failed");
         console.error(errorMessage);
-        toast.error(errorMessage);
       }
       finally {
         setIsLoading(false);
@@ -49,13 +45,7 @@ const ProfilePage = () => {
   const handleVerifyEmailClick = async () => {
     if (!user) return;
     if (isSendingVerifyEmail) return;
-    try {
-      await triggerEmail(user.email, "VERIFY", setIsSendingVerifyEmail);
-      setIsSent(true);
-    }
-    catch (error: unknown) {
-      setIsSendError(true);
-    }
+    await triggerEmail(user.email, "VERIFY", setIsSendingVerifyEmail);
   }
 
   const handleResetPasswordClick = () => {

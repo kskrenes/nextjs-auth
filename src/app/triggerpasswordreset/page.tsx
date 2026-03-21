@@ -93,7 +93,7 @@ const TriggerPasswordResetPage = () => {
           <h1 className="mb-6 text-3xl font-bold">Unable to send email</h1>
           <Button
             onClick={handleRetryClick}
-            className="min-w-[120px]"
+            className="min-w-[120px] mt-4"
           >
             Retry
           </Button>

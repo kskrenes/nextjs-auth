@@ -1,4 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { excludesSpaces, meetsMinimum } from "@/helpers/expression-validation";
 import { getRequestBody } from "@/helpers/validate-request";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
@@ -21,29 +22,50 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // throw if required params don't exist
-    if (!("token" in reqBody) || !("password" in reqBody)) {
+    // throw if field types are invalid at runtime
+    const { token, password } = reqBody as { token?: string; password?: string };
+    if (
+      typeof token !== "string" ||
+      typeof password !== "string"
+    ) {
+      console.error("Invalid request");
       return NextResponse.json(
-        { error: "Invalid request" }, 
+        { error: "Unable to reset password" },
         { status: 400 }
       );
     }
 
-    // throw if token is invalid
-    const token = reqBody.token;
-    if (typeof token !== "string" || token.trim().length === 0) {
+    // throw if valid token is not provided
+    if (token.trim().length === 0) {
+      console.error("Invalid token");
       return NextResponse.json(
-        { error: "Invalid token" }, 
+        { error: "Please follow the link from your email" }, 
+        { status: 401 }
+      );
+    }
+
+    // throw if valid password is not provided
+    if (!password) {
+      console.error("Invalid password");
+      return NextResponse.json(
+        { error: "Invalid password" },
         { status: 400 }
       );
     }
 
-    // throw if no new password provided
-    const password = reqBody.password;
-    if (typeof password !== "string" || password.length < 8) {
+    if (!meetsMinimum(password, 8)) {
+      console.error("Password failed minimum character test");
       return NextResponse.json(
-        { error: "Password must be at least 8 characters" }, 
-        { status: 400 }
+        { error: "Password must meet minimum character requirement" }, 
+        { status: 422 }
+      );
+    }
+
+    if (!excludesSpaces(password)) {
+      console.error("Password contains spaces");
+      return NextResponse.json(
+        { error: "Password cannot contain spaces" }, 
+        { status: 422 }
       );
     }
 
@@ -58,13 +80,14 @@ export async function POST(request: NextRequest) {
 
     // throw if user not found with non-expired matching token
     if (!user) {
+      console.error("Invalid or expired token");
       return NextResponse.json(
-        { error: "Invalid or expired token" }, 
-        { status: 400 }
+        { error: "Your token has expired" }, 
+        { status: 410 }
       );
     }
 
-    // hash password
+    // hash normalized password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
