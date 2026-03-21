@@ -52,6 +52,10 @@ const VerifyEmailPage = () => {
       setIsRetrievingData(true);
       const res = await axios.get('/api/users/me');
       const user = res.data.user as NaeUser;
+      if (!user.email) {
+        toast.error("No email found for this account");
+        return;
+      }
       try {
         await triggerEmail(user.email, "VERIFY", setIsSendingEmail);
         toast.success("Verification email sent");
