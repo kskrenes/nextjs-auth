@@ -111,7 +111,7 @@ const SignupPage = () => {
           label="Password"
           password={user.password}
           confirmPassword={confirmPassword}
-          onPasswordChange={(v:string) => setUser({...user, password: v})}
+          onPasswordChange={(v) => setUser({...user, password: v})}
           onConfirmPasswordChange={setConfirmPassword}
         />
         <Button

@@ -6,8 +6,8 @@ interface SetPasswordInputsProps {
   label: string;
   password: string;
   confirmPassword: string;
-  onPasswordChange: Function;
-  onConfirmPasswordChange: Function;
+  onPasswordChange: (v: string) => void;
+  onConfirmPasswordChange: (v: string) => void;
   idPrefix?: string;
 }
 
