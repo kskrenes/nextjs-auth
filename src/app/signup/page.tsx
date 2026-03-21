@@ -46,9 +46,17 @@ const SignupPage = () => {
     setIsError(false);
     setErrorMessage("");
 
+    const normalizedUsername = user.username.trim();
+
     // validate username
-    if (!excludesSpaces(user.username.trim())) {
+    if (!excludesSpaces(normalizedUsername)) {
       setErrorMessage("Username cannot contain spaces");
+      setIsError(true);
+      return;
+    }
+
+    if (normalizedUsername.length < 4) {
+      setErrorMessage("Username must meet minimum character requirement");
       setIsError(true);
       return;
     }
