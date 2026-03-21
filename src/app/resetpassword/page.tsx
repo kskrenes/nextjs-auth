@@ -71,19 +71,23 @@ const ResetPasswordPage = () => {
 
     try {
       setIsPendingReset(true);
-      await axios.post("/api/users/resetpassword", { token, password: newPassword });
+      await axios.post(
+        "/api/users/resetpassword", 
+        { token, password: newPassword }
+      );
       setIsReset(true);
     } 
     catch (error: unknown) {
       const message = getErrorMessage(error, "Unable to reset password");
       setErrorMessage(message);
+
       if (
-        axios.isAxiosError(error) && 
-        error.response?.status === 422
+        message.includes("follow the link") ||
+        message.includes("expired") 
       ) {
-        setIsValidationError(true);
-      } else {
         setIsError(true);
+      } else {
+        setIsValidationError(true);
       }
     } 
     finally {
