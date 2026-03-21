@@ -31,8 +31,8 @@ verifyemail page
 x add resend error state
 
 sendemail
-- improve email message
-- improve email style
+x improve email message
+x improve email style
 
 dashboard page
 - layout page
