@@ -44,10 +44,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const normalizedPassword = password.trim();
-
     // throw if valid password is not provided
-    if (!normalizedPassword) {
+    if (!password) {
       console.error("Invalid password");
       return NextResponse.json(
         { error: "Unable to reset password" },
@@ -55,7 +53,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!meetsMinimum(normalizedPassword, 8)) {
+    if (!meetsMinimum(password, 8)) {
       console.error("Password failed minimum character test");
       return NextResponse.json(
         { error: "Password must meet minimum character requirement" }, 
@@ -63,7 +61,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!excludesSpaces(normalizedPassword)) {
+    if (!excludesSpaces(password)) {
       console.error("Password contains spaces");
       return NextResponse.json(
         { error: "Password cannot contain spaces" }, 
@@ -91,7 +89,7 @@ export async function POST(request: NextRequest) {
 
     // hash normalized password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(normalizedPassword, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // set new values
     const update: object = {
