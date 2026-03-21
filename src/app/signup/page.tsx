@@ -46,13 +46,21 @@ const SignupPage = () => {
     setIsError(false);
     setErrorMessage("");
 
-    // enforce password confirmation match
+    // validate username
+    if (!excludesSpaces(user.username)) {
+      setErrorMessage("Username cannot contain spaces");
+      setIsError(true);
+      return;
+    }
+
+    // verify password match
     if (user.password !== confirmPassword) {
       setErrorMessage("Passwords do not match");
       setIsError(true);
       return;
     }
 
+    // validate password
     if (!excludesSpaces(user.password)) {
       setErrorMessage("Password cannot contain spaces");
       setIsError(true);
