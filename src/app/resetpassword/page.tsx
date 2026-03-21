@@ -39,6 +39,7 @@ const ResetPasswordPage = () => {
 
     setIsError(false);
     setIsValidationError(false);
+    setErrorMessage("");
 
     if (!token) {
       setErrorMessage("Please follow the link from your email");
