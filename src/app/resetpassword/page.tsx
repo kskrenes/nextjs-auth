@@ -98,6 +98,23 @@ const ResetPasswordPage = () => {
   const handleResendClick = () => {
     router.push("/triggerpasswordreset");
   }
+
+  // clear stale inline errors when either password changes
+  const handlePasswordChange = (value: string) => {
+    setNewPassword(value);
+    if (isValidationError) {
+      setIsValidationError(false);
+      setErrorMessage("");
+    }
+  }
+
+  const handleConfirmPasswordChange = (value: string) => {
+    setConfirmPassword(value);
+    if (isValidationError) {
+      setIsValidationError(false);
+      setErrorMessage("");
+    }
+  }
   
   return (
     <div className="flex min-h-screen items-center justify-center">
@@ -151,8 +168,8 @@ const ResetPasswordPage = () => {
             label="New Password"
             password={newPassword}
             confirmPassword={confirmPassword}
-            onPasswordChange={setNewPassword}
-            onConfirmPasswordChange={setConfirmPassword}
+            onPasswordChange={handlePasswordChange}
+            onConfirmPasswordChange={handleConfirmPasswordChange}
           />
           <Button
             type="submit"
