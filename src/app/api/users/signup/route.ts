@@ -97,22 +97,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // throw if username already exists
-    const existingUsername = await User.findOne(
-      { username: normalizedUsername }
-    );
-    if (existingUsername) {
-      return NextResponse.json(
-        { error: "Username already exists" }, 
-        { status: 409 }
-      );
-    }
-
-    // throw if user already exists
-    const existingUser = await User.findOne(
-      { email: normalizedEmail }
-    );
+    // check for existing username or email
+    const existingUser = await User.findOne({
+      $or: [
+        { username: normalizedUsername },
+        { email: normalizedEmail }
+      ]
+    });
     if (existingUser) {
+      // throw if username already exists
+      if (existingUser.username === normalizedUsername) {
+        return NextResponse.json(
+          { error: "Username already exists" }, 
+          { status: 409 }
+        );
+      }
+      // throw if email already exists
       return NextResponse.json(
         { error: "User already exists" }, 
         { status: 409 }
