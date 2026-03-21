@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if valid token is not provided
-    if (typeof token !== "string" || token.trim().length === 0) {
+    if (token.trim().length === 0) {
       console.error("Invalid token");
       return NextResponse.json(
         { error: "Please follow the link from your email" }, 
