@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       console.error("Invalid token");
       return NextResponse.json(
         { error: "Please follow the link from your email" }, 
-        { status: 400 }
+        { status: 401 }
       );
     }
 
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
       console.error("Invalid or expired token");
       return NextResponse.json(
         { error: "Your token has expired" }, 
-        { status: 400 }
+        { status: 410 }
       );
     }
 

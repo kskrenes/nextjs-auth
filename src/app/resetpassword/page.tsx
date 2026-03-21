@@ -78,15 +78,13 @@ const ResetPasswordPage = () => {
       setIsReset(true);
     } 
     catch (error: unknown) {
-      const message = getErrorMessage(error, "Unable to reset password");
-      setErrorMessage(message);
-
-      if (
-        message.includes("follow the link") ||
-        message.includes("expired") 
-      ) {
+      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
+      setErrorMessage(getErrorMessage(error, "Unable to reset password"));
+      if (status === 401 || status === 410) {
+        // fatal errors arre unretriable
         setIsError(true);
       } else {
+        // all other errors display inline and allow retry
         setIsValidationError(true);
       }
     } 
