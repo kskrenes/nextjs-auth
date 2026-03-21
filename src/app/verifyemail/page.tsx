@@ -9,6 +9,7 @@ import { BadgeCheck, Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const VerifyEmailPage = () => {
 
@@ -18,7 +19,6 @@ const VerifyEmailPage = () => {
   const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
   const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
   const [isVerificationError, setIsVerificationError] = useState<boolean>(false);
-  const [isEmailSentError, setIsEmailSentError] = useState<boolean>(false); // TODO: add resend error state (in upcoming feature)
 
   const router = useRouter();
 
@@ -52,15 +52,30 @@ const VerifyEmailPage = () => {
       setIsRetrievingData(true);
       const res = await axios.get('/api/users/me');
       const user = res.data.user as NaeUser;
+      if (!user.email) {
+        toast.error("No email found for this account");
+        return;
+      }
       try {
         await triggerEmail(user.email, "VERIFY", setIsSendingEmail);
-        setIsEmailSent(true);  
+        toast.success("Verification email sent");
+        setIsEmailSent(true);
       } catch (error: unknown) {
-        setIsEmailSentError(true);
+        toast.error("Failed to send verification email");
       }
     }
     catch (error: unknown) {
-      router.push("/login");
+      const message = getErrorMessage(
+        error,
+        "Unable to retrieve account info. Please try again."
+      );
+      const lower = message.toLowerCase();
+      if (lower.includes("unauthorized") || lower.includes("forbidden")) {
+        toast.error("Please sign in to request a verification email");
+        router.push("/login");
+        return;
+      }
+      toast.error(message);
     }
     finally {
       setIsRetrievingData(false);
@@ -91,6 +106,7 @@ const VerifyEmailPage = () => {
       </h1>
       {isVerificationError && !isEmailSent && (
         <Button
+          className="mt-4"
           onClick={handleResendClick}
         >
           Resend Email

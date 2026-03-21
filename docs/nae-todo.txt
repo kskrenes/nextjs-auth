@@ -21,11 +21,14 @@ resetpassword page
 x show better error messaging
 
 profile
-x add success state after send verify email (toast handled in triggerEmail)
-x add error state after send verify email (toast handled in triggerEmail)
+x add success state after send verify email
+x add error state after send verify email
+
+triggerEmail
+x move toast messaging out of helper
 
 verifyemail page
-- add resend error state
+x add resend error state
 
 sendemail
 - improve email message
