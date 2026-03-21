@@ -67,13 +67,6 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-
-    if (!excludesSpaces(normalizedEmail)) {
-      return NextResponse.json(
-        { error: "Email cannot contain spaces" }, 
-        { status: 400 }
-      );
-    }
     
     // throw if valid password is not provided
     if (!normalizedPassword) {
