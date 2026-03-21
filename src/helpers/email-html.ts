@@ -53,10 +53,10 @@ export const getEmailHtml = (
   const safeUrl = escapeHtml(url);
 
   // action-dependent text
-  const introMessage = `${action === 'VERIFY' ? INTRO_VERIFY : INTRO_RESET}`;
-  const actionMessage = `${action === 'VERIFY' ? ACTION_VERIFY : ACTION_RESET}`;
-  const ignoreMessage = `${action === 'VERIFY' ? IGNORE_VERIFY : IGNORE_RESET}`;
-  const buttonLabel = `${action === 'VERIFY' ? BUTTON_LABEL_VERIFY : BUTTON_LABEL_RESET}`;
+  const introMessage = action === 'VERIFY' ? INTRO_VERIFY : INTRO_RESET;
+  const actionMessage = action === 'VERIFY' ? ACTION_VERIFY : ACTION_RESET;
+  const ignoreMessage = action === 'VERIFY' ? IGNORE_VERIFY : IGNORE_RESET;
+  const buttonLabel = action === 'VERIFY' ? BUTTON_LABEL_VERIFY : BUTTON_LABEL_RESET;
 
   // full p tags
   const bodyPTag = `<p style="color: ${BODY_TEXT_COLOR}; font-size: ${BODY_FONT_SIZE}; line-height: ${BODY_LINE_HEIGHT}; margin: 0 0 30px 0;">`;
