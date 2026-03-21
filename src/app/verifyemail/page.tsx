@@ -61,8 +61,17 @@ const VerifyEmailPage = () => {
       }
     }
     catch (error: unknown) {
-      toast.error("Please sign in to request a verification email");
-      router.push("/login");
+      const message = getErrorMessage(
+        error,
+        "Unable to retrieve account info. Please try again."
+      );
+      const lower = message.toLowerCase();
+      if (lower.includes("unauthorized") || lower.includes("forbidden")) {
+        toast.error("Please sign in to request a verification email");
+        router.push("/login");
+        return;
+      }
+      toast.error(message);
     }
     finally {
       setIsRetrievingData(false);
