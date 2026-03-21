@@ -2,6 +2,7 @@ import User from "@/models/user-model";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
+import { getEmailHtml, getEmailSubject } from "./email-html";
 
 export const sendEmail = async ({ 
   email, 
@@ -83,14 +84,17 @@ export const sendEmail = async ({
     });
 
     // expose only the raw token in the url
-    const verificationUrl = `${domain}/${route}?token=${encodeURIComponent(rawToken)}`;
+    const username = updatedUser.username;
+    const linkUrl = `${domain}/${route}?token=${encodeURIComponent(rawToken)}`;
+    const subject = getEmailSubject(username, emailType);
+    const html = getEmailHtml(username, linkUrl, emailType);
 
     // configure mail options
     const mailOptions = {
       from: mailFrom,
       to: email,
-      subject: action,
-      html: `<p>Click <a href="${verificationUrl}">here</a> to ${action.toLowerCase()}</p>`,
+      subject,
+      html,
     };
 
     // send the email and return the transport response
