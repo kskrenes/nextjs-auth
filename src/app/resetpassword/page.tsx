@@ -9,7 +9,6 @@ import { LaptopMinimalCheck, Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type SubmitEvent } from "react";
-import toast from "react-hot-toast";
 
 const ResetPasswordPage = () => {
 
@@ -52,6 +51,13 @@ const ResetPasswordPage = () => {
     // enforce password confirmation match
     if (newPassword !== confirmPassword) {
       setErrorMessage("Passwords do not match");
+      setIsValidationError(true);
+      return;
+    }
+
+    // enforce minimum length
+    if (newPassword.length < 8) {
+      setErrorMessage("Password must be at least 8 characters");
       setIsValidationError(true);
       return;
     }
