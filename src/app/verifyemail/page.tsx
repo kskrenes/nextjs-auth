@@ -9,6 +9,7 @@ import { BadgeCheck, Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
 const VerifyEmailPage = () => {
 
@@ -54,12 +55,15 @@ const VerifyEmailPage = () => {
       const user = res.data.user as NaeUser;
       try {
         await triggerEmail(user.email, "VERIFY", setIsSendingEmail);
-        setIsEmailSent(true);  
+        toast.success("Verification email sent");
+        setIsEmailSent(true);
       } catch (error: unknown) {
+        toast.error("Failed to send verification email");
         setIsEmailSentError(true);
       }
     }
     catch (error: unknown) {
+      toast.error("Please sign in to request a verification email");
       router.push("/login");
     }
     finally {
@@ -91,6 +95,7 @@ const VerifyEmailPage = () => {
       </h1>
       {isVerificationError && !isEmailSent && (
         <Button
+          className="mt-4"
           onClick={handleResendClick}
         >
           Resend Email

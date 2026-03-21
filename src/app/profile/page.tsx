@@ -9,6 +9,7 @@ import type NaeUser from "@/models/user-interface"
 import Button from "@/components/nae-button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 const ProfilePage = () => {
 
@@ -45,7 +46,12 @@ const ProfilePage = () => {
   const handleVerifyEmailClick = async () => {
     if (!user) return;
     if (isSendingVerifyEmail) return;
-    await triggerEmail(user.email, "VERIFY", setIsSendingVerifyEmail);
+    try {
+      await triggerEmail(user.email, "VERIFY", setIsSendingVerifyEmail);
+      toast.success("Verification email sent");
+    } catch (error: unknown) {
+      toast.error("Failed to send verification email");
+    }
   }
 
   const handleResetPasswordClick = () => {

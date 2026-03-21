@@ -56,9 +56,11 @@ const TriggerPasswordResetPage = () => {
     if (isSending || email.length === 0) return;
 
     try {
-      await triggerEmail(email, "RESET", setIsSending);  
+      await triggerEmail(email, "RESET", setIsSending);
+      toast.success("Reset password email sent");
       setIsSent(true);
     } catch (error: unknown) {
+      toast.error("Failed to send reset password email");
       setIsError(true);
     }
   }

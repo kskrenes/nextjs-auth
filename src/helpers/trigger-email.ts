@@ -1,5 +1,5 @@
 import axios from "axios";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import { getErrorMessage } from "./error-message";
 
 export const triggerEmail = async (
@@ -15,12 +15,12 @@ export const triggerEmail = async (
       "/api/users/sendemail", 
       { email, type }
     );
-    toast.success("Email sent.");
+    // toast.success("Email sent.");
   } 
   catch (error: unknown) {
-    const errorMessage = getErrorMessage(error, `Error sending ${type} email`);
+    const errorMessage = getErrorMessage(error, `Error sending email`);
     console.error(errorMessage);
-    toast.error(errorMessage);
+    // toast.error(errorMessage);
     throw new Error(errorMessage);
   }
   finally {
