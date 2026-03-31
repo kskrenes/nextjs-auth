@@ -58,10 +58,10 @@ session management lifecycle (research)
 - active device monitoring
 - session revocation
 
-- one time passcodes
+- one-time passcodes
 - restrict email domains and subaddresses
 
-- what is social sign on (SSO)?
+- what is social sign-on (SSO)?
 - MFA?
 - SAML?
 
