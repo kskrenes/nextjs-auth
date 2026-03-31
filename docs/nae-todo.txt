@@ -34,10 +34,13 @@ sendemail
 x improve email message
 x improve email style
 
-dashboard page
-- layout page
-
 home page
+x layout page
+
+header
+- create
+
+dashboard page
 - layout page
 
 multiple pages
@@ -48,5 +51,19 @@ sendemail api and resetpassword api
 - console error
 
 - add oauth
+- multifactor auth
+- roles and permissions
+
+session management lifecycle (research)
+- active device monitoring
+- session revocation
+
+- one-time passcodes
+- restrict email domains and subaddresses
+
+- what is social sign-on (SSO)?
+- MFA?
+- SAML?
+
 
 DEPLOY
