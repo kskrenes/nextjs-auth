@@ -1,5 +1,6 @@
 import BackgroundContainer from "@/components/background-container";
 import Header from "@/components/header";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -34,12 +35,12 @@ export default function Home() {
             </ul>
           </div>
 
-          <a
+          <Link
             href="/signup"
             className="px-6 py-3 bg-blue-600 text-lg font-semibold text-white rounded-lg hover:bg-blue-700 transition-colors"
           >
             Get Started
-          </a>
+          </Link>
         </main>
       </BackgroundContainer>
     </div>

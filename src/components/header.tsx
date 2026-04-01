@@ -1,5 +1,5 @@
 import { ShieldUser } from "lucide-react"
-import NavItem from "./nav-item"
+import Link from "next/link"
 
 const Header = () => {
   return (
@@ -38,22 +38,22 @@ const Header = () => {
         <div className="ml-auto flex items-center gap-6 font-medium">
           <div className="flex items-center gap-2">
             <div>
-              <a 
+              <Link 
                 href="/login" 
                 className="rounded-md px-2.5 py-1 text-gray-50 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" 
                 target=""
               >
                 Sign In
-              </a>
+              </Link>
             </div>
             <div>
-              <a 
+              <Link 
                 href="/signup" 
                 className="rounded-md px-2.5 py-1 font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer" 
                 target=""
               >
                 Get Started
-              </a>
+              </Link>
             </div>
           </div>
         </div>
