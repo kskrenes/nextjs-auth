@@ -41,7 +41,7 @@ header
 x create
 
 favicon
-- implement
+x implement
 
 dashboard page
 - layout page
