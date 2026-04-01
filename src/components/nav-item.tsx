@@ -11,7 +11,7 @@ const NavItem = ({
 }: NavItemProps) => {
 
   const baseStyles = 'flex items-center gap-x-[0.5rem] transition-colors';
-  const colorStyles = 'text-gray-50 group-hover/navlist:text-gray-400 group-hover/navbutton:!text-white';
+  const colorStyles = 'text-gray-50 group-hover/navlist:text-gray-400 group-hover/navbutton:text-white!';
 
   return (
     <li className="relative flex">
