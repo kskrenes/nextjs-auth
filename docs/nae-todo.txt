@@ -38,7 +38,10 @@ home page
 x layout page
 
 header
-- create
+x create
+
+favicon
+- implement
 
 dashboard page
 - layout page
