@@ -1,41 +1,21 @@
 "use client";
 
-import { getErrorMessage } from "@/helpers/error-message";
 import { triggerEmail } from "@/helpers/trigger-email";
-import axios from "axios";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
-import type NaeUser from "@/models/user-interface"
+import { useState } from "react";
 import Button from "@/components/nae-button";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
+import { useAuth } from "@/context/AuthContext";
 
 const ProfilePage = () => {
 
-  const [isLoading, setIsLoading] = useState(true);
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
-  const [user, setUser] = useState<NaeUser | null>(null);
-
+  const { loading, user } = useAuth();
   const router = useRouter();
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get('/api/users/me');
-        setUser(res.data.user as NaeUser);
-      }
-      catch (error: unknown) {
-        const errorMessage = getErrorMessage(error, "Get user data failed");
-        console.error(errorMessage);
-      }
-      finally {
-        setIsLoading(false);
-      }
-    })();
-  }, []);
-
-  if (isLoading) {
+  if (loading) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
         <Loader2 className='w-8 h-8 animate-spin text-purple-500' />
