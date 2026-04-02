@@ -2,44 +2,40 @@
 
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
+import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import { Loader2, ShieldAlert } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useState, type SubmitEvent } from "react";
 
 const LoginPage = () => {
 
-  const router = useRouter();
+  const { loading, login } = useAuth();
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isServerError, setIsServerError] = useState<boolean>(false);
   const [isInvalid, setIsInvalid] = useState<boolean>(false);
-  const [user, setUser] = useState({
+  const [credentials, setCredentials] = useState({
     email: "",
     password: "",
   });
 
   const buttonDisabled =
-    isLoading ||
-    user.email.trim().length === 0 ||
-    user.password.trim().length === 0;
+    loading ||
+    credentials.email.trim().length === 0 ||
+    credentials.password.trim().length === 0;
 
   const handleLogin = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
     e.preventDefault(); 
 
-    if (isLoading) return;
+    if (loading) return;
 
     setIsInvalid(false);
     setIsServerError(false);
 
     try {
-      setIsLoading(true);
-      await axios.post("/api/users/login", user);
-      router.push("/dashboard");
-    } 
-    catch (error: unknown) {
+      await login(credentials.email, credentials.password);  
+    } catch (error) {
       if (
         axios.isAxiosError(error) && 
         error.response?.status === 401
@@ -48,9 +44,6 @@ const LoginPage = () => {
       } else {
         setIsServerError(true);
       }
-    } 
-    finally {
-      setIsLoading(false);
     }
   };
 
@@ -78,8 +71,8 @@ const LoginPage = () => {
           placeholder="email"
           type="email"
           required
-          value={user.email}
-          onChange={(e) => setUser({...user, email: e.target.value})}
+          value={credentials.email}
+          onChange={(e) => setCredentials({...credentials, email: e.target.value})}
         />
         <Input 
           id="password" 
@@ -88,15 +81,15 @@ const LoginPage = () => {
           type="password"
           autoComplete="current-password"
           required
-          value={user.password}
-          onChange={(e) => setUser({...user, password: e.target.value})}
+          value={credentials.password}
+          onChange={(e) => setCredentials({...credentials, password: e.target.value})}
         />
         <Button
           type="submit"
           className="w-full my-8"
           disabled={buttonDisabled}
         >
-          {isLoading 
+          {loading 
             ? (
               <>
                 <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
