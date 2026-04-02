@@ -39,7 +39,8 @@ x layout page
 
 header
 x create
-- update when authentication state changes
+x update when authentication state changes
+- add avatar with dropdown options
 
 favicon
 x implement
@@ -65,10 +66,29 @@ session management lifecycle (research)
 
 - one-time passcodes
 - restrict email domains and subaddresses
+- passkeys?
 
 - what is social sign-on (SSO)?
 - MFA?
 - SAML?
+
+
+*******************************
+'''''''''''''''''''''''''''''''
+Homepage Checklist:
+x Email/password authentication
+x Protected routes and pages
+- Session management
+x Email verification
+- Google OAuth authentication
+- Multifactor authentication
+- Roles and permissions
+- Profile management
+- Restricted domains
+- Passkeys
+,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+*******************************
+
 
 
 DEPLOY
