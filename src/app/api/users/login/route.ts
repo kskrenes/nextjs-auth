@@ -86,10 +86,14 @@ export async function POST(request: NextRequest) {
       { expiresIn: "1d" }
     );
 
+    // create sanitized user object for response
+    const { password: _, ...sanitizedUser } = user.toObject();
+
     // store token in client cookie
     const response = NextResponse.json({
       message: "Log in successful",
       success: true,
+      user: sanitizedUser,
     });
     response.cookies.set(
       TOKEN_COOKIE_NAME, 
