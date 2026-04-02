@@ -48,37 +48,28 @@ const Header = () => {
         {!loading && (
           <div className="ml-auto flex items-center gap-6 font-medium">
             {user ? (
-              <div className="flex items-center gap-2">
-                <div>
-                  <button 
-                    onClick={logout}
-                    className="rounded-md px-2.5 py-0.5 text-gray-50 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" 
-                  >
-                    Sign Out
-                  </button>
-                </div>
-              </div>
+              <button 
+                onClick={logout}
+                className="rounded-md px-2.5 py-0.5 text-gray-50 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" 
+              >
+                Sign Out
+              </button>
             ) : (
               <div className="flex items-center gap-2">
-                <div>
-                  <Link 
-                    href="/login" 
-                    className="rounded-md px-2.5 py-1 text-gray-50 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" 
-                  >
-                    Sign In
-                  </Link>
-                </div>
-                <div>
-                  <Link 
-                    href="/signup" 
-                    className="rounded-md px-2.5 py-1 font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer" 
-                  >
-                    Get Started
-                  </Link>
-                </div>
+                <Link 
+                  href="/login" 
+                  className="rounded-md px-2.5 py-0.5 text-gray-50 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" 
+                >
+                  Sign In
+                </Link>
+                <Link 
+                  href="/signup" 
+                  className="rounded-md px-2.5 py-0.5 font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer" 
+                >
+                  Get Started
+                </Link>
               </div>
             )}
-          
           </div>
         )}
 
