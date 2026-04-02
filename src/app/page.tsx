@@ -5,31 +5,33 @@ export default function Home() {
   return (
     <div className="flex min-h-screen font-sans">
       <BackgroundContainer>
-        <div className="flex min-h-screen w-full max-w-5xl flex-col items-center sm:justify-between py-28 lg:py-38 px-8 sm:px-16 sm:items-start">
-          <h1 className="font-bold text-white text-4xl/tight sm:text-6xl/tight text-center sm:text-left">
-            Authentication built with Next.js and NextAuth
+        <div className="flex min-h-screen w-full max-w-5xl flex-col items-center sm:justify-between py-28 sm:py-64 md:py-58 lg:py-48 px-8 sm:px-16 sm:items-start">
+          <h1 className="font-bold text-white text-4xl/tight md:text-5xl/tight lg:text-6xl/tight text-center sm:text-left">
+            Authentication built with Next.js and React Context
           </h1>
 
           {/* Show only for smaller screens */}
           <p className="sm:hidden text-lg sm:text-xl my-12 text-center">
-            A fully featured authentication example, including OAuth, multifactor authentication, protected routes, session management, account verification, profile management, roles and permissions, and more.
+            A secure JSON Web Token authentication example, including OAuth, multifactor authentication, protected routes, session management, account verification, profile management, roles and permissions, and more.
           </p>
           
 
           {/* Show only for larger screens */}
-          <div className="hidden sm:block text-gray-300 text-left">
-            <p className="text-xl mb-6">
-              A fully featured authentication example, including:
+          <div className="hidden sm:block space-y-6 text-gray-300 text-left text-base md:text-lg lg:text-xl">
+            <p>
+              A secure JSON Web Token authentication example, including:
             </p>
-            <ul className="list-disc list-inside mt-2 font-semibold text-xl/relaxed">
+            <ul className="list-disc list-inside columns-2 gap-5 md:gap-10 lg:gap-20 font-semibold leading-relaxed">
               <li>Email/password authentication</li>
-              <li>Google OAuth authentication</li>
-              <li>Multifactor authentication</li>
               <li>Protected routes and pages</li>
               <li>Session management</li>
-              <li>Account verification</li>
-              <li>Profile management</li>
+              <li>Email verification</li>
+              <li>Google OAuth authentication</li>
+              <li>Multifactor authentication</li>
               <li>Roles and permissions</li>
+              <li>Profile management</li>
+              <li>Restricted domains</li>
+              <li>Passkeys</li>
             </ul>
           </div>
 
