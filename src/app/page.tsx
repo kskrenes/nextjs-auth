@@ -1,13 +1,11 @@
 import BackgroundContainer from "@/components/background-container";
-import Header from "@/components/header";
 import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen font-sans">
       <BackgroundContainer>
-        <Header />
-        <main className="flex min-h-screen w-full max-w-5xl flex-col items-center sm:justify-between py-28 lg:py-38 px-8 sm:px-16 sm:items-start">
+        <div className="flex min-h-screen w-full max-w-5xl flex-col items-center sm:justify-between py-28 lg:py-38 px-8 sm:px-16 sm:items-start">
           <h1 className="font-bold text-white text-4xl/tight sm:text-6xl/tight text-center sm:text-left">
             Authentication built with Next.js and NextAuth
           </h1>
@@ -41,7 +39,7 @@ export default function Home() {
           >
             Get Started
           </Link>
-        </main>
+        </div>
       </BackgroundContainer>
     </div>
   );
