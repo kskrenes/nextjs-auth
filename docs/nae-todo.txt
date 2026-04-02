@@ -59,6 +59,7 @@ sendemail api and resetpassword api
 - roles and permissions
 
 session management lifecycle (research)
+- token expiration (logout/timeout)
 - active device monitoring
 - session revocation
 
