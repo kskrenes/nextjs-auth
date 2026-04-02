@@ -87,7 +87,13 @@ export async function POST(request: NextRequest) {
     );
 
     // create sanitized user object for response
-    const { password: _, ...sanitizedUser } = user.toObject();
+    const sanitizedUser = {
+      _id: user._id,
+      username: user.username,
+      email: user.email,
+      isVerified: user.isVerified,
+      isAdmin: user.isAdmin,
+    };
 
     // store token in client cookie
     const response = NextResponse.json({
