@@ -11,14 +11,14 @@ export interface AuthContextType {
   user: NaeUser | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   login: async () => {},
-  logout: () => {},
+  logout: async () => {},
 });
 
 interface AuthProviderProps {
