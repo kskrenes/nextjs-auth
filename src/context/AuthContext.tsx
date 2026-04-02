@@ -26,8 +26,8 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<NaeUser | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const router = useRouter();
 
