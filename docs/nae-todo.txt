@@ -39,6 +39,7 @@ x layout page
 
 header
 x create
+- update when authentication state changes
 
 favicon
 x implement
