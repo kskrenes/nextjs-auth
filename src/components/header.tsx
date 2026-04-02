@@ -64,7 +64,6 @@ const Header = () => {
                   <Link 
                     href="/login" 
                     className="rounded-md px-2.5 py-1 text-gray-50 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" 
-                    target=""
                   >
                     Sign In
                   </Link>
@@ -73,7 +72,6 @@ const Header = () => {
                   <Link 
                     href="/signup" 
                     className="rounded-md px-2.5 py-1 font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer" 
-                    target=""
                   >
                     Get Started
                   </Link>
