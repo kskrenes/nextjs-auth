@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
 
     // throw one error if user does not exist or if password is invalid
     // to avoid account enumeration
-    const user = await User.findOne({ email: normalizedEmail });
+    const user = await User.findOne({ email: normalizedEmail }).select('+password');
     const isValidPassword = user ? await bcrypt.compare(normalizedPassword, user.password) : false;
     if (!isValidPassword) {
       return NextResponse.json(
