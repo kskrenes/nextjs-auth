@@ -40,7 +40,7 @@ home page
 header
 - [x] create
 - [x] update when authentication state changes
-- [ ] add avatar with dropdown options
+- [ ] add user nav with avatar and dropdown options
 
 favicon
 - [x] implement
