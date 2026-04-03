@@ -39,7 +39,7 @@ favicon
 profile
 - [x] add success state after send verify email
 - [x] add error state after send verify email
-- [ ] add user fields
+- [ ] add user fields: name, company, website, social link x4, avatar
 - [ ] allow edit
 - [ ] layout and styling
 
