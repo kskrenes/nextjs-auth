@@ -1,33 +1,18 @@
 "use client";
 
 import Button from "@/components/nae-button"
-import { getErrorMessage } from "@/helpers/error-message";
-import axios from "axios";
+import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import toast from "react-hot-toast";
 
 const DashboardPage = () => {
 
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-
+  const { loading, logout } = useAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
-    if (isLoggingOut) return;
-
-    try {
-      setIsLoggingOut(true);
-      await axios.post("/api/users/logout");
-      router.push("/login");
-    } 
-    catch (error: unknown) {
-      toast.error(getErrorMessage(error, "Logout failed"));
-    } 
-    finally {
-      setIsLoggingOut(false);
-    }
+    if (loading) return;
+    logout();
   }
 
   return (
@@ -48,9 +33,9 @@ const DashboardPage = () => {
         <Button 
           className="w-full my-8"
           onClick={handleLogout}
-          disabled={isLoggingOut}
+          disabled={loading}
         >
-          {isLoggingOut 
+          {loading 
             ? (
               <>
                 <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />

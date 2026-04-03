@@ -1,73 +1,92 @@
 NAE TODO
 
 triggerpasswordreset page
-x success state
-x add email validation
+- [x] success state
+- [x] add email validation
 
 login page
-x error state
+- [x] error state
 
 signup page
-x add confirm password
-x add password instructions & validation
-x add username instructions & validation
-x add email validation
-x reinforce username, password, email validation on api
-x add check for duplicate username (username already exists)
-x add check for duplicate email (account already exists)
-x show success (toast?)
+- [x] add confirm password
+- [x] add password instructions & validation
+- [x] add username instructions & validation
+- [x] add email validation
+- [x] reinforce username, password, email validation on api
+- [x] add check for duplicate username (username already exists)
+- [x] add check for duplicate email (account already exists)
+- [x] show success (toast?)
 
 resetpassword page
-x show better error messaging
+- [x] show better error messaging
 
 profile
-x add success state after send verify email
-x add error state after send verify email
+- [x] add success state after send verify email
+- [x] add error state after send verify email
 
 triggerEmail
-x move toast messaging out of helper
+- [x] move toast messaging out of helper
 
 verifyemail page
-x add resend error state
+- [x] add resend error state
 
 sendemail
-x improve email message
-x improve email style
+- [x] improve email message
+- [x] improve email style
 
 home page
-x layout page
+- [x] layout page
 
 header
-x create
-- update when authentication state changes
+- [x] create
+- [x] update when authentication state changes
+- [ ] add avatar with dropdown options
 
 favicon
-x implement
+- [x] implement
 
 dashboard page
-- layout page
+- [ ] layout page
 
 multiple pages
-- improve style
-- either display or discard toast
+- [ ] improve style
+- [ ] either display or discard toast
 
 sendemail api and resetpassword api
-- console error
+- [ ] console error
 
-- add oauth
-- multifactor auth
-- roles and permissions
+additional authentication methods
+- [ ] add social login (google)
+- [ ] research multifactor auth (MFA)
+- [ ] research one-time passcodes
+- [ ] research passkeys
 
-session management lifecycle (research)
-- active device monitoring
-- session revocation
+roles and permissions
+- [ ] research examples and determine what to implement
 
-- one-time passcodes
-- restrict email domains and subaddresses
+session management lifecycle
+- [ ] conceptual research
+- [ ] token expiration (logout/timeout)
+- [ ] active device monitoring
+- [ ] session revocation
 
-- what is social sign-on (SSO)?
-- MFA?
-- SAML?
+security
+- [ ] restrict email domains and subaddresses
 
+feature research
+- [x] research social sign-on
+- [x] research SAML
+
+## Homepage Feature Checklist
+- [x] Email/password authentication
+- [x] Protected routes and pages
+- [ ] Session management
+- [x] Email verification
+- [ ] Social login (Google)
+- [ ] Multifactor authentication
+- [ ] Roles and permissions
+- [ ] Profile management
+- [ ] Restricted domains
+- [ ] Passkeys
 
 DEPLOY
