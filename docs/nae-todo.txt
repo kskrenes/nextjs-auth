@@ -37,13 +37,18 @@ sendemail
 home page
 - [x] layout page
 
+favicon
+- [x] implement
+
+profile
+- [ ] add user fields
+- [ ] allow edit
+- [ ] layout and styling
+
 header
 - [x] create
 - [x] update when authentication state changes
 - [ ] add user nav with avatar and dropdown options
-
-favicon
-- [x] implement
 
 dashboard page
 - [ ] layout page
