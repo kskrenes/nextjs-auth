@@ -91,6 +91,10 @@ export async function POST(request: NextRequest) {
       _id: user._id,
       username: user.username,
       email: user.email,
+      name: user.name,
+      company: user.company,
+      website: user.website,
+      socialLinks: user.socialLinks,
       isVerified: user.isVerified,
       isAdmin: user.isAdmin,
     };
