@@ -118,13 +118,13 @@ const ResetPasswordPage = () => {
     <div className="flex min-h-screen items-center justify-center">
       {isReset ? (
         <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
-          <LaptopMinimalCheck className="w-10 h-10 text-purple-600" />
+          <LaptopMinimalCheck className="w-10 h-10 text-blue-600" />
           <h1 className="mb-6 text-3xl font-bold">Your password has been reset.</h1>
           <p className="text-xs">
             {'Go to '}
             <Link 
               href="/login"
-              className="text-purple-400 hover:text-purple-500 underline transition-colors"
+              className="text-blue-400 hover:text-blue-500 underline transition-colors"
             >
               Sign in
             </Link>{' page.'}
@@ -144,7 +144,7 @@ const ResetPasswordPage = () => {
             {'Go to '}
             <Link 
               href="/login"
-              className="text-purple-400 hover:text-purple-500 underline transition-colors"
+              className="text-blue-400 hover:text-blue-500 underline transition-colors"
             >
               Sign in
             </Link>{' page.'}
@@ -182,7 +182,7 @@ const ResetPasswordPage = () => {
             {isPendingReset 
               ? (
                 <>
-                  <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
+                  <Loader2 className="w-7 h-7 animate-spin text-blue-400" aria-hidden="true" />
                   <span className="sr-only">Resetting password</span>
                 </>
               )

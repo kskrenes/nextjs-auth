@@ -38,7 +38,7 @@ const DashboardPage = () => {
           {loading 
             ? (
               <>
-                <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
+                <Loader2 className="w-7 h-7 animate-spin text-blue-400" aria-hidden="true" />
                 <span className="sr-only">Signing out</span>
               </>
             ) 

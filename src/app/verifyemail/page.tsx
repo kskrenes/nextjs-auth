@@ -86,14 +86,14 @@ const VerifyEmailPage = () => {
     <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
       {isVerified 
           ? (
-            <BadgeCheck className="w-10 h-10 text-purple-600" />
+            <BadgeCheck className="w-10 h-10 text-blue-600" />
           ) 
           : isVerificationError 
             ? (
               <ShieldAlert className="w-10 h-10 text-red-600" />
             ) 
             : (
-              <Loader2 className="w-10 h-10 animate-spin text-purple-600" />
+              <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
             )
       }
       <h1 className="mb-6 text-3xl font-bold">
@@ -120,7 +120,7 @@ const VerifyEmailPage = () => {
           {'Go to '}
           <Link 
             href="/login"
-            className="text-purple-400 hover:text-purple-500 underline transition-colors"
+            className="text-blue-400 hover:text-blue-500 underline transition-colors"
           >
             Sign in
           </Link>{' page.'}
