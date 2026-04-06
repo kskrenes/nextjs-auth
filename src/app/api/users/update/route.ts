@@ -86,9 +86,21 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    // throw if user not found
+    if (!updatedUser) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+
     // delete old avatar if one exists
     if (oldAvatarId) {
-      await cloudinary.uploader.destroy(oldAvatarId);
+      try {
+        await cloudinary.uploader.destroy(oldAvatarId);  
+      } catch (error) {
+        console.error("Failed to delete old avatar", error);
+      }
     }
 
     // return sanitized user
