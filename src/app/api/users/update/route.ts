@@ -2,8 +2,9 @@ import { connect } from "@/dbconfig/dbconfig";
 import { AuthTokenError, getIdFromToken } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
 import type NaeUser from "@/models/user-interface";
-import User from "@/models/user-model";
+import User, { defaultAvatarId } from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
+import { v2 as cloudinary } from 'cloudinary';
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,13 +37,15 @@ export async function POST(request: NextRequest) {
     }
 
     // check for valid fields at runtime
-    const user = reqBody as Partial<NaeUser>;
+    const userUpdates = reqBody as Partial<NaeUser>;
     if (
-      (user.name !== undefined && typeof user.name !== "string") ||
-      (user.company !== undefined && typeof user.company !== "string") ||
-      (user.website !== undefined && typeof user.website !== "string") ||
-      (user.avatarId !== undefined && typeof user.avatarId !== "string") ||
-      (user.socialLinks !== undefined && (!Array.isArray(user.socialLinks) || user.socialLinks.some(element => typeof element !== "string")))
+      (userUpdates.name !== undefined && typeof userUpdates.name !== "string") ||
+      (userUpdates.company !== undefined && typeof userUpdates.company !== "string") ||
+      (userUpdates.website !== undefined && typeof userUpdates.website !== "string") ||
+      (userUpdates.avatarId !== undefined && typeof userUpdates.avatarId !== "string") ||
+      (userUpdates.socialLinks !== undefined && 
+        (!Array.isArray(userUpdates.socialLinks) || 
+        userUpdates.socialLinks.some(element => typeof element !== "string")))
     ) {
       return NextResponse.json(
         { error: "Invalid user fields" }, 
@@ -52,11 +55,24 @@ export async function POST(request: NextRequest) {
 
     // set new values
     const update: any = {
-      ...(user.name !== undefined && { name: user.name.trim() }),
-      ...(user.company !== undefined && { company: user.company.trim() }),
-      ...(user.website !== undefined && { website: user.website.trim() }),
-      ...(user.avatarId !== undefined && { avatarId: user.avatarId.trim() }),
-      ...(user.socialLinks !== undefined && { socialLinks: user.socialLinks.map((link) => link.trim()) }),
+      ...(userUpdates.name !== undefined && { name: userUpdates.name.trim() }),
+      ...(userUpdates.company !== undefined && { company: userUpdates.company.trim() }),
+      ...(userUpdates.website !== undefined && { website: userUpdates.website.trim() }),
+      ...(userUpdates.avatarId !== undefined && { avatarId: userUpdates.avatarId.trim() }),
+      ...(userUpdates.socialLinks !== undefined && { socialLinks: userUpdates.socialLinks.map((link) => link.trim()) }),
+    }
+
+    // if avatar is being updated, delete the old avatar image unless it's the default
+    if (update.avatarId) {
+      const user = await User.findById(authenticatedUserId);
+      if (
+        user && 
+        user.avatarId && 
+        user.avatarId !== defaultAvatarId && 
+        user.avatarId !== update.avatarId
+      ) {
+        await cloudinary.uploader.destroy(user.avatarId);
+      }
     }
 
     // update user
