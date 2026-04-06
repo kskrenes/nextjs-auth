@@ -40,7 +40,7 @@ profile
 - [x] add success state after send verify email
 - [x] add error state after send verify email
 - [x] add user fields: name, company, website, social link x4, avatar
-- [x] implement edit of non image fields
+- [x] implement edit of non-image fields
 - [ ] implement avatar edit
 - [ ] layout and styling
 
