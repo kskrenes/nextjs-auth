@@ -8,11 +8,11 @@ import { createContext, ReactNode, useContext, useEffect, useState } from 'react
 import toast from 'react-hot-toast';
 
 type EditableProfileFields = {
-  name: string;
-  company: string;
-  website: string;
-  avatarUrl: string;
-  socialLinks: string[];
+  name?: string;
+  company?: string;
+  website?: string;
+  avatarId?: string;
+  socialLinks?: string[];
 };
 
 export interface AuthContextType {

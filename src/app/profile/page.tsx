@@ -37,13 +37,13 @@ const ProfilePage = () => {
     name: string;
     company: string;
     website: string;
-    avatarUrl: string;
+    avatarId: string;
     socialLinks: string[];
   }>({
     name: "",
     company: "",
     website: "",
-    avatarUrl: "",
+    avatarId: "",
     socialLinks: ["", "", "", ""],
   });
   const { user, loading, updateUser } = useAuth();
@@ -143,7 +143,7 @@ const ProfilePage = () => {
       name: user.name || "",
       company: user.company || "",
       website: user.website || "",
-      avatarUrl: user.avatarUrl || "",
+      avatarId: user.avatarId || "",
       socialLinks: [...(user.socialLinks ?? []), "", "", "", ""].slice(0, 4),
     });
     setIsEditing(true);
@@ -294,7 +294,9 @@ const ProfilePage = () => {
                   ) : (
                     <span className="flex gap-2">
                       {user.email}
-                      <span className="rounded-full bg-gradient-to-br from-red-500 to-red-600 px-3 py-1 text-white text-xs font-semibold text-shadow-md">
+                      <span 
+                        className="rounded-full bg-gradient-to-br from-red-500 to-red-600 px-3 py-1 text-white text-xs font-semibold text-shadow-md cursor-default"
+                      >
                         Unverified
                       </span>
                     </span>
@@ -338,6 +340,17 @@ const ProfilePage = () => {
                 </div>
               );
             })}
+
+            {/* Avatar ID */}
+            {user?.avatarId && (
+              <>
+                <h2 className="text-lg font-semibold mt-4">Avatar</h2>
+                <div className="flex items-center gap-2">
+                  <CompanyIcon />
+                  <span>{user?.avatarId}</span>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

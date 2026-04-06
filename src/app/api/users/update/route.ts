@@ -41,9 +41,8 @@ export async function POST(request: NextRequest) {
       (user.name !== undefined && typeof user.name !== "string") ||
       (user.company !== undefined && typeof user.company !== "string") ||
       (user.website !== undefined && typeof user.website !== "string") ||
-      (user.avatarUrl !== undefined && typeof user.avatarUrl !== "string") ||
-      !Array.isArray(user.socialLinks) ||
-      user.socialLinks.some(element => typeof element !== "string")
+      (user.avatarId !== undefined && typeof user.avatarId !== "string") ||
+      (user.socialLinks !== undefined && (!Array.isArray(user.socialLinks) || user.socialLinks.some(element => typeof element !== "string")))
     ) {
       return NextResponse.json(
         { error: "Invalid user fields" }, 
@@ -56,7 +55,7 @@ export async function POST(request: NextRequest) {
       ...(user.name !== undefined && { name: user.name.trim() }),
       ...(user.company !== undefined && { company: user.company.trim() }),
       ...(user.website !== undefined && { website: user.website.trim() }),
-      ...(user.avatarUrl !== undefined && { avatarUrl: user.avatarUrl.trim() }),
+      ...(user.avatarId !== undefined && { avatarId: user.avatarId.trim() }),
       ...(user.socialLinks !== undefined && { socialLinks: user.socialLinks.map((link) => link.trim()) }),
     }
 
@@ -82,7 +81,7 @@ export async function POST(request: NextRequest) {
         company: updatedUser.company,
         website: updatedUser.website,
         socialLinks: updatedUser.socialLinks,
-        avatarUrl: updatedUser.avatarUrl,
+        avatarId: updatedUser.avatarId,
         isVerified: updatedUser.isVerified,
         isAdmin: updatedUser.isAdmin,
       },

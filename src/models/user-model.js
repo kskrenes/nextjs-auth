@@ -54,10 +54,10 @@ const userSchema = new mongoose.Schema({
     trim: true,
     validate: urlValidator,
   }],
-  avatarUrl: {
+  avatarId: {
     type: String,
     trim: true,
-    validate: urlValidator,
+    default: "default_potato",
   },
   isVerified: {
     type: Boolean,
