@@ -72,9 +72,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = async () => {
     try {
       await axios.post("/api/users/logout");
-      // use standard browser redirect to force a full page reload
+      // use browser redirect (instead of app router) to force a full page reload
       // user data is automatically cleared
-      window.location.href = '/login';
+      window.location.replace('/login');
     } catch (error) {
       toast.error(getErrorMessage(error, "Logout failed"));
     }
