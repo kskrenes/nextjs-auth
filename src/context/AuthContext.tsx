@@ -74,9 +74,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const updateUser = async (user:NaeUser) => {
+  const updateUser = async (userData:NaeUser) => {
     try {
-      const res = await axios.post("/api/users/update", user);
+      const res = await axios.post("/api/users/update", userData);
       setUser(res.data.user);
     } catch (error) {
       throw error;
