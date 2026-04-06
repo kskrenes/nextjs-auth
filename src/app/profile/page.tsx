@@ -319,11 +319,12 @@ const ProfilePage = () => {
               </>
             )}
             {/* Social Links */}
-            {user?.socialLinks?.some(element => element !== "") && (
+            {user?.socialLinks?.some((element) => element.trim() !== "") && (
               <h2 className="text-lg font-semibold mt-4">Social Links</h2>
             )}
-            {user?.socialLinks?.map((link, index) => (
-              link !== '' && (
+            {user?.socialLinks?.map((rawLink, index) => {
+              const link = rawLink.trim();
+              return link !== '' && (
                 <div key={index} className="flex items-center gap-2">
                   {getSocialIcon(link)}
                   <a 
@@ -333,8 +334,8 @@ const ProfilePage = () => {
                     {getDisplayLink(link)}
                   </a>
                 </div>
-              )
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
