@@ -1,36 +1,43 @@
 "use client";
 
 import { CldUploadWidget } from 'next-cloudinary';
-import { useState } from 'react';
 import AvatarDisplay from './avatar-display';
 import { useAuth } from '@/context/AuthContext';
+import { Camera, Plus } from 'lucide-react';
+import Button from './nae-button';
+import toast from 'react-hot-toast';
 
 export default function AvatarUpload() {
-  const [publicId, setPublicId] = useState<string | null>(null);
+
   const { user, updateUser } = useAuth();
 
   return (
-    <div>
+    <div className="mx-auto rounded-full flex items-center justify-center relative">
       <CldUploadWidget 
         uploadPreset="nae_avatar_preset"
         onSuccess={async (result) => {
-          // The public_id is the unique identifier for the image
           if (typeof result.info !== 'string') {
-            setPublicId(result.info?.public_id || null);
-          }
-
-          if (publicId) {
-            await updateUser({ avatarId: publicId });
+            try {
+              await updateUser({ avatarId: result.info?.public_id });
+              toast.success('Avatar updated successfully');
+            } catch (error) {
+              toast.error('Failed to update avatar');
+            }
           }
         }}
       >
         {({ open }) => (
-          <button onClick={() => open()}>Upload Avatar</button>
+          <Button 
+            onClick={() => open()}
+            className='rounded-full h-9 w-9 px-0 py-0 absolute bottom-2 right-2'
+          >
+            <Camera className="w-6 h-6" strokeWidth={3} />
+          </Button>
         )}
       </CldUploadWidget>
 
       {/* Display the uploaded avatar below */}
-      {publicId && <AvatarDisplay publicId={publicId} />}
+      {user?.avatarId && <AvatarDisplay publicId={user.avatarId} />}
     </div>
   );
 }
