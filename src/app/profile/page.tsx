@@ -13,6 +13,7 @@ import {
 } from "@/components/profile-icons";
 import Input from "@/components/nae-input";
 import { getErrorMessage } from "@/helpers/error-message";
+import AvatarUpload from "@/components/avatar-upload";
 
 const socialSubstrings = ["linkedin", "facebook", "twitter", "x.com", "instagram", "youtube", "reddit", "twitch", "mastodon", "bsky"];
 const socialIconsMap: { [key: string]: React.ReactElement } = {
@@ -163,9 +164,7 @@ const ProfilePage = () => {
         
         <div className="bg-slate-900 flex flex-col px-6 py-12 gap-8">
           {/* Avatar */}
-          <div className="w-52 h-52 mx-auto bg-pink-600/20 rounded-full flex items-center justify-center text-white/30 text-[10rem]">
-            {user?.name ? user.name.charAt(0).toUpperCase() : <User className="w-40 h-40" />}
-          </div>
+          <AvatarUpload />
 
           <div className="flex flex-col gap-1 items-center">
             {/* Name */}
@@ -341,16 +340,6 @@ const ProfilePage = () => {
               );
             })}
 
-            {/* Avatar ID */}
-            {user?.avatarId && (
-              <>
-                <h2 className="text-lg font-semibold mt-4">Avatar</h2>
-                <div className="flex items-center gap-2">
-                  <CompanyIcon />
-                  <span>{user?.avatarId}</span>
-                </div>
-              </>
-            )}
           </div>
         )}
       </div>
