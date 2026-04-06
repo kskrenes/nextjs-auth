@@ -186,6 +186,7 @@ const ProfilePage = () => {
             <Button 
               className="flex-1 px-0"
               onClick={handleEditClick}
+              disabled={!user || isEditing}
             >
               Edit Profile
             </Button>
