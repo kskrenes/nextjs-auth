@@ -12,6 +12,7 @@ export interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (user: NaeUser) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -19,6 +20,7 @@ const AuthContext = createContext<AuthContextType>({
   loading: true,
   login: async () => {},
   logout: async () => {},
+  updateUser: async () => {},
 });
 
 interface AuthProviderProps {
@@ -72,8 +74,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const updateUser = async (user:NaeUser) => {
+    try {
+      const res = await axios.post("/api/users/update", user);
+      setUser(res.data.user);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
