@@ -2,7 +2,7 @@
 
 import { triggerEmail } from "@/helpers/trigger-email";
 import { Loader2, User } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
@@ -76,7 +76,7 @@ const ProfilePage = () => {
     return `https://${input}`;
   };
   
-  const handleUpdate = async (e: React.SubmitEvent<HTMLFormElement>) => {
+  const handleUpdate = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (isSaving) return;
