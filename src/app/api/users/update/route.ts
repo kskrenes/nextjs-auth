@@ -62,7 +62,8 @@ export async function POST(request: NextRequest) {
       ...(userUpdates.socialLinks !== undefined && { socialLinks: userUpdates.socialLinks.map((link) => link.trim()) }),
     }
 
-    // if avatar is being updated, delete the old avatar image unless it's the default
+    // if avatar is being updated, set the old avatar image to be deleted unless it's the default
+    let oldAvatarId: string | undefined;
     if (update.avatarId) {
       const user = await User.findById(authenticatedUserId);
       if (
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
         user.avatarId !== defaultAvatarId && 
         user.avatarId !== update.avatarId
       ) {
-        await cloudinary.uploader.destroy(user.avatarId);
+        oldAvatarId = user.avatarId;
       }
     }
 
@@ -84,6 +85,11 @@ export async function POST(request: NextRequest) {
         runValidators: true,
       }
     );
+
+    // delete old avatar if one exists
+    if (oldAvatarId) {
+      await cloudinary.uploader.destroy(oldAvatarId);
+    }
 
     // return sanitized user
     return NextResponse.json({
