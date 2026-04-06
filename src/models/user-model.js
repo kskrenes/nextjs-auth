@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const urlValidator = {
   validator: function(v) {
+    if (v === "") return true;
     try {
       new URL(v);
       return true;
