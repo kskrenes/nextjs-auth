@@ -7,12 +7,20 @@ import { useRouter } from 'next/navigation';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 
+type EditableProfileFields = {
+  name: string;
+  company: string;
+  website: string;
+  avatarUrl: string;
+  socialLinks: string[];
+};
+
 export interface AuthContextType {
   user: NaeUser | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  updateUser: (user: NaeUser) => Promise<void>;
+  updateUser: (user: EditableProfileFields) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -74,7 +82,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const updateUser = async (userData:NaeUser) => {
+  const updateUser = async (userData: EditableProfileFields) => {
     try {
       const res = await axios.post("/api/users/update", userData);
       setUser(res.data.user);
