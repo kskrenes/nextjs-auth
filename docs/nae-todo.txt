@@ -91,7 +91,7 @@ feature research
 - [ ] Social login (Google)
 - [ ] Multifactor authentication
 - [ ] Roles and permissions
-- [ ] Profile management
+- [x] Profile management
 - [ ] Restricted domains
 - [ ] Passkeys
 
