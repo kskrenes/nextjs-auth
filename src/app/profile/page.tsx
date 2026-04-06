@@ -84,13 +84,12 @@ const ProfilePage = () => {
 
     setIsSaving(true);
 
-    const fullWebsiteUrl = getNormalizedUrl(editedFields.website)
-    const fullSocialLinks = editedFields.socialLinks.map(link => getNormalizedUrl(link));
-    const updatedUser = { 
-      ...user, 
+    const website = getNormalizedUrl(editedFields.website)
+    const socialLinks = editedFields.socialLinks.map(link => getNormalizedUrl(link));
+    const updatedUser = {
       ...editedFields, 
-      website: fullWebsiteUrl, 
-      socialLinks: fullSocialLinks 
+      website, 
+      socialLinks,
     };
 
     try {
