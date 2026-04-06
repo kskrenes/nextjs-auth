@@ -312,6 +312,7 @@ const ProfilePage = () => {
                   <a 
                     href={user.website}
                     className="hover:underline hover:text-blue-500" 
+                    rel="noopener noreferrer"
                   >
                     {user.website}
                   </a>
@@ -330,6 +331,7 @@ const ProfilePage = () => {
                   <a 
                     href={link}
                     className="hover:underline hover:text-blue-500" 
+                    rel="noopener noreferrer"
                   >
                     {getDisplayLink(link)}
                   </a>
