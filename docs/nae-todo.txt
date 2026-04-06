@@ -43,6 +43,7 @@ profile
 - [x] implement edit of non-image fields
 - [x] implement avatar edit
 - [ ] layout and styling
+- [ ] implement signed uploads to cloudinary
 
 header
 - [x] create
