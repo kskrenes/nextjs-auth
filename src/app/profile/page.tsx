@@ -104,27 +104,37 @@ const ProfilePage = () => {
   }
 
   const getDisplayLink = (url: string) => {
-    const urlObj = new URL(url);
-    const cleanPathname = urlObj.pathname.replace(/^\/|\/$/g, ''); // remove leading and trailing slashes
-    const hostname = urlObj.hostname.toLowerCase();
-    const isSupportedSite = socialSubstrings.some(substring => hostname.includes(substring));
+    try {
+      const urlObj = new URL(url);
+      const cleanPathname = urlObj.pathname.replace(/^\/|\/$/g, ''); // remove leading and trailing slashes
+      const hostname = urlObj.hostname.toLowerCase();
+      const isSupportedSite = socialSubstrings.some(substring => hostname.includes(substring));
 
-    if (isSupportedSite) {
-      return cleanPathname;
+      if (isSupportedSite) {
+        return cleanPathname;
+      }
+
+      return `${urlObj.host}/${cleanPathname}`;  
+    } catch {
+      // fallback to raw string if URL is invalid
+      return url;
     }
-
-    return `${urlObj.host}/${cleanPathname}`;
+    
   }
 
   const getSocialIcon = (url: string) => {
-    const urlObj = new URL(url);
-    const hostname = urlObj.hostname.toLowerCase();
+    try {
+      const urlObj = new URL(url);
+      const hostname = urlObj.hostname.toLowerCase();
 
-    const supportedSiteMatch = socialSubstrings.find(substring => hostname.includes(substring));
-    if (supportedSiteMatch) {
-      return socialIconsMap[supportedSiteMatch];
+      const supportedSiteMatch = socialSubstrings.find(substring => hostname.includes(substring));
+      if (supportedSiteMatch) {
+        return socialIconsMap[supportedSiteMatch];
+      }
+    } catch {
+      // fall through to default icon
     }
-
+    
     return <LinkIcon />;
   }
 
