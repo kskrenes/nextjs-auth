@@ -6,7 +6,7 @@ export default interface NaeUser {
   company?: string;
   website?: string;
   socialLinks?: string[];
-  avatarUrl?: string;
+  avatarId?: string;
   isVerified?: boolean;
   isAdmin?: boolean;
   __v?: number;

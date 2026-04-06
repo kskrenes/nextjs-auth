@@ -41,8 +41,9 @@ profile
 - [x] add error state after send verify email
 - [x] add user fields: name, company, website, social link x4, avatar
 - [x] implement edit of non-image fields
-- [ ] implement avatar edit
+- [x] implement avatar edit
 - [ ] layout and styling
+- [ ] implement signed uploads to cloudinary
 
 header
 - [x] create

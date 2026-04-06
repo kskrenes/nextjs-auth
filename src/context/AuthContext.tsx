@@ -8,11 +8,11 @@ import { createContext, ReactNode, useContext, useEffect, useState } from 'react
 import toast from 'react-hot-toast';
 
 type EditableProfileFields = {
-  name: string;
-  company: string;
-  website: string;
-  avatarUrl: string;
-  socialLinks: string[];
+  name?: string;
+  company?: string;
+  website?: string;
+  avatarId?: string;
+  socialLinks?: string[];
 };
 
 export interface AuthContextType {
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const res = await axios.post("/api/users/login", { email, password });
       setUser(res.data.user);
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (error) {
       throw error;
     } finally {
@@ -70,15 +70,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const logout = async () => {
-    setLoading(true);
     try {
       await axios.post("/api/users/logout");
-      setUser(null);
-      router.push("/login");
+      // use browser redirect (instead of app router) to force a full page reload
+      // user data is automatically cleared
+      window.location.replace('/login');
     } catch (error) {
       toast.error(getErrorMessage(error, "Logout failed"));
-    } finally {
-      setLoading(false);
     }
   };
 

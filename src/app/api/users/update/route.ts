@@ -2,8 +2,9 @@ import { connect } from "@/dbconfig/dbconfig";
 import { AuthTokenError, getIdFromToken } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
 import type NaeUser from "@/models/user-interface";
-import User from "@/models/user-model";
+import User, { defaultAvatarId } from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
+import { v2 as cloudinary } from 'cloudinary';
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,14 +37,15 @@ export async function POST(request: NextRequest) {
     }
 
     // check for valid fields at runtime
-    const user = reqBody as Partial<NaeUser>;
+    const userUpdates = reqBody as Partial<NaeUser>;
     if (
-      (user.name !== undefined && typeof user.name !== "string") ||
-      (user.company !== undefined && typeof user.company !== "string") ||
-      (user.website !== undefined && typeof user.website !== "string") ||
-      (user.avatarUrl !== undefined && typeof user.avatarUrl !== "string") ||
-      !Array.isArray(user.socialLinks) ||
-      user.socialLinks.some(element => typeof element !== "string")
+      (userUpdates.name !== undefined && typeof userUpdates.name !== "string") ||
+      (userUpdates.company !== undefined && typeof userUpdates.company !== "string") ||
+      (userUpdates.website !== undefined && typeof userUpdates.website !== "string") ||
+      (userUpdates.avatarId !== undefined && typeof userUpdates.avatarId !== "string") ||
+      (userUpdates.socialLinks !== undefined && 
+        (!Array.isArray(userUpdates.socialLinks) || 
+        userUpdates.socialLinks.some(element => typeof element !== "string")))
     ) {
       return NextResponse.json(
         { error: "Invalid user fields" }, 
@@ -53,11 +55,25 @@ export async function POST(request: NextRequest) {
 
     // set new values
     const update: any = {
-      ...(user.name !== undefined && { name: user.name.trim() }),
-      ...(user.company !== undefined && { company: user.company.trim() }),
-      ...(user.website !== undefined && { website: user.website.trim() }),
-      ...(user.avatarUrl !== undefined && { avatarUrl: user.avatarUrl.trim() }),
-      ...(user.socialLinks !== undefined && { socialLinks: user.socialLinks.map((link) => link.trim()) }),
+      ...(userUpdates.name !== undefined && { name: userUpdates.name.trim() }),
+      ...(userUpdates.company !== undefined && { company: userUpdates.company.trim() }),
+      ...(userUpdates.website !== undefined && { website: userUpdates.website.trim() }),
+      ...(userUpdates.avatarId !== undefined && { avatarId: userUpdates.avatarId.trim() }),
+      ...(userUpdates.socialLinks !== undefined && { socialLinks: userUpdates.socialLinks.map((link) => link.trim()) }),
+    }
+
+    // if avatar is being updated, set the old avatar image to be deleted unless it's the default
+    let oldAvatarId: string | undefined;
+    if (update.avatarId) {
+      const user = await User.findById(authenticatedUserId);
+      if (
+        user && 
+        user.avatarId && 
+        user.avatarId !== defaultAvatarId && 
+        user.avatarId !== update.avatarId
+      ) {
+        oldAvatarId = user.avatarId;
+      }
     }
 
     // update user
@@ -69,6 +85,23 @@ export async function POST(request: NextRequest) {
         runValidators: true,
       }
     );
+
+    // throw if user not found
+    if (!updatedUser) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+
+    // delete old avatar if one exists
+    if (oldAvatarId) {
+      try {
+        await cloudinary.uploader.destroy(oldAvatarId);  
+      } catch (error) {
+        console.error("Failed to delete old avatar", error);
+      }
+    }
 
     // return sanitized user
     return NextResponse.json({
@@ -82,7 +115,7 @@ export async function POST(request: NextRequest) {
         company: updatedUser.company,
         website: updatedUser.website,
         socialLinks: updatedUser.socialLinks,
-        avatarUrl: updatedUser.avatarUrl,
+        avatarId: updatedUser.avatarId,
         isVerified: updatedUser.isVerified,
         isAdmin: updatedUser.isAdmin,
       },
