@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       authenticatedUserId,
       update,
       {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       }
     );

@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
       user._id,
       update,
       {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       }
     );
