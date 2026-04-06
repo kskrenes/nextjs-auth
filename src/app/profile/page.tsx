@@ -68,12 +68,13 @@ const ProfilePage = () => {
     }
   }
   
-  const getFullUrl = (input: string): string => {
-    if (!input) return "";
-    if (input.startsWith("http://") || input.startsWith("https://")) {
-      return input;
+  const getNormalizedUrl = (input: string): string => {
+    const value = input.trim();
+    if (!value) return "";
+    if (/^https?:\/\//i.test(value)) {
+      return value;
     }
-    return `https://${input}`;
+    return `https://${value}`;
   };
   
   const handleUpdate = async (e: SubmitEvent<HTMLFormElement>) => {
@@ -83,14 +84,14 @@ const ProfilePage = () => {
 
     setIsSaving(true);
 
-    const fullWebsiteUrl = getFullUrl(editedFields.website)
-    const fullSocialLinks = editedFields.socialLinks.map(link => getFullUrl(link));
+    const fullWebsiteUrl = getNormalizedUrl(editedFields.website)
+    const fullSocialLinks = editedFields.socialLinks.map(link => getNormalizedUrl(link));
     const updatedUser = { 
       ...user, 
       ...editedFields, 
       website: fullWebsiteUrl, 
       socialLinks: fullSocialLinks 
-    } as NaeUser;
+    };
 
     try {
       await updateUser(updatedUser);
