@@ -81,6 +81,7 @@ export async function POST(request: NextRequest) {
         company: updatedUser.company,
         website: updatedUser.website,
         socialLinks: updatedUser.socialLinks,
+        avatarUrl: updatedUser.avatarUrl,
         isVerified: updatedUser.isVerified,
         isAdmin: updatedUser.isAdmin,
       },
