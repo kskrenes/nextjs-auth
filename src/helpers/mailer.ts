@@ -63,7 +63,7 @@ export const sendEmail = async ({
       { email },
       userUpdate,
       {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       }
     );    

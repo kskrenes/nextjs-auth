@@ -35,22 +35,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // check for valid required fields at runtime
+    // check for valid fields at runtime
     const user = reqBody as Partial<NaeUser>;
     if (
-      typeof user.username !== "string" ||
-      typeof user.email !== "string"
+      (user.name !== undefined && typeof user.name !== "string") ||
+      (user.company !== undefined && typeof user.company !== "string") ||
+      (user.website !== undefined && typeof user.website !== "string") ||
+      (user.avatarUrl !== undefined && typeof user.avatarUrl !== "string") ||
+      !Array.isArray(user.socialLinks) ||
+      user.socialLinks.some(element => typeof element !== "string")
     ) {
       return NextResponse.json(
-        { error: "Missing required user fields (username, email)" }, 
+        { error: "Invalid user fields" }, 
         { status: 400 }
       );
     }
 
     // set new values
     const update: any = {
-      username: user.username.trim(),
-      email: user.email.trim().toLowerCase(),
+      ...(user.name !== undefined && { name: user.name.trim() }),
+      ...(user.company !== undefined && { company: user.company.trim() }),
+      ...(user.website !== undefined && { website: user.website.trim() }),
+      ...(user.avatarUrl !== undefined && { avatarUrl: user.avatarUrl.trim() }),
+      ...(user.socialLinks !== undefined && { socialLinks: user.socialLinks.map((link) => link.trim()) }),
     }
 
     // update user
@@ -58,7 +65,7 @@ export async function POST(request: NextRequest) {
       authenticatedUserId,
       update,
       {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       }
     );
@@ -68,9 +75,14 @@ export async function POST(request: NextRequest) {
       message: "User updated successfully",
       success: true,
       user: {
-        id: updatedUser._id,
+        _id: updatedUser._id,
         username: updatedUser.username,
         email: updatedUser.email,
+        name: updatedUser.name,
+        company: updatedUser.company,
+        website: updatedUser.website,
+        socialLinks: updatedUser.socialLinks,
+        avatarUrl: updatedUser.avatarUrl,
         isVerified: updatedUser.isVerified,
         isAdmin: updatedUser.isAdmin,
       },

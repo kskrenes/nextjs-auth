@@ -21,7 +21,7 @@ const Input: React.FC<InputProps> = ({
   className = '',
   ...rest 
 }) => {
-  const baseStyles = 'p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-purple-400';
+  const baseStyles = 'p-2 border border-gray-300 rounded-lg mb-4 focus:outline-none focus:border-blue-400';
   const autoCompleteValue = autoComplete || id;
   return (
     <div className="flex flex-col space-y-2 min-w-[300px]">

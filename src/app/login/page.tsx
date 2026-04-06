@@ -92,7 +92,7 @@ const LoginPage = () => {
           {loading 
             ? (
               <>
-                <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
+                <Loader2 className="w-7 h-7 animate-spin text-blue-400" aria-hidden="true" />
                 <span className="sr-only">Signing in</span>
               </>
             )
@@ -102,14 +102,14 @@ const LoginPage = () => {
           Don't have an account?{' '}
           <Link 
             href="/signup"
-            className="text-purple-400 hover:text-purple-500 underline transition-colors"
+            className="text-blue-400 hover:text-blue-500 underline transition-colors"
           >
             Sign up here
           </Link>.
         </p>
         <Link 
           href="/triggerpasswordreset"
-          className="text-xs mt-2 text-purple-400 hover:text-purple-500 underline transition-colors"
+          className="text-xs mt-2 text-blue-400 hover:text-blue-500 underline transition-colors"
         >
           Forgot password
         </Link>

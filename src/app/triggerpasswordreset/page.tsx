@@ -44,7 +44,7 @@ const TriggerPasswordResetPage = () => {
   if (fetchingUser) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        <Loader2 className='w-8 h-8 animate-spin text-purple-500' />
+        <Loader2 className='w-8 h-8 animate-spin text-blue-500' />
       </div>
     );
   }
@@ -74,7 +74,7 @@ const TriggerPasswordResetPage = () => {
     <div className="flex min-h-screen items-center justify-center">
       {isSent ? (
         <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
-          <MailCheck className="w-10 h-10 text-purple-600" />
+          <MailCheck className="w-10 h-10 text-blue-600" />
           <h1 className="mb-6 text-3xl font-bold">An email has been sent.</h1>
           <p className="max-w-[300px] text-sm text-center">
             Check your email for instructions you can follow to reset your password.
@@ -83,7 +83,7 @@ const TriggerPasswordResetPage = () => {
             {'Go to '}
             <Link 
               href="/"
-              className="text-purple-400 hover:text-purple-500 underline transition-colors"
+              className="text-blue-400 hover:text-blue-500 underline transition-colors"
             >
               home
             </Link>{' page.'}
@@ -103,7 +103,7 @@ const TriggerPasswordResetPage = () => {
             {'Go to '}
             <Link 
               href="/login"
-              className="text-purple-400 hover:text-purple-500 underline transition-colors"
+              className="text-blue-400 hover:text-blue-500 underline transition-colors"
             >
               Sign in
             </Link>{' page.'}
@@ -133,7 +133,7 @@ const TriggerPasswordResetPage = () => {
               {isSending 
                 ? (
                   <>
-                    <Loader2 className="w-7 h-7 animate-spin text-purple-400" aria-hidden="true" />
+                    <Loader2 className="w-7 h-7 animate-spin text-blue-400" aria-hidden="true" />
                     <span className="sr-only">Sending Email</span>
                   </>
                 )
@@ -145,7 +145,7 @@ const TriggerPasswordResetPage = () => {
               Return to{' '}
               <Link 
                 href="/profile"
-                className="text-purple-400 hover:text-purple-500 underline transition-colors"
+                className="text-blue-400 hover:text-blue-500 underline transition-colors"
               >
                 profile page
               </Link>.
@@ -155,7 +155,7 @@ const TriggerPasswordResetPage = () => {
               Already have a password?{' '}
               <Link 
                 href="/login"
-                className="text-purple-400 hover:text-purple-500 underline transition-colors"
+                className="text-blue-400 hover:text-blue-500 underline transition-colors"
               >
                 Sign in here
               </Link>.
