@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+export const defaultAvatarId = "default_potato";
+
 const urlValidator = {
   validator: function(v) {
     if (v === "") return true;
@@ -57,7 +59,7 @@ const userSchema = new mongoose.Schema({
   avatarId: {
     type: String,
     trim: true,
-    default: "default_potato",
+    default: defaultAvatarId,
   },
   isVerified: {
     type: Boolean,
