@@ -146,7 +146,7 @@ const ProfilePage = () => {
       company: user.company || "",
       website: user.website || "",
       avatarUrl: user.avatarUrl || "",
-      socialLinks: user.socialLinks && user.socialLinks.length > 0 ? user.socialLinks : ["", "", "", ""],
+      socialLinks: [...(user.socialLinks ?? []), "", "", "", ""].slice(0, 4),
     });
     setIsEditing(true);
   }
