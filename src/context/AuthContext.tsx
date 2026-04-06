@@ -61,7 +61,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const res = await axios.post("/api/users/login", { email, password });
       setUser(res.data.user);
-      router.push("/dashboard");
+      router.replace("/dashboard");
     } catch (error) {
       throw error;
     } finally {
@@ -70,15 +70,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const logout = async () => {
-    setLoading(true);
     try {
       await axios.post("/api/users/logout");
-      setUser(null);
-      router.push("/login");
+      // use standard browser redirect to force a full page reload
+      // user data is automatically cleared
+      window.location.href = '/login';
     } catch (error) {
       toast.error(getErrorMessage(error, "Logout failed"));
-    } finally {
-      setLoading(false);
     }
   };
 
