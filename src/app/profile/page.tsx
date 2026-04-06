@@ -13,7 +13,20 @@ import {
 } from "@/components/profile-icons";
 import Input from "@/components/nae-input";
 import { getErrorMessage } from "@/helpers/error-message";
-import NaeUser from "@/models/user-interface";
+
+const socialSubstrings = ["linkedin", "facebook", "twitter", "x.com", "instagram", "youtube", "reddit", "twitch", "mastodon", "bsky"];
+const socialIconsMap: { [key: string]: React.ReactElement } = {
+  linkedin: <LinkedInIcon />,
+  twitter: <TwitterIcon />,
+  "x.com": <TwitterIcon />,
+  facebook: <FacebookIcon />,
+  instagram: <InstagramIcon />,
+  youtube: <YouTubeIcon />,
+  reddit: <RedditIcon />,
+  twitch: <TwitchIcon />,
+  mastodon: <MastodonIcon />,
+  bsky: <BlueSkyIcon />,
+};
 
 const ProfilePage = () => {
 
@@ -42,20 +55,6 @@ const ProfilePage = () => {
       </div>
     );
   }
-
-  const socialSubstrings = ["linkedin", "facebook", "twitter", "x.com", "instagram", "youtube", "reddit", "twitch", "mastodon", "bsky"];
-  const socialIconsMap: { [key: string]: React.ReactElement } = {
-    linkedin: <LinkedInIcon />,
-    twitter: <TwitterIcon />,
-    "x.com": <TwitterIcon />,
-    facebook: <FacebookIcon />,
-    instagram: <InstagramIcon />,
-    youtube: <YouTubeIcon />,
-    reddit: <RedditIcon />,
-    twitch: <TwitchIcon />,
-    mastodon: <MastodonIcon />,
-    bsky: <BlueSkyIcon />,
-  };
 
   const handleVerifyEmailClick = async () => {
     if (!user) return;
@@ -159,7 +158,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="grid grid-cols-[420px_1fr] min-h-screen gap-4">
+    <div className="grid grid-cols-1 md:grid-cols-[420px_1fr] min-h-screen gap-4">
       <div className="pt-22 px-12" >
         
         <div className="bg-slate-900 flex flex-col px-6 py-12 gap-8">
