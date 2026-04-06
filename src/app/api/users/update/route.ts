@@ -38,11 +38,12 @@ export async function POST(request: NextRequest) {
     // check for valid fields at runtime
     const user = reqBody as Partial<NaeUser>;
     if (
-      typeof user.name !== "string" ||
-      typeof user.company !== "string" ||
-      typeof user.website !== "string" ||
-      typeof user.avatarUrl !== "string" ||
-      !Array.isArray(user.socialLinks)
+      (user.name !== undefined && typeof user.name !== "string") ||
+      (user.company !== undefined && typeof user.company !== "string") ||
+      (user.website !== undefined && typeof user.website !== "string") ||
+      (user.avatarUrl !== undefined && typeof user.avatarUrl !== "string") ||
+      !Array.isArray(user.socialLinks) ||
+      user.socialLinks.some(element => typeof element !== "string")
     ) {
       return NextResponse.json(
         { error: "Invalid user fields" }, 
@@ -52,11 +53,11 @@ export async function POST(request: NextRequest) {
 
     // set new values
     const update: any = {
-      name: user.name?.trim(),
-      company: user.company?.trim(),
-      website: user.website?.trim(),
-      avatarUrl: user.avatarUrl?.trim(),
-      socialLinks: user.socialLinks.map((link) => link.trim()),
+      ...(user.name !== undefined && { name: user.name.trim() }),
+      ...(user.company !== undefined && { company: user.company.trim() }),
+      ...(user.website !== undefined && { website: user.website.trim() }),
+      ...(user.avatarUrl !== undefined && { avatarUrl: user.avatarUrl.trim() }),
+      ...(user.socialLinks !== undefined && { socialLinks: user.socialLinks.map((link) => link.trim()) }),
     }
 
     // update user
