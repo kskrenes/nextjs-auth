@@ -35,22 +35,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // check for valid required fields at runtime
+    // check for valid fields at runtime
     const user = reqBody as Partial<NaeUser>;
     if (
-      typeof user.username !== "string" ||
-      typeof user.email !== "string"
+      typeof user.name !== "string" ||
+      typeof user.company !== "string" ||
+      typeof user.website !== "string" ||
+      typeof user.avatarUrl !== "string" ||
+      !Array.isArray(user.socialLinks)
     ) {
       return NextResponse.json(
-        { error: "Missing required user fields (username, email)" }, 
+        { error: "Invalid user fields" }, 
         { status: 400 }
       );
     }
 
     // set new values
     const update: any = {
-      username: user.username.trim(),
-      email: user.email.trim().toLowerCase(),
+      name: user.name?.trim(),
+      company: user.company?.trim(),
+      website: user.website?.trim(),
+      avatarUrl: user.avatarUrl?.trim(),
+      socialLinks: user.socialLinks.map((link) => link.trim()),
     }
 
     // update user
@@ -68,9 +74,13 @@ export async function POST(request: NextRequest) {
       message: "User updated successfully",
       success: true,
       user: {
-        id: updatedUser._id,
+        _id: updatedUser._id,
         username: updatedUser.username,
         email: updatedUser.email,
+        name: updatedUser.name,
+        company: updatedUser.company,
+        website: updatedUser.website,
+        socialLinks: updatedUser.socialLinks,
         isVerified: updatedUser.isVerified,
         isAdmin: updatedUser.isAdmin,
       },
