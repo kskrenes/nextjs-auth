@@ -112,7 +112,7 @@ const ProfilePage = () => {
       const isSupportedSite = socialSubstrings.some(substring => hostname.includes(substring));
 
       if (isSupportedSite) {
-        return cleanPathname;
+        return cleanPathname || urlObj.host;
       }
 
       return `${urlObj.host}/${cleanPathname}`;  
