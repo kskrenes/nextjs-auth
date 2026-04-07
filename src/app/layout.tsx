@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NextJS Auth Example",
+  title: "nAuth - NextJS Auth Example",
   description: "Authentication system built with Next.js, NextAuth, and MongoDB.",
 };
 
