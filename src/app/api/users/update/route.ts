@@ -5,6 +5,7 @@ import type NaeUser from "@/models/user-interface";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
+import { defaultAvatarId } from "@/helpers/themes";
 
 export async function POST(request: NextRequest) {
   try {
@@ -69,7 +70,7 @@ export async function POST(request: NextRequest) {
       if (
         user && 
         user.avatarId && 
-        user.avatarId !== 'default_potato' && 
+        user.avatarId !== defaultAvatarId && 
         user.avatarId !== update.avatarId
       ) {
         oldAvatarId = user.avatarId;

@@ -1,3 +1,4 @@
+import { defaultAvatarId } from '@/helpers/themes';
 import { User } from 'lucide-react';
 import { CldImage } from 'next-cloudinary';
 import { useState } from 'react';
@@ -9,7 +10,7 @@ interface AvatarDisplayProps {
 }
 
 export default function AvatarDisplay({
-  publicId = 'default_potato',
+  publicId = defaultAvatarId,
   size,
   className = '',
 }: AvatarDisplayProps) {

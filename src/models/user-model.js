@@ -1,3 +1,4 @@
+import { defaultAvatarId } from "@/helpers/themes";
 import mongoose from "mongoose";
 
 const urlValidator = {
@@ -57,7 +58,7 @@ const userSchema = new mongoose.Schema({
   avatarId: {
     type: String,
     trim: true,
-    default: 'default_potato',
+    default: defaultAvatarId,
   },
   isVerified: {
     type: Boolean,
