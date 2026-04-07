@@ -162,7 +162,7 @@ const ProfilePage = () => {
     <div className="grid grid-cols-1 md:grid-cols-[420px_1fr] min-h-screen gap-4">
       <div className="pt-22 px-12" >
         
-        <div className="bg-slate-900 flex flex-col px-6 py-12 gap-8">
+        <div className="flex flex-col px-6 py-12 gap-8">
           {/* Avatar */}
           <AvatarUpload />
 
