@@ -36,12 +36,6 @@ home page
 favicon
 - [x] implement
 
-header
-- [x] create
-- [x] update when authentication state changes
-- [x] add user nav with avatar and dropdown options
-- [ ] add site nav dropdown with: dashboard, profile, triggerpasswordreset
-
 profile
 - [x] add success state after send verify email
 - [x] add error state after send verify email
@@ -50,6 +44,12 @@ profile
 - [x] implement avatar edit
 - [ ] layout and styling
 - [ ] implement signed uploads to cloudinary
+
+header
+- [x] create
+- [x] update when authentication state changes
+- [x] add user nav with avatar and dropdown options
+- [ ] add site nav dropdown with: dashboard, profile, triggerpasswordreset
 
 dashboard page
 - [ ] layout page
