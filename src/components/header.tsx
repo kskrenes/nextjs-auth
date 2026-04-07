@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { ShieldUser } from "lucide-react"
 import Link from "next/link"
 import AvatarDisplay from "./avatar-display";
 import { useState } from "react";
