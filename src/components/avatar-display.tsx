@@ -16,7 +16,6 @@ export default function AvatarDisplay({
 
   const [hasError, setHasError] = useState<boolean>(false);
   const sizeUnits = size * 0.25;
-  // const src = publicId || 'default-potato'; // Fallback to a default avatar if publicId is not provided
 
   if (hasError) {
     return (
