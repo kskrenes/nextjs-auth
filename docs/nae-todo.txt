@@ -39,7 +39,7 @@ favicon
 header
 - [x] create
 - [x] update when authentication state changes
-- [ ] add user nav with avatar and dropdown options
+- [x] add user nav with avatar and dropdown options
 - [ ] add site nav dropdown with: dashboard, profile, triggerpasswordreset
 
 profile
