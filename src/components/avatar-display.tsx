@@ -20,7 +20,7 @@ export default function AvatarDisplay({
     return (
       <div 
         style={{ width: size, height: size }}
-        className={`rounded-full bg-slate-700 flex items-center justify-center`}
+        className={`rounded-full bg-slate-700 flex items-center justify-center ${className}`}
       >
         <User className='w-2/3 h-2/3 text-slate-500' />
       </div>
