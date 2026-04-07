@@ -9,7 +9,7 @@ interface AvatarDisplayProps {
 }
 
 export default function AvatarDisplay({
-  publicId = 'default-potato',
+  publicId = 'default_potato',
   size,
   className = '',
 }: AvatarDisplayProps) {
