@@ -15,11 +15,13 @@ export default function AvatarDisplay({
 }: AvatarDisplayProps) {
 
   const [hasError, setHasError] = useState<boolean>(false);
-  const sizeUnits = size * 0.25;
 
   if (hasError) {
     return (
-      <div className={`w-${sizeUnits} h-${sizeUnits} rounded-full bg-slate-700 flex items-center justify-center`}>
+      <div 
+        style={{ width: size, height: size }}
+        className={`rounded-full bg-slate-700 flex items-center justify-center`}
+      >
         <User className='w-2/3 h-2/3 text-slate-500' />
       </div>
     );
