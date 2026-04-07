@@ -1,8 +1,10 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { ShieldUser } from "lucide-react"
 import Link from "next/link"
+import AvatarDisplay from "./avatar-display";
+import Image from "next/image"
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 const Header = () => {
 
@@ -10,14 +12,14 @@ const Header = () => {
 
   return (
     <header className='fixed top-2 left-2 right-2 z-20 text-sm'>
-      <div className='relative flex w-full max-w-6xl mx-auto z-30 rounded-xl px-3 py-3 items-center bg-gray-900/90 border-b border-blue-950 shadow-md'>
+      <div className='relative flex w-full max-w-6xl mx-auto z-30 rounded-xl px-1 sm:px-3 h-[50px] items-center bg-gray-700/90 border-b border-gray-800 shadow-md'>
 
         {/* Home link / Logo */}
         <a href="/" className="flex select-none items-center gap-x-4 pl-2">
-          <ShieldUser size={26} className='text-gray-300/80' />
+          <Image src="/nAuth-logo.png" alt="nAuth logo" width={29} height={29} />
           <div 
             aria-hidden="true" 
-            className="box-content hidden sm:block h-[1.625rem] w-[0.5px] border-r-[0.5px] border-solid border-blue-950 bg-gray-800"
+            className="hidden sm:block h-[1.625rem] w-[1px] bg-gray-600"
           />
         </a>
 
@@ -46,14 +48,36 @@ const Header = () => {
 
         {/* Right side actions */}
         {!loading && (
-          <div className="ml-auto flex items-center gap-6 font-medium">
+          <div className="ml-auto flex items-center gap-6 font-medium mr-2">
             {user ? (
-              <button 
-                onClick={logout}
-                className="rounded-md px-2.5 py-0.5 text-gray-50 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" 
-              >
-                Sign Out
-              </button>
+              <div className="flex items-center gap-2">
+                <Menu>
+                  <MenuButton className="cursor-pointer">
+                    <AvatarDisplay publicId={user?.avatarId} size={36} />
+                  </MenuButton>
+                  <MenuItems className="absolute top-[50px] right-0 w-62 bg-gray-700/90 border border-gray-800 border-t-0 shadow-md">
+                    <MenuItem>
+                      <Link href="/profile" className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/50">
+                        Profile
+                      </Link>
+                    </MenuItem>
+                    <MenuItem>
+                      <Link href="/triggerpasswordreset" className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/50">
+                        Reset Password
+                      </Link>
+                    </MenuItem>
+                    <hr className="border-t border-gray-600" />
+                    <MenuItem>
+                      <button 
+                        className="w-full px-4 py-2 my-1 text-sm text-gray-200 hover:bg-gray-800/50 text-left cursor-pointer"
+                        onClick={logout}
+                      >
+                        Sign Out
+                      </button>
+                    </MenuItem>
+                  </MenuItems>
+                </Menu>
+              </div>
             ) : (
               <div className="flex items-center gap-2">
                 <Link 

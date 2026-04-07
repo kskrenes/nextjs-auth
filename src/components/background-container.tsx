@@ -16,7 +16,7 @@ const BackgroundContainer: React.FC<BGProps> = ({
         src={bgImage}
         alt=''
         fill
-        className='object-cover -z-10'
+        className='object-cover'
         priority
       />
       <div className='relative'>{children}</div>

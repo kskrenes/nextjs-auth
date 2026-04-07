@@ -1,14 +1,28 @@
+import { defaultAvatarId } from '@/helpers/themes';
 import { User } from 'lucide-react';
 import { CldImage } from 'next-cloudinary';
 import { useState } from 'react';
 
-export default function AvatarDisplay({ publicId }: { publicId: string }) {
+interface AvatarDisplayProps {
+  publicId?: string;
+  size: number;
+  className?: string;
+}
+
+export default function AvatarDisplay({
+  publicId = defaultAvatarId,
+  size,
+  className = '',
+}: AvatarDisplayProps) {
 
   const [hasError, setHasError] = useState<boolean>(false);
 
   if (hasError) {
     return (
-      <div className="w-52 h-52 rounded-full bg-slate-700 flex items-center justify-center">
+      <div 
+        style={{ width: size, height: size }}
+        className={`rounded-full bg-slate-700 flex items-center justify-center ${className}`}
+      >
         <User className='w-2/3 h-2/3 text-slate-500' />
       </div>
     );
@@ -16,14 +30,14 @@ export default function AvatarDisplay({ publicId }: { publicId: string }) {
 
   return (
     <CldImage
-      width="208"
-      height="208"
+      width={size}
+      height={size}
       src={publicId}
-      sizes="208px"
+      sizes={`${size}px`}
       alt="User Avatar"
       crop="thumb"      // Automatically crops to the most interesting part
       gravity="face"    // Ensures the face is centered in the avatar
-      className="rounded-full"
+      className={`rounded-full ${className}`}
       onError={() => setHasError(true)}
     />
   );

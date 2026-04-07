@@ -1,6 +1,5 @@
+import { defaultAvatarId } from "@/helpers/themes";
 import mongoose from "mongoose";
-
-export const defaultAvatarId = "default_potato";
 
 const urlValidator = {
   validator: function(v) {

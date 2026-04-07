@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "NextJS Auth Example",
+  title: "nAuth - NextJS Auth Example",
   description: "Authentication system built with Next.js, NextAuth, and MongoDB.",
 };
 
@@ -32,7 +32,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <Header />
-          <main>{children}</main>
+          <main className="bg-slate-800">{children}</main>
           <Toaster />
         </AuthProvider>
       </body>
