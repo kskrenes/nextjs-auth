@@ -10,8 +10,6 @@ const Header = () => {
 
   const { user, loading, logout } = useAuth();
 
-  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-
   return (
     <header className='fixed top-2 left-2 right-2 z-20 text-sm'>
       <div className='relative flex w-full max-w-6xl mx-auto z-30 rounded-xl px-3 h-[50px] items-center bg-gray-700/90 border-b border-gray-800 shadow-md'>
@@ -55,7 +53,7 @@ const Header = () => {
             {user ? (
               <div className="flex items-center gap-2">
                 <Menu>
-                  <MenuButton className="cursor-pointer" onClick={() => setIsUserDropdownOpen(prev => !prev)}>
+                  <MenuButton className="cursor-pointer">
                     <AvatarDisplay publicId={user?.avatarId} size={36} />
                   </MenuButton>
                   <MenuItems className="absolute top-[50px] right-0 w-62 bg-gray-700/90 border border-gray-800 border-t-0 shadow-md">
