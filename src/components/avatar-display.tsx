@@ -2,13 +2,25 @@ import { User } from 'lucide-react';
 import { CldImage } from 'next-cloudinary';
 import { useState } from 'react';
 
-export default function AvatarDisplay({ publicId }: { publicId: string }) {
+interface AvatarDiplayProps {
+  publicId?: string;
+  size: number;
+  className?: string;
+}
+
+export default function AvatarDisplay({
+  publicId = 'default-potato',
+  size,
+  className = '',
+}: AvatarDiplayProps) {
 
   const [hasError, setHasError] = useState<boolean>(false);
+  const sizeUnits = size * 0.25;
+  // const src = publicId || 'default-potato'; // Fallback to a default avatar if publicId is not provided
 
   if (hasError) {
     return (
-      <div className="w-52 h-52 rounded-full bg-slate-700 flex items-center justify-center">
+      <div className={`w-${sizeUnits} h-${sizeUnits} rounded-full bg-slate-700 flex items-center justify-center`}>
         <User className='w-2/3 h-2/3 text-slate-500' />
       </div>
     );
@@ -16,14 +28,14 @@ export default function AvatarDisplay({ publicId }: { publicId: string }) {
 
   return (
     <CldImage
-      width="208"
-      height="208"
+      width={size}
+      height={size}
       src={publicId}
-      sizes="208px"
+      sizes={`${size}px`}
       alt="User Avatar"
       crop="thumb"      // Automatically crops to the most interesting part
       gravity="face"    // Ensures the face is centered in the avatar
-      className="rounded-full"
+      className={`rounded-full ${className}`}
       onError={() => setHasError(true)}
     />
   );
