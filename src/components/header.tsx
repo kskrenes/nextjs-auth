@@ -20,7 +20,7 @@ const Header = () => {
         {/* Home link / Logo */}
         <a href="/" className="flex select-none items-center gap-x-4 pl-2">
           {/* <ShieldUser size={26} className='text-gray-300/80' /> */}
-          <img src="/nAuth-logo.png" alt="Logo" width={29} height={29} className="hidden sm:block" />
+          <img src="/nAuth-logo.png" alt="nAuth logo" width={29} height={29} className="hidden sm:block" />
           <div 
             aria-hidden="true" 
             className="hidden sm:block h-[1.625rem] w-[1px] bg-gray-600"
