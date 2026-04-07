@@ -2,7 +2,7 @@ import { User } from 'lucide-react';
 import { CldImage } from 'next-cloudinary';
 import { useState } from 'react';
 
-interface AvatarDiplayProps {
+interface AvatarDisplayProps {
   publicId?: string;
   size: number;
   className?: string;
@@ -12,7 +12,7 @@ export default function AvatarDisplay({
   publicId = 'default-potato',
   size,
   className = '',
-}: AvatarDiplayProps) {
+}: AvatarDisplayProps) {
 
   const [hasError, setHasError] = useState<boolean>(false);
   const sizeUnits = size * 0.25;
