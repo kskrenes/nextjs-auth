@@ -3,7 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link"
 import AvatarDisplay from "./avatar-display";
-import { useState } from "react";
+import Image from "next/image"
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 
 const Header = () => {
@@ -12,12 +12,12 @@ const Header = () => {
 
   return (
     <header className='fixed top-2 left-2 right-2 z-20 text-sm'>
-      <div className='relative flex w-full max-w-6xl mx-auto z-30 rounded-xl px-3 h-[50px] items-center bg-gray-700/90 border-b border-gray-800 shadow-md'>
+      <div className='relative flex w-full max-w-6xl mx-auto z-30 rounded-xl px-1 sm:px-3 h-[50px] items-center bg-gray-700/90 border-b border-gray-800 shadow-md'>
 
         {/* Home link / Logo */}
         <a href="/" className="flex select-none items-center gap-x-4 pl-2">
           {/* <ShieldUser size={26} className='text-gray-300/80' /> */}
-          <img src="/nAuth-logo.png" alt="nAuth logo" width={29} height={29} className="hidden sm:block" />
+          <Image src="/nAuth-logo.png" alt="nAuth logo" width={29} height={29} />
           <div 
             aria-hidden="true" 
             className="hidden sm:block h-[1.625rem] w-[1px] bg-gray-600"
