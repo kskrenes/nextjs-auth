@@ -33,7 +33,10 @@ const Header = () => {
 
                 {/* user button / dropdown */}
                 <Menu>
-                  <MenuButton className="cursor-pointer hover:bg-gray-700 rounded-md transition-colors">
+                  <MenuButton 
+                    aria-label="Open user menu"
+                    className="cursor-pointer hover:bg-gray-700 rounded-md transition-colors"
+                  >
                     <div className="flex items-center p-2 gap-3">
                       <AvatarDisplay publicId={user?.avatarId} size={36} />
                       <div className="hidden sm:inline text-left">
