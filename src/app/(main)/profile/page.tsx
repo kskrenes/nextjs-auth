@@ -373,7 +373,7 @@ const ProfilePage = () => {
                 <div className="flex flex-col gap-1">
                   <label className="text-lg font-semibold">Social Accounts</label>
                   {user?.socialLinks?.map((rawLink, index) => {
-                    const link = rawLink.trim();
+                    const link = getNormalizedUrl(rawLink);
                     return link !== '' && (
                       <div key={index} className="flex items-center gap-2">
                         {getSocialIcon(link)}
