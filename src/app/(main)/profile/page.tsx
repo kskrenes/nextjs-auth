@@ -168,10 +168,10 @@ const ProfilePage = () => {
       <h1 className="text-2xl font-semibold mb-8">My Profile</h1>
 
       {/* page layout */}
-      <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] gap-8 mb-8">
+      <div className="flex gap-8 mb-8">
         
         {/* first column */}
-        <div className="">
+        <div className="w-90 flex-shrink-0">
 
           {/* profile card */}
           <div 
@@ -219,7 +219,7 @@ const ProfilePage = () => {
         </div>
 
         {/* second column */}
-        <div className="flex flex-col">
+        <div className="flex-1">
 
           {isEditing ? (  
             
