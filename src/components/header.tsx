@@ -64,6 +64,7 @@ const Header = () => {
                     {/* sign out button */}
                     <MenuItem>
                       <button 
+                        type="button"
                         className="w-full block px-4 py-2 hover:bg-gray-700 text-left cursor-pointer"
                         onClick={logout}
                       >
