@@ -23,7 +23,7 @@ const Input: React.FC<InputProps> = ({
   const baseStyles = 'p-2 border border-gray-700 text-gray-400 rounded-lg focus:outline-none focus:border-indigo-400';
   const autoCompleteValue = autoComplete || id;
   return (
-    <div className="flex flex-col gap-2 min-w-[300px] w-full">
+    <div className="flex flex-col gap-2 w-full">
 
       {(label || instruction) && (
         <div className='flex justify-between items-center'>
