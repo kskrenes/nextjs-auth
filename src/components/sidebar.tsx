@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from '@/context/AuthContext';
 import { defaultTheme } from '@/helpers/themes'
 import { LayoutDashboardIcon, LogOut, RotateCcwKey, UserPen } from 'lucide-react'
 import Image from 'next/image'
@@ -19,6 +20,7 @@ const navItemStyles = 'flex items-center gap-2 px-4 py-3.5 rounded-md';
 const Sidebar = () => {
 
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   return (
     <aside 
@@ -56,6 +58,7 @@ const Sidebar = () => {
           <li>
             <button 
               className={`${navItemStyles} ${interactiveStyles} w-full cursor-pointer`}
+              onClick={logout}
             >
               <LogOut />
               Sign Out
