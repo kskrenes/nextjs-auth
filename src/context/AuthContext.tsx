@@ -95,7 +95,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       await axios.post('/api/users/verifyemail', { token });
       setUser(prev =>( prev ? { ...prev, isVerified: true } : prev));
-      // auth sync as fallback in case prev wasn't definied yet
+      // auth sync as fallback in case prev wasn't defined yet
       try {
         const res = await axios.get('/api/users/me');
         if (res.data?.user) setUser(res.data.user);
