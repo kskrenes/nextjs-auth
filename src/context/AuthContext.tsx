@@ -21,6 +21,7 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (user: EditableProfileFields) => Promise<void>;
+  verifyEmail: (token: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -29,6 +30,7 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   logout: async () => {},
   updateUser: async () => {},
+  verifyEmail: async () => {},
 });
 
 interface AuthProviderProps {
@@ -89,8 +91,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const verifyEmail = async (token: string) => {
+    try {
+      await axios.post('/api/users/verifyemail', { token });
+      setUser(prev => prev ? { ...prev, isVerified: true } : null);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, updateUser, verifyEmail }}>
       {children}
     </AuthContext.Provider>
   );
