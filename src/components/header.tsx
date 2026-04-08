@@ -3,29 +3,30 @@
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link"
 import AvatarDisplay from "./avatar-display";
-import Image from "next/image"
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { ChevronDown } from "lucide-react";
+import { defaultTheme } from "@/helpers/themes";
 
 const Header = () => {
 
   const { user, loading, logout } = useAuth();
 
   return (
-    <header className='fixed top-2 left-2 right-2 z-20 text-sm'>
-      <div className='relative flex w-full max-w-6xl mx-auto z-30 rounded-xl px-1 sm:px-3 h-[50px] items-center bg-gray-700/90 border-b border-gray-800 shadow-md'>
+    <header className='fixed top-0 left-65 right-0 z-20'>
+      <div className='relative flex w-full mx-auto z-30 px-1 sm:px-3 items-center'>
 
         {/* Home link / Logo */}
-        <a href="/" className="flex select-none items-center gap-x-4 pl-2">
+        {/* <a href="/" className="flex select-none items-center gap-x-4 pl-2">
           <Image src="/nAuth-logo.png" alt="nAuth logo" width={29} height={29} />
           <div 
             aria-hidden="true" 
             className="hidden sm:block h-[1.625rem] w-[1px] bg-gray-600"
           />
-        </a>
+        </a> */}
 
-        <p className="ml-4 hidden sm:block font-semibold">
+        {/* <p className="ml-4 hidden sm:block font-semibold">
           {user ? `Welcome, ${user.username}!` : ''}
-        </p>
+        </p> */}
 
         {/* Header nav */}
         {/* example usage, not currently in scope */}
@@ -48,28 +49,38 @@ const Header = () => {
 
         {/* Right side actions */}
         {!loading && (
-          <div className="ml-auto flex items-center gap-6 font-medium mr-2">
+          <div className="ml-auto flex items-center p-2">
             {user ? (
               <div className="flex items-center gap-2">
                 <Menu>
-                  <MenuButton className="cursor-pointer">
-                    <AvatarDisplay publicId={user?.avatarId} size={36} />
+                  <MenuButton className="cursor-pointer hover:bg-gray-700 rounded-md transition-colors">
+                    <div className="flex items-center p-2 gap-3">
+                      <AvatarDisplay publicId={user?.avatarId} size={36} />
+                      <div className="hidden sm:inline text-left">
+                        {user?.name && <p className="font-medium">{user?.name}</p>}
+                        <p className="text-sm text-gray-400">{user?.username}</p>
+                      </div>
+                      <ChevronDown className="w-4 h-4 hidden sm:inline" />
+                    </div>
                   </MenuButton>
-                  <MenuItems className="absolute top-[50px] right-0 w-62 bg-gray-700/90 border border-gray-800 border-t-0 shadow-md">
+                  <MenuItems 
+                    style={{ backgroundColor: defaultTheme.panel }}
+                    className="absolute top-[68px] py-1 right-5 w-62 rounded-md text-gray-400"
+                  >
                     <MenuItem>
-                      <Link href="/profile" className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/50">
+                      <Link href="/profile" className="block px-4 py-2 hover:bg-gray-700">
                         Profile
                       </Link>
                     </MenuItem>
                     <MenuItem>
-                      <Link href="/triggerpasswordreset" className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-800/50">
+                      <Link href="/triggerpasswordreset" className="block px-4 py-2 hover:bg-gray-700">
                         Reset Password
                       </Link>
                     </MenuItem>
-                    <hr className="border-t border-gray-600" />
+                    <hr className="border-t border-gray-700/50 my-1" />
                     <MenuItem>
                       <button 
-                        className="w-full px-4 py-2 my-1 text-sm text-gray-200 hover:bg-gray-800/50 text-left cursor-pointer"
+                        className="w-full block px-4 py-2 hover:bg-gray-700 text-left cursor-pointer"
                         onClick={logout}
                       >
                         Sign Out
