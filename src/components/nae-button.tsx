@@ -1,4 +1,3 @@
-import { defaultTheme } from '@/helpers/themes';
 import React, { ButtonHTMLAttributes, ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
