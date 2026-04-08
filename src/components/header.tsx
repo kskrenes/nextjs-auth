@@ -18,7 +18,7 @@ const Header = () => {
   const { user, loading, logout } = useAuth();
 
   return (
-    <header className='fixed top-0 left-64 right-0 z-20'>
+    <header className='fixed top-0 left-0 md:left-64 right-0 z-20'>
       <div className='relative flex w-full mx-auto z-30 px-1 sm:px-3 items-center'>
 
         {/* right side actions */}
