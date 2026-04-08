@@ -168,7 +168,7 @@ const ProfilePage = () => {
       <h1 className="text-2xl font-semibold mb-8">My Profile</h1>
 
       {/* page layout */}
-      <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] min-h-screen gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-[360px_1fr] gap-8 mb-8">
         
         {/* first column */}
         <div className="">
@@ -247,6 +247,7 @@ const ProfilePage = () => {
                       id="name" 
                       placeholder="Name"
                       type="text"
+                      aria-label="Name"
                       value={editedFields.name}
                       onChange={(e) => setEditedFields({ ...editedFields, name: e.target.value })}
                     />
@@ -258,6 +259,7 @@ const ProfilePage = () => {
                       id="company" 
                       placeholder="Company"
                       type="text"
+                      aria-label="Company"
                       value={editedFields.company}
                       onChange={(e) => setEditedFields({ ...editedFields, company: e.target.value })}
                       className="w-full"
@@ -270,6 +272,7 @@ const ProfilePage = () => {
                       id="website" 
                       placeholder="Website URL"
                       type="text"
+                      aria-label="Website"
                       value={editedFields.website}
                       onChange={(e) => setEditedFields({ ...editedFields, website: e.target.value })}
                     />
@@ -286,6 +289,7 @@ const ProfilePage = () => {
                         id={`socialLink${index}`} 
                         placeholder={`Social URL ${index + 1}`}
                         type="text"
+                        aria-label={`Social URL ${index + 1}`}
                         value={link}
                         onChange={(e) => handleSocialEdit(e.target.value, index)}
                       />
