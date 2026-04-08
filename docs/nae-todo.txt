@@ -43,7 +43,8 @@ header
 - [x] add site nav dropdown with: dashboard, profile, triggerpasswordreset
 
 sendemail api and resetpassword api
-- [ ] console error
+- [x] console error
+- [ ] update user after email is verified
 
 profile
 - [x] add success state after send verify email
