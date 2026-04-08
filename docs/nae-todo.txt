@@ -46,6 +46,12 @@ sendemail api and resetpassword api
 - [x] console error
 - [ ] update authed user after email is verified
 
+look & feel
+- [x] improve style
+- [ ] make new (main) layout responsive
+- [ ] layout triggerpasswordreset page
+- [ ] layout dashboard page
+
 profile
 - [x] add success state after send verify email
 - [x] add error state after send verify email
@@ -70,11 +76,7 @@ session management lifecycle
 - [ ] active device monitoring
 - [ ] session revocation
 
-dashboard page
-- [ ] layout page
-
 multiple pages
-- [ ] improve style
 - [x] either display or discard toast
 
 security
