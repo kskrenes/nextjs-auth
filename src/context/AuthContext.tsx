@@ -94,7 +94,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const verifyEmail = async (token: string) => {
     try {
       await axios.post('/api/users/verifyemail', { token });
-      setUser(prev => prev ? { ...prev, isVerified: true } : null);
+      setUser(prev =>( prev ? { ...prev, isVerified: true } : prev));
+      // auth sync as fallback in case prev wasn't definied yet
+      try {
+        const res = await axios.get('/api/users/me');
+        if (res.data?.user) setUser(res.data.user);
+      } catch {
+        // verification can occur while signed out; ignore auth sync failures here
+      }
     } catch (error) {
       throw error;
     }
