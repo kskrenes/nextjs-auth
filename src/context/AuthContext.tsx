@@ -21,6 +21,7 @@ export interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (user: EditableProfileFields) => Promise<void>;
+  verifyEmail: (token: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -29,6 +30,7 @@ const AuthContext = createContext<AuthContextType>({
   login: async () => {},
   logout: async () => {},
   updateUser: async () => {},
+  verifyEmail: async () => {},
 });
 
 interface AuthProviderProps {
@@ -89,8 +91,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const verifyEmail = async (token: string) => {
+    try {
+      await axios.post('/api/users/verifyemail', { token });
+      // auth sync for signed-in sessions
+      try {
+        const res = await axios.get('/api/users/me');
+        if (res.data?.user) setUser(res.data.user);
+      } catch {
+        // verification can occur while signed out; ignore auth sync failures here
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, updateUser, verifyEmail }}>
       {children}
     </AuthContext.Provider>
   );
