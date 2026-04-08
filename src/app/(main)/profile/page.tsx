@@ -41,13 +41,11 @@ const ProfilePage = () => {
     name: string;
     company: string;
     website: string;
-    avatarId: string;
     socialLinks: string[];
   }>({
     name: "",
     company: "",
     website: "",
-    avatarId: "",
     socialLinks: ["", "", "", ""],
   });
   const { user, loading, updateUser } = useAuth();
@@ -147,7 +145,6 @@ const ProfilePage = () => {
       name: user.name || "",
       company: user.company || "",
       website: user.website || "",
-      avatarId: user.avatarId || "",
       socialLinks: [...(user.socialLinks ?? []), "", "", "", ""].slice(0, 4),
     });
     setIsEditing(true);
