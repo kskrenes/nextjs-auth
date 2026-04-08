@@ -44,7 +44,7 @@ header
 
 sendemail api and resetpassword api
 - [x] console error
-- [ ] update user after email is verified
+- [ ] update authed user after email is verified
 
 profile
 - [x] add success state after send verify email
