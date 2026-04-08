@@ -162,13 +162,13 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="pt-24">
+    <div className="pt-24 mx-8 mb-8">
 
       {/* page title */}
       <h1 className="text-2xl font-semibold mb-8">My Profile</h1>
 
       {/* page layout */}
-      <div className="flex gap-8 mb-8">
+      <div className="flex gap-8">
         
         {/* first column */}
         <div className="w-90 flex-shrink-0">
@@ -228,7 +228,7 @@ const ProfilePage = () => {
             <div className="flex flex-col gap-8">
               {/* title panel */}
               <div 
-                className="px-5 py-3 rounded-md max-w-150 mr-8" 
+                className="px-5 py-3 rounded-md max-w-150" 
                 style={{ backgroundColor: defaultTheme.panel }}
               >
                 <h2 className="text-lg font-semibold">Edit Profile</h2>
@@ -327,7 +327,7 @@ const ProfilePage = () => {
             <div className="flex flex-col gap-8">
               {/* title panel */}
               <div 
-                className="px-5 py-3 rounded-md max-w-150 mr-8" 
+                className="px-5 py-3 rounded-md max-w-150" 
                 style={{ backgroundColor: defaultTheme.panel }}
               >
                 <h2 className="text-lg font-semibold">My Info</h2>
