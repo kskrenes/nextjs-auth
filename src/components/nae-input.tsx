@@ -1,16 +1,15 @@
 import React, { InputHTMLAttributes } from 'react';
 
-/*
-  Define the props interface by extending standard HTML input attributes.
-  This allows the component to accept all standard input props without 
-  explicit declaration, while also allowing custom props.
-*/
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
+type BaseInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'aria-label' | 'aria-labelledby'> & {
   instruction?: string;
-  id: string; // Ensure the input has an ID for accessibility (linking label and input)
+  id: string;
   autoComplete?: string;
-}
+};
+
+type InputProps =
+  | (BaseInputProps & { label: string; ['aria-label']?: string; ['aria-labelledby']?: string })
+  | (BaseInputProps & { label?: undefined; ['aria-label']: string; ['aria-labelledby']?: string })
+  | (BaseInputProps & { label?: undefined; ['aria-label']?: string; ['aria-labelledby']: string });
 
 // Use React.FC (Function Component) or the arrow function syntax with the InputProps type.
 const Input: React.FC<InputProps> = ({
