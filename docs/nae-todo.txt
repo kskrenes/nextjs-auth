@@ -42,13 +42,6 @@ header
 - [x] add user nav with avatar and dropdown options
 - [x] add site nav dropdown with: dashboard, profile, triggerpasswordreset
 
-dashboard page
-- [ ] layout page
-
-multiple pages
-- [ ] improve style
-- [x] either display or discard toast
-
 sendemail api and resetpassword api
 - [ ] console error
 
@@ -75,6 +68,13 @@ session management lifecycle
 - [ ] token expiration (logout/timeout)
 - [ ] active device monitoring
 - [ ] session revocation
+
+dashboard page
+- [ ] layout page
+
+multiple pages
+- [ ] improve style
+- [x] either display or discard toast
 
 security
 - [ ] restrict email domains and subaddresses
