@@ -36,30 +36,23 @@ home page
 favicon
 - [x] implement
 
+header
+- [x] create
+- [x] update when authentication state changes
+- [x] add user nav with avatar and dropdown options
+- [x] add site nav dropdown with: dashboard, profile, triggerpasswordreset
+
+sendemail api and resetpassword api
+- [ ] console error
+
 profile
 - [x] add success state after send verify email
 - [x] add error state after send verify email
 - [x] add user fields: name, company, website, social link x4, avatar
 - [x] implement edit of non-image fields
 - [x] implement avatar edit
-- [ ] layout and styling
+- [x] layout and styling
 - [ ] implement signed uploads to cloudinary
-
-header
-- [x] create
-- [x] update when authentication state changes
-- [x] add user nav with avatar and dropdown options
-- [ ] add site nav dropdown with: dashboard, profile, triggerpasswordreset
-
-dashboard page
-- [ ] layout page
-
-multiple pages
-- [ ] improve style
-- [ ] either display or discard toast
-
-sendemail api and resetpassword api
-- [ ] console error
 
 additional authentication methods
 - [ ] add social login (google)
@@ -75,6 +68,13 @@ session management lifecycle
 - [ ] token expiration (logout/timeout)
 - [ ] active device monitoring
 - [ ] session revocation
+
+dashboard page
+- [ ] layout page
+
+multiple pages
+- [ ] improve style
+- [x] either display or discard toast
 
 security
 - [ ] restrict email domains and subaddresses
