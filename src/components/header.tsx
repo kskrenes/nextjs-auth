@@ -47,7 +47,7 @@ const Header = () => {
                   {/* dropdown */}
                   <MenuItems 
                     style={{ backgroundColor: defaultTheme.panel }}
-                    className="absolute top-[68px] py-1 right-5 w-62 rounded-md text-gray-400"
+                    className="absolute top-[68px] py-1 right-5 w-64 rounded-md text-gray-400"
                   >
                     {/* nav links */}
                     {navLinks.map((link) => (
