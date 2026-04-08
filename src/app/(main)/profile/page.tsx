@@ -117,7 +117,7 @@ const ProfilePage = () => {
         return cleanPathname || urlObj.host;
       }
 
-      return `${urlObj.host}/${cleanPathname}`;  
+      return cleanPathname ? `${urlObj.host}/${cleanPathname}` : urlObj.host;  
     } catch {
       // fallback to raw string if URL is invalid
       return url;
