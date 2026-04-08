@@ -3,7 +3,7 @@
 import { CldUploadWidget } from 'next-cloudinary';
 import AvatarDisplay from './avatar-display';
 import { useAuth } from '@/context/AuthContext';
-import { Camera, Plus } from 'lucide-react';
+import { Camera } from 'lucide-react';
 import Button from './nae-button';
 import toast from 'react-hot-toast';
 
@@ -31,7 +31,7 @@ export default function AvatarUpload() {
             onClick={() => open()}
             className='rounded-full h-9 w-9 px-0 py-0 absolute bottom-2 right-2'
           >
-            <Camera className="w-6 h-6" strokeWidth={3} />
+            <Camera className="w-6 h-6" strokeWidth={2} />
           </Button>
         )}
       </CldUploadWidget>
