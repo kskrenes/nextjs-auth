@@ -10,7 +10,7 @@ const ProfileIcon = ({svgPath}: ProfileIconProps) => {
       width="16" 
       height="16" 
       viewBox="0 0 16 16" 
-      className="fill-gray-500"
+      className="fill-indigo-400"
     >
       <path d={svgPath}/>
     </svg>
