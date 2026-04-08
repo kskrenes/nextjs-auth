@@ -44,13 +44,17 @@ header
 
 sendemail api and resetpassword api
 - [x] console error
-- [ ] update authed user after email is verified
+- [x] update authed user after email is verified
 
 look & feel
 - [x] improve style
 - [ ] make new (main) layout responsive
-- [ ] layout triggerpasswordreset page
-- [ ] layout dashboard page
+- [ ] define themes
+- [ ] allow theme selection (settings page?)
+- [ ] lay out login and signup pages
+- [ ] lay out triggerpasswordreset page
+- [ ] lay out verifyemail page
+- [ ] lay out dashboard page
 
 profile
 - [x] add success state after send verify email
