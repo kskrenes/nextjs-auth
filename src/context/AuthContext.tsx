@@ -94,8 +94,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const verifyEmail = async (token: string) => {
     try {
       await axios.post('/api/users/verifyemail', { token });
-      setUser(prev => (prev ? { ...prev, isVerified: true } : prev));
-      // auth sync as fallback in case prev wasn't defined yet
+      // auth sync for signed-in sessions
       try {
         const res = await axios.get('/api/users/me');
         if (res.data?.user) setUser(res.data.user);
