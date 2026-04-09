@@ -50,12 +50,12 @@ const LoginPage = () => {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <form 
-        className="flex w-[300px] flex-col items-center py-2" 
+        className="flex w-75 flex-col items-center py-2 gap-8" 
         onSubmit={handleLogin}
       >
-        <h1 className="mb-6 text-3xl font-bold">Sign In</h1>
+        <h1 className="text-3xl font-bold">Sign In</h1>
         {(isInvalid || isServerError) && (
-          <div role="alert" className="flex items-center space-x-2 mb-4 text-sm text-red-500">
+          <div role="alert" className="flex items-center space-x-2 text-sm text-red-500">
             <ShieldAlert className="w-4 h-4" />
             <span>
               {isInvalid 
@@ -65,28 +65,30 @@ const LoginPage = () => {
             </span>
           </div>
         )}
-        <Input 
-          id="email" 
-          label="Email"
-          placeholder="email"
-          type="email"
-          required
-          value={credentials.email}
-          onChange={(e) => setCredentials({...credentials, email: e.target.value})}
-        />
-        <Input 
-          id="password" 
-          label="Password"
-          placeholder="password"
-          type="password"
-          autoComplete="current-password"
-          required
-          value={credentials.password}
-          onChange={(e) => setCredentials({...credentials, password: e.target.value})}
-        />
+        <div className="flex flex-col gap-4 w-full">
+          <Input 
+            id="email" 
+            label="Email"
+            placeholder="email"
+            type="email"
+            required
+            value={credentials.email}
+            onChange={(e) => setCredentials({...credentials, email: e.target.value})}
+          />
+          <Input 
+            id="password" 
+            label="Password"
+            placeholder="password"
+            type="password"
+            autoComplete="current-password"
+            required
+            value={credentials.password}
+            onChange={(e) => setCredentials({...credentials, password: e.target.value})}
+          />
+        </div>
         <Button
           type="submit"
-          className="w-full my-8"
+          className="w-full"
           disabled={buttonDisabled}
         >
           {loading 
@@ -98,21 +100,23 @@ const LoginPage = () => {
             )
             : 'Sign In'}
         </Button>
-        <p className="text-xs">
-          Don't have an account?{' '}
+        <div className="flex flex-col items-center gap-2">
+          <p className="text-xs">
+            Don't have an account?{' '}
+            <Link 
+              href="/signup"
+              className="text-brand hover:text-brand-highlight underline transition-colors"
+            >
+              Sign up here
+            </Link>.
+          </p>
           <Link 
-            href="/signup"
-            className="text-blue-400 hover:text-blue-500 underline transition-colors"
+            href="/triggerpasswordreset"
+            className="text-xs text-brand hover:text-brand-highlight underline transition-colors"
           >
-            Sign up here
-          </Link>.
-        </p>
-        <Link 
-          href="/triggerpasswordreset"
-          className="text-xs mt-2 text-blue-400 hover:text-blue-500 underline transition-colors"
-        >
-          Forgot password
-        </Link>
+            Forgot password
+          </Link>
+        </div>
       </form>
     </div>
   )

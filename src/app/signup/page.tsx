@@ -121,46 +121,48 @@ const SignupPage = () => {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <form 
-        className="flex w-[300px] flex-col items-center py-2" 
+        className="flex w-75 flex-col items-center py-2 gap-8" 
         onSubmit={handleSignup} 
       >
-        <h1 className="mb-6 text-3xl font-bold">Sign Up</h1>
+        <h1 className="text-3xl font-bold">Sign Up</h1>
         {isError && (
-          <div role="alert" className="flex items-center space-x-2 mb-4 text-sm text-red-500">
+          <div role="alert" className="flex items-center space-x-2 text-sm text-red-500">
             <ShieldAlert className="w-4 h-4" />
             <span className="text-center">{errorMessage}</span>
           </div>
         )}
-        <Input 
-          id="username" 
-          label="Username"
-          placeholder="username"
-          type="text"
-          instruction="4 character minimum, no spaces"
-          minLength={4}
-          required
-          value={user.username}
-          onChange={(e) => handleUsernameChange(e.target.value)}
-        />
-        <Input 
-          id="email" 
-          label="Email"
-          placeholder="email@example.com"
-          type="email"
-          required
-          value={user.email}
-          onChange={(e) => handleEmailChange(e.target.value)}
-        />
-        <SetPasswordInputs 
-          label="Password"
-          password={user.password}
-          confirmPassword={confirmPassword}
-          onPasswordChange={handlePasswordChange}
-          onConfirmPasswordChange={handleConfirmPasswordChange}
-        />
+        <div className="flex flex-col gap-4 w-full">
+          <Input 
+            id="username" 
+            label="Username"
+            placeholder="username"
+            type="text"
+            instruction="4 character minimum, no spaces"
+            minLength={4}
+            required
+            value={user.username}
+            onChange={(e) => handleUsernameChange(e.target.value)}
+          />
+          <Input 
+            id="email" 
+            label="Email"
+            placeholder="email@example.com"
+            type="email"
+            required
+            value={user.email}
+            onChange={(e) => handleEmailChange(e.target.value)}
+          />
+          <SetPasswordInputs 
+            label="Password"
+            password={user.password}
+            confirmPassword={confirmPassword}
+            onPasswordChange={handlePasswordChange}
+            onConfirmPasswordChange={handleConfirmPasswordChange}
+          />
+        </div>
         <Button
           type="submit"
-          className="w-full my-8"
+          className="w-full"
           disabled={buttonDisabled}
         >
           {isLoading 
@@ -176,7 +178,7 @@ const SignupPage = () => {
           Already have an account?{' '}
           <Link 
             href="/login"
-            className="text-blue-400 hover:text-blue-500 underline transition-colors"
+            className="text-brand hover:text-brand-highlight underline transition-colors"
           >
             Sign in here
           </Link>.
