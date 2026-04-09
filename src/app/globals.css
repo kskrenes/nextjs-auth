@@ -4,3 +4,148 @@
   --breakpoint-xs: 438px;
   --breakpoint-ll: 1096px;
 }
+
+:root {
+  --page: #e5e6f2;
+
+  --panel: #ffffff;
+  --panel-highlight: #374151;
+  --panel-active: #f3f4f6;
+  --panel-active-foreground: #111827;
+
+  --foreground-primary: #353642;
+  --foreground-secondary: #bfbfbf;
+
+  --brand: #6366f1;
+  --brand-light: #818cf8;
+  --brand-highlight: #4f46e5;
+  --brand-low: #2b295c;
+
+  --button-foreground: #e5e6f2;
+  --button-foreground-highlight: #ffffff;
+  --button-foreground-low: #4a4d6f;
+  --button-secondary-foreground: #6366f1;
+}
+
+[data-theme="dark"] {
+  --page: #252632;
+
+  --panel: #282a36;
+  --panel-highlight: #374151;
+  --panel-active: #f3f4f6;
+  --panel-active-foreground: #111827;
+
+  --foreground-primary: #e5e6f2;
+  --foreground-secondary: #9ca3af;
+
+  --brand: #6366f1;
+  --brand-light: #818cf8;
+  --brand-highlight: #4f46e5;
+  --brand-low: #2b295c;
+
+  --button-foreground: #e5e6f2;
+  --button-foreground-highlight: #ffffff;
+  --button-foreground-low: #4a4d6f;
+  --button-secondary-foreground: #e5e6f2;
+}
+
+@theme inline {
+  --color-page: var(--page);
+  --color-panel: var(--panel);
+  --color-panel-highlight: var(--panel-highlight);
+  --color-panel-active: var(--panel-active);
+  --color-panel-active-foreground: var(--panel-active-foreground);
+  --color-foreground-primary: var(--foreground-primary);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-brand: var(--brand);
+  --color-brand-light: var(--brand-light);
+  --color-brand-highlight: var(--brand-highlight);
+  --color-brand-low: var(--brand-low);
+  --color-button-foreground: var(--button-foreground);
+  --color-button-foreground-highlight: var(--button-foreground-highlight);
+  --color-button-foreground-low: var(--button-foreground-low);
+  --color-button-secondary-foreground: var(--button-secondary-foreground);
+}
+
+body {
+  background-color: var(--page);
+  color: var(--foreground-primary);
+}
+
+@utility button-base {
+  @apply
+    flex 
+    justify-center 
+    items-center 
+    rounded-md 
+    transition-colors 
+    cursor-pointer
+    disabled:cursor-not-allowed
+}
+
+@utility button-primary {
+  @apply 
+    button-base
+    font-semibold 
+    text-button-foreground 
+    hover:text-button-foreground-highlight 
+    disabled:text-button-foreground-low
+    bg-brand 
+    hover:bg-brand-highlight 
+    disabled:bg-brand-low
+}
+
+@utility button-secondary {
+  @apply 
+    button-base
+    font-semibold 
+    text-button-secondary-foreground 
+    hover:text-button-foreground-highlight 
+    disabled:text-button-foreground-low
+    bg-transparent 
+    hover:bg-brand-highlight
+    disabled:bg-transparent
+    border-2
+    border-brand
+    hover:border-brand-highlight
+    disabled:border-brand-low
+}
+
+@utility button-ghost {
+  @apply 
+    button-base 
+    text-foreground-primary
+    hover:text-button-foreground-highlight 
+    disabled:text-button-foreground-low
+    bg-transparent 
+    hover:bg-panel-highlight
+    disabled:bg-transparent
+}
+
+@utility nav-item-base {
+  @apply
+    flex 
+    items-center 
+    gap-2 
+    px-4 
+    py-3.5 
+    rounded-md 
+    w-full 
+    transition-colors
+}
+
+@utility nav-item {
+  @apply
+    nav-item-base
+    text-foreground-secondary
+    hover:bg-panel-highlight
+    cursor-pointer 
+}
+
+@utility nav-item-selected {
+  @apply
+    nav-item-base
+    bg-panel-active
+    text-panel-active-foreground
+    cursor-default
+}
