@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
-import { defaultTheme } from '@/helpers/themes'
 import { LayoutDashboardIcon, LogOut, RotateCcwKey, UserPen } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -20,8 +19,7 @@ const Sidebar = () => {
 
   return (
     <aside 
-      className="p-4 w-64 shrink-0 hidden md:block" 
-      style={{ backgroundColor: defaultTheme.panel }}
+      className="p-4 w-64 shrink-0 hidden md:block bg-panel" 
     >
       {/* home link / logo */}
       <Link href="/" className="flex select-none items-center gap-2 m-4">
