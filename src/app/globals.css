@@ -10,6 +10,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --breakpoint-xs: 438px;
+  --breakpoint-ll: 1096px;
 }
 
 @media (prefers-color-scheme: dark) {

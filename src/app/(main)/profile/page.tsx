@@ -159,20 +159,20 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="pt-24 mx-8 mb-8">
+    <div className="pt-14 sm:pt-24 mx-5 xs:mx-8 mb-8">
 
       {/* page title */}
-      <h1 className="text-2xl font-semibold mb-8">My Profile</h1>
+      <h1 className="text-2xl min-w-[156px] font-semibold mx-auto md:mx-0 mb-8">My Profile</h1>
 
       {/* page layout */}
-      <div className="flex gap-8">
+      <div className="flex gap-8 flex-col ll:flex-row">
         
         {/* first column */}
-        <div className="w-90 flex-shrink-0">
+        <div className="xs:w-90 xs:flex-shrink-0 xs:mx-auto md:mx-0">
 
           {/* profile card */}
           <div 
-            className="flex flex-col px-6 py-12 gap-8 rounded-md" 
+            className="flex flex-col w-full px-6 py-12 gap-8 rounded-md" 
             style={{ backgroundColor: defaultTheme.panel }}
           >
             {/* avatar */}
@@ -181,10 +181,10 @@ const ProfilePage = () => {
             {/* name/username group */}
             <div className="flex flex-col gap-1 items-center">
               {/* name */}
-              {user && user.name && (<h1 className="text-3xl font-semibold">{user.name}</h1>)}
+              {user && user.name && (<h1 className="text-2xl xs:text-3xl xs:max-w-75 truncate font-semibold">{user.name}</h1>)}
               {/* username/admin */}
               <div className="flex items-center gap-2">
-                <p className="text-gray-400 text-xl">{user?.username}</p>
+                <p className="text-gray-400 text-lg xs:text-xl">{user?.username}</p>
                 {user?.isAdmin && <Badge label="Admin" variant="green" />}
               </div>
             </div>
@@ -216,16 +216,16 @@ const ProfilePage = () => {
         </div>
 
         {/* second column */}
-        <div className="flex-1">
+        <div className="w-full xs:w-90 ll:flex-1 mx-auto md:mx-0">
 
           {isEditing ? (  
             
             // edit profile form
 
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-8 max-w-150">
               {/* title panel */}
               <div 
-                className="px-5 py-3 rounded-md max-w-150" 
+                className="px-5 py-3 rounded-md" 
                 style={{ backgroundColor: defaultTheme.panel }}
               >
                 <h2 className="text-lg font-semibold">Edit Profile</h2>
@@ -321,10 +321,10 @@ const ProfilePage = () => {
 
             // profile info
 
-            <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-8 max-w-150">
               {/* title panel */}
               <div 
-                className="px-5 py-3 rounded-md max-w-150" 
+                className="px-5 py-3 rounded-md" 
                 style={{ backgroundColor: defaultTheme.panel }}
               >
                 <h2 className="text-lg font-semibold">My Info</h2>
