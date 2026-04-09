@@ -5,7 +5,6 @@ import Link from "next/link"
 import AvatarDisplay from "./avatar-display";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDown, LayoutDashboardIcon, LogOut, RotateCcwKey, UserPen } from "lucide-react";
-import { defaultTheme } from "@/helpers/themes";
 
 const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon className="w-5 h-5" /> },
@@ -35,13 +34,13 @@ const Header = () => {
                 <Menu>
                   <MenuButton 
                     aria-label="Open user menu"
-                    className="cursor-pointer hover:bg-gray-700 rounded-md transition-colors"
+                    className="cursor-pointer hover:bg-panel-highlight rounded-md transition-colors focus:outline-none"
                   >
                     <div className="flex items-center p-2 gap-3">
                       <AvatarDisplay publicId={user?.avatarId} size={36} />
                       <div className="hidden sm:inline text-left">
                         {user?.name && <p className="font-medium">{user?.name}</p>}
-                        <p className="text-sm text-gray-400">{user?.username}</p>
+                        <p className="text-sm text-foreground-secondary">{user?.username}</p>
                       </div>
                       <ChevronDown className="w-4 h-4 hidden sm:inline" />
                     </div>
@@ -49,26 +48,25 @@ const Header = () => {
 
                   {/* dropdown */}
                   <MenuItems 
-                    style={{ backgroundColor: defaultTheme.panel }}
-                    className="absolute top-[68px] py-1 right-5 w-64 rounded-md text-gray-400"
+                    className="absolute top-17 py-1 right-5 w-64 rounded-md bg-panel text-foreground-secondary"
                   >
                     {/* nav links */}
                     {navLinks.map((link) => (
                       <MenuItem key={`user-nav-${link.name}`}>
-                        <Link href={link.href} className="flex items-center px-4 py-2 gap-2 hover:bg-gray-700">
+                        <Link href={link.href} className="nav-item">
                           {link.icon}
                           {link.name}
                         </Link>
                       </MenuItem>
                     ))}
 
-                    <hr className="border-t border-gray-700/50 my-1" />
+                    <hr className="border-t border-panel-highlight my-1" />
 
                     {/* sign out button */}
                     <MenuItem>
                       <button 
                         type="button"
-                        className="w-full block px-4 py-2 hover:bg-gray-700 text-left cursor-pointer"
+                        className="nav-item"
                         onClick={logout}
                       >
                         <LogOut className="w-5 h-5 inline mr-2" />
@@ -86,14 +84,14 @@ const Header = () => {
                 {/* sign in button */}
                 <Link 
                   href="/login" 
-                  className="rounded-md px-2.5 py-0.5 text-gray-50 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" 
+                  className="button-ghost px-2.5 py-0.5"
                 >
                   Sign In
                 </Link>
                 {/* sign up button */}
                 <Link 
                   href="/signup" 
-                  className="rounded-md px-2.5 py-0.5 font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer" 
+                  className="button-primary px-2.5 py-0.5" 
                 >
                   Get Started
                 </Link>

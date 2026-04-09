@@ -13,10 +13,6 @@ const navLinks = [
   { name: 'Reset Password', href: '/triggerpasswordreset', icon: <RotateCcwKey /> },
 ];
 
-const interactiveStyles = 'text-gray-400 hover:bg-gray-700';
-const selectedStyles = 'text-gray-900 bg-gray-100';
-const navItemStyles = 'flex items-center gap-2 px-4 py-3.5 rounded-md';
-
 const Sidebar = () => {
 
   const pathname = usePathname();
@@ -24,7 +20,7 @@ const Sidebar = () => {
 
   return (
     <aside 
-      className="p-4 w-64 flex-shrink-0 hidden md:block" 
+      className="p-4 w-64 shrink-0 hidden md:block" 
       style={{ backgroundColor: defaultTheme.panel }}
     >
       {/* home link / logo */}
@@ -46,7 +42,7 @@ const Sidebar = () => {
               <li key={`sidebar-link-${link.name}`}>
                 <Link 
                   href={link.href}
-                  className={`${navItemStyles} ${isActive ? selectedStyles : interactiveStyles}`}
+                  className={`${isActive ? 'nav-item-selected' : 'nav-item'}`}
                 >
                   {link.icon}
                   {link.name}
@@ -57,7 +53,7 @@ const Sidebar = () => {
           {/* sign out item */}
           <li>
             <button 
-              className={`${navItemStyles} ${interactiveStyles} w-full cursor-pointer`}
+              className="nav-item"
               onClick={logout}
             >
               <LogOut />
