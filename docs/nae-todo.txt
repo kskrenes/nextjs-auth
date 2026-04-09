@@ -49,7 +49,7 @@ sendemail api and resetpassword api
 look & feel
 - [x] improve style
 - [x] make new (main) layout responsive
-- [ ] define themes
+- [x] define themes
 - [ ] allow theme selection (settings page?)
 - [ ] lay out login and signup pages
 - [ ] lay out triggerpasswordreset page
