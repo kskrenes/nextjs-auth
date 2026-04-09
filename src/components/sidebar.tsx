@@ -23,7 +23,7 @@ const Sidebar = () => {
     >
       {/* home link / logo */}
       <Link href="/" className="flex select-none items-center gap-2 m-4">
-        <Image src="/nAuth-logo.png" alt="nAuth logo" width={29} height={29} />
+        <div className="w-7.25 h-7.25 bg-logo bg-contain bg-no-repeat" />
         <span className="hidden sm:block text-lg font-bold">
           nAuth
         </span>
