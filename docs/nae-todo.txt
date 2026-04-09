@@ -48,7 +48,7 @@ sendemail api and resetpassword api
 
 look & feel
 - [x] improve style
-- [ ] make new (main) layout responsive
+- [x] make new (main) layout responsive
 - [ ] define themes
 - [ ] allow theme selection (settings page?)
 - [ ] lay out login and signup pages
