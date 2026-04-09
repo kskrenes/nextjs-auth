@@ -1,8 +1,7 @@
 "use client";
 
 import { useAuth } from '@/context/AuthContext';
-import { LayoutDashboardIcon, LogOut, RotateCcwKey, UserPen } from 'lucide-react'
-import Image from 'next/image'
+import { LayoutDashboardIcon, LogIn, LogOut, RotateCcwKey, UserPen } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation';
 
@@ -10,6 +9,7 @@ const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon /> },
   { name: 'Profile', href: '/profile', icon: <UserPen /> },
   { name: 'Reset Password', href: '/triggerpasswordreset', icon: <RotateCcwKey /> },
+  { name: 'Sign In', href: '/login', icon: <LogIn /> },
 ];
 
 const Sidebar = () => {
