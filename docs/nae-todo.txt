@@ -50,7 +50,7 @@ look & feel
 - [x] improve style
 - [x] make new (main) layout responsive
 - [x] define themes
-- [ ] allow theme selection (settings page?)
+- [x] allow theme selection
 - [ ] lay out login and signup pages
 - [ ] lay out triggerpasswordreset page
 - [ ] lay out verifyemail page
