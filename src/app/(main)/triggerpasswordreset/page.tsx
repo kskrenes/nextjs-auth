@@ -1,11 +1,11 @@
 "use client";
 
+import FullScreenLoader from "@/components/full-screen-loader";
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
-import { getErrorMessage } from "@/helpers/error-message";
+import { EmailIcon } from "@/components/profile-icons";
+import { useAuth } from "@/context/AuthContext";
 import { triggerEmail } from "@/helpers/trigger-email";
-import type NaeUser from "@/models/user-interface";
-import axios from "axios";
 import { Loader2, MailCheck, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState, type SubmitEvent } from "react";
@@ -13,41 +13,20 @@ import toast from "react-hot-toast";
 
 const TriggerPasswordResetPage = () => {
 
-  const [user, setUser] = useState<NaeUser | null>(null);
-  const [fetchingUser, setFetchingUser] = useState<boolean>(false);
   const [isSending, setIsSending] = useState<boolean>(false);
   const [isSent, setIsSent] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
 
+  const { user, loading } = useAuth();
+
   useEffect(() => {
-    if (fetchingUser) return;
+    if (!user) return;
 
-    (async () => {
-      try {
-        // check for authed user, but fail silently and let the user
-        // manually enter email if no authed user is found
-        setFetchingUser(true);
-        const res = await axios.get('/api/users/me');
-        const user = res.data.user as NaeUser
-        setUser(user);
-        setEmail(user.email);
-      } catch (error: unknown) {
-        const message = getErrorMessage(error, "Failed to fetch user");
-        console.error(message);
-      } finally {
-        setFetchingUser(false);
-      }
-    })();
-  }, [])
+    setEmail(user.email);
+  }, [user]);
 
-  if (fetchingUser) {
-    return (
-      <div className='min-h-screen flex items-center justify-center'>
-        <Loader2 className='w-8 h-8 animate-spin text-blue-500' />
-      </div>
-    );
-  }
+  if (loading) return <FullScreenLoader />;
   
   const handleReset = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
@@ -71,98 +50,76 @@ const TriggerPasswordResetPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      {isSent ? (
-        <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
-          <MailCheck className="w-10 h-10 text-blue-600" />
-          <h1 className="mb-6 text-3xl font-bold">An email has been sent.</h1>
-          <p className="max-w-[300px] text-sm text-center">
-            Check your email for instructions you can follow to reset your password.
-          </p>
-          <p className="text-xs">
-            {'Go to '}
-            <Link 
-              href="/"
-              className="text-blue-400 hover:text-blue-500 underline transition-colors"
-            >
-              home
-            </Link>{' page.'}
-          </p>
-        </div>
-      ) : isError ? (
-        <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
-          <ShieldAlert className="w-10 h-10 text-red-600" />
-          <h1 className="mb-6 text-3xl font-bold">Unable to send email</h1>
-          <Button
-            onClick={handleRetryClick}
-            className="min-w-[120px] mt-4"
+    <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
+
+      {/* page title */}
+      <h1 className="text-2xl min-w-39 max-w-90 font-semibold mx-auto md:mx-0 mb-8">My Password</h1>
+
+      {/* page layout */}
+      <div className="w-full xs:w-90 ll:flex-1 mx-auto md:mx-0">
+        <div className="flex flex-col gap-8 max-w-150">
+          {/* title panel */}
+          <div 
+            className="px-5 py-3 rounded-md bg-panel" 
           >
-            Retry
-          </Button>
-          <p className="text-xs">
-            {'Go to '}
-            <Link 
-              href="/login"
-              className="text-blue-400 hover:text-blue-500 underline transition-colors"
-            >
-              Sign in
-            </Link>{' page.'}
-          </p>
-        </div>
-      ) : (
-        <form 
-          className="flex w-[300px] flex-col items-center py-2" 
-          onSubmit={handleReset} 
-        >
-          <h1 className="mb-6 text-3xl font-bold">Reset Password</h1>
-          <Input 
-            id="email" 
-            label="Email"
-            placeholder="email@example.com"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <div className="mt-4 mb-8">
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={fetchingUser || isSending || email.length === 0}
-            >
-              {isSending 
-                ? (
-                  <>
-                    <Loader2 className="w-7 h-7 animate-spin text-blue-400" aria-hidden="true" />
-                    <span className="sr-only">Sending Email</span>
-                  </>
-                )
-                : 'Send Reset Email'}
-            </Button>
+            <h2 className="text-lg font-semibold">Reset Password</h2>
           </div>
-          {user ? (
-            <p className="text-xs">
-              Return to{' '}
-              <Link 
-                href="/profile"
-                className="text-blue-400 hover:text-blue-500 underline transition-colors"
+          {isSent ? (
+            <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
+              <MailCheck className="w-10 h-10 text-brand" />
+              <h1 className="mb-6 text-3xl font-bold">An email has been sent.</h1>
+              <p className="max-w-75 text-sm text-center">
+                Check your email for instructions you can follow to reset your password.
+              </p>
+            </div>
+          ) : isError ? (
+            <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
+              <ShieldAlert className="w-10 h-10 text-red-600" />
+              <h1 className="mb-6 text-3xl font-bold">Unable to send email</h1>
+              <Button
+                onClick={handleRetryClick}
+                className="min-w-30 mt-4"
               >
-                profile page
-              </Link>.
-            </p>
+                Retry
+              </Button>
+            </div>
           ) : (
-            <p className="text-xs">
-              Already have a password?{' '}
-              <Link 
-                href="/login"
-                className="text-blue-400 hover:text-blue-500 underline transition-colors"
-              >
-                Sign in here
-              </Link>.
-            </p>
+            <form 
+              className="flex flex-col max-w-md gap-8" 
+              onSubmit={handleReset} 
+            >
+              {/* <h1 className="text-3xl font-semibold -mb-1">Reset Password</h1> */}
+              <div className="flex items-center gap-2 w-full">
+                <EmailIcon />
+                <Input 
+                  id="email" 
+                  placeholder="email@example.com"
+                  type="email"
+                  aria-label="Email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div className="flex gap-4 max-w-xs">
+                <Button
+                  type="submit"
+                  disabled={loading || isSending || email.length === 0}
+                >
+                  {isSending 
+                    ? (
+                      <>
+                        <Loader2 className="w-7 h-7 animate-spin text-blue-400" aria-hidden="true" />
+                        <span className="sr-only">Sending Email</span>
+                      </>
+                    )
+                    : 'Send Reset Email'}
+                </Button>
+              </div>
+            </form>
           )}
-        </form>
-      )}
+        </div>
+      </div>
     </div>
   )
 }
