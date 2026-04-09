@@ -159,10 +159,10 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="pt-14 sm:pt-24 mx-5 xs:mx-8 mb-8">
+    <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
 
       {/* page title */}
-      <h1 className="text-2xl min-w-[156px] font-semibold mx-auto md:mx-0 mb-8">My Profile</h1>
+      <h1 className="text-2xl min-w-[156px] max-w-90 font-semibold mx-auto md:mx-0 mb-8">My Profile</h1>
 
       {/* page layout */}
       <div className="flex gap-8 flex-col ll:flex-row">
