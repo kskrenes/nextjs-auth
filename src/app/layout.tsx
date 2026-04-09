@@ -4,7 +4,7 @@ import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Header from "@/components/header";
 import { AuthProvider } from "../context/AuthContext";
-import { defaultTheme } from "@/helpers/themes";
+import NaeThemeProvider from "@/themes/nae-theme-provider";
 
 const robotoSans = Roboto({
   subsets: ["latin"],
@@ -22,18 +22,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${robotoSans.className} antialiased`}
-        style={{ 
-          backgroundColor: defaultTheme.background,
-          color: defaultTheme.text
-        }}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${robotoSans.className} antialiased`}>
         <AuthProvider>
-          <Header />
-          <main>{children}</main>
-          <Toaster />
+          <NaeThemeProvider>
+            <Header />
+            <main>{children}</main>
+            <Toaster />
+          </NaeThemeProvider>
         </AuthProvider>
       </body>
     </html>
