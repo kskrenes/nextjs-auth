@@ -6,6 +6,7 @@ import AvatarDisplay from "./avatar-display";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDown, LayoutDashboardIcon, LogOut, RotateCcwKey, UserPen } from "lucide-react";
 import ThemeSwitcher from "./theme-switcher";
+import { useSelectedLayoutSegments } from "next/navigation";
 
 const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon className="w-5 h-5" /> },
@@ -16,10 +17,13 @@ const navLinks = [
 const Header = () => {
 
   const { user, loading, logout } = useAuth();
+  const segments = useSelectedLayoutSegments();
+  const isMainGroup = segments.includes('(main)');
+  const headerLeft = isMainGroup ? 'md:left-64' : 'md:left-0';
 
   return (
-    <header className='fixed top-0 left-0 md:left-64 right-0 z-20'>
-      <div className='relative flex w-full mx-auto z-30 px-1 sm:px-3 items-center'>
+    <header className={`fixed top-0 left-0 right-0 z-20 ${headerLeft}`}>
+      <div className='relative flex w-full mx-auto z-30 px-1 sm:px-3 items-center min-h-19'>
         <div className="flex items-center px-2">
           <ThemeSwitcher />
         </div>
