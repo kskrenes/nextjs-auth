@@ -1,7 +1,7 @@
 "use client";
 
 import { triggerEmail } from "@/helpers/trigger-email";
-import { Loader2, ShieldUser } from "lucide-react";
+import { ShieldUser } from "lucide-react";
 import React, { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
@@ -16,6 +16,7 @@ import { getErrorMessage } from "@/helpers/error-message";
 import AvatarUpload from "@/components/avatar-upload";
 import ExternalLink from "@/components/external-link";
 import Badge from "@/components/badge";
+import FullScreenLoader from "@/components/full-screen-loader";
 
 const socialSubstrings = ["linkedin", "facebook", "twitter", "x.com", "instagram", "youtube", "reddit", "twitch", "mastodon", "bsky"];
 const socialIconsMap: { [key: string]: React.ReactElement } = {
@@ -49,13 +50,7 @@ const ProfilePage = () => {
   });
   const { user, loading, updateUser } = useAuth();
 
-  if (loading) {
-    return (
-      <div className='min-h-screen flex items-center justify-center'>
-        <Loader2 className='w-8 h-8 animate-spin text-indigo-500' />
-      </div>
-    );
-  }
+  if (loading) return <FullScreenLoader />;
 
   const handleVerifyEmailClick = async () => {
     if (!user) return;
