@@ -5,6 +5,7 @@ import Link from "next/link"
 import AvatarDisplay from "./avatar-display";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDown, LayoutDashboardIcon, LogOut, RotateCcwKey, UserPen } from "lucide-react";
+import ThemeSwitcher from "./theme-switcher";
 
 const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon className="w-5 h-5" /> },
@@ -19,6 +20,9 @@ const Header = () => {
   return (
     <header className='fixed top-0 left-0 md:left-64 right-0 z-20'>
       <div className='relative flex w-full mx-auto z-30 px-1 sm:px-3 items-center'>
+        <div className="flex items-center px-2">
+          <ThemeSwitcher />
+        </div>
 
         {/* right side actions */}
         {!loading && (
@@ -34,13 +38,13 @@ const Header = () => {
                 <Menu>
                   <MenuButton 
                     aria-label="Open user menu"
-                    className="cursor-pointer hover:bg-panel-highlight rounded-md transition-colors focus:outline-none"
+                    className="nav-item p-0 focus:outline-none"
                   >
                     <div className="flex items-center p-2 gap-3">
                       <AvatarDisplay publicId={user?.avatarId} size={36} />
                       <div className="hidden sm:inline text-left">
-                        {user?.name && <p className="font-medium">{user?.name}</p>}
-                        <p className="text-sm text-foreground-secondary">{user?.username}</p>
+                        {user?.name && <p className="font-medium text-foreground-primary">{user?.name}</p>}
+                        <p className="text-sm">{user?.username}</p>
                       </div>
                       <ChevronDown className="w-4 h-4 hidden sm:inline" />
                     </div>
@@ -48,7 +52,7 @@ const Header = () => {
 
                   {/* dropdown */}
                   <MenuItems 
-                    className="absolute top-17 py-1 right-5 w-64 rounded-md bg-panel text-foreground-secondary"
+                    className="absolute top-17 right-5 w-60 rounded-md bg-panel focus:outline-none"
                   >
                     {/* nav links */}
                     {navLinks.map((link) => (
