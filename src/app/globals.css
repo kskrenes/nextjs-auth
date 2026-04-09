@@ -6,15 +6,15 @@
 }
 
 :root {
-  --page: #e5e6f2;
+  --page: #e3eaef;
 
-  --panel: #ffffff;
-  --panel-highlight: #374151;
-  --panel-active: #f3f4f6;
-  --panel-active-foreground: #111827;
+  --panel: #f3faff;
+  --panel-highlight: #d1d5db;
+  --panel-active: #444b5a;
+  --panel-active-foreground: #eee;
 
   --foreground-primary: #353642;
-  --foreground-secondary: #bfbfbf;
+  --foreground-secondary: #4b596d;
 
   --brand: #6366f1;
   --brand-light: #818cf8;
@@ -25,6 +25,8 @@
   --button-foreground-highlight: #ffffff;
   --button-foreground-low: #4a4d6f;
   --button-secondary-foreground: #6366f1;
+
+  --logo: url('/nAuth-logo-light.png');
 }
 
 [data-theme="dark"] {
@@ -47,6 +49,8 @@
   --button-foreground-highlight: #ffffff;
   --button-foreground-low: #4a4d6f;
   --button-secondary-foreground: #e5e6f2;
+
+  --logo: url('/nAuth-logo.png');
 }
 
 @theme inline {
@@ -65,6 +69,7 @@
   --color-button-foreground-highlight: var(--button-foreground-highlight);
   --color-button-foreground-low: var(--button-foreground-low);
   --color-button-secondary-foreground: var(--button-secondary-foreground);
+  --background-image-logo: var(--logo);
 }
 
 body {
