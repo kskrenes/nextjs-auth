@@ -3,11 +3,11 @@
 import FullScreenLoader from "@/components/full-screen-loader";
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
+import NaeLoader from "@/components/nae-loader";
 import { EmailIcon } from "@/components/profile-icons";
 import { useAuth } from "@/context/AuthContext";
 import { triggerEmail } from "@/helpers/trigger-email";
-import { Loader2, MailCheck, ShieldAlert } from "lucide-react";
-import Link from "next/link";
+import { MailCheck, ShieldAlert } from "lucide-react";
 import { useEffect, useState, type SubmitEvent } from "react";
 import toast from "react-hot-toast";
 
@@ -109,7 +109,7 @@ const TriggerPasswordResetPage = () => {
                   {isSending 
                     ? (
                       <>
-                        <Loader2 className="w-7 h-7 animate-spin text-blue-400" aria-hidden="true" />
+                        <NaeLoader />
                         <span className="sr-only">Sending Email</span>
                       </>
                     )

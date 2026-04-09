@@ -1,12 +1,13 @@
 "use client";
 
 import Button from "@/components/nae-button";
+import NaeLoader from "@/components/nae-loader";
 import { useAuth } from "@/context/AuthContext";
 import { getErrorMessage } from "@/helpers/error-message";
 import { triggerEmail } from "@/helpers/trigger-email";
 import type NaeUser from "@/models/user-interface";
 import axios from "axios";
-import { BadgeCheck, Loader2, ShieldAlert } from "lucide-react";
+import { BadgeCheck, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -96,7 +97,7 @@ const VerifyEmailPage = () => {
               <ShieldAlert className="w-10 h-10 text-red-600" />
             ) 
             : (
-              <Loader2 className="w-10 h-10 animate-spin text-blue-600" />
+              <NaeLoader className="w-10 h-10" />
             )
       }
       <h1 className="mb-6 text-3xl font-bold">

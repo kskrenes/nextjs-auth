@@ -2,9 +2,10 @@
 
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
+import NaeLoader from "@/components/nae-loader";
 import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
-import { Loader2, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useState, type SubmitEvent } from "react";
 
@@ -94,7 +95,7 @@ const LoginPage = () => {
           {loading 
             ? (
               <>
-                <Loader2 className="w-7 h-7 animate-spin text-blue-400" aria-hidden="true" />
+                <NaeLoader />
                 <span className="sr-only">Signing in</span>
               </>
             )

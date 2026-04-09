@@ -7,7 +7,7 @@ interface NaeLoaderProps {
 
 const NaeLoader = ({className = ''}: NaeLoaderProps) => {
   return (
-    <Loader2 className={twMerge('w-8 h-8 animate-spin text-brand', className)} />
+    <Loader2 className={twMerge('w-7 h-7 animate-spin text-brand', className)} />
   )
 }
 

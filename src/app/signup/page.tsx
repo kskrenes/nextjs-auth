@@ -2,11 +2,12 @@
 
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
+import NaeLoader from "@/components/nae-loader";
 import SetPasswordInputs from "@/components/nae-set-password";
 import { getErrorMessage } from "@/helpers/error-message";
 import { excludesSpaces } from "@/helpers/expression-validation";
 import axios from "axios";
-import { Loader2, ShieldAlert } from "lucide-react";
+import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type SubmitEvent } from "react";
@@ -168,7 +169,7 @@ const SignupPage = () => {
           {isLoading 
             ? (
               <>
-                <Loader2 className="w-7 h-7 animate-spin text-blue-400" aria-hidden="true" />
+                <NaeLoader />
                 <span className="sr-only">Creating account</span>
               </>
             )
