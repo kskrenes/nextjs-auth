@@ -14,7 +14,6 @@ import {
 import Input from "@/components/nae-input";
 import { getErrorMessage } from "@/helpers/error-message";
 import AvatarUpload from "@/components/avatar-upload";
-import { defaultTheme } from "@/helpers/themes";
 import ExternalLink from "@/components/external-link";
 import Badge from "@/components/badge";
 
@@ -53,7 +52,7 @@ const ProfilePage = () => {
   if (loading) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        <Loader2 className='w-8 h-8 animate-spin text-blue-500' />
+        <Loader2 className='w-8 h-8 animate-spin text-indigo-500' />
       </div>
     );
   }
@@ -162,18 +161,17 @@ const ProfilePage = () => {
     <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
 
       {/* page title */}
-      <h1 className="text-2xl min-w-[156px] max-w-90 font-semibold mx-auto md:mx-0 mb-8">My Profile</h1>
+      <h1 className="text-2xl min-w-39 max-w-90 font-semibold mx-auto md:mx-0 mb-8">My Profile</h1>
 
       {/* page layout */}
       <div className="flex gap-8 flex-col ll:flex-row">
         
         {/* first column */}
-        <div className="xs:w-90 xs:flex-shrink-0 xs:mx-auto md:mx-0">
+        <div className="xs:w-90 xs:shrink-0 xs:mx-auto md:mx-0">
 
           {/* profile card */}
           <div 
-            className="flex flex-col w-full px-6 py-12 gap-8 rounded-md" 
-            style={{ backgroundColor: defaultTheme.panel }}
+            className="flex flex-col w-full px-6 py-12 gap-8 rounded-md bg-panel" 
           >
             {/* avatar */}
             <AvatarUpload />
@@ -184,7 +182,7 @@ const ProfilePage = () => {
               {user && user.name && (<h1 className="text-2xl xs:text-3xl xs:max-w-75 truncate font-semibold">{user.name}</h1>)}
               {/* username/admin */}
               <div className="flex items-center gap-2">
-                <p className="text-gray-400 text-lg xs:text-xl">{user?.username}</p>
+                <p className="text-foreground-secondary text-lg xs:text-xl">{user?.username}</p>
                 {user?.isAdmin && <Badge label="Admin" variant="green" />}
               </div>
             </div>
@@ -225,8 +223,7 @@ const ProfilePage = () => {
             <div className="flex flex-col gap-8 max-w-150">
               {/* title panel */}
               <div 
-                className="px-5 py-3 rounded-md" 
-                style={{ backgroundColor: defaultTheme.panel }}
+                className="px-5 py-3 rounded-md bg-panel" 
               >
                 <h2 className="text-lg font-semibold">Edit Profile</h2>
               </div>
@@ -324,8 +321,7 @@ const ProfilePage = () => {
             <div className="flex flex-col gap-8 max-w-150">
               {/* title panel */}
               <div 
-                className="px-5 py-3 rounded-md" 
-                style={{ backgroundColor: defaultTheme.panel }}
+                className="px-5 py-3 rounded-md bg-panel"
               >
                 <h2 className="text-lg font-semibold">My Info</h2>
               </div>
@@ -335,7 +331,7 @@ const ProfilePage = () => {
                   <label className="text-lg font-semibold">Company</label>
                   <div className="flex items-center gap-2">
                     <CompanyIcon />
-                    <span className="text-gray-400">{user?.company}</span>
+                    <span className="text-foreground-secondary">{user?.company}</span>
                   </div>
                 </div>
               )}
@@ -350,7 +346,7 @@ const ProfilePage = () => {
                       <ExternalLink href={`mailto:${user.email}`}>{user.email}</ExternalLink>
                     ) : (
                       // unverified email with badge
-                      <span className="flex gap-2 text-gray-400">
+                      <span className="flex gap-2 text-foreground-secondary">
                         {user.email}
                         <Badge label="Unverified" variant="red" />
                       </span>
