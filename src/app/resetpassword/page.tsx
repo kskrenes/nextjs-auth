@@ -152,7 +152,7 @@ const ResetPasswordPage = () => {
         </div>
       ) : (
         <form 
-          className="flex w-[300px] flex-col items-center py-2" 
+          className="flex w-75 flex-col items-center py-2" 
           onSubmit={handleReset} 
         >
           <h1 className="mb-6 text-3xl font-bold">Reset Password</h1>
