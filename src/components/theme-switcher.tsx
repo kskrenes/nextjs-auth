@@ -40,11 +40,15 @@ const ThemeSwitcher = () => {
       >
         {/* nav links */}
         {themeItems.map((item) => (
-          <MenuItem key={`theme-item-${item.name}`}>
-            <div className="nav-item" onClick={() => setTheme(item.name)}>
-              {item.icon}
-              {item.label}
-            </div>
+          <MenuItem 
+            as="button"
+            type="button"
+            key={`theme-item-${item.name}`}
+            className="nav-item"
+            onClick={() => setTheme(item.name)}
+          >
+            {item.icon}
+            {item.label}
           </MenuItem>
         ))}
       </MenuItems>
