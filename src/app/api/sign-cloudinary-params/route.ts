@@ -10,8 +10,8 @@ export async function POST(request: NextRequest) {
     } catch (error: unknown) {
       if (error instanceof AuthTokenError) {
         return NextResponse.json(
-          { error: error.message }, 
-          { status: 401 }
+          { error: "Unauthorized" }, 
+          { status: error.status ?? 401 }
         );
       }
       throw error;
