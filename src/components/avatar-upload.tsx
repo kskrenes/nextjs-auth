@@ -14,7 +14,8 @@ export default function AvatarUpload() {
   return (
     <div className="mx-auto rounded-full flex items-center justify-center relative">
       <CldUploadWidget 
-        uploadPreset="nae_avatar_preset"
+        uploadPreset="ml_default"
+        signatureEndpoint="/api/sign-cloudinary-params"
         onSuccess={async (result) => {
           if (typeof result.info !== 'string') {
             try {
