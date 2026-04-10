@@ -145,6 +145,7 @@ body {
     text-foreground-secondary
     hover:bg-panel-highlight
     cursor-pointer 
+    data-focus:bg-panel-highlight
 }
 
 @utility nav-item-selected {
