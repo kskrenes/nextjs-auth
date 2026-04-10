@@ -5,7 +5,8 @@ import Link from "next/link"
 import AvatarDisplay from "./avatar-display";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDown, LayoutDashboardIcon, LogOut, RotateCcwKey, UserPen } from "lucide-react";
-import { defaultTheme } from "@/helpers/themes";
+import ThemeSwitcher from "./theme-switcher";
+import { useSelectedLayoutSegments } from "next/navigation";
 
 const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon className="w-5 h-5" /> },
@@ -16,10 +17,16 @@ const navLinks = [
 const Header = () => {
 
   const { user, loading, logout } = useAuth();
+  const segments = useSelectedLayoutSegments();
+  const isMainGroup = segments.includes('(main)');
+  const headerLeft = isMainGroup ? 'md:left-64' : 'md:left-0';
 
   return (
-    <header className='fixed top-0 left-0 md:left-64 right-0 z-20'>
-      <div className='relative flex w-full mx-auto z-30 px-1 sm:px-3 items-center'>
+    <header className={`fixed top-0 left-0 right-0 z-20 ${headerLeft}`}>
+      <div className='relative flex w-full mx-auto z-30 px-1 sm:px-3 items-center min-h-19'>
+        <div className="flex items-center px-2">
+          <ThemeSwitcher />
+        </div>
 
         {/* right side actions */}
         {!loading && (
@@ -35,13 +42,13 @@ const Header = () => {
                 <Menu>
                   <MenuButton 
                     aria-label="Open user menu"
-                    className="cursor-pointer hover:bg-gray-700 rounded-md transition-colors"
+                    className="nav-item p-0 focus:outline-none"
                   >
                     <div className="flex items-center p-2 gap-3">
                       <AvatarDisplay publicId={user?.avatarId} size={36} />
                       <div className="hidden sm:inline text-left">
-                        {user?.name && <p className="font-medium">{user?.name}</p>}
-                        <p className="text-sm text-gray-400">{user?.username}</p>
+                        {user?.name && <p className="font-medium text-foreground-primary">{user?.name}</p>}
+                        <p className="text-sm">{user?.username}</p>
                       </div>
                       <ChevronDown className="w-4 h-4 hidden sm:inline" />
                     </div>
@@ -49,26 +56,25 @@ const Header = () => {
 
                   {/* dropdown */}
                   <MenuItems 
-                    style={{ backgroundColor: defaultTheme.panel }}
-                    className="absolute top-[68px] py-1 right-5 w-64 rounded-md text-gray-400"
+                    className="absolute top-17 right-5 w-60 rounded-md bg-panel focus:outline-none"
                   >
                     {/* nav links */}
                     {navLinks.map((link) => (
                       <MenuItem key={`user-nav-${link.name}`}>
-                        <Link href={link.href} className="flex items-center px-4 py-2 gap-2 hover:bg-gray-700">
+                        <Link href={link.href} className="nav-item">
                           {link.icon}
                           {link.name}
                         </Link>
                       </MenuItem>
                     ))}
 
-                    <hr className="border-t border-gray-700/50 my-1" />
+                    <hr className="border-t border-panel-highlight my-1" />
 
                     {/* sign out button */}
                     <MenuItem>
                       <button 
                         type="button"
-                        className="w-full block px-4 py-2 hover:bg-gray-700 text-left cursor-pointer"
+                        className="nav-item"
                         onClick={logout}
                       >
                         <LogOut className="w-5 h-5 inline mr-2" />
@@ -86,14 +92,14 @@ const Header = () => {
                 {/* sign in button */}
                 <Link 
                   href="/login" 
-                  className="rounded-md px-2.5 py-0.5 text-gray-50 hover:bg-gray-700 hover:text-white transition-colors cursor-pointer" 
+                  className="button-ghost px-2.5 py-0.5"
                 >
                   Sign In
                 </Link>
                 {/* sign up button */}
                 <Link 
                   href="/signup" 
-                  className="rounded-md px-2.5 py-0.5 font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-colors cursor-pointer" 
+                  className="button-primary px-2.5 py-0.5" 
                 >
                   Get Started
                 </Link>

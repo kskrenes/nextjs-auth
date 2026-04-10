@@ -1,11 +1,12 @@
 "use client";
 
 import Button from "@/components/nae-button";
+import NaeLoader from "@/components/nae-loader";
 import SetPasswordInputs from "@/components/nae-set-password";
 import { getErrorMessage } from "@/helpers/error-message";
 import { excludesSpaces } from "@/helpers/expression-validation";
 import axios from "axios";
-import { LaptopMinimalCheck, Loader2, ShieldAlert } from "lucide-react";
+import { LaptopMinimalCheck, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type SubmitEvent } from "react";
@@ -152,7 +153,7 @@ const ResetPasswordPage = () => {
         </div>
       ) : (
         <form 
-          className="flex w-[300px] flex-col items-center py-2" 
+          className="flex w-75 flex-col items-center py-2" 
           onSubmit={handleReset} 
         >
           <h1 className="mb-6 text-3xl font-bold">Reset Password</h1>
@@ -182,7 +183,7 @@ const ResetPasswordPage = () => {
             {isPendingReset 
               ? (
                 <>
-                  <Loader2 className="w-7 h-7 animate-spin text-blue-400" aria-hidden="true" />
+                  <NaeLoader />
                   <span className="sr-only">Resetting password</span>
                 </>
               )

@@ -12,21 +12,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
     'primary' | 'secondary';
 }
 
-const baseStyles = `
-  flex justify-center items-center 
-  px-6 py-2.5 rounded-md 
-  text-lg font-semibold 
-  transition-colors 
-  cursor-pointer disabled:cursor-not-allowed`;
-
-const primaryStyles = `
-  bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-900/50 
-  text-[#e5e6f2] disabled:text-gray-500/50`;
-  
-const secondaryStyles = `
-  bg-indigo-500/0 hover:bg-indigo-600 disabled:bg-indigo-900/0
-  border-2 border-indigo-500 hover:border-indigo-600 disabled:border-indigo-900/40
-  text-[#e5e6f2] hover:text-white disabled:text-gray-700`;
+const baseStyles = `px-6 py-2.5 text-lg`;
 
 const Button: React.FC<ButtonProps> = ({
   children, 
@@ -37,8 +23,8 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
   
   const variantStyles = variant === 'primary'
-    ? primaryStyles
-    : secondaryStyles;
+    ? 'button-primary'
+    : 'button-secondary';
 
   return (
     <button

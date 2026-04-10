@@ -20,7 +20,7 @@ const Input: React.FC<InputProps> = ({
   className = '',
   ...rest 
 }) => {
-  const baseStyles = 'p-2 border border-gray-700 text-gray-400 rounded-lg focus:outline-none focus:border-indigo-400';
+  const baseStyles = 'p-2 border border-panel-highlight text-foreground-secondary rounded-lg focus:outline-none focus:border-brand-light';
   const autoCompleteValue = autoComplete || id;
   return (
     <div className="flex flex-col gap-2 w-full">
@@ -31,7 +31,7 @@ const Input: React.FC<InputProps> = ({
           {label && <label className='text-lg font-semibold' htmlFor={id}>{label}</label>}
           
           {/* show instruction text top right */}
-          {instruction && <p className='text-xs text-gray-400'>{instruction}</p>}
+          {instruction && <p className='text-xs text-foreground-secondary'>{instruction}</p>}
         </div>
       )}
       {/* spread the rest of the props onto the native input element */}
