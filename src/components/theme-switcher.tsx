@@ -25,7 +25,7 @@ const ThemeSwitcher = () => {
   return (
     <Menu>
       <MenuButton 
-        aria-label="Open user menu"
+        aria-label="Open theme menu"
         className="nav-item p-0 focus:outline-none"
       >
         <div className="flex items-center pl-2 pr-1 py-2 gap-1">
