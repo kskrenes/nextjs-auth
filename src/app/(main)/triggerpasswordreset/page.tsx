@@ -22,7 +22,7 @@ const TriggerPasswordResetPage = () => {
   useEffect(() => {
     if (!user) return;
 
-    setEmail(user.email);
+    setEmail((prev) => prev || user.email);
   }, [user]);
   
   const handleReset = async (e: SubmitEvent<HTMLFormElement>) => {
