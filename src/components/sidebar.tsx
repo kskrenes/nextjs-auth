@@ -9,13 +9,12 @@ const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon /> },
   { name: 'Profile', href: '/profile', icon: <UserPen /> },
   { name: 'Reset Password', href: '/triggerpasswordreset', icon: <RotateCcwKey /> },
-  { name: 'Sign In', href: '/login', icon: <LogIn /> },
 ];
 
 const Sidebar = () => {
 
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   return (
     <aside 
@@ -48,15 +47,25 @@ const Sidebar = () => {
               </li>
             )
           })}
-          {/* sign out item */}
+          {/* sign in or out item */}
           <li>
-            <button 
-              className="nav-item"
-              onClick={logout}
-            >
-              <LogOut />
-              Sign Out
-            </button>
+            {user ? (
+              <button 
+                className="nav-item"
+                onClick={logout}
+              >
+                <LogOut />
+                Sign Out
+              </button>
+            ) : (
+              <Link 
+                href="/login"
+                className="nav-item"
+              >
+                <LogIn />
+                Sign In
+              </Link>
+            )}
           </li>
         </ul>
       </nav>
