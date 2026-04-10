@@ -53,7 +53,7 @@ profile
 - [x] implement edit of non-image fields
 - [x] implement avatar edit
 - [x] layout and styling
-- [ ] implement signed uploads to cloudinary
+- [x] implement signed uploads to cloudinary
 
 additional authentication methods
 - [ ] add social login (google)
