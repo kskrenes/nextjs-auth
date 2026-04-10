@@ -5,7 +5,7 @@ import { ReactNode } from "react";
 
 const NaeThemeProvider = ({children}: {children: ReactNode}) => {
   return (
-    <ThemeProvider>
+    <ThemeProvider attribute="data-theme" defaultTheme="system" enableSystem>
       {children}
     </ThemeProvider>
   )
