@@ -15,6 +15,9 @@ const ThemeSwitcher = () => {
 
   const [isMounted, setIsMounted] = useState(false);
   const { theme, setTheme } = useTheme();
+  const activeThemeItem =
+    themeItems.find((item) => item.name === theme) ??
+    themeItems.find((item) => item.name === "system");
 
   useEffect(() => {
     setIsMounted(true);
@@ -29,7 +32,7 @@ const ThemeSwitcher = () => {
         className="nav-item p-0 focus:outline-none"
       >
         <div className="flex items-center pl-2 pr-1 py-2 gap-1">
-          {themeItems.find((item) => item.name === theme)?.icon}
+          {activeThemeItem?.icon}
           <ChevronDown className="w-4 h-4" />
         </div>
       </MenuButton>
