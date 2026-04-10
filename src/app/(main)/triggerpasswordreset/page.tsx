@@ -1,6 +1,5 @@
 "use client";
 
-import FullScreenLoader from "@/components/full-screen-loader";
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
@@ -18,7 +17,7 @@ const TriggerPasswordResetPage = () => {
   const [isError, setIsError] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
 
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!user) return;
@@ -102,7 +101,7 @@ const TriggerPasswordResetPage = () => {
               <div className="flex gap-4 max-w-xs">
                 <Button
                   type="submit"
-                  disabled={loading || isSending || email.length === 0}
+                  disabled={isSending || email.length === 0}
                 >
                   {isSending 
                     ? (
