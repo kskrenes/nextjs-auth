@@ -25,8 +25,6 @@ const TriggerPasswordResetPage = () => {
 
     setEmail(user.email);
   }, [user]);
-
-  if (loading) return <FullScreenLoader />;
   
   const handleReset = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
