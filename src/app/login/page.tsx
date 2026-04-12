@@ -1,5 +1,6 @@
 "use client";
 
+import GoogleLoginButton from "@/components/google-login-button";
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
@@ -50,11 +51,15 @@ const LoginPage = () => {
 
   return (
     <div className="flex min-h-screen items-center justify-center">
+      {/* sign in form */}
       <form 
         className="flex w-75 flex-col items-center py-2 gap-8" 
         onSubmit={handleLogin}
       >
+        {/* title */}
         <h1 className="text-3xl font-bold">Sign In</h1>
+
+        {/* error message */}
         {(isInvalid || isServerError) && (
           <div role="alert" className="flex items-center space-x-2 text-sm text-red-500">
             <ShieldAlert className="w-4 h-4" />
@@ -66,7 +71,10 @@ const LoginPage = () => {
             </span>
           </div>
         )}
+
+        {/* input group */}
         <div className="flex flex-col gap-4 w-full">
+          {/* email */}
           <Input 
             id="email" 
             label="Email"
@@ -76,6 +84,7 @@ const LoginPage = () => {
             value={credentials.email}
             onChange={(e) => setCredentials({...credentials, email: e.target.value})}
           />
+          {/* password */}
           <Input 
             id="password" 
             label="Password"
@@ -87,6 +96,8 @@ const LoginPage = () => {
             onChange={(e) => setCredentials({...credentials, password: e.target.value})}
           />
         </div>
+
+        {/* submit button */}
         <Button
           type="submit"
           className="w-full"
@@ -101,7 +112,13 @@ const LoginPage = () => {
             )
             : 'Sign In'}
         </Button>
+
+        {/* google sso button */}
+        <GoogleLoginButton />
+
+        {/* links group */}
         <div className="flex flex-col items-center gap-2">
+          {/* sign up link */}
           <p className="text-xs">
             Don't have an account?{' '}
             <Link 
@@ -111,6 +128,7 @@ const LoginPage = () => {
               Sign up here
             </Link>.
           </p>
+          {/* reset password link */}
           <Link 
             href="/triggerpasswordreset"
             className="text-xs text-brand hover:text-brand-highlight underline transition-colors"
