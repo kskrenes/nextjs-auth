@@ -65,7 +65,10 @@ export async function POST(request: NextRequest) {
       ...(userUpdates.website !== undefined && { website: userUpdates.website.trim() }),
       ...(userUpdates.avatarId !== undefined && { avatarId: userUpdates.avatarId.trim() }),
       ...(userUpdates.socialLinks !== undefined && { socialLinks: userUpdates.socialLinks.map((link) => link.trim()) }),
-      hasCompletedProfile: settingUsername,
+    }
+
+    if (settingUsername) {
+      update.hasCompletedProfile = true;
     }
 
     // if avatar is being updated, set the old avatar image to be deleted unless it's the default
