@@ -1,5 +1,5 @@
 import jwt, { type JwtPayload } from "jsonwebtoken";
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
 export const TOKEN_COOKIE_NAME = "naetoken" as const;
 
@@ -60,4 +60,43 @@ export const getIdFromToken = async (request: NextRequest) => {
   }
 
   return (decodedToken as JwtPayload).id;
+}
+
+export const signSessionToken = (userData: {
+  id: string;
+  username: string;
+  email: string;
+  hasCompletedProfile: boolean;
+}) => {
+  // throw if token secret is not configured
+  const tokenSecret = process.env.JWT_SECRET;
+  if (!tokenSecret) {
+    console.error("JWT_SECRET is not configured");
+    throw new Error("Invalid server configuration");
+  }
+
+  // create session token
+  const tokenData = { ...userData };
+  const sessionToken = jwt.sign(
+    tokenData, 
+    tokenSecret, 
+    { expiresIn: "1d" }
+  );
+
+  return sessionToken;
+}
+      
+export const storeSessionCookie = (token: string, response: NextResponse) => {
+  // store token in client cookie
+  response.cookies.set(
+    TOKEN_COOKIE_NAME, 
+    token, 
+    { 
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24,
+    }
+  );
 }
