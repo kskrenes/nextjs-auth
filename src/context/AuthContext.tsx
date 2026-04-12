@@ -8,6 +8,7 @@ import { createContext, ReactNode, useContext, useEffect, useState } from 'react
 import toast from 'react-hot-toast';
 
 type EditableProfileFields = {
+  username?: string;
   name?: string;
   company?: string;
   website?: string;
@@ -19,6 +20,7 @@ export interface AuthContextType {
   user: NaeUser | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  loginViaGoogle: (token: string) => Promise<void>
   logout: () => Promise<void>;
   updateUser: (user: EditableProfileFields) => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;
@@ -28,6 +30,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   loading: true,
   login: async () => {},
+  loginViaGoogle: async () => {},
   logout: async () => {},
   updateUser: async () => {},
   verifyEmail: async () => {},
@@ -106,8 +109,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
+  const loginViaGoogle = async (token: string) => {
+    setLoading(true);
+    try {
+      const res = await axios.post('/api/auth/google', { token });
+      setUser(res.data.user);
+      router.replace("/dashboard");
+    } catch (error) {
+      throw error;      
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, updateUser, verifyEmail }}>
+    <AuthContext.Provider value={{ user, loading, login, loginViaGoogle, logout, updateUser, verifyEmail }}>
       {children}
     </AuthContext.Provider>
   );
