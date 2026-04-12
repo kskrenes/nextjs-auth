@@ -1,7 +1,7 @@
 'use client';
 
 import { getErrorMessage } from '@/helpers/error-message';
-import NaeUser from '@/models/user-interface';
+import NaeUser from '@/types/user-interface';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';

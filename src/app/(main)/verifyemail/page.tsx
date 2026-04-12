@@ -5,7 +5,7 @@ import NaeLoader from "@/components/nae-loader";
 import { useAuth } from "@/context/AuthContext";
 import { getErrorMessage } from "@/helpers/error-message";
 import { triggerEmail } from "@/helpers/trigger-email";
-import type NaeUser from "@/models/user-interface";
+import type NaeUser from "@/types/user-interface";
 import axios from "axios";
 import { BadgeCheck, ShieldAlert } from "lucide-react";
 import Link from "next/link";

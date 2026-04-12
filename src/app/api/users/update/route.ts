@@ -1,11 +1,11 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { AuthTokenError, getIdFromToken } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
-import type NaeUser from "@/models/user-interface";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import { defaultAvatarId } from "@/helpers/themes";
+import NaeUser from "@/types/user-interface";
 
 export async function POST(request: NextRequest) {
   try {
