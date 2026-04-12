@@ -4,6 +4,7 @@ import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
 import { getRequestBody } from "@/helpers/validate-request";
 import { excludesSpaces, meetsMinimum, validateEmail } from "@/helpers/expression-validation";
+import mongoose from "mongoose";
 
 export async function POST(request: NextRequest) {
   try {
@@ -135,10 +136,17 @@ export async function POST(request: NextRequest) {
     const hashedPassword = await bcrypt.hash(normalizedPassword, salt);
 
     // create new user
+    const userId = new mongoose.Types.ObjectId();
     const user = new User({
+      _id: userId,
       username: normalizedUsername, 
       email: normalizedEmail, 
       password: hashedPassword,
+      hasCompletedProfile: true,
+      accounts: [{ 
+        provider: 'credentials',
+        providerId: userId.toString(),
+      }],
     });
 
     // store user in the database
@@ -162,20 +170,31 @@ export async function POST(request: NextRequest) {
       throw error;
     }
 
-    // return sanitized user
-    return NextResponse.json({
-      message: "User created successfully",
-      success: true,
-      user: {
-        id: storedUser._id,
-        username: storedUser.username,
-        email: storedUser.email,
-        isVerified: storedUser.isVerified,
-        isAdmin: storedUser.isAdmin,
-      },
-    }, { status: 201 });
+    // create sanitized user for response
+    const sanitizedUser = {
+      _id: storedUser._id,
+      username: storedUser.username,
+      email: storedUser.email,
+      name: storedUser.name,
+      company: storedUser.company,
+      website: storedUser.website,
+      socialLinks: storedUser.socialLinks,
+      avatarId: storedUser.avatarId,
+      hasCompletedProfile: storedUser.hasCompletedProfile,
+      isVerified: storedUser.isVerified,
+      isAdmin: storedUser.isAdmin,
+    };
 
-  } catch (error: unknown) {
+    return NextResponse.json(
+      {
+        message: "User created successfully",
+        success: true,
+        user: sanitizedUser,
+      }, 
+      { status: 201 }
+    );
+  } 
+  catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unable to create user";
     console.error(message);
     return NextResponse.json(
