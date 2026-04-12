@@ -1,11 +1,11 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { AuthTokenError, getIdFromToken } from "@/helpers/token";
+import { AuthTokenError, getIdFromToken, signSessionToken, storeSessionCookie } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
+import type NaeUser from "@/types/user-interface";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import { defaultAvatarId } from "@/helpers/themes";
-import NaeUser from "@/types/user-interface";
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
     // check for valid fields at runtime
     const userUpdates = reqBody as Partial<NaeUser>;
     if (
+      (userUpdates.username !== undefined && typeof userUpdates.username !== "string") ||
       (userUpdates.name !== undefined && typeof userUpdates.name !== "string") ||
       (userUpdates.company !== undefined && typeof userUpdates.company !== "string") ||
       (userUpdates.website !== undefined && typeof userUpdates.website !== "string") ||
@@ -54,13 +55,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const settingUsername = userUpdates.username !== undefined;
+
     // set new values
     const update: any = {
+      ...(userUpdates.username !== undefined && { username: userUpdates.username.trim() }),
       ...(userUpdates.name !== undefined && { name: userUpdates.name.trim() }),
       ...(userUpdates.company !== undefined && { company: userUpdates.company.trim() }),
       ...(userUpdates.website !== undefined && { website: userUpdates.website.trim() }),
       ...(userUpdates.avatarId !== undefined && { avatarId: userUpdates.avatarId.trim() }),
       ...(userUpdates.socialLinks !== undefined && { socialLinks: userUpdates.socialLinks.map((link) => link.trim()) }),
+      hasCompletedProfile: settingUsername,
     }
 
     // if avatar is being updated, set the old avatar image to be deleted unless it's the default
@@ -78,7 +83,7 @@ export async function POST(request: NextRequest) {
     }
 
     // update user
-    const updatedUser = await User.findByIdAndUpdate(
+    let updatedUser = await User.findByIdAndUpdate(
       authenticatedUserId,
       update,
       {
@@ -104,24 +109,53 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // return sanitized user
-    return NextResponse.json({
-      message: "User updated successfully",
-      success: true,
-      user: {
-        _id: updatedUser._id,
-        username: updatedUser.username,
-        email: updatedUser.email,
-        name: updatedUser.name,
-        company: updatedUser.company,
-        website: updatedUser.website,
-        socialLinks: updatedUser.socialLinks,
-        avatarId: updatedUser.avatarId,
-        isVerified: updatedUser.isVerified,
-        isAdmin: updatedUser.isAdmin,
-      },
-    }, { status: 200 });
+    // create sanitized user for response
+    const sanitizedUser = {
+      _id: updatedUser._id,
+      username: updatedUser.username,
+      email: updatedUser.email,
+      name: updatedUser.name,
+      company: updatedUser.company,
+      website: updatedUser.website,
+      socialLinks: updatedUser.socialLinks,
+      avatarId: updatedUser.avatarId,
+      hasCompletedProfile: updatedUser.hasCompletedProfile,
+      isVerified: updatedUser.isVerified,
+      isAdmin: updatedUser.isAdmin,
+    };
 
+    // create success response
+    const response = NextResponse.json(
+      {
+        message: "User updated successfully",
+        success: true,
+        user: sanitizedUser,
+      }, 
+      { status: 200 }
+    );
+
+    // if updating username, refresh session token
+    if (settingUsername) {
+      let sessionToken;
+      try {
+        sessionToken = signSessionToken({
+          id: sanitizedUser._id,
+          username: sanitizedUser.username,
+          email: sanitizedUser.email,
+          hasCompletedProfile: sanitizedUser.hasCompletedProfile,
+        });
+      } catch (error) {
+        return NextResponse.json(
+          { error: "Unable to continue session" },
+          { status: 500 }
+        );
+      }
+
+      storeSessionCookie(sessionToken, response);
+    }
+
+    // return success
+    return response;
   } 
   catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Unable to update user";
