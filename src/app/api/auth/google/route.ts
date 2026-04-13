@@ -111,6 +111,14 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    if (storedUser) {
+      // upgrade isVerified if Google now says the email is verified
+      if (!storedUser.isVerified && email_verified) {
+        storedUser.isVerified = true;
+        await storedUser.save();
+      }
+    }
     
     const normalizedEmail = email.trim().toLowerCase();
 
@@ -133,6 +141,12 @@ export async function POST(request: NextRequest) {
 
         if (!alreadyLinked) {
           storedUser.accounts.push({ provider: "google", providerId: sub });
+
+          // upgrade isVerified if Google now says the email is verified (never downgrade)
+          if (!storedUser.isVerified) {
+            storedUser.isVerified = email_verified;
+          }
+          
           await storedUser.save();
         }
 
