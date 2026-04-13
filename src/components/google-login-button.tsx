@@ -6,13 +6,20 @@ import { useEffect } from 'react';
 export default function GoogleLoginButton() {
 
   const { loading, loginViaGoogle } = useAuth();
+
+  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   
   useEffect(() => {
-    // define the global callback function
-    window.handleCredentialResponse = (response) => {
-      const idToken = response.credential;
-      handleBackendAuth(idToken);
+    // define a local callback and expose it for cleanup
+    const handleCredentialResponseLocal = (response: any) => {
+      const idToken = response?.credential;
+      if (idToken) {
+        handleBackendAuth(idToken);
+      }
     };
+
+    // expose to window so the script can call it if needed
+    window.handleCredentialResponse = handleCredentialResponseLocal;
 
     // load google script
     const script = document.createElement('script');
@@ -22,9 +29,14 @@ export default function GoogleLoginButton() {
     document.body.appendChild(script);
 
     script.onload = () => {
+      if (!clientId) {
+        console.error("NEXT_PUBLIC_GOOGLE_CLIENT_ID is not configured");
+        return;
+      }
+
       window.google?.accounts.id.initialize({
-        client_id: '196254866356-4tqaqmloq3tobllnbi4m4sb1inte6imu.apps.googleusercontent.com',
-        callback: window.handleCredentialResponse,
+        client_id: clientId,
+        callback: handleCredentialResponseLocal,
       });
       window.google?.accounts.id.renderButton(
         document.getElementById('gsi-button')!,
