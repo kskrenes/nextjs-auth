@@ -90,8 +90,7 @@ export async function POST(request: NextRequest) {
       !payload.sub ||
       typeof payload.sub !== "string" ||
       !payload.email ||
-      typeof payload.email !== "string" ||
-      typeof payload.name !== "string"
+      typeof payload.email !== "string"
     ) {
       console.error("Invalid token payload");
       return NextResponse.json(
@@ -100,7 +99,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { sub, email, name, picture, email_verified } = payload;
+    const { sub, email, picture, email_verified } = payload;
+    const name = typeof payload.name === "string" ? payload.name : "";
 
     // find existing user
     let storedUser = await User.findOne({
