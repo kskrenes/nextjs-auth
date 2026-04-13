@@ -56,7 +56,7 @@ profile
 - [x] implement signed uploads to cloudinary
 
 additional authentication methods
-- [ ] add social login (google)
+- [x] add social login (google)
 - [ ] research multifactor auth (MFA)
 - [ ] research one-time passcodes
 - [ ] research passkeys
