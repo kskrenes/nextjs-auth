@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
           if (!storedUser.isVerified) {
             storedUser.isVerified = email_verified;
           }
-          
+
           await storedUser.save();
         }
 
@@ -166,8 +166,13 @@ export async function POST(request: NextRequest) {
           isVerified: email_verified,
         });
 
+        // import the avatar from Google
         if (picture && typeof picture === 'string') {
-          newUser.avatarId = await getAvatarId(picture);
+          try {
+            newUser.avatarId = await getAvatarId(picture);  
+          } catch (error) {
+            console.error("Failed to import Google avatar", error);
+          }
         }
 
         // store user in the database
