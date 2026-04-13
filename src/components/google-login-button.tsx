@@ -6,8 +6,6 @@ import { useEffect } from 'react';
 export default function GoogleLoginButton() {
 
   const { loading, loginViaGoogle } = useAuth();
-
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
   
   useEffect(() => {
     // define a local callback and expose it for cleanup
@@ -20,6 +18,8 @@ export default function GoogleLoginButton() {
 
     // expose to window so the script can call it if needed
     window.handleCredentialResponse = handleCredentialResponseLocal;
+
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
     // load google script
     const script = document.createElement('script');
