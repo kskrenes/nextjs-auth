@@ -6,13 +6,32 @@ import { v2 as cloudinary } from 'cloudinary';
 import { signSessionToken, storeSessionCookie, TOKEN_COOKIE_NAME } from "@/helpers/token";
 import { connect } from "@/dbconfig/dbconfig";
 
-function createUsername(name: string, email: string) {
-  const suffix = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+const createUniqueUsername = async (name: string, email: string): Promise<string> => {
+  // generate a base username from the name or email
   let prefix = name.toLowerCase().replace(/\s+/g, '');
   if (!prefix) {
     prefix = email.split('@')[0];
   }
-  return prefix + suffix;
+
+  // append a random 4-digit alphanumeric suffix
+  const CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  const SUFFIX_LEN = 4;
+  const MAX_ATTEMPTS = 10;  // short circuit to avoid infinite loop in case of high collision
+
+  for (let i = 0; i < MAX_ATTEMPTS; i++) {
+    let suffix = '';
+    for (let j = 0; j < SUFFIX_LEN; j++) {
+      suffix += CHARS[Math.floor(Math.random() * CHARS.length)];
+    }
+    const candidate = prefix + suffix;
+    const exists = await User.exists({ username: candidate });
+
+    // return the first candidate that doesn't exist in the database
+    if (!exists) return candidate;
+  }
+
+  // last-resort fallback if we hit too many collisions
+  return prefix + Date.now().toString(36);
 }
 
 async function getAvatarId(url: string) {
@@ -119,7 +138,7 @@ export async function POST(request: NextRequest) {
 
       // ...otherwise create and insert new user
       } else {
-        const username = createUsername(name, email);
+        const username = createUniqueUsername(name, email);
       
         const newUser = new User({
           username, 
