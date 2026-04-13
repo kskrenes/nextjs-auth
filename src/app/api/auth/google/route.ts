@@ -3,8 +3,8 @@ import User from "@/models/user-model";
 import { OAuth2Client } from "google-auth-library";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
-import jwt from "jsonwebtoken";
 import { signSessionToken, storeSessionCookie, TOKEN_COOKIE_NAME } from "@/helpers/token";
+import { connect } from "@/dbconfig/dbconfig";
 
 function createUsername(name: string, email: string) {
   const suffix = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
@@ -22,6 +22,8 @@ async function getAvatarId(url: string) {
 
 export async function POST(request: NextRequest) {
   try {
+    await connect();
+
     // throw if request json is invalid
     let reqBody: object;
     try {
