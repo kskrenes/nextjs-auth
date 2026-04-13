@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
 
       // ...otherwise create and insert new user
       } else {
-        const username = createUniqueUsername(name, email);
+        const username = await createUniqueUsername(name, email);
       
         const newUser = new User({
           username, 
