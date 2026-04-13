@@ -166,6 +166,21 @@ export async function POST(request: NextRequest) {
           isVerified: email_verified,
         });
 
+        // ensure cloudinary url configuration before attempting to import avatar
+        const cloudinaryUrl = process.env.CLOUDINARY_URL;
+        if (!cloudinaryUrl) {
+          console.error("Cloudinary URL not configured, cannot import Google avatar");
+        } else {
+          // import the avatar from Google
+          if (picture && typeof picture === 'string') {
+            try {
+              newUser.avatarId = await getAvatarId(picture);  
+            } catch (error) {
+              console.error("Failed to import Google avatar", error);
+            }
+          }
+        }
+
         // import the avatar from Google
         if (picture && typeof picture === 'string') {
           try {
