@@ -3,7 +3,7 @@ import User from "@/models/user-model";
 import { OAuth2Client } from "google-auth-library";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
-import { signSessionToken, storeSessionCookie, TOKEN_COOKIE_NAME } from "@/helpers/token";
+import { signSessionToken, storeSessionCookie } from "@/helpers/token";
 import { connect } from "@/dbconfig/dbconfig";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
