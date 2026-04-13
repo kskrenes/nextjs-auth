@@ -84,7 +84,14 @@ export async function POST(request: NextRequest) {
     const { sub, email, name, picture, email_verified } = payload;
 
     // find existing user
-    let storedUser = await User.findOne({ 'accounts.providerId': sub });
+    let storedUser = await User.findOne({
+      accounts: {
+        $elemMatch: {
+          provider: "google",
+          providerId: sub,
+        },
+      },
+    });
     
     // create and insert new user if none exists
     if (!storedUser) {
