@@ -156,14 +156,32 @@ export async function POST(request: NextRequest) {
 
     // link credentials to an existing SSO account if applicable
     if (canLink && existingEmailUser) {
-      existingEmailUser.accounts.push({
-        provider: "credentials",
-        providerId: existingEmailUser._id.toString(),
-      });
-      existingEmailUser.password = hashedPassword;
-      existingEmailUser.username = normalizedUsername;
-      existingEmailUser.hasCompletedProfile = true; // valid username created during signup satisfies profile requirements
-      const linkedUser = await existingEmailUser.save();
+      let linkedUser;
+      try {
+        existingEmailUser.accounts.push({
+          provider: "credentials",
+          providerId: existingEmailUser._id.toString(),
+        });
+        existingEmailUser.password = hashedPassword;
+        existingEmailUser.username = normalizedUsername;
+        existingEmailUser.hasCompletedProfile = true; // valid username created during signup satisfies profile requirements
+        linkedUser = await existingEmailUser.save();
+        
+      // throw if database rejects duplicate with 11000
+      } catch (error: unknown) {
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "code" in error &&
+          (error as { code?: number }).code === 11000
+        ) {
+          return NextResponse.json(
+            { error: "User already exists" },
+            { status: 409 }
+          );
+        }
+        throw error;
+      }
 
       const sanitizedUser = {
         _id: linkedUser._id,
