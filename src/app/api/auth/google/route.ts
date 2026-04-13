@@ -47,9 +47,9 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if google client id is not configured
-    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     if (!clientId) {
-      console.error("GOOGLE_CLIENT_ID is not configured");
+      console.error("NEXT_PUBLIC_GOOGLE_CLIENT_ID is not configured");
       return NextResponse.json(
         { error: "Server configuration error" },
         { status: 500 }
@@ -57,10 +57,10 @@ export async function POST(request: NextRequest) {
     }
 
     // verify the ID Token with google
-    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const client = new OAuth2Client(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: process.env.GOOGLE_CLIENT_ID,
+      audience: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
@@ -93,45 +93,69 @@ export async function POST(request: NextRequest) {
       },
     });
     
-    // create and insert new user if none exists
-    if (!storedUser) {
-      const username = createUsername(name, email);
-      const normalizedEmail = email.trim().toLowerCase();
-      
-      const newUser = new User({
-        username, 
-        email: normalizedEmail, 
-        name,
-        hasCompletedProfile: false,
-        accounts: [{ 
-          provider: 'google',
-          providerId: sub,
-        }],
-        isVerified: email_verified,
-      });
+    const normalizedEmail = email.trim().toLowerCase();
 
-      if (picture && typeof picture === 'string') {
-        newUser.avatarId = await getAvatarId(picture);
+    // if no match, it's a new google sign in
+    if (!storedUser) {
+
+      // if email is already stored, link google account to existing user...
+      if (email_verified) {
+        storedUser = await User.findOne({ email: normalizedEmail });
       }
 
-      // store user in the database
-      try {
-        storedUser = await newUser.save();
+      if (storedUser) {
+        const alreadyLinked = storedUser.accounts?.some(
+          (account: { 
+            provider: string; 
+            providerId: string 
+          }) =>
+          account.provider === "google" && account.providerId === sub
+        );
 
-      // throw if database rejects duplicate with 11000
-      } catch (error: unknown) {
-        if (
-          typeof error === "object" &&
-          error !== null &&
-          "code" in error &&
-          (error as { code?: number }).code === 11000
-        ) {
-          return NextResponse.json(
-            { error: "User already exists" },
-            { status: 409 }
-          );
+        if (!alreadyLinked) {
+          storedUser.accounts.push({ provider: "google", providerId: sub });
+          await storedUser.save();
         }
-        throw error;
+
+      // ...otherwise create and insert new user
+      } else {
+        const username = createUsername(name, email);
+      
+        const newUser = new User({
+          username, 
+          email: normalizedEmail, 
+          name,
+          hasCompletedProfile: false,
+          accounts: [{ 
+            provider: 'google',
+            providerId: sub,
+          }],
+          isVerified: email_verified,
+        });
+
+        if (picture && typeof picture === 'string') {
+          newUser.avatarId = await getAvatarId(picture);
+        }
+
+        // store user in the database
+        try {
+          storedUser = await newUser.save();
+
+        // throw if database rejects duplicate with 11000
+        } catch (error: unknown) {
+          if (
+            typeof error === "object" &&
+            error !== null &&
+            "code" in error &&
+            (error as { code?: number }).code === 11000
+          ) {
+            return NextResponse.json(
+              { error: "User already exists" },
+              { status: 409 }
+            );
+          }
+          throw error;
+        }
       }
     }
 
