@@ -7,6 +7,7 @@ export default interface NaeUser {
   website?: string;
   socialLinks?: string[];
   avatarId?: string;
+  hasCompletedProfile?: boolean;
   isVerified?: boolean;
   isAdmin?: boolean;
   __v?: number;
