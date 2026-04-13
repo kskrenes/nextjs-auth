@@ -86,14 +86,31 @@ export async function POST(request: NextRequest) {
     }
 
     // update user
-    let updatedUser = await User.findByIdAndUpdate(
-      authenticatedUserId,
-      update,
-      {
-        returnDocument: 'after',
-        runValidators: true,
+    let updatedUser;
+    try {
+      updatedUser = await User.findByIdAndUpdate(
+        authenticatedUserId,
+        update,
+        {
+          returnDocument: 'after',
+          runValidators: true,
+        }
+      );
+    // throw if username is a duplicate
+    } catch (error: unknown) {
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "code" in error &&
+        (error as { code?: number }).code === 11000
+      ) {
+        return NextResponse.json(
+          { error: "Username already exists" },
+          { status: 409 }
+        );
       }
-    );
+      throw error;
+    }
 
     // throw if user not found
     if (!updatedUser) {
