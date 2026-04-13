@@ -10,7 +10,7 @@ const createUniqueUsername = async (name: string, email: string): Promise<string
   // generate a base username from the name or email
   let prefix = name.toLowerCase().replace(/\s+/g, '');
   if (!prefix) {
-    prefix = email.split('@')[0];
+    prefix = email.split('@')[0].toLowerCase();
   }
 
   // append a random 4-digit alphanumeric suffix
