@@ -159,12 +159,13 @@ export async function POST(request: NextRequest) {
       let sessionToken;
       try {
         sessionToken = signSessionToken({
-          id: sanitizedUser._id,
+          id: sanitizedUser._id.toString(),
           username: sanitizedUser.username,
           email: sanitizedUser.email,
           hasCompletedProfile: sanitizedUser.hasCompletedProfile,
         });
       } catch (error) {
+        console.error("Failed to sign session token", error);
         return NextResponse.json(
           { error: "Unable to continue session" },
           { status: 500 }
