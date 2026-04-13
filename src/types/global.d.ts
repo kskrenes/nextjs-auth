@@ -3,8 +3,19 @@ export {};
 interface GoogleIdentityServices {
   accounts: {
     id: {
-      initialize(config: { client_id: string; callback: (response: CredentialResponse) => void }): void;
-      renderButton(element: HTMLElement, options: { theme: string; size: string }): void;
+      initialize(
+        config: { 
+          client_id: string; 
+          callback: (response: CredentialResponse) => void 
+        }
+      ): void;
+      renderButton(
+        element: HTMLElement, 
+        options: { 
+          theme: string; 
+          size: string 
+        }
+      ): void;
     };
   };
 }
