@@ -123,15 +123,11 @@ export async function POST(request: NextRequest) {
       (!usernameInUse || existingUsernameUser?._id.equals(existingEmailUser._id));
 
     // throw if both already exist
-    if (usernameInUse && emailInUse) {
-      if (canLink) {
-        // fall through to linking logic below
-      } else {
-        return NextResponse.json(
-          { error: "Username and email both in use" }, 
-          { status: 409 }
-        );
-      }
+    if (usernameInUse && emailInUse && !canLink) {
+      return NextResponse.json(
+        { error: "Username and email both in use" }, 
+        { status: 409 }
+      );
     }
 
     // throw if username already exists
