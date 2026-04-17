@@ -1,7 +1,7 @@
 "use client";
 
 import { triggerEmail } from "@/helpers/trigger-email";
-import { ShieldUser } from "lucide-react";
+import { RotateCcwKey, ShieldUser } from "lucide-react";
 import React, { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
@@ -36,6 +36,7 @@ const socialIconsMap: { [key: string]: React.ReactElement } = {
 const AccountPage = () => {
 
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
+  const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
@@ -155,6 +156,19 @@ const AccountPage = () => {
     });
   };
 
+  const handleTriggerResetEmail = async () => {
+    if (isSendingResetEmail || !user) return;
+
+    try {
+      await triggerEmail(user.email, "RESET", setIsSendingResetEmail);
+      toast.success("Reset password email sent");
+      // setIsSent(true);
+    } catch (error: unknown) {
+      toast.error("Failed to send reset password email");
+      // setIsError(true);
+    }
+  }
+
   return (
     <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
 
@@ -245,7 +259,7 @@ const AccountPage = () => {
                       <label className='text-lg font-semibold'>General Info</label>
                       {/* name */}
                       <div className="flex items-center gap-2">
-                        <ShieldUser className="w-5 h-5 text-indigo-400 -m-0.5" />
+                        <ShieldUser className="w-5 h-5 text-brand-light -m-0.5" />
                         <Input 
                           id="name" 
                           placeholder="Name"
@@ -385,7 +399,24 @@ const AccountPage = () => {
                 )}
               </TabPanel>
               <TabPanel>
-                <label className="text-lg font-semibold">Settings Tab</label>
+                <div className="flex flex-col gap-8">
+                  <div className="flex flex-col gap-1">
+                    <div className="flex items-center gap-2">
+                      <label className="text-lg font-semibold">Reset Password</label>
+                      <RotateCcwKey className="w-5 h-5 text-brand-light -m-0.5" />
+                    </div>
+                    <p className="text-foreground-secondary">We'll send you an email with instructions to update your password.</p>
+                    <div className="mt-2">
+                      <Button 
+                        variant="secondary"
+                        onClick={handleTriggerResetEmail}
+                        disabled={isSendingResetEmail}
+                      >
+                        Send Reset Email
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </TabPanel>
             </TabPanels>
           </TabGroup>          
