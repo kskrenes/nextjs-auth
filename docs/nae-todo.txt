@@ -55,8 +55,18 @@ profile
 - [x] layout and styling
 - [x] implement signed uploads to cloudinary
 
+sso
+- [ ] remove account linking logic from public routes
+- [ ] change profile page to account page
+- [ ] add tabs to account page for profile and settings
+- [ ] expose linkedProviders on the sanitized user object
+- [ ] add reset password to settings view
+- [ ] add create password and link google account to settings view
+- [ ] add /api/users/link-credentials: requires valid session, gates linking on session.id === existingUser._id.toString()
+- [ ] add /api/users/link-google route for google account linking
+
 additional authentication methods
-- [ ] add social login (google)
+- [x] add social login (google)
 - [ ] research multifactor auth (MFA)
 - [ ] research one-time passcodes
 - [ ] research passkeys
@@ -95,7 +105,7 @@ feature research
 - [x] Protected routes and pages
 - [ ] Session management
 - [x] Email verification
-- [ ] Social login (Google)
+- [x] Social login (Google)
 - [ ] Multifactor authentication
 - [ ] Roles and permissions
 - [x] Profile management

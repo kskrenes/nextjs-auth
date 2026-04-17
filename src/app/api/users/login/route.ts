@@ -2,8 +2,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextResponse, type NextRequest } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import { TOKEN_COOKIE_NAME } from "@/helpers/token";
+import { signSessionToken, storeSessionCookie, TOKEN_COOKIE_NAME } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
 
 export async function POST(request: NextRequest) {
@@ -64,29 +63,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // throw if token secret is not configured
-    const tokenSecret = process.env.JWT_SECRET;
-    if (!tokenSecret) {
-      console.error("JWT_SECRET is not configured");
-      return NextResponse.json(
-        { error: "Unable to log in" },
-        { status: 500 }
-      );
-    }
-
-    // create token
-    const tokenData = {
-      id: user._id,
-      username: user.username,
-      email: user.email,
-    }
-    const token = jwt.sign(
-      tokenData, 
-      tokenSecret, 
-      { expiresIn: "1d" }
-    );
-
-    // create sanitized user object for response
+    // create sanitized user for response
     const sanitizedUser = {
       _id: user._id,
       username: user.username,
@@ -96,33 +73,46 @@ export async function POST(request: NextRequest) {
       website: user.website,
       socialLinks: user.socialLinks,
       avatarId: user.avatarId,
+      hasCompletedProfile: user.hasCompletedProfile,
       isVerified: user.isVerified,
       isAdmin: user.isAdmin,
     };
 
-    // store token in client cookie
-    const response = NextResponse.json({
-      message: "Log in successful",
-      success: true,
-      user: sanitizedUser,
-    });
-    response.cookies.set(
-      TOKEN_COOKIE_NAME, 
-      token, 
-      { 
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
-        maxAge: 60 * 60 * 24,
-      }
+    // create session token
+    let sessionToken;
+    try {
+      sessionToken = signSessionToken({
+        id: sanitizedUser._id.toString(),
+        username: sanitizedUser.username,
+        email: sanitizedUser.email,
+        hasCompletedProfile: sanitizedUser.hasCompletedProfile,
+      });
+    } catch (error) {
+      console.error("Failed to sign session token", error);
+      return NextResponse.json(
+        { error: "Unable to log in" },
+        { status: 500 }
+      );
+    }
+
+    // create success response
+    const response = NextResponse.json(
+      {
+        message: "Authentication successful",
+        success: true,
+        user: sanitizedUser,
+      }, 
+      { status: 200 }
     );
+    
+    // store token in client cookie
+    storeSessionCookie(sessionToken, response);
 
+    // return success
     return response;
-
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to log in";
-    console.error(message);
+  } 
+  catch (error: unknown) {
+    console.error(error instanceof Error ? error.message : "Unable to log in");
     return NextResponse.json(
       { error: "Unable to log in" }, 
       { status: 500 }

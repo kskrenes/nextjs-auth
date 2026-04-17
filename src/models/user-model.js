@@ -32,11 +32,14 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, "Please provide a password"],
     minlength: [8, "Password must be at least 8 characters long"],
     match: [/^\S*$/, 'Please provide a password without spaces'],
     select: false, // exclude password from query results by default
   },
+  accounts: [{
+    provider: { type: String, enum: ['google', 'credentials'], required: true },
+    providerId: { type: String, required: true }, // This is where the 'sub' goes
+  }],
   name: {
     type: String,
     trim: true,
@@ -60,6 +63,10 @@ const userSchema = new mongoose.Schema({
     trim: true,
     default: defaultAvatarId,
   },
+  hasCompletedProfile: {
+    type: Boolean,
+    default: false,
+  },
   isVerified: {
     type: Boolean,
     default: false,
@@ -73,6 +80,8 @@ const userSchema = new mongoose.Schema({
   verifyToken: String,
   verifyTokenExpiry: Date,
 });
+
+userSchema.index({ "accounts.provider": 1, "accounts.providerId": 1 }, { unique: true });
 
 const User = mongoose.models.users || mongoose.model("users", userSchema);
 
