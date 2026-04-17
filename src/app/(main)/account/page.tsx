@@ -32,7 +32,7 @@ const socialIconsMap: { [key: string]: React.ReactElement } = {
   bsky: <BlueSkyIcon />,
 };
 
-const ProfilePage = () => {
+const AccountPage = () => {
 
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -156,7 +156,7 @@ const ProfilePage = () => {
     <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
 
       {/* page title */}
-      <h1 className="text-2xl min-w-39 max-w-90 font-semibold mx-auto md:mx-0 mb-8">My Profile</h1>
+      <h1 className="text-2xl min-w-39 max-w-90 font-semibold mx-auto md:mx-0 mb-8">My Account</h1>
 
       {/* page layout */}
       <div className="flex gap-8 flex-col ll:flex-row">
@@ -382,4 +382,4 @@ const ProfilePage = () => {
   )
 }
 
-export default ProfilePage
+export default AccountPage

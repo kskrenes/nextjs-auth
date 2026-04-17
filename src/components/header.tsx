@@ -10,7 +10,7 @@ import { useSelectedLayoutSegments } from "next/navigation";
 
 const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon className="w-5 h-5" /> },
-  { name: 'Profile', href: '/profile', icon: <UserPen className="w-5 h-5" /> },
+  { name: 'Account', href: '/account', icon: <UserPen className="w-5 h-5" /> },
   { name: 'Reset Password', href: '/triggerpasswordreset', icon: <RotateCcwKey className="w-5 h-5" /> },
 ];
 
