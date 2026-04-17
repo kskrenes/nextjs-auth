@@ -17,6 +17,7 @@ import AvatarUpload from "@/components/avatar-upload";
 import ExternalLink from "@/components/external-link";
 import Badge from "@/components/badge";
 import FullScreenLoader from "@/components/full-screen-loader";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 
 const socialSubstrings = ["linkedin", "facebook", "twitter", "x.com", "instagram", "youtube", "reddit", "twitch", "mastodon", "bsky"];
 const socialIconsMap: { [key: string]: React.ReactElement } = {
@@ -37,6 +38,7 @@ const AccountPage = () => {
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
   const [editedFields, setEditedFields] = useState<{
     name: string;
     company: string;
@@ -141,6 +143,7 @@ const AccountPage = () => {
       website: user.website || "",
       socialLinks: [...(user.socialLinks ?? []), "", "", "", ""].slice(0, 4),
     });
+    setActiveTab(0);
     setIsEditing(true);
   }
 
@@ -211,171 +214,181 @@ const AccountPage = () => {
         {/* second column */}
         <div className="w-full xs:w-90 ll:flex-1 mx-auto md:mx-0">
 
-          {isEditing ? (  
+          <TabGroup 
+            className="flex flex-col gap-8 max-w-150"
+            selectedIndex={activeTab} 
+            onChange={setActiveTab}
+          >
+            <TabList className="tab-list">
+              <Tab className="tab-list-item data-selected:tab-list-item-selected">
+                Profile
+              </Tab>
+              <Tab 
+                className="tab-list-item data-selected:tab-list-item-selected"
+                onClick={() => setIsEditing(false)}
+              >
+                Settings
+              </Tab>
+            </TabList>
+            <TabPanels>
+              <TabPanel>
+                {isEditing ? (  
             
-            // edit profile form
+                  // edit profile form
 
-            <div className="flex flex-col gap-8 max-w-150">
-              {/* title panel */}
-              <div 
-                className="px-5 py-3 rounded-md bg-panel" 
-              >
-                <h2 className="text-lg font-semibold">Edit Profile</h2>
-              </div>
-              <form 
-                className="flex flex-col max-w-md gap-8" 
-                onSubmit={handleUpdate} 
-              >
-                {/* general info group */}
-                <div className="flex flex-col gap-4">
-                  <label className='text-lg font-semibold'>General Info</label>
-                  {/* name */}
-                  <div className="flex items-center gap-2">
-                    <ShieldUser className="w-5 h-5 text-indigo-400 -m-0.5" />
-                    <Input 
-                      id="name" 
-                      placeholder="Name"
-                      type="text"
-                      aria-label="Name"
-                      value={editedFields.name}
-                      onChange={(e) => setEditedFields({ ...editedFields, name: e.target.value })}
-                    />
-                  </div>
-                  {/* company */}
-                  <div className="flex items-center gap-2">
-                    <CompanyIcon />
-                    <Input 
-                      id="company" 
-                      placeholder="Company"
-                      type="text"
-                      aria-label="Company"
-                      value={editedFields.company}
-                      onChange={(e) => setEditedFields({ ...editedFields, company: e.target.value })}
-                      className="w-full"
-                    />
-                  </div>
-                  {/* website */}
-                  <div className="flex items-center gap-2">
-                    <LinkIcon />
-                    <Input 
-                      id="website" 
-                      placeholder="Website URL"
-                      type="text"
-                      aria-label="Website"
-                      value={editedFields.website}
-                      onChange={(e) => setEditedFields({ ...editedFields, website: e.target.value })}
-                    />
-                  </div>
-                </div>
-
-                {/* social accounts */}
-                <div className="flex flex-col gap-4">
-                  <label className='text-lg font-semibold'>Social Accounts</label>
-                  {editedFields.socialLinks.map((link, index) => (
-                    <div key={`socialLink${index}`} className="flex items-center gap-2">
-                      <LinkIcon />
-                      <Input 
-                        id={`socialLink${index}`} 
-                        placeholder={`Social URL ${index + 1}`}
-                        type="text"
-                        aria-label={`Social URL ${index + 1}`}
-                        value={link}
-                        onChange={(e) => handleSocialEdit(e.target.value, index)}
-                      />
+                  <form 
+                    className="flex flex-col max-w-md gap-8" 
+                    onSubmit={handleUpdate} 
+                  >
+                    {/* general info group */}
+                    <div className="flex flex-col gap-4">
+                      <label className='text-lg font-semibold'>General Info</label>
+                      {/* name */}
+                      <div className="flex items-center gap-2">
+                        <ShieldUser className="w-5 h-5 text-indigo-400 -m-0.5" />
+                        <Input 
+                          id="name" 
+                          placeholder="Name"
+                          type="text"
+                          aria-label="Name"
+                          value={editedFields.name}
+                          onChange={(e) => setEditedFields({ ...editedFields, name: e.target.value })}
+                        />
+                      </div>
+                      {/* company */}
+                      <div className="flex items-center gap-2">
+                        <CompanyIcon />
+                        <Input 
+                          id="company" 
+                          placeholder="Company"
+                          type="text"
+                          aria-label="Company"
+                          value={editedFields.company}
+                          onChange={(e) => setEditedFields({ ...editedFields, company: e.target.value })}
+                          className="w-full"
+                        />
+                      </div>
+                      {/* website */}
+                      <div className="flex items-center gap-2">
+                        <LinkIcon />
+                        <Input 
+                          id="website" 
+                          placeholder="Website URL"
+                          type="text"
+                          aria-label="Website"
+                          value={editedFields.website}
+                          onChange={(e) => setEditedFields({ ...editedFields, website: e.target.value })}
+                        />
+                      </div>
                     </div>
-                  ))}
-                </div>
 
-                {/* form button group */}
-                <div className="flex gap-4 max-w-xs">
-                  {/* submit button */}
-                  <Button 
-                    type="submit" 
-                    className="flex-1" 
-                    disabled={isSaving}
-                  >
-                    Save
-                  </Button>
-                  {/* cancel button */}
-                  <Button 
-                    type="button" 
-                    className="flex-1" 
-                    variant="secondary"
-                    disabled={isSaving}
-                    onClick={() => setIsEditing(false)}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
-            </div>
-          ) : (
+                    {/* social accounts */}
+                    <div className="flex flex-col gap-4">
+                      <label className='text-lg font-semibold'>Social Accounts</label>
+                      {editedFields.socialLinks.map((link, index) => (
+                        <div key={`socialLink${index}`} className="flex items-center gap-2">
+                          <LinkIcon />
+                          <Input 
+                            id={`socialLink${index}`} 
+                            placeholder={`Social URL ${index + 1}`}
+                            type="text"
+                            aria-label={`Social URL ${index + 1}`}
+                            value={link}
+                            onChange={(e) => handleSocialEdit(e.target.value, index)}
+                          />
+                        </div>
+                      ))}
+                    </div>
 
-            // profile info
+                    {/* form button group */}
+                    <div className="flex gap-4 max-w-xs">
+                      {/* submit button */}
+                      <Button 
+                        type="submit" 
+                        className="flex-1" 
+                        disabled={isSaving}
+                      >
+                        Save
+                      </Button>
+                      {/* cancel button */}
+                      <Button 
+                        type="button" 
+                        className="flex-1" 
+                        variant="secondary"
+                        disabled={isSaving}
+                        onClick={() => setIsEditing(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                ) : (
 
-            <div className="flex flex-col gap-8 max-w-150">
-              {/* title panel */}
-              <div 
-                className="px-5 py-3 rounded-md bg-panel"
-              >
-                <h2 className="text-lg font-semibold">My Info</h2>
-              </div>
-              {/* company */}
-              {user?.company && (
-                <div className="flex flex-col gap-1">
-                  <label className="text-lg font-semibold">Company</label>
-                  <div className="flex items-center gap-2">
-                    <CompanyIcon />
-                    <span className="text-foreground-secondary">{user?.company}</span>
-                  </div>
-                </div>
-              )}
-              {/* email */}
-              {user?.email && (
-                <div className="flex flex-col gap-1">
-                  <label className="text-lg font-semibold">Email</label>
-                  <div className="flex items-center gap-2">
-                    <EmailIcon />
-                    {user.isVerified ? (
-                      // verified email link
-                      <ExternalLink href={`mailto:${user.email}`}>{user.email}</ExternalLink>
-                    ) : (
-                      // unverified email with badge
-                      <span className="flex gap-2 text-foreground-secondary">
-                        {user.email}
-                        <Badge label="Unverified" variant="red" />
-                      </span>
+                  // profile info
+
+                  <div className="flex flex-col gap-8">
+                    {/* company */}
+                    {user?.company && (
+                      <div className="flex flex-col gap-1">
+                        <label className="text-lg font-semibold">Company</label>
+                        <div className="flex items-center gap-2">
+                          <CompanyIcon />
+                          <span className="text-foreground-secondary">{user?.company}</span>
+                        </div>
+                      </div>
+                    )}
+                    {/* email */}
+                    {user?.email && (
+                      <div className="flex flex-col gap-1">
+                        <label className="text-lg font-semibold">Email</label>
+                        <div className="flex items-center gap-2">
+                          <EmailIcon />
+                          {user.isVerified ? (
+                            // verified email link
+                            <ExternalLink href={`mailto:${user.email}`}>{user.email}</ExternalLink>
+                          ) : (
+                            // unverified email with badge
+                            <span className="flex gap-2 text-foreground-secondary">
+                              {user.email}
+                              <Badge label="Unverified" variant="red" />
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {/* website */}
+                    {user?.website && (
+                      <div className="flex flex-col gap-1">
+                        <label className="text-lg font-semibold">Website</label>
+                        <div className="flex items-center gap-2">
+                          <LinkIcon />
+                          <ExternalLink href={user.website}>{user.website}</ExternalLink>
+                        </div>
+                      </div>
+                    )}
+                    {/* social accounts */}
+                    {user?.socialLinks?.some((element) => element.trim() !== "") && (
+                      <div className="flex flex-col gap-1">
+                        <label className="text-lg font-semibold">Social Accounts</label>
+                        {user?.socialLinks?.map((rawLink, index) => {
+                          const link = getNormalizedUrl(rawLink);
+                          return link !== '' && (
+                            <div key={index} className="flex items-center gap-2">
+                              {getSocialIcon(link)}
+                              <ExternalLink href={link}>{getDisplayLink(link)}</ExternalLink>
+                            </div>
+                          );
+                        })}
+                      </div>
                     )}
                   </div>
-                </div>
-              )}
-              {/* website */}
-              {user?.website && (
-                <div className="flex flex-col gap-1">
-                  <label className="text-lg font-semibold">Website</label>
-                  <div className="flex items-center gap-2">
-                    <LinkIcon />
-                    <ExternalLink href={user.website}>{user.website}</ExternalLink>
-                  </div>
-                </div>
-              )}
-              {/* social accounts */}
-              {user?.socialLinks?.some((element) => element.trim() !== "") && (
-                <div className="flex flex-col gap-1">
-                  <label className="text-lg font-semibold">Social Accounts</label>
-                  {user?.socialLinks?.map((rawLink, index) => {
-                    const link = getNormalizedUrl(rawLink);
-                    return link !== '' && (
-                      <div key={index} className="flex items-center gap-2">
-                        {getSocialIcon(link)}
-                        <ExternalLink href={link}>{getDisplayLink(link)}</ExternalLink>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </TabPanel>
+              <TabPanel>
+                <label className="text-lg font-semibold">Settings Tab</label>
+              </TabPanel>
+            </TabPanels>
+          </TabGroup>          
         </div>
       </div>
     </div>
