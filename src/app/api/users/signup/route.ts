@@ -107,23 +107,8 @@ export async function POST(request: NextRequest) {
       (existingUser) => existingUser.email === normalizedEmail
     );
 
-    // helper to check whether we can link credentials to an existing SSO user
-    const existingEmailUser = existingUsers.find(
-      (u) => u.email === normalizedEmail
-    );
-    const existingUsernameUser = existingUsers.find(
-      (u) => u.username === normalizedUsername
-    );
-    const canLink =
-      !!existingEmailUser &&
-      !existingEmailUser.accounts?.some(
-        (a: { provider: string }) => a.provider === "credentials"
-      ) &&
-      // username must be free OR belong to the same existing user
-      (!usernameInUse || existingUsernameUser?._id.equals(existingEmailUser._id));
-
     // throw if both already exist
-    if (usernameInUse && emailInUse && !canLink) {
+    if (usernameInUse && emailInUse) {
       return NextResponse.json(
         { error: "Username and email both in use" }, 
         { status: 409 }
@@ -131,7 +116,7 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if username already exists
-    if (usernameInUse && !canLink) {
+    if (usernameInUse) {
       return NextResponse.json(
         { error: "Username already in use" }, 
         { status: 409 }
@@ -139,7 +124,7 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if email already exists
-    if (emailInUse && !canLink) {
+    if (emailInUse) {
       return NextResponse.json(
         { error: "Email already in use" }, 
         { status: 409 }
@@ -149,59 +134,6 @@ export async function POST(request: NextRequest) {
     // hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(normalizedPassword, salt);
-
-    // link credentials to an existing SSO account if applicable
-    if (canLink && existingEmailUser) {
-      let linkedUser;
-      try {
-        existingEmailUser.accounts.push({
-          provider: "credentials",
-          providerId: existingEmailUser._id.toString(),
-        });
-        existingEmailUser.password = hashedPassword;
-        existingEmailUser.username = normalizedUsername;
-        existingEmailUser.hasCompletedProfile = true; // valid username created during signup satisfies profile requirements
-        linkedUser = await existingEmailUser.save();
-        
-      // throw if database rejects duplicate with 11000
-      } catch (error: unknown) {
-        if (
-          typeof error === "object" &&
-          error !== null &&
-          "code" in error &&
-          (error as { code?: number }).code === 11000
-        ) {
-          return NextResponse.json(
-            { error: "User already exists" },
-            { status: 409 }
-          );
-        }
-        throw error;
-      }
-
-      const sanitizedUser = {
-        _id: linkedUser._id,
-        username: linkedUser.username,
-        email: linkedUser.email,
-        name: linkedUser.name,
-        company: linkedUser.company,
-        website: linkedUser.website,
-        socialLinks: linkedUser.socialLinks,
-        avatarId: linkedUser.avatarId,
-        hasCompletedProfile: linkedUser.hasCompletedProfile,
-        isVerified: linkedUser.isVerified,
-        isAdmin: linkedUser.isAdmin,
-      };
-
-      return NextResponse.json(
-        { 
-          message: "User created successfully", 
-          success: true, 
-          user: sanitizedUser 
-        },
-        { status: 201 }
-      );
-    }
 
     // with email conflicts resolved, go ahead with creating a brand new user
     const userId = new mongoose.Types.ObjectId();
