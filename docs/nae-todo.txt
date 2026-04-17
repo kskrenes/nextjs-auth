@@ -59,7 +59,7 @@ sso
 - [x] remove account linking logic from public routes
 - [x] change profile page to account page
 - [x] add tabs to account page for profile and settings
-- [ ] expose linkedProviders on the sanitized user object
+- [x] expose linkedProviders on the sanitized user object
 - [ ] add reset password to settings view
 - [ ] add create password and link google account to settings view
 - [ ] add /api/users/link-credentials: requires valid session, gates linking on session.id === existingUser._id.toString()
