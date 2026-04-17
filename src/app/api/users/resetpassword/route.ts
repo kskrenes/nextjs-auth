@@ -108,17 +108,10 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    // return sanitized user
+    // return success
     return NextResponse.json({
       message: "Password reset successfully",
       success: true,
-      user: {
-        id: updatedUser._id,
-        username: updatedUser.username,
-        email: updatedUser.email,
-        isVerified: updatedUser.isVerified,
-        isAdmin: updatedUser.isAdmin,
-      },
     }, { status: 201 });
 
   } 
