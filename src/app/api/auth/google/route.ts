@@ -124,63 +124,25 @@ export async function POST(request: NextRequest) {
 
     // if no match, it's a new google sign in
     if (!storedUser) {
+      const username = await createUniqueUsername(name, email);
+    
+      const newUser = new User({
+        username, 
+        email: normalizedEmail, 
+        name,
+        hasCompletedProfile: false,
+        accounts: [{ 
+          provider: 'google',
+          providerId: sub,
+        }],
+        isVerified: email_verified,
+      });
 
-      // if email is already stored, link google account to existing user...
-      if (email_verified) {
-        storedUser = await User.findOne({ email: normalizedEmail });
-      }
-
-      if (storedUser) {
-        const alreadyLinked = storedUser.accounts?.some(
-          (account: { 
-            provider: string; 
-            providerId: string 
-          }) =>
-          account.provider === "google" && account.providerId === sub
-        );
-
-        if (!alreadyLinked) {
-          storedUser.accounts.push({ provider: "google", providerId: sub });
-
-          // upgrade isVerified if Google now says the email is verified (never downgrade)
-          if (!storedUser.isVerified) {
-            storedUser.isVerified = email_verified;
-          }
-
-          await storedUser.save();
-        }
-
-      // ...otherwise create and insert new user
+      // ensure cloudinary url configuration before attempting to import avatar
+      const cloudinaryUrl = process.env.CLOUDINARY_URL;
+      if (!cloudinaryUrl) {
+        console.error("Cloudinary URL not configured, cannot import Google avatar");
       } else {
-        const username = await createUniqueUsername(name, email);
-      
-        const newUser = new User({
-          username, 
-          email: normalizedEmail, 
-          name,
-          hasCompletedProfile: false,
-          accounts: [{ 
-            provider: 'google',
-            providerId: sub,
-          }],
-          isVerified: email_verified,
-        });
-
-        // ensure cloudinary url configuration before attempting to import avatar
-        const cloudinaryUrl = process.env.CLOUDINARY_URL;
-        if (!cloudinaryUrl) {
-          console.error("Cloudinary URL not configured, cannot import Google avatar");
-        } else {
-          // import the avatar from Google
-          if (picture && typeof picture === 'string') {
-            try {
-              newUser.avatarId = await getAvatarId(picture);  
-            } catch (error) {
-              console.error("Failed to import Google avatar", error);
-            }
-          }
-        }
-
         // import the avatar from Google
         if (picture && typeof picture === 'string') {
           try {
@@ -189,26 +151,35 @@ export async function POST(request: NextRequest) {
             console.error("Failed to import Google avatar", error);
           }
         }
+      }
 
-        // store user in the database
+      // import the avatar from Google
+      if (picture && typeof picture === 'string') {
         try {
-          storedUser = await newUser.save();
-
-        // throw if database rejects duplicate with 11000
-        } catch (error: unknown) {
-          if (
-            typeof error === "object" &&
-            error !== null &&
-            "code" in error &&
-            (error as { code?: number }).code === 11000
-          ) {
-            return NextResponse.json(
-              { error: "User already exists" },
-              { status: 409 }
-            );
-          }
-          throw error;
+          newUser.avatarId = await getAvatarId(picture);  
+        } catch (error) {
+          console.error("Failed to import Google avatar", error);
         }
+      }
+
+      // store user in the database
+      try {
+        storedUser = await newUser.save();
+
+      // throw if database rejects duplicate with 11000
+      } catch (error: unknown) {
+        if (
+          typeof error === "object" &&
+          error !== null &&
+          "code" in error &&
+          (error as { code?: number }).code === 11000
+        ) {
+          return NextResponse.json(
+            { error: "User already exists" },
+            { status: 409 }
+          );
+        }
+        throw error;
       }
     }
 
