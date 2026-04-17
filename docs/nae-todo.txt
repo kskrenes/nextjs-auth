@@ -105,7 +105,7 @@ feature research
 - [x] Protected routes and pages
 - [ ] Session management
 - [x] Email verification
-- [ ] Social login (Google)
+- [x] Social login (Google)
 - [ ] Multifactor authentication
 - [ ] Roles and permissions
 - [x] Profile management
