@@ -183,6 +183,9 @@ export async function POST(request: NextRequest) {
       hasCompletedProfile: storedUser.hasCompletedProfile,
       isVerified: storedUser.isVerified,
       isAdmin: storedUser.isAdmin,
+      linkedProviders: (storedUser.accounts ?? []).map(
+        (a: { provider: string }) => a.provider
+      ),
     };
 
     return NextResponse.json(

@@ -76,6 +76,9 @@ export async function POST(request: NextRequest) {
       hasCompletedProfile: user.hasCompletedProfile,
       isVerified: user.isVerified,
       isAdmin: user.isAdmin,
+      linkedProviders: (user.accounts ?? []).map(
+        (a: { provider: string }) => a.provider
+      ),
     };
 
     // create session token

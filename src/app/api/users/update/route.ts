@@ -142,6 +142,9 @@ export async function POST(request: NextRequest) {
       hasCompletedProfile: updatedUser.hasCompletedProfile,
       isVerified: updatedUser.isVerified,
       isAdmin: updatedUser.isAdmin,
+      linkedProviders: (updatedUser.accounts ?? []).map(
+        (a: { provider: string }) => a.provider
+      ),
     };
 
     // create success response
