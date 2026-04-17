@@ -153,15 +153,6 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // import the avatar from Google
-      if (picture && typeof picture === 'string') {
-        try {
-          newUser.avatarId = await getAvatarId(picture);  
-        } catch (error) {
-          console.error("Failed to import Google avatar", error);
-        }
-      }
-
       // store user in the database
       try {
         storedUser = await newUser.save();
