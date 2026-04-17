@@ -57,7 +57,7 @@ profile
 
 sso
 - [x] remove account linking logic from public routes
-- [ ] change profile page to account page
+- [x] change profile page to account page
 - [ ] add tabs to account page for profile and settings
 - [ ] expose linkedProviders on the sanitized user object
 - [ ] add reset password to settings view
