@@ -56,7 +56,7 @@ profile
 - [x] implement signed uploads to cloudinary
 
 sso
-- [ ] remove account linking logic from public routes
+- [x] remove account linking logic from public routes
 - [ ] change profile page to account page
 - [ ] add tabs to account page for profile and settings
 - [ ] expose linkedProviders on the sanitized user object
