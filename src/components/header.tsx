@@ -92,14 +92,14 @@ const Header = () => {
                 {/* sign in button */}
                 <Link 
                   href="/login" 
-                  className="button-ghost px-2.5 py-0.5"
+                  className="button-ghost button-small"
                 >
                   Sign In
                 </Link>
                 {/* sign up button */}
                 <Link 
                   href="/signup" 
-                  className="button-primary px-2.5 py-0.5" 
+                  className="button-primary button-small" 
                 >
                   Get Started
                 </Link>

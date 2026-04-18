@@ -10,13 +10,14 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;  // The content inside the button
   variant?:             // Optional custom styling
     'primary' | 'secondary';
+  size?:                // Optional size styling
+    'standard' | 'small';
 }
-
-const baseStyles = `px-6 py-2.5 text-lg`;
 
 const Button: React.FC<ButtonProps> = ({
   children, 
   variant = 'primary', 
+  size = 'standard',
   onClick, 
   className = '',
   ...rest // Collect any other standard HTML button props
@@ -26,10 +27,14 @@ const Button: React.FC<ButtonProps> = ({
     ? 'button-primary'
     : 'button-secondary';
 
+  const sizeStyles = size === 'standard'
+    ? 'button-standard'
+    : 'button-small';
+
   return (
     <button
       onClick={onClick}
-      className={twMerge(baseStyles, variantStyles, className)}
+      className={twMerge(variantStyles, sizeStyles, className)}
       {...rest} // Spread the rest of the HTML button attributes
     >
       {children}

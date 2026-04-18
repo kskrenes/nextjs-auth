@@ -10,5 +10,6 @@ export default interface NaeUser {
   hasCompletedProfile?: boolean;
   isVerified?: boolean;
   isAdmin?: boolean;
+  linkedProviders?: string[];
   __v?: number;
 }

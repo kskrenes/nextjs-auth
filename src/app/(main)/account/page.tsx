@@ -1,7 +1,7 @@
 "use client";
 
 import { triggerEmail } from "@/helpers/trigger-email";
-import { RotateCcwKey, ShieldUser } from "lucide-react";
+import { KeyRound, RotateCcwKey, ShieldUser, UserPlus } from "lucide-react";
 import React, { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
@@ -18,6 +18,8 @@ import ExternalLink from "@/components/external-link";
 import Badge from "@/components/badge";
 import FullScreenLoader from "@/components/full-screen-loader";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
+import SetPasswordInputs from "@/components/nae-set-password";
+import { excludesSpaces } from "@/helpers/expression-validation";
 
 const socialSubstrings = ["linkedin", "facebook", "twitter", "x.com", "instagram", "youtube", "reddit", "twitch", "mastodon", "bsky"];
 const socialIconsMap: { [key: string]: React.ReactElement } = {
@@ -39,7 +41,12 @@ const AccountPage = () => {
   const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isPasswordValidationError, setIsPasswordValidationError] = useState(false);
+  const [isPendingSetPassword, setIsPendingSetPassword] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
   const [editedFields, setEditedFields] = useState<{
     name: string;
     company: string;
@@ -168,6 +175,70 @@ const AccountPage = () => {
       // setIsError(true);
     }
   }
+
+  // clear stale inline errors when either password changes
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    if (isPasswordValidationError) {
+      setIsPasswordValidationError(false);
+      setPasswordErrorMessage("");
+    }
+  }
+
+  const handleConfirmPasswordChange = (value: string) => {
+    setConfirmPassword(value);
+    if (isPasswordValidationError) {
+      setIsPasswordValidationError(false);
+      setPasswordErrorMessage("");
+    }
+  }
+
+  const handleAddPassword = async () => {
+    setIsPasswordValidationError(false);
+    setPasswordErrorMessage("");
+
+    if (isPendingSetPassword) return;
+
+    // TODO: move password validation into a helper
+
+    // enforce password confirmation match
+    if (password !== confirmPassword) {
+      setPasswordErrorMessage("Passwords do not match");
+      setIsPasswordValidationError(true);
+      return;
+    }
+
+    // enforce minimum length
+    if (password.length < 8) {
+      setPasswordErrorMessage("Password must be at least 8 characters");
+      setIsPasswordValidationError(true);
+      return;
+    }
+
+    if (!excludesSpaces(password)) {
+      setPasswordErrorMessage("Password cannot contain spaces");
+      setIsPasswordValidationError(true);
+      return;
+    }
+
+    try {
+      setIsPendingSetPassword(true);
+      // TODO: add password via auth context
+    } 
+    catch (error: unknown) {
+      console.error(getErrorMessage(error, "Unable to add password"));
+      toast.error("There was a problem adding a password to your account")
+    } 
+    finally {
+      setIsPendingSetPassword(false);
+    }
+  }
+
+  const handleLinkGoogleAccount = async () => {
+    // TODO: link google account via auth context
+  }
+
+  console.log(user)
 
   return (
     <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
@@ -381,10 +452,10 @@ const AccountPage = () => {
                       </div>
                     )}
                     {/* social accounts */}
-                    {user?.socialLinks?.some((element) => element.trim() !== "") && (
+                    {user?.socialLinks?.some((element: string) => element.trim() !== "") && (
                       <div className="flex flex-col gap-1">
                         <label className="text-lg font-semibold">Social Accounts</label>
-                        {user?.socialLinks?.map((rawLink, index) => {
+                        {user?.socialLinks?.map((rawLink: string, index: React.Key | null | undefined) => {
                           const link = getNormalizedUrl(rawLink);
                           return link !== '' && (
                             <div key={index} className="flex items-center gap-2">
@@ -399,23 +470,88 @@ const AccountPage = () => {
                 )}
               </TabPanel>
               <TabPanel>
-                <div className="flex flex-col gap-8">
-                  <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                      <label className="text-lg font-semibold">Reset Password</label>
-                      <RotateCcwKey className="w-5 h-5 text-brand-light -m-0.5" />
+                <div className="flex flex-col gap-10">
+
+                  {/* reset password */}
+                  {user && user.linkedProviders?.includes('credentials') && (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <RotateCcwKey className="w-5 h-5 text-brand-light -m-0.5" />
+                        <label className="text-lg font-semibold">Reset Password</label>
+                      </div>
+                      <p className="text-foreground-secondary max-w-md">
+                        We'll send you an email with instructions to update your password.
+                      </p>
+                      <div className="mt-2">
+                        <Button 
+                          size="small"
+                          onClick={handleTriggerResetEmail}
+                          disabled={isSendingResetEmail}
+                        >
+                          Send Reset Email
+                        </Button>
+                      </div>
                     </div>
-                    <p className="text-foreground-secondary">We'll send you an email with instructions to update your password.</p>
-                    <div className="mt-2">
-                      <Button 
-                        variant="secondary"
-                        onClick={handleTriggerResetEmail}
-                        disabled={isSendingResetEmail}
-                      >
-                        Send Reset Email
-                      </Button>
+                  )}
+                  
+
+                  {/* add linked account - password */}
+                  {user && !user.linkedProviders?.includes('credentials') && (
+                    <div className="flex flex-col gap-1 max-w-md">
+                      <div className="flex items-center gap-2">
+                        <KeyRound className="w-5 h-5 text-brand-light -m-0.5" />
+                        <label className="text-lg font-semibold">Create Password</label>
+                      </div>
+                      <p className="text-foreground-secondary max-w-md">
+                        Set a password to enable traditional email and password login alongside Google SSO.
+                      </p>
+                      <div className="flex flex-col gap-4 max-w-sm">
+                        <SetPasswordInputs
+                          label="Password"
+                          password={password}
+                          confirmPassword={confirmPassword}
+                          onPasswordChange={handlePasswordChange}
+                          onConfirmPasswordChange={handleConfirmPasswordChange}
+                        />
+                        <div className="mt-0.5">
+                          <Button 
+                            size="small"
+                            onClick={handleAddPassword}
+                            disabled={
+                              isPendingSetPassword ||
+                              password.length === 0 || 
+                              confirmPassword.length === 0
+                            }
+                          >
+                            Add Password
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  )}
+
+                  {/* add linked account - google */}
+                  {user && !user.linkedProviders?.includes('google') && (
+                    <div className="flex flex-col gap-1 max-w-md">
+                      <div className="flex items-center gap-2">
+                        <UserPlus className="w-5 h-5 text-brand-light -m-0.5" />
+                        <label className="text-lg font-semibold">Link Google Account</label>
+                      </div>
+                      <p className="text-foreground-secondary">
+                        Connect your Google account to sign in securely with one click. You can still use your current username and password.
+                      </p>
+                      <div className="mt-2">
+                        <Button 
+                          size="small"
+                          onClick={handleLinkGoogleAccount}
+                          disabled={isSendingResetEmail}
+                        >
+                          Add Google Account
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  
                 </div>
               </TabPanel>
             </TabPanels>
