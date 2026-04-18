@@ -191,16 +191,12 @@ body {
   @apply
     text-tab-foreground
     hover:text-foreground-primary
+    data-selected:text-tab-foreground-selected
     text-lg 
     font-semibold 
     outline-none
     cursor-pointer
+    data-selected:cursor-default
+    data-selected:shadow-[inset_0_-2px_0_0_var(--color-tab-foreground-selected)]
     py-3
-}
-
-@utility tab-list-item-selected {
-  @apply
-    text-tab-foreground-selected
-    cursor-default
-    shadow-[inset_0_-2px_0_0_var(--color-tab-foreground-selected)]
 }

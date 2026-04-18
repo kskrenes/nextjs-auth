@@ -306,11 +306,11 @@ const AccountPage = () => {
             onChange={setActiveTab}
           >
             <TabList className="tab-list">
-              <Tab className="tab-list-item data-selected:tab-list-item-selected">
+              <Tab className="tab-list-item">
                 Profile
               </Tab>
               <Tab 
-                className="tab-list-item data-selected:tab-list-item-selected"
+                className="tab-list-item"
                 onClick={() => setIsEditing(false)}
               >
                 Settings
