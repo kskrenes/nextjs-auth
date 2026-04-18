@@ -24,6 +24,7 @@ export interface AuthContextType {
   logout: () => Promise<void>;
   updateUser: (user: EditableProfileFields) => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;
+  linkCredentials: (password: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -34,6 +35,7 @@ const AuthContext = createContext<AuthContextType>({
   logout: async () => {},
   updateUser: async () => {},
   verifyEmail: async () => {},
+  linkCredentials: async () => {},
 });
 
 interface AuthProviderProps {
@@ -122,8 +124,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const linkCredentials = async (password: string) => {
+    try {
+      const res = await axios.post("/api/users/linkcredentials", { password });
+      setUser(res.data.user);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, loginViaGoogle, logout, updateUser, verifyEmail }}>
+    <AuthContext.Provider 
+      value={{ 
+        user, 
+        loading, 
+        login, 
+        loginViaGoogle, 
+        logout, 
+        updateUser, 
+        verifyEmail, 
+        linkCredentials, 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
