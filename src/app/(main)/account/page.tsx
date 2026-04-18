@@ -58,7 +58,7 @@ const AccountPage = () => {
     website: "",
     socialLinks: ["", "", "", ""],
   });
-  const { user, loading, updateUser } = useAuth();
+  const { user, loading, updateUser, linkCredentials } = useAuth();
 
   if (loading) return <FullScreenLoader />;
 
@@ -221,9 +221,12 @@ const AccountPage = () => {
       return;
     }
 
+    setIsPendingSetPassword(true);
+    
     try {
-      setIsPendingSetPassword(true);
-      // TODO: add password via auth context
+      // add password via auth context
+      await linkCredentials(password);
+      toast.success("Password added successfully!");
     } 
     catch (error: unknown) {
       console.error(getErrorMessage(error, "Unable to add password"));
