@@ -238,8 +238,6 @@ const AccountPage = () => {
     // TODO: link google account via auth context
   }
 
-  console.log(user)
-
   return (
     <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
 
