@@ -61,9 +61,10 @@ sso
 - [x] add tabs to account page for profile and settings
 - [x] expose linkedProviders on the sanitized user object
 - [x] add reset password to settings view
-- [ ] add create password and link google account to settings view
+- [x] add create password and link google account to settings view
 - [ ] add /api/users/link-credentials: requires valid session, gates linking on session.id === existingUser._id.toString()
 - [ ] add /api/users/link-google route for google account linking
+- [ ] move password validation logic into a helper
 
 additional authentication methods
 - [x] add social login (google)
