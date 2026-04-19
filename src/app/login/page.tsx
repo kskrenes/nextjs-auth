@@ -12,7 +12,7 @@ import { useState, type SubmitEvent } from "react";
 
 const LoginPage = () => {
 
-  const { loading, login } = useAuth();
+  const { loggingIn, login } = useAuth();
 
   const [isServerError, setIsServerError] = useState<boolean>(false);
   const [isInvalid, setIsInvalid] = useState<boolean>(false);
@@ -22,7 +22,7 @@ const LoginPage = () => {
   });
 
   const buttonDisabled =
-    loading ||
+    loggingIn ||
     credentials.email.trim().length === 0 ||
     credentials.password.trim().length === 0;
 
@@ -30,7 +30,7 @@ const LoginPage = () => {
     // suppress native html form submit behavior
     e.preventDefault(); 
 
-    if (loading) return;
+    if (loggingIn) return;
 
     setIsInvalid(false);
     setIsServerError(false);
@@ -103,7 +103,7 @@ const LoginPage = () => {
           className="w-full"
           disabled={buttonDisabled}
         >
-          {loading 
+          {loggingIn 
             ? (
               <>
                 <NaeLoader />
@@ -114,7 +114,7 @@ const LoginPage = () => {
         </Button>
 
         {/* google sso button */}
-        <GoogleLoginButton />
+        <GoogleLoginButton redirect={true} />
 
         {/* links group */}
         <div className="flex flex-col items-center gap-2">

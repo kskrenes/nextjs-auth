@@ -14,7 +14,7 @@ const navLinks = [
 const Sidebar = () => {
 
   const pathname = usePathname();
-  const { logout, user } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <aside 

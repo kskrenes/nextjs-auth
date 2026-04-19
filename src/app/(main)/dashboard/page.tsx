@@ -5,9 +5,9 @@ import { useAuth } from "@/context/AuthContext";
 
 const DashboardPage = () => {
 
-  const { loading } = useAuth();
+  const { fetchingUser } = useAuth();
 
-  if (loading) return <FullScreenLoader />;
+  if (fetchingUser) return <FullScreenLoader />;
 
   return (
     <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">

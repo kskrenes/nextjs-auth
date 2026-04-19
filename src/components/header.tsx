@@ -16,7 +16,7 @@ const navLinks = [
 
 const Header = () => {
 
-  const { user, loading, logout } = useAuth();
+  const { user, fetchingUser, loggingIn, logout } = useAuth();
   const segments = useSelectedLayoutSegments();
   const isMainGroup = segments.includes('(main)');
   const headerLeft = isMainGroup ? 'md:left-64' : 'md:left-0';
@@ -29,7 +29,7 @@ const Header = () => {
         </div>
 
         {/* right side actions */}
-        {!loading && (
+        {!(fetchingUser || loggingIn) && (
           <div className="ml-auto flex items-center p-2">
 
             {user ? (
