@@ -20,6 +20,7 @@ import FullScreenLoader from "@/components/full-screen-loader";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import SetPasswordInputs from "@/components/nae-set-password";
 import { excludesSpaces } from "@/helpers/expression-validation";
+import GoogleLoginButton from "@/components/google-login-button";
 
 const socialSubstrings = ["linkedin", "facebook", "twitter", "x.com", "instagram", "youtube", "reddit", "twitch", "mastodon", "bsky"];
 const socialIconsMap: { [key: string]: React.ReactElement } = {
@@ -40,7 +41,6 @@ const AccountPage = () => {
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
   const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [isPasswordValidationError, setIsPasswordValidationError] = useState(false);
   const [isPendingSetPassword, setIsPendingSetPassword] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
@@ -58,18 +58,38 @@ const AccountPage = () => {
     website: "",
     socialLinks: ["", "", "", ""],
   });
-  const { user, loading, updateUser, linkCredentials } = useAuth();
 
-  if (loading) return <FullScreenLoader />;
+  const { 
+    user, 
+    fetchingUser, 
+    updatingUser, 
+    linkingAccount, 
+    loggingIn, 
+    updateUser, 
+    linkCredentials 
+  } = useAuth();
+
+  if (fetchingUser) return <FullScreenLoader />;
 
   const handleVerifyEmailClick = async () => {
-    if (!user) return;
-    if (isSendingVerifyEmail) return;
+    if (isSendingVerifyEmail || !user) return;
+
     try {
       await triggerEmail(user.email, "VERIFY", setIsSendingVerifyEmail);
       toast.success("Verification email sent");
     } catch (error: unknown) {
       toast.error("Failed to send verification email");
+    }
+  }
+
+  const handleResetPasswordClick = async () => {
+    if (isSendingResetEmail || !user) return;
+
+    try {
+      await triggerEmail(user.email, "RESET", setIsSendingResetEmail);
+      toast.success("Reset password email sent");
+    } catch (error: unknown) {
+      toast.error("Failed to send reset password email");
     }
   }
   
@@ -82,12 +102,10 @@ const AccountPage = () => {
     return `https://${value}`;
   };
   
-  const handleUpdate = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleUpdateUser = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (isSaving) return;
-
-    setIsSaving(true);
+    if (updatingUser) return;
 
     const website = getNormalizedUrl(editedFields.website)
     const socialLinks = editedFields.socialLinks.map(link => getNormalizedUrl(link));
@@ -103,11 +121,36 @@ const AccountPage = () => {
       toast.success("Profile updated");
     } catch (error) {
       toast.error(getErrorMessage(error, "Failed to update profile"));
-    } finally {
-      setIsSaving(false);
     }
   }
 
+  const handleEditClick = () => {
+    if (!user || isEditing) return;
+
+    setEditedFields({
+      name: user.name || "",
+      company: user.company || "",
+      website: user.website || "",
+      socialLinks: [...(user.socialLinks ?? []), "", "", "", ""].slice(0, 4),
+    });
+
+    setActiveTab(0);
+    setIsEditing(true);
+  }
+
+  const handleSocialEdit = (value: string, index: number) => {
+    setEditedFields((prev) => {
+      const newSocialLinks = [...prev.socialLinks];
+      newSocialLinks[index] = value;
+      return { ...prev, socialLinks: newSocialLinks };
+    });
+  };
+
+  const handleGoogleLinkSuccess = async () => {
+    toast.success("Google account added successfully!");
+  }
+
+  // TODO: move display helpers into component ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   const getDisplayLink = (url: string) => {
     try {
       const urlObj = new URL(url);
@@ -142,40 +185,9 @@ const AccountPage = () => {
     
     return <LinkIcon />;
   }
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  const handleEditClick = () => {
-    if (!user || isEditing) return;
-    setEditedFields({
-      name: user.name || "",
-      company: user.company || "",
-      website: user.website || "",
-      socialLinks: [...(user.socialLinks ?? []), "", "", "", ""].slice(0, 4),
-    });
-    setActiveTab(0);
-    setIsEditing(true);
-  }
-
-  const handleSocialEdit = (value: string, index: number) => {
-    setEditedFields((prev) => {
-      const newSocialLinks = [...prev.socialLinks];
-      newSocialLinks[index] = value;
-      return { ...prev, socialLinks: newSocialLinks };
-    });
-  };
-
-  const handleTriggerResetEmail = async () => {
-    if (isSendingResetEmail || !user) return;
-
-    try {
-      await triggerEmail(user.email, "RESET", setIsSendingResetEmail);
-      toast.success("Reset password email sent");
-      // setIsSent(true);
-    } catch (error: unknown) {
-      toast.error("Failed to send reset password email");
-      // setIsError(true);
-    }
-  }
-
+  // TODO: move display helpers into component ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // clear stale inline errors when either password changes
   const handlePasswordChange = (value: string) => {
     setPassword(value);
@@ -236,10 +248,7 @@ const AccountPage = () => {
       setIsPendingSetPassword(false);
     }
   }
-
-  const handleLinkGoogleAccount = async () => {
-    // TODO: link google account via auth context
-  }
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   return (
     <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
@@ -324,7 +333,7 @@ const AccountPage = () => {
 
                   <form 
                     className="flex flex-col max-w-md gap-8" 
-                    onSubmit={handleUpdate} 
+                    onSubmit={handleUpdateUser} 
                   >
                     {/* general info group */}
                     <div className="flex flex-col gap-4">
@@ -392,7 +401,7 @@ const AccountPage = () => {
                       <Button 
                         type="submit" 
                         className="flex-1" 
-                        disabled={isSaving}
+                        disabled={updatingUser}
                       >
                         Save
                       </Button>
@@ -401,7 +410,7 @@ const AccountPage = () => {
                         type="button" 
                         className="flex-1" 
                         variant="secondary"
-                        disabled={isSaving}
+                        disabled={updatingUser}
                         onClick={() => setIsEditing(false)}
                       >
                         Cancel
@@ -486,7 +495,7 @@ const AccountPage = () => {
                       <div className="mt-2">
                         <Button 
                           size="small"
-                          onClick={handleTriggerResetEmail}
+                          onClick={handleResetPasswordClick}
                           disabled={isSendingResetEmail}
                         >
                           Send Reset Email
@@ -542,13 +551,7 @@ const AccountPage = () => {
                         Connect your Google account to sign in securely with one click. You can still use your current username and password.
                       </p>
                       <div className="mt-2">
-                        <Button 
-                          size="small"
-                          onClick={handleLinkGoogleAccount}
-                          disabled={isSendingResetEmail}
-                        >
-                          Add Google Account
-                        </Button>
+                        <GoogleLoginButton callback={handleGoogleLinkSuccess} />
                       </div>
                     </div>
                   )}
