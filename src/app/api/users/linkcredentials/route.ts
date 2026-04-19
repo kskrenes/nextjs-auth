@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
           hasCompletedProfile: true,
         },
       },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     if (!updatedUser) {
