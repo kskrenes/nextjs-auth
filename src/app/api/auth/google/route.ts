@@ -3,7 +3,7 @@ import User from "@/models/user-model";
 import { OAuth2Client } from "google-auth-library";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
-import { signSessionToken, storeSessionCookie } from "@/helpers/token";
+import { getIdFromToken, signSessionToken, storeSessionCookie } from "@/helpers/token";
 import { connect } from "@/dbconfig/dbconfig";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
@@ -124,6 +124,70 @@ export async function POST(request: NextRequest) {
 
     // if no match, it's a new google sign in
     if (!storedUser) {
+
+      // check if the user has an authorized session
+      let sessionUserId: string | undefined;
+      try {
+        sessionUserId = await getIdFromToken(request);
+      } catch {
+        // ignore errors and fall through to new user flow
+      }
+
+      // if authed, attempt to link google account
+      if (sessionUserId) {
+        // if ids and emails match, update user
+        const updatedUser = await User.findOneAndUpdate(
+          {
+            _id: sessionUserId,
+            email: normalizedEmail,
+          },
+          {
+            $push: {
+              accounts: {
+                provider: "google",
+                providerId: sub,
+              },
+            }
+          },
+          { returnDocument: 'after' }
+        );
+
+        // if no user was found, current session user has a different email
+        if (!updatedUser) {
+          return NextResponse.json(
+            { error: "Google email must match account email" },
+            { status: 409 }
+          );
+        }
+
+        // build sanitized user and return success
+        const sanitizedUser = {
+          _id: updatedUser._id,
+          username: updatedUser.username,
+          email: updatedUser.email,
+          name: updatedUser.name,
+          company: updatedUser.company,
+          website: updatedUser.website,
+          socialLinks: updatedUser.socialLinks,
+          avatarId: updatedUser.avatarId,
+          hasCompletedProfile: updatedUser.hasCompletedProfile,
+          isVerified: updatedUser.isVerified,
+          isAdmin: updatedUser.isAdmin,
+          linkedProviders: (updatedUser.accounts ?? []).map(
+            (a: { provider: string }) => a.provider
+          ),
+        };
+
+        return NextResponse.json(
+          {
+            message: 'Account linked successfully',
+            success: true,
+            user: sanitizedUser,
+          }, 
+          { status: 200 }
+        );
+      }
+      
       const username = await createUniqueUsername(name, email);
     
       const newUser = new User({
