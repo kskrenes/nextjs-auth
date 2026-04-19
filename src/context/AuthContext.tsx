@@ -18,7 +18,12 @@ type EditableProfileFields = {
 
 export interface AuthContextType {
   user: NaeUser | null;
-  loading: boolean;
+  fetchingUser: boolean; 
+  loggingIn: boolean;
+  loggingOut: boolean;
+  updatingUser: boolean;
+  verifyingEmail: boolean; 
+  linkingAccount: boolean;
   login: (email: string, password: string) => Promise<void>;
   loginViaGoogle: (token: string) => Promise<void>
   logout: () => Promise<void>;
@@ -29,7 +34,12 @@ export interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  loading: true,
+  fetchingUser: true,
+  loggingIn: false,
+  loggingOut: false,
+  updatingUser: false,
+  verifyingEmail: false,
+  linkingAccount: false,
   login: async () => {},
   loginViaGoogle: async () => {},
   logout: async () => {},
@@ -44,7 +54,12 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<NaeUser | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [fetchingUser, setFetchingUser] = useState<boolean>(true);
+  const [loggingIn, setLoggingIn] = useState<boolean>(false);
+  const [loggingOut, setLoggingOut] = useState<boolean>(false);
+  const [updatingUser, setUpdatingUser] = useState<boolean>(false);
+  const [verifyingEmail, setVerifyingEmail] = useState<boolean>(false);
+  const [linkingAccount, setLinkingAccount] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -55,7 +70,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       setUser(null);
     } finally {
-      setLoading(false);
+      setFetchingUser(false);
     }
   };
 
@@ -64,7 +79,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const login = async (email: string, password: string) => {
-    setLoading(true);
+    setLoggingIn(true);
     try {
       const res = await axios.post("/api/users/login", { email, password });
       setUser(res.data.user);
@@ -72,11 +87,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } catch (error) {
       throw error;
     } finally {
-      setLoading(false);
+      setLoggingIn(false);
     }
   };
 
   const logout = async () => {
+    setLoggingOut(true);
     try {
       await axios.post("/api/users/logout");
       // use browser redirect (instead of app router) to force a full page reload
@@ -84,19 +100,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
       window.location.replace('/login');
     } catch (error) {
       toast.error(getErrorMessage(error, "Logout failed"));
+    } finally {
+      setLoggingOut(false);
     }
   };
 
   const updateUser = async (userData: EditableProfileFields) => {
+    setUpdatingUser(true);
     try {
       const res = await axios.post("/api/users/update", userData);
       setUser(res.data.user);
     } catch (error) {
       throw error;
+    } finally {
+      setUpdatingUser(false);
     }
   };
 
   const verifyEmail = async (token: string) => {
+    setVerifyingEmail(true);
     try {
       await axios.post('/api/users/verifyemail', { token });
       // auth sync for signed-in sessions
@@ -108,28 +130,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     } catch (error) {
       throw error;
+    } finally {
+      setVerifyingEmail(false);
     }
   };
 
   const loginViaGoogle = async (token: string) => {
-    setLoading(true);
+    setLoggingIn(true);
     try {
       const res = await axios.post('/api/auth/google', { token });
       setUser(res.data.user);
-      router.replace("/dashboard");
     } catch (error) {
       throw error;      
     } finally {
-      setLoading(false);
+      setLoggingIn(false);
     }
   }
 
   const linkCredentials = async (password: string) => {
+    setLinkingAccount(true);
     try {
       const res = await axios.post("/api/users/linkcredentials", { password });
       setUser(res.data.user);
     } catch (error) {
       throw error;
+    } finally {
+      setLinkingAccount(false);
     }
   }
 
@@ -137,7 +163,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     <AuthContext.Provider 
       value={{ 
         user, 
-        loading, 
+        fetchingUser, 
+        loggingIn,
+        loggingOut,
+        updatingUser,
+        verifyingEmail, 
+        linkingAccount,
         login, 
         loginViaGoogle, 
         logout, 
