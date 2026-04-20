@@ -42,7 +42,7 @@ const OnboardingPage = () => {
     setUsername(value);
   }
 
-  const handleSubmit = async (e: SubmitEvent) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
     e.preventDefault(); 
 
