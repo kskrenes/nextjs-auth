@@ -63,7 +63,6 @@ export default function GoogleLoginButton({
   const handleBackendAuth = async (token: string) => {
     try {
       await loginViaGoogle(token);
-      console.log('successful response from sso google login');
       if (callback) {
         callback();
       }
