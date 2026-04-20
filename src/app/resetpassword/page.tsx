@@ -63,7 +63,7 @@ const ResetPasswordPage = () => {
       setIsPendingReset(true);
       await axios.post(
         "/api/users/resetpassword", 
-        { token, password: newPassword }
+        { token, password: validPassword }
       );
       setIsReset(true);
     } 
