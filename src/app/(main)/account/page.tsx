@@ -6,11 +6,7 @@ import React, { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
-import { 
-  BlueSkyIcon, CompanyIcon, EmailIcon, FacebookIcon, 
-  InstagramIcon, LinkedInIcon, LinkIcon, MastodonIcon, 
-  RedditIcon, TwitchIcon, TwitterIcon, YouTubeIcon 
-} from "@/components/profile-icons";
+import { CompanyIcon, EmailIcon, LinkIcon } from "@/components/profile-icons";
 import Input from "@/components/nae-input";
 import { getErrorMessage } from "@/helpers/error-message";
 import AvatarUpload from "@/components/avatar-upload";
@@ -19,22 +15,9 @@ import Badge from "@/components/badge";
 import FullScreenLoader from "@/components/full-screen-loader";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import SetPasswordInputs from "@/components/nae-set-password";
-import { excludesSpaces } from "@/helpers/expression-validation";
+import { validatePassword } from "@/helpers/expression-validation";
 import GoogleLoginButton from "@/components/google-login-button";
-
-const socialSubstrings = ["linkedin", "facebook", "twitter", "x.com", "instagram", "youtube", "reddit", "twitch", "mastodon", "bsky"];
-const socialIconsMap: { [key: string]: React.ReactElement } = {
-  linkedin: <LinkedInIcon />,
-  twitter: <TwitterIcon />,
-  "x.com": <TwitterIcon />,
-  facebook: <FacebookIcon />,
-  instagram: <InstagramIcon />,
-  youtube: <YouTubeIcon />,
-  reddit: <RedditIcon />,
-  twitch: <TwitchIcon />,
-  mastodon: <MastodonIcon />,
-  bsky: <BlueSkyIcon />,
-};
+import { getDisplayLink, getSocialIcon } from "@/helpers/display";
 
 const AccountPage = () => {
 
@@ -42,7 +25,6 @@ const AccountPage = () => {
   const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isPasswordValidationError, setIsPasswordValidationError] = useState(false);
-  const [isPendingSetPassword, setIsPendingSetPassword] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -64,7 +46,6 @@ const AccountPage = () => {
     fetchingUser, 
     updatingUser, 
     linkingAccount, 
-    loggingIn, 
     updateUser, 
     linkCredentials 
   } = useAuth();
@@ -151,44 +132,6 @@ const AccountPage = () => {
     toast.success("Google account added successfully!");
   }
 
-  // TODO: move display helpers into component ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  const getDisplayLink = (url: string) => {
-    try {
-      const urlObj = new URL(url);
-      const cleanPathname = urlObj.pathname.replace(/^\/|\/$/g, ''); // remove leading and trailing slashes
-      const hostname = urlObj.hostname.toLowerCase();
-      const isSupportedSite = socialSubstrings.some(substring => hostname.includes(substring));
-
-      if (isSupportedSite) {
-        return cleanPathname || urlObj.host;
-      }
-
-      return cleanPathname ? `${urlObj.host}/${cleanPathname}` : urlObj.host;  
-    } catch {
-      // fallback to raw string if URL is invalid
-      return url;
-    }
-    
-  }
-
-  const getSocialIcon = (url: string) => {
-    try {
-      const urlObj = new URL(url);
-      const hostname = urlObj.hostname.toLowerCase();
-
-      const supportedSiteMatch = socialSubstrings.find(substring => hostname.includes(substring));
-      if (supportedSiteMatch) {
-        return socialIconsMap[supportedSiteMatch];
-      }
-    } catch {
-      // fall through to default icon
-    }
-    
-    return <LinkIcon />;
-  }
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-  // TODO: move display helpers into component ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // clear stale inline errors when either password changes
   const handlePasswordChange = (value: string) => {
     setPassword(value);
@@ -210,46 +153,27 @@ const AccountPage = () => {
     setIsPasswordValidationError(false);
     setPasswordErrorMessage("");
 
-    if (isPendingSetPassword) return;
+    if (linkingAccount) return;
 
-    // TODO: move password validation into a helper
-
-    // enforce password confirmation match
-    if (password !== confirmPassword) {
-      setPasswordErrorMessage("Passwords do not match");
+    let validPassword;
+    try {
+      validPassword = validatePassword(password, confirmPassword);
+    } catch (error: unknown) {
+      setPasswordErrorMessage((error as Error).message);
       setIsPasswordValidationError(true);
       return;
     }
-
-    // enforce minimum length
-    if (password.length < 8) {
-      setPasswordErrorMessage("Password must be at least 8 characters");
-      setIsPasswordValidationError(true);
-      return;
-    }
-
-    if (!excludesSpaces(password)) {
-      setPasswordErrorMessage("Password cannot contain spaces");
-      setIsPasswordValidationError(true);
-      return;
-    }
-
-    setIsPendingSetPassword(true);
     
     try {
       // add password via auth context
-      await linkCredentials(password);
+      await linkCredentials(validPassword);
       toast.success("Password added successfully!");
     } 
     catch (error: unknown) {
       console.error(getErrorMessage(error, "Unable to add password"));
       toast.error("There was a problem adding a password to your account")
-    } 
-    finally {
-      setIsPendingSetPassword(false);
     }
   }
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   return (
     <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
@@ -535,7 +459,7 @@ const AccountPage = () => {
                             size="small"
                             onClick={handleAddPassword}
                             disabled={
-                              isPendingSetPassword ||
+                              linkingAccount ||
                               password.length === 0 || 
                               confirmPassword.length === 0
                             }

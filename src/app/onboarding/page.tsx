@@ -6,7 +6,7 @@ import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
 import { useAuth } from "@/context/AuthContext";
 import { getErrorMessage } from "@/helpers/error-message";
-import { excludesSpaces } from "@/helpers/expression-validation";
+import { validateUsername } from "@/helpers/expression-validation";
 import { ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type SubmitEvent } from "react";
@@ -51,24 +51,17 @@ const OnboardingPage = () => {
     setIsError(false);
     setErrorMessage("");
 
-    const normalizedUsername = username.trim();
-
-    // validate username format
-    if (!excludesSpaces(normalizedUsername)) {
-      setErrorMessage("Username cannot contain spaces");
-      setIsError(true);
-      return;
-    }
-
-    // validate username length
-    if (normalizedUsername.length < 4) {
-      setErrorMessage("Username must meet minimum character requirement");
+    let validUsername;
+    try {
+      validUsername = validateUsername(username);
+    } catch (error: unknown) {
+      setErrorMessage((error as Error).message);
       setIsError(true);
       return;
     }
 
     try {
-      await updateUser({ username: normalizedUsername });
+      await updateUser({ username: validUsername });
       toast.success("Your username has been updated!")
       router.replace("/dashboard");
     } catch (error) {

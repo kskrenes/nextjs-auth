@@ -4,7 +4,7 @@ import Button from "@/components/nae-button";
 import NaeLoader from "@/components/nae-loader";
 import SetPasswordInputs from "@/components/nae-set-password";
 import { getErrorMessage } from "@/helpers/error-message";
-import { excludesSpaces } from "@/helpers/expression-validation";
+import { validatePassword } from "@/helpers/expression-validation";
 import axios from "axios";
 import { LaptopMinimalCheck, ShieldAlert } from "lucide-react";
 import Link from "next/link";
@@ -50,22 +50,11 @@ const ResetPasswordPage = () => {
 
     if (isPendingReset) return;
 
-    // enforce password confirmation match
-    if (newPassword !== confirmPassword) {
-      setErrorMessage("Passwords do not match");
-      setIsValidationError(true);
-      return;
-    }
-
-    // enforce minimum length
-    if (newPassword.length < 8) {
-      setErrorMessage("Password must be at least 8 characters");
-      setIsValidationError(true);
-      return;
-    }
-
-    if (!excludesSpaces(newPassword)) {
-      setErrorMessage("Password cannot contain spaces");
+    let validPassword;
+    try {
+      validPassword = validatePassword(newPassword, confirmPassword);
+    } catch (error: unknown) {
+      setErrorMessage((error as Error).message);
       setIsValidationError(true);
       return;
     }
