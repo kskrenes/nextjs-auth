@@ -30,25 +30,22 @@ export const getValidUsername = (username: string): string => {
 }
 
 export const getValidPassword = (password: string, confirmPassword: string): string => {
-  const normalizedPassword = password.trim();
-  const normalizedConfirm = confirmPassword.trim();
-
   // enforce password confirmation match
-  if (normalizedPassword !== normalizedConfirm) {
+  if (password !== confirmPassword) {
     throw new Error("Passwords do not match");
   }
 
   // enforce minimum length
-  if (normalizedPassword.length < 8) {
+  if (password.length < 8) {
     throw new Error("Password must be at least 8 characters");
   }
 
   // enforce no whitespace
-  if (!excludesSpaces(normalizedPassword)) {
+  if (!excludesSpaces(password)) {
     throw new Error("Password cannot contain spaces");
   }
 
-  return normalizedPassword;
+  return password;
 }
 
 export const getValidEmail = (email: string): string => {
