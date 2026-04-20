@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 
 export const getRequestBody = async (request: NextRequest):Promise<object> => {
   let reqBody: unknown;
