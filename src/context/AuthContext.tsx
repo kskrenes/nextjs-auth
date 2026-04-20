@@ -32,21 +32,7 @@ export interface AuthContextType {
   linkCredentials: (password: string) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  user: null,
-  fetchingUser: true,
-  loggingIn: false,
-  loggingOut: false,
-  updatingUser: false,
-  verifyingEmail: false,
-  linkingAccount: false,
-  login: async () => {},
-  loginViaGoogle: async () => {},
-  logout: async () => {},
-  updateUser: async () => {},
-  verifyEmail: async () => {},
-  linkCredentials: async () => {},
-});
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -182,4 +168,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 }
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within AuthProvider");
+  }
+  return context;
+};
