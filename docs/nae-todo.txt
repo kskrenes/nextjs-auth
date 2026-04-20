@@ -63,7 +63,7 @@ sso
 - [x] add reset password to settings view
 - [x] add create password and link google account to settings view
 - [x] add /api/users/linkcredentials: requires valid session, gates linking on session.id === existingUser._id.toString()
-- [x] update /api/auth/google route to inclue google account linking when authorized
+- [x] support Google account linking via /api/auth/google for authenticated users
 - [x] display validation error states for create password
 - [x] move user sanitation into a helper using server-only package
 - [x] move password validation logic into a helper
