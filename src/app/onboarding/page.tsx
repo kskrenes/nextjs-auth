@@ -6,7 +6,7 @@ import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
 import { useAuth } from "@/context/AuthContext";
 import { getErrorMessage } from "@/helpers/error-message";
-import { validateUsername } from "@/helpers/expression-validation";
+import { getValidUsername } from "@/helpers/expression-validation";
 import { ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type SubmitEvent } from "react";
@@ -53,7 +53,7 @@ const OnboardingPage = () => {
 
     let validUsername;
     try {
-      validUsername = validateUsername(username);
+      validUsername = getValidUsername(username);
     } catch (error: unknown) {
       setErrorMessage((error as Error).message);
       setIsError(true);

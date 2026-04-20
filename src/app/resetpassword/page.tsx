@@ -4,7 +4,7 @@ import Button from "@/components/nae-button";
 import NaeLoader from "@/components/nae-loader";
 import SetPasswordInputs from "@/components/nae-set-password";
 import { getErrorMessage } from "@/helpers/error-message";
-import { validatePassword } from "@/helpers/expression-validation";
+import { getValidPassword } from "@/helpers/expression-validation";
 import axios from "axios";
 import { LaptopMinimalCheck, ShieldAlert } from "lucide-react";
 import Link from "next/link";
@@ -52,7 +52,7 @@ const ResetPasswordPage = () => {
 
     let validPassword;
     try {
-      validPassword = validatePassword(newPassword, confirmPassword);
+      validPassword = getValidPassword(newPassword, confirmPassword);
     } catch (error: unknown) {
       setErrorMessage((error as Error).message);
       setIsValidationError(true);

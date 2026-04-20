@@ -15,7 +15,7 @@ import Badge from "@/components/badge";
 import FullScreenLoader from "@/components/full-screen-loader";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import SetPasswordInputs from "@/components/nae-set-password";
-import { validatePassword } from "@/helpers/expression-validation";
+import { getValidPassword } from "@/helpers/expression-validation";
 import GoogleLoginButton from "@/components/google-login-button";
 import { getDisplayLink, getSocialIcon } from "@/helpers/display";
 
@@ -157,7 +157,7 @@ const AccountPage = () => {
 
     let validPassword;
     try {
-      validPassword = validatePassword(password, confirmPassword);
+      validPassword = getValidPassword(password, confirmPassword);
     } catch (error: unknown) {
       setPasswordErrorMessage((error as Error).message);
       setIsPasswordValidationError(true);
