@@ -28,8 +28,8 @@ const UserDTOSchema = z.object({
   isAdmin: z.boolean(),
   linkedProviders: z.array(z.enum([
     "credentials", 
-    "google"]
-  ).optional())
+    "google"
+  ]))
 });
 
 // infer a typescript type from the zod schema
