@@ -5,7 +5,7 @@ import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
 import SetPasswordInputs from "@/components/nae-set-password";
 import { getErrorMessage } from "@/helpers/error-message";
-import { validatePassword, validateUsername } from "@/helpers/expression-validation";
+import { getValidEmail, getValidPassword, getValidUsername } from "@/helpers/expression-validation";
 import axios from "axios";
 import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
@@ -47,29 +47,26 @@ const SignupPage = () => {
     setIsError(false);
     setErrorMessage("");
 
+    let validEmail;
     let validUsername;
-    try {
-      validUsername = validateUsername(user.username);
-    } catch (error: unknown) {
-      setErrorMessage((error as Error).message);
-      setIsError(true);
-      return;
-    }
-
     let validPassword;
     try {
-      validPassword = validatePassword(user.password, confirmPassword);
+      validEmail = getValidEmail(user.email);
+      validUsername = getValidUsername(user.username);
+      validPassword = getValidPassword(user.password, confirmPassword);
     } catch (error: unknown) {
       setErrorMessage((error as Error).message);
       setIsError(true);
       return;
     }
-
-    setUser((current) => ({ ...current, username: validUsername, password: validPassword }));
     
     try {
       setIsLoading(true);
-      await axios.post("/api/users/signup", user);
+      await axios.post("/api/users/signup", {
+        email: validEmail,
+        username: validUsername,
+        password: validPassword,
+      });
       toast.success("Your account has been created!")
       router.push("/login");
     } 

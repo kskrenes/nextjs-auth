@@ -13,7 +13,7 @@ export const meetsMinimum = (value: string, min: number): boolean => {
   return value.length >= min;
 }
 
-export const validateUsername = (username: string): string => {
+export const getValidUsername = (username: string): string => {
   const normalizedUsername = username.trim();
 
   // enforce no whitespace
@@ -29,7 +29,7 @@ export const validateUsername = (username: string): string => {
   return normalizedUsername;
 }
 
-export const validatePassword = (password: string, confirmPassword: string): string => {
+export const getValidPassword = (password: string, confirmPassword: string): string => {
   const normalizedPassword = password.trim();
   const normalizedConfirm = confirmPassword.trim();
 
@@ -43,10 +43,20 @@ export const validatePassword = (password: string, confirmPassword: string): str
     throw new Error("Password must be at least 8 characters");
   }
 
-  // enforece no whitespace
+  // enforce no whitespace
   if (!excludesSpaces(normalizedPassword)) {
     throw new Error("Password cannot contain spaces");
   }
 
   return normalizedPassword;
+}
+
+export const getValidEmail = (email: string): string => {
+  const normalizedEmail = email.trim();
+
+  if (!validateEmail(normalizedEmail)) {
+    throw new Error("Please supply a valid email");
+  }
+  
+  return normalizedEmail;
 }
