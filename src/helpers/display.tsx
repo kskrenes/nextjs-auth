@@ -3,11 +3,11 @@ import {
   MastodonIcon, RedditIcon, TwitchIcon, TwitterIcon, YouTubeIcon 
 } from "@/components/profile-icons";
 
-const socialSubstrings = ["linkedin", "facebook", "twitter", "x.com", "instagram", "youtube", "reddit", "twitch", "mastodon", "bsky"];
+const socialSubstrings = ["linkedin", "facebook", "twitter", "x", "instagram", "youtube", "reddit", "twitch", "mastodon", "bsky"];
 const socialIconsMap: { [key: string]: React.ReactElement } = {
   linkedin: <LinkedInIcon />,
   twitter: <TwitterIcon />,
-  "x.com": <TwitterIcon />,
+  x: <TwitterIcon />,
   facebook: <FacebookIcon />,
   instagram: <InstagramIcon />,
   youtube: <YouTubeIcon />,
@@ -17,8 +17,10 @@ const socialIconsMap: { [key: string]: React.ReactElement } = {
   bsky: <BlueSkyIcon />,
 };
 
-const isHostMatch = (hostname: string, domain: string): boolean => 
-  hostname === domain || hostname.endsWith(`.${domain}`);
+const isHostMatch = (hostname: string, domain: string): boolean => {
+  const plainHostname = hostname.replace(/^www\./, '').split('.')[0];
+  return plainHostname === domain;
+}
 
 export const getDisplayLink = (url: string) => {
   try {
