@@ -55,8 +55,8 @@ const VerifyEmailPage = () => {
     try {
       setIsRetrievingData(true);
       const res = await axios.get('/api/users/me');
-      const user = res.data.user as UserDTO;
-      if (!user.email) {
+      const user = res.data?.user as UserDTO | undefined;
+      if (!user?.email) {
         toast.error("No email found for this account");
         return;
       }
