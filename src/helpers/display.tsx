@@ -17,12 +17,15 @@ const socialIconsMap: { [key: string]: React.ReactElement } = {
   bsky: <BlueSkyIcon />,
 };
 
+const isHostMatch = (hostname: string, domain: string): boolean => 
+  hostname === domain || hostname.endsWith(`.${domain}`);
+
 export const getDisplayLink = (url: string) => {
   try {
     const urlObj = new URL(url);
     const cleanPathname = urlObj.pathname.replace(/^\/|\/$/g, ''); // remove leading and trailing slashes
     const hostname = urlObj.hostname.toLowerCase();
-    const isSupportedSite = socialSubstrings.some(substring => hostname.includes(substring));
+    const isSupportedSite = socialSubstrings.some(substring => isHostMatch(hostname, substring));
 
     if (isSupportedSite) {
       return cleanPathname || urlObj.host;
@@ -41,7 +44,7 @@ export const getSocialIcon = (url: string) => {
     const urlObj = new URL(url);
     const hostname = urlObj.hostname.toLowerCase();
 
-    const supportedSiteMatch = socialSubstrings.find(substring => hostname.includes(substring));
+    const supportedSiteMatch = socialSubstrings.find(substring => isHostMatch(hostname, substring));
     if (supportedSiteMatch) {
       return socialIconsMap[supportedSiteMatch];
     }
