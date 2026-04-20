@@ -71,7 +71,7 @@ const ResetPasswordPage = () => {
       const status = axios.isAxiosError(error) ? error.response?.status : undefined;
       setErrorMessage(getErrorMessage(error, "Unable to reset password"));
       if (status === 401 || status === 410) {
-        // fatal errors arre unretriable
+        // fatal errors are unretriable
         setIsError(true);
       } else {
         // all other errors display inline and allow retry
