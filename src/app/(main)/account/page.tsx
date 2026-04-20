@@ -385,12 +385,14 @@ const AccountPage = () => {
                       </div>
                     )}
                     {/* website */}
-                    {user?.website && (
+                    {user?.website && getNormalizedUrl(user.website) && (
                       <div className="flex flex-col gap-1">
                         <label className="text-lg font-semibold">Website</label>
                         <div className="flex items-center gap-2">
                           <LinkIcon />
-                          <ExternalLink href={user.website}>{user.website}</ExternalLink>
+                          <ExternalLink href={getNormalizedUrl(user.website)}>
+                            {getDisplayLink(getNormalizedUrl(user.website))}
+                          </ExternalLink>
                         </div>
                       </div>
                     )}
