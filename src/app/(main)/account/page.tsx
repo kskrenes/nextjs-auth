@@ -167,6 +167,8 @@ const AccountPage = () => {
     try {
       // add password via auth context
       await linkCredentials(validPassword);
+      setPassword('');
+      setConfirmPassword('');
       toast.success("Password added successfully!");
     } 
     catch (error: unknown) {
