@@ -70,7 +70,7 @@ export default function GoogleLoginButton({
         router.replace("/dashboard");
       }
     } catch (error) {
-      console.error('error loging in via google', error);
+      console.error('Error logging in via Google', error);
     }
   }
 
