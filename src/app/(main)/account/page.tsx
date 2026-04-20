@@ -155,8 +155,7 @@ const AccountPage = () => {
   }
 
   const handleAddPassword = async () => {
-    setIsPasswordValidationError(false);
-    setPasswordErrorMessage("");
+    clearPasswordValidationState();
 
     if (linkingAccount) return;
 
@@ -172,8 +171,7 @@ const AccountPage = () => {
     try {
       // add password via auth context
       await linkCredentials(validPassword);
-      setPassword('');
-      setConfirmPassword('');
+      resetPasswordFormState();
       toast.success("Password added successfully!");
     } 
     catch (error: unknown) {
