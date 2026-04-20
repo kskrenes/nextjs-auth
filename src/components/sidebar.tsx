@@ -7,14 +7,14 @@ import { usePathname } from 'next/navigation';
 
 const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon /> },
-  { name: 'Profile', href: '/profile', icon: <UserPen /> },
+  { name: 'Account', href: '/account', icon: <UserPen /> },
   { name: 'Reset Password', href: '/triggerpasswordreset', icon: <RotateCcwKey /> },
 ];
 
 const Sidebar = () => {
 
   const pathname = usePathname();
-  const { logout, user } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <aside 

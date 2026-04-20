@@ -1,11 +1,12 @@
 "use client";
 
+import FullScreenLoader from "@/components/full-screen-loader";
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
 import { useAuth } from "@/context/AuthContext";
 import { getErrorMessage } from "@/helpers/error-message";
-import { excludesSpaces } from "@/helpers/expression-validation";
+import { getValidUsername } from "@/helpers/expression-validation";
 import { ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type SubmitEvent } from "react";
@@ -14,11 +15,10 @@ import toast from "react-hot-toast";
 const OnboardingPage = () => {
 
   const [isError, setIsError] = useState<boolean>(false);
-  const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [username, setUsername] = useState<string>("");
 
-  const { user, loading, updateUser } = useAuth();
+  const { user, fetchingUser, updatingUser, updateUser } = useAuth();
 
   const router = useRouter();
 
@@ -26,6 +26,8 @@ const OnboardingPage = () => {
     if (!user) return;
     setUsername(user.username);
   }, [user]);
+
+  if (fetchingUser) return <FullScreenLoader />;
 
   // clear inline errors when fields change
   const clearInlineError = () => {
@@ -40,41 +42,31 @@ const OnboardingPage = () => {
     setUsername(value);
   }
 
-  const handleSubmit = async (e: SubmitEvent) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
     e.preventDefault(); 
 
-    if (loading || isSaving) return;
+    if (updatingUser) return;
     
     setIsError(false);
     setErrorMessage("");
 
-    const normalizedUsername = username.trim();
-
-    // validate username format
-    if (!excludesSpaces(normalizedUsername)) {
-      setErrorMessage("Username cannot contain spaces");
-      setIsError(true);
-      return;
-    }
-
-    // validate username length
-    if (normalizedUsername.length < 4) {
-      setErrorMessage("Username must meet minimum character requirement");
-      setIsError(true);
-      return;
-    }
-
-    setIsSaving(true);
+    let validUsername;
     try {
-      await updateUser({ username: normalizedUsername });
+      validUsername = getValidUsername(username);
+    } catch (error: unknown) {
+      setErrorMessage((error as Error).message);
+      setIsError(true);
+      return;
+    }
+
+    try {
+      await updateUser({ username: validUsername });
       toast.success("Your username has been updated!")
       router.replace("/dashboard");
     } catch (error) {
       setErrorMessage(getErrorMessage(error, "An error occurred. Please try again."));
       setIsError(true);
-    } finally {
-      setIsSaving(false);
     }
   }
 
@@ -108,14 +100,14 @@ const OnboardingPage = () => {
         <Button
           type="submit"
           className="w-full"
-          disabled={loading || isSaving}
+          disabled={updatingUser}
         >
-          {loading || isSaving
+          {updatingUser
             ? (
               <>
                 <NaeLoader />
                 <span className="sr-only">
-                  {loading ? 'Loading user info' : 'Updating username'}
+                  Updating username
                 </span>
               </>
             )

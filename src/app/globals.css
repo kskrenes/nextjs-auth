@@ -19,12 +19,15 @@
   --brand: #6366f1;
   --brand-light: #818cf8;
   --brand-highlight: #4f46e5;
-  --brand-low: #2b295c;
+  --brand-low: #c1ccff;
 
   --button-foreground: #e5e6f2;
   --button-foreground-highlight: #ffffff;
-  --button-foreground-low: #4a4d6f;
+  --button-foreground-low: #9a9dbf;
   --button-secondary-foreground: #6366f1;
+
+  --tab-foreground: #4b596d;
+  --tab-foreground-selected: #6366f1;
 
   --logo: url('/nAuth-logo-light.png');
 }
@@ -50,6 +53,9 @@
   --button-foreground-low: #4a4d6f;
   --button-secondary-foreground: #e5e6f2;
 
+  --tab-foreground: #9ca3af;
+  --tab-foreground-selected: #818cf8;
+
   --logo: url('/nAuth-logo.png');
 }
 
@@ -69,12 +75,18 @@
   --color-button-foreground-highlight: var(--button-foreground-highlight);
   --color-button-foreground-low: var(--button-foreground-low);
   --color-button-secondary-foreground: var(--button-secondary-foreground);
+  --color-tab-foreground: var(--tab-foreground);
+  --color-tab-foreground-selected: var(--tab-foreground-selected);
   --background-image-logo: var(--logo);
 }
 
 body {
   background-color: var(--page);
   color: var(--foreground-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand);
 }
 
 @utility button-base {
@@ -127,6 +139,20 @@ body {
     disabled:bg-transparent
 }
 
+@utility button-standard {
+  @apply 
+    px-6 
+    py-2.5 
+    text-lg
+}
+
+@utility button-small {
+  @apply 
+    px-2.5 
+    py-0.5 
+    text-base
+}
+
 @utility nav-item-base {
   @apply
     flex 
@@ -154,4 +180,26 @@ body {
     bg-panel-active
     text-panel-active-foreground
     cursor-default
+}
+
+@utility tab-list {
+  @apply
+    flex 
+    gap-10 
+    px-5 
+    rounded-md 
+    bg-panel
+}
+
+@utility tab-list-item {
+  @apply
+    text-tab-foreground
+    hover:text-foreground-primary
+    data-selected:text-tab-foreground-selected
+    text-lg 
+    font-semibold 
+    cursor-pointer
+    data-selected:cursor-default
+    data-selected:shadow-[inset_0_-2px_0_0_var(--color-tab-foreground-selected)]
+    py-3
 }

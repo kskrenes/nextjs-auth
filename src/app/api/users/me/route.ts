@@ -1,5 +1,6 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { getIdFromToken } from "@/helpers/token";
+import { sanitizeUser } from "@/helpers/user-dto";
 import User from "@/models/user-model";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -20,10 +21,13 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // create sanitized user for response
+    const sanitizedUser = sanitizeUser(user);
+
     // return success
     return NextResponse.json({
       message: "User found",
-      user,
+      user: sanitizedUser,
     });
   } 
   catch (error: unknown) {

@@ -7,7 +7,7 @@ function requireAuth(path: string) {
   // include all pages that require authorized users
   return (
     path === "/dashboard" ||
-    path === "/profile" ||
+    path === "/account" ||
     path === "/onboarding"
   );
 }
@@ -66,7 +66,7 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/profile",
+    "/account",
     "/dashboard",
     "/onboarding",
     "/login",

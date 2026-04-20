@@ -56,14 +56,17 @@ profile
 - [x] implement signed uploads to cloudinary
 
 sso
-- [ ] remove account linking logic from public routes
-- [ ] change profile page to account page
-- [ ] add tabs to account page for profile and settings
-- [ ] expose linkedProviders on the sanitized user object
-- [ ] add reset password to settings view
-- [ ] add create password and link google account to settings view
-- [ ] add /api/users/link-credentials: requires valid session, gates linking on session.id === existingUser._id.toString()
-- [ ] add /api/users/link-google route for google account linking
+- [x] remove account linking logic from public routes
+- [x] change profile page to account page
+- [x] add tabs to account page for profile and settings
+- [x] expose linkedProviders on the sanitized user object
+- [x] add reset password to settings view
+- [x] add create password and link google account to settings view
+- [x] add /api/users/linkcredentials: requires valid session, gates linking on session.id === existingUser._id.toString()
+- [x] support Google account linking via /api/auth/google for authenticated users
+- [x] display validation error states for create password
+- [x] move user sanitation into a helper using server-only package
+- [x] move password validation logic into a helper
 
 additional authentication methods
 - [x] add social login (google)
@@ -85,10 +88,12 @@ look & feel
 - [x] make new (main) layout responsive
 - [x] define themes
 - [x] allow theme selection
+- [ ] include password validation states in password component
 - [ ] lay out login and signup pages
 - [ ] lay out triggerpasswordreset page
 - [ ] lay out verifyemail page
 - [ ] lay out dashboard page
+- [ ] refactor to components where applicable
 
 multiple pages
 - [x] either display or discard toast

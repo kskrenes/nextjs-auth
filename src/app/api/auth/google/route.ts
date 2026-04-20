@@ -3,8 +3,9 @@ import User from "@/models/user-model";
 import { OAuth2Client } from "google-auth-library";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
-import { signSessionToken, storeSessionCookie } from "@/helpers/token";
+import { getIdFromToken, signSessionToken, storeSessionCookie } from "@/helpers/token";
 import { connect } from "@/dbconfig/dbconfig";
+import { sanitizeUser } from "@/helpers/user-dto";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
   // generate a base username from the name or email
@@ -124,6 +125,74 @@ export async function POST(request: NextRequest) {
 
     // if no match, it's a new google sign in
     if (!storedUser) {
+
+      // check if the user has an authorized session
+      let sessionUserId: string | undefined;
+      try {
+        sessionUserId = await getIdFromToken(request);
+      } catch {
+        // ignore errors and fall through to new user flow
+      }
+
+      // if authed, attempt to link google account
+      if (sessionUserId) {
+        // if ids and emails match, update user
+        const updatedUser = await User.findOneAndUpdate(
+          {
+            _id: sessionUserId,
+            email: normalizedEmail,
+          },
+          {
+            $push: {
+              accounts: {
+                provider: "google",
+                providerId: sub,
+              },
+            }
+          },
+          { returnDocument: 'after' }
+        );
+
+        // if no user was found, current session user has a different email
+        if (!updatedUser) {
+          return NextResponse.json(
+            { error: "Google email must match account email" },
+            { status: 409 }
+          );
+        }
+
+        // build sanitized user and return success
+        const sanitizedUser = sanitizeUser(updatedUser);
+
+        // re-issue session token with updated user data
+        let sessionToken;
+        try {
+          sessionToken = signSessionToken({
+            id: sanitizedUser.id.toString(),
+            username: sanitizedUser.username,
+            email: sanitizedUser.email,
+            hasCompletedProfile: sanitizedUser.hasCompletedProfile,
+          });
+        } catch {
+          return NextResponse.json(
+            { error: "Unable to continue session" },
+            { status: 500 }
+          );
+        }
+
+        const response = NextResponse.json(
+          {
+            message: 'Account linked successfully',
+            success: true,
+            user: sanitizedUser,
+          }, 
+          { status: 200 }
+        );
+
+        storeSessionCookie(sessionToken, response);
+        return response;
+      }
+      
       const username = await createUniqueUsername(name, email);
     
       const newUser = new User({
@@ -175,25 +244,13 @@ export async function POST(request: NextRequest) {
     }
 
     // create sanitized user for response
-    const sanitizedUser = {
-      _id: storedUser._id,
-      username: storedUser.username,
-      email: storedUser.email,
-      name: storedUser.name,
-      company: storedUser.company,
-      website: storedUser.website,
-      socialLinks: storedUser.socialLinks,
-      avatarId: storedUser.avatarId,
-      hasCompletedProfile: storedUser.hasCompletedProfile,
-      isVerified: storedUser.isVerified,
-      isAdmin: storedUser.isAdmin,
-    };
+    const sanitizedUser = sanitizeUser(storedUser);
 
     // create session token
     let sessionToken;
     try {
       sessionToken = signSessionToken({
-        id: sanitizedUser._id.toString(),
+        id: sanitizedUser.id.toString(),
         username: sanitizedUser.username,
         email: sanitizedUser.email,
         hasCompletedProfile: sanitizedUser.hasCompletedProfile,

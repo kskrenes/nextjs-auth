@@ -5,7 +5,7 @@ import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
 import SetPasswordInputs from "@/components/nae-set-password";
 import { getErrorMessage } from "@/helpers/error-message";
-import { excludesSpaces } from "@/helpers/expression-validation";
+import { getValidEmail, getValidPassword, getValidUsername } from "@/helpers/expression-validation";
 import axios from "axios";
 import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
@@ -47,38 +47,26 @@ const SignupPage = () => {
     setIsError(false);
     setErrorMessage("");
 
-    const normalizedUsername = user.username.trim();
-
-    // validate username
-    if (!excludesSpaces(normalizedUsername)) {
-      setErrorMessage("Username cannot contain spaces");
-      setIsError(true);
-      return;
-    }
-
-    if (normalizedUsername.length < 4) {
-      setErrorMessage("Username must meet minimum character requirement");
-      setIsError(true);
-      return;
-    }
-
-    // verify password match
-    if (user.password !== confirmPassword) {
-      setErrorMessage("Passwords do not match");
-      setIsError(true);
-      return;
-    }
-
-    // validate password
-    if (!excludesSpaces(user.password)) {
-      setErrorMessage("Password cannot contain spaces");
+    let validEmail;
+    let validUsername;
+    let validPassword;
+    try {
+      validEmail = getValidEmail(user.email);
+      validUsername = getValidUsername(user.username);
+      validPassword = getValidPassword(user.password, confirmPassword);
+    } catch (error: unknown) {
+      setErrorMessage((error as Error).message);
       setIsError(true);
       return;
     }
     
     try {
       setIsLoading(true);
-      await axios.post("/api/users/signup", user);
+      await axios.post("/api/users/signup", {
+        email: validEmail,
+        username: validUsername,
+        password: validPassword,
+      });
       toast.success("Your account has been created!")
       router.push("/login");
     } 

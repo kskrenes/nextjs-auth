@@ -1,11 +1,11 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { AuthTokenError, getIdFromToken, signSessionToken, storeSessionCookie } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
-import type NaeUser from "@/types/user-interface";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import { defaultAvatarId } from "@/helpers/themes";
+import { sanitizeUser } from "@/helpers/user-dto";
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     // check for valid fields at runtime
-    const userUpdates = reqBody as Partial<NaeUser>;
+    const userUpdates = reqBody;
     if (
       (userUpdates.username !== undefined && typeof userUpdates.username !== "string") ||
       (userUpdates.name !== undefined && typeof userUpdates.name !== "string") ||
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       (userUpdates.avatarId !== undefined && typeof userUpdates.avatarId !== "string") ||
       (userUpdates.socialLinks !== undefined && 
         (!Array.isArray(userUpdates.socialLinks) || 
-        userUpdates.socialLinks.some(element => typeof element !== "string")))
+        userUpdates.socialLinks.some((element: any) => typeof element !== "string")))
     ) {
       return NextResponse.json(
         { error: "Invalid user fields" }, 
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
       ...(userUpdates.company !== undefined && { company: userUpdates.company.trim() }),
       ...(userUpdates.website !== undefined && { website: userUpdates.website.trim() }),
       ...(userUpdates.avatarId !== undefined && { avatarId: userUpdates.avatarId.trim() }),
-      ...(userUpdates.socialLinks !== undefined && { socialLinks: userUpdates.socialLinks.map((link) => link.trim()) }),
+      ...(userUpdates.socialLinks !== undefined && { socialLinks: userUpdates.socialLinks.map((link: any) => link.trim()) }),
     }
 
     if (settingUsername) {
@@ -130,19 +130,7 @@ export async function POST(request: NextRequest) {
     }
 
     // create sanitized user for response
-    const sanitizedUser = {
-      _id: updatedUser._id,
-      username: updatedUser.username,
-      email: updatedUser.email,
-      name: updatedUser.name,
-      company: updatedUser.company,
-      website: updatedUser.website,
-      socialLinks: updatedUser.socialLinks,
-      avatarId: updatedUser.avatarId,
-      hasCompletedProfile: updatedUser.hasCompletedProfile,
-      isVerified: updatedUser.isVerified,
-      isAdmin: updatedUser.isAdmin,
-    };
+    const sanitizedUser = sanitizeUser(updatedUser);
 
     // create success response
     const response = NextResponse.json(
@@ -159,7 +147,7 @@ export async function POST(request: NextRequest) {
       let sessionToken;
       try {
         sessionToken = signSessionToken({
-          id: sanitizedUser._id.toString(),
+          id: sanitizedUser.id.toString(),
           username: sanitizedUser.username,
           email: sanitizedUser.email,
           hasCompletedProfile: sanitizedUser.hasCompletedProfile,

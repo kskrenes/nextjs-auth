@@ -5,7 +5,7 @@ import NaeLoader from "@/components/nae-loader";
 import { useAuth } from "@/context/AuthContext";
 import { getErrorMessage } from "@/helpers/error-message";
 import { triggerEmail } from "@/helpers/trigger-email";
-import type NaeUser from "@/types/user-interface";
+import type { UserDTO } from "@/helpers/user-dto";
 import axios from "axios";
 import { BadgeCheck, ShieldAlert } from "lucide-react";
 import Link from "next/link";
@@ -55,8 +55,8 @@ const VerifyEmailPage = () => {
     try {
       setIsRetrievingData(true);
       const res = await axios.get('/api/users/me');
-      const user = res.data.user as NaeUser;
-      if (!user.email) {
+      const user = res.data?.user as UserDTO | undefined;
+      if (!user?.email) {
         toast.error("No email found for this account");
         return;
       }

@@ -10,13 +10,13 @@ import { useSelectedLayoutSegments } from "next/navigation";
 
 const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon className="w-5 h-5" /> },
-  { name: 'Profile', href: '/profile', icon: <UserPen className="w-5 h-5" /> },
+  { name: 'Account', href: '/account', icon: <UserPen className="w-5 h-5" /> },
   { name: 'Reset Password', href: '/triggerpasswordreset', icon: <RotateCcwKey className="w-5 h-5" /> },
 ];
 
 const Header = () => {
 
-  const { user, loading, logout } = useAuth();
+  const { user, fetchingUser, loggingIn, logout } = useAuth();
   const segments = useSelectedLayoutSegments();
   const isMainGroup = segments.includes('(main)');
   const headerLeft = isMainGroup ? 'md:left-64' : 'md:left-0';
@@ -29,7 +29,7 @@ const Header = () => {
         </div>
 
         {/* right side actions */}
-        {!loading && (
+        {!(fetchingUser || loggingIn) && (
           <div className="ml-auto flex items-center p-2">
 
             {user ? (
@@ -92,14 +92,14 @@ const Header = () => {
                 {/* sign in button */}
                 <Link 
                   href="/login" 
-                  className="button-ghost px-2.5 py-0.5"
+                  className="button-ghost button-small"
                 >
                   Sign In
                 </Link>
                 {/* sign up button */}
                 <Link 
                   href="/signup" 
-                  className="button-primary px-2.5 py-0.5" 
+                  className="button-primary button-small" 
                 >
                   Get Started
                 </Link>

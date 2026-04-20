@@ -1,11 +1,21 @@
 'use client';
 
 import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
-export default function GoogleLoginButton() {
+interface GoogleLoginButtonProps {
+  redirect?: boolean;
+  callback?: () => void;
+}
 
-  const { loading, loginViaGoogle } = useAuth();
+export default function GoogleLoginButton({ 
+  redirect = false,
+  callback,
+ }: GoogleLoginButtonProps) {
+
+  const { loggingIn, loginViaGoogle } = useAuth();
+  const router = useRouter();
   
   useEffect(() => {
     // define a local callback and expose it for cleanup
@@ -53,16 +63,21 @@ export default function GoogleLoginButton() {
   const handleBackendAuth = async (token: string) => {
     try {
       await loginViaGoogle(token);
-      console.log('successful response from sso google login');
+      if (callback) {
+        callback();
+      }
+      if (redirect) {
+        router.replace("/dashboard");
+      }
     } catch (error) {
-      console.error('error loging in via google', error);
+      console.error('Error logging in via Google', error);
     }
   }
 
   return (
     <div style={{colorScheme: 'auto'}} className='relative'>
       <div id="gsi-button" data-type="standard"></div>
-      {loading && <div className='absolute top-0 left-0 w-full h-full bg-page/80'></div>}
+      {loggingIn && <div className='absolute top-0 left-0 w-full h-full bg-page/80'></div>}
     </div>
   );
 }

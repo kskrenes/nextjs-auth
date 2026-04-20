@@ -4,7 +4,7 @@ import Button from "@/components/nae-button";
 import NaeLoader from "@/components/nae-loader";
 import SetPasswordInputs from "@/components/nae-set-password";
 import { getErrorMessage } from "@/helpers/error-message";
-import { excludesSpaces } from "@/helpers/expression-validation";
+import { getValidPassword } from "@/helpers/expression-validation";
 import axios from "axios";
 import { LaptopMinimalCheck, ShieldAlert } from "lucide-react";
 import Link from "next/link";
@@ -50,22 +50,11 @@ const ResetPasswordPage = () => {
 
     if (isPendingReset) return;
 
-    // enforce password confirmation match
-    if (newPassword !== confirmPassword) {
-      setErrorMessage("Passwords do not match");
-      setIsValidationError(true);
-      return;
-    }
-
-    // enforce minimum length
-    if (newPassword.length < 8) {
-      setErrorMessage("Password must be at least 8 characters");
-      setIsValidationError(true);
-      return;
-    }
-
-    if (!excludesSpaces(newPassword)) {
-      setErrorMessage("Password cannot contain spaces");
+    let validPassword;
+    try {
+      validPassword = getValidPassword(newPassword, confirmPassword);
+    } catch (error: unknown) {
+      setErrorMessage((error as Error).message);
       setIsValidationError(true);
       return;
     }
@@ -74,7 +63,7 @@ const ResetPasswordPage = () => {
       setIsPendingReset(true);
       await axios.post(
         "/api/users/resetpassword", 
-        { token, password: newPassword }
+        { token, password: validPassword }
       );
       setIsReset(true);
     } 
@@ -82,7 +71,7 @@ const ResetPasswordPage = () => {
       const status = axios.isAxiosError(error) ? error.response?.status : undefined;
       setErrorMessage(getErrorMessage(error, "Unable to reset password"));
       if (status === 401 || status === 410) {
-        // fatal errors arre unretriable
+        // fatal errors are unretriable
         setIsError(true);
       } else {
         // all other errors display inline and allow retry
