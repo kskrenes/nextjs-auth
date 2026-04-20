@@ -21,7 +21,7 @@ const UserDTOSchema = z.object({
   socialLinks: z.array(z.union([
     z.url(),
     z.literal(""),
-  ]).optional()).optional(),
+  ])).optional(),
   avatarId: z.string().optional(),
   hasCompletedProfile: z.boolean(),
   isVerified: z.boolean(),
