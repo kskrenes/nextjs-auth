@@ -164,7 +164,23 @@ export async function POST(request: NextRequest) {
         // build sanitized user and return success
         const sanitizedUser = sanitizeUser(updatedUser);
 
-        return NextResponse.json(
+        // re-issue session token with updated user data
+        let sessionToken;
+        try {
+          sessionToken = signSessionToken({
+            id: sanitizedUser.id.toString(),
+            username: sanitizedUser.username,
+            email: sanitizedUser.email,
+            hasCompletedProfile: sanitizedUser.hasCompletedProfile,
+          });
+        } catch {
+          return NextResponse.json(
+            { error: "Unable to continue session" },
+            { status: 500 }
+          );
+        }
+
+        const response = NextResponse.json(
           {
             message: 'Account linked successfully',
             success: true,
@@ -172,6 +188,9 @@ export async function POST(request: NextRequest) {
           }, 
           { status: 200 }
         );
+
+        storeSessionCookie(sessionToken, response);
+        return response;
       }
       
       const username = await createUniqueUsername(name, email);
