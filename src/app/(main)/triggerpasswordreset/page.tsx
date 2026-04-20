@@ -61,16 +61,17 @@ const TriggerPasswordResetPage = () => {
           >
             <h2 className="text-lg font-semibold">Reset Password</h2>
           </div>
+          <p className="text-foreground-secondary">We'll send you an email with instructions to update your password.</p>
           {isSent ? (
-            <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
+            <div className="flex flex-col items-center min-h-screen space-y-8">
               <MailCheck className="w-10 h-10 text-brand" />
               <h1 className="mb-6 text-3xl font-bold">An email has been sent.</h1>
-              <p className="max-w-75 text-sm text-center">
+              <p className="max-w-75 text-sm text-center text-foreground-secondary">
                 Check your email for instructions you can follow to reset your password.
               </p>
             </div>
           ) : isError ? (
-            <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
+            <div className="flex flex-col items-center min-h-screen space-y-8">
               <ShieldAlert className="w-10 h-10 text-red-600" />
               <h1 className="mb-6 text-3xl font-bold">Unable to send email</h1>
               <Button
