@@ -109,6 +109,7 @@ const AccountPage = () => {
   const handleEditClick = () => {
     if (!user || isEditing) return;
 
+    resetPasswordFormState();
     setEditedFields({
       name: user.name || "",
       company: user.company || "",
@@ -133,10 +134,14 @@ const AccountPage = () => {
   }
 
   const clearPasswordValidationState = () => {
-    if (isPasswordValidationError) {
-      setIsPasswordValidationError(false);
-      setPasswordErrorMessage("");
-    }
+    setIsPasswordValidationError(false);
+    setPasswordErrorMessage("");
+  };
+
+  const resetPasswordFormState = () => {
+    setPassword("");
+    setConfirmPassword("");
+    clearPasswordValidationState();
   };
 
   const handlePasswordChange = (value: string) => {
@@ -243,7 +248,8 @@ const AccountPage = () => {
             // so setIsEditing(false) here won't conflict with setIsEditing(true) there.
             onChange={(index) => {
               setActiveTab(index);
-              setIsEditing(false)
+              setIsEditing(false);
+              resetPasswordFormState();
             }}
           >
             <TabList className="tab-list">
