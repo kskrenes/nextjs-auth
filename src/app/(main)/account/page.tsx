@@ -132,21 +132,21 @@ const AccountPage = () => {
     toast.success("Google account added successfully!");
   }
 
-  // clear stale inline errors when either password changes
-  const handlePasswordChange = (value: string) => {
-    setPassword(value);
+  const clearPasswordValidationState = () => {
     if (isPasswordValidationError) {
       setIsPasswordValidationError(false);
       setPasswordErrorMessage("");
     }
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    clearPasswordValidationState();
   }
 
   const handleConfirmPasswordChange = (value: string) => {
     setConfirmPassword(value);
-    if (isPasswordValidationError) {
-      setIsPasswordValidationError(false);
-      setPasswordErrorMessage("");
-    }
+    clearPasswordValidationState();
   }
 
   const handleAddPassword = async () => {
