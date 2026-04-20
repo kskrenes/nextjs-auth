@@ -1,7 +1,7 @@
 "use client";
 
 import { triggerEmail } from "@/helpers/trigger-email";
-import { KeyRound, RotateCcwKey, ShieldAlert, ShieldUser, UserPlus } from "lucide-react";
+import { KeyRound, Pencil, RotateCcwKey, ShieldAlert, ShieldUser, UserPlus } from "lucide-react";
 import React, { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
@@ -214,10 +214,11 @@ const AccountPage = () => {
             <div className="flex w-full gap-4">
               {/* edit button - always visible */}
               <Button 
-                className="flex-1 px-0"
+                className="flex-1 px-0 gap-2"
                 onClick={handleEditClick}
                 disabled={!user || isEditing}
               >
+                <Pencil className="w-5 h-5" />
                 Edit Profile
               </Button>
 
