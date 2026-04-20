@@ -1,7 +1,7 @@
 "use client";
 
 import { triggerEmail } from "@/helpers/trigger-email";
-import { KeyRound, RotateCcwKey, ShieldUser, UserPlus } from "lucide-react";
+import { KeyRound, RotateCcwKey, ShieldAlert, ShieldUser, UserPlus } from "lucide-react";
 import React, { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
@@ -516,6 +516,12 @@ const AccountPage = () => {
                         Set a password to enable traditional email and password login alongside Google SSO.
                       </p>
                       <div className="flex flex-col gap-4 max-w-sm">
+                        {isPasswordValidationError && (
+                          <div role="alert" className="flex items-center space-x-2 mt-4 text-sm text-red-500">
+                            <ShieldAlert className="w-4 h-4" />
+                            <span className="text-center">{passwordErrorMessage}</span>
+                          </div>
+                        )}
                         <SetPasswordInputs
                           label="Password"
                           password={password}
