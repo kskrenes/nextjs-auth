@@ -1,7 +1,7 @@
 'use client';
 
 import { getErrorMessage } from '@/helpers/error-message';
-import NaeUser from '@/types/user-interface';
+import type { UserDTO } from '@/helpers/user-dto';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
@@ -17,7 +17,7 @@ type EditableProfileFields = {
 };
 
 export interface AuthContextType {
-  user: NaeUser | null;
+  user: UserDTO | null;
   fetchingUser: boolean; 
   loggingIn: boolean;
   loggingOut: boolean;
@@ -53,7 +53,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<NaeUser | null>(null);
+  const [user, setUser] = useState<UserDTO | null>(null);
   const [fetchingUser, setFetchingUser] = useState<boolean>(true);
   const [loggingIn, setLoggingIn] = useState<boolean>(false);
   const [loggingOut, setLoggingOut] = useState<boolean>(false);

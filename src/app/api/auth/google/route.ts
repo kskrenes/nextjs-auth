@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import { getIdFromToken, signSessionToken, storeSessionCookie } from "@/helpers/token";
 import { connect } from "@/dbconfig/dbconfig";
+import { sanitizeUser } from "@/helpers/user-dto";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
   // generate a base username from the name or email
@@ -161,22 +162,7 @@ export async function POST(request: NextRequest) {
         }
 
         // build sanitized user and return success
-        const sanitizedUser = {
-          _id: updatedUser._id,
-          username: updatedUser.username,
-          email: updatedUser.email,
-          name: updatedUser.name,
-          company: updatedUser.company,
-          website: updatedUser.website,
-          socialLinks: updatedUser.socialLinks,
-          avatarId: updatedUser.avatarId,
-          hasCompletedProfile: updatedUser.hasCompletedProfile,
-          isVerified: updatedUser.isVerified,
-          isAdmin: updatedUser.isAdmin,
-          linkedProviders: (updatedUser.accounts ?? []).map(
-            (a: { provider: string }) => a.provider
-          ),
-        };
+        const sanitizedUser = sanitizeUser(updatedUser);
 
         return NextResponse.json(
           {
@@ -239,28 +225,13 @@ export async function POST(request: NextRequest) {
     }
 
     // create sanitized user for response
-    const sanitizedUser = {
-      _id: storedUser._id,
-      username: storedUser.username,
-      email: storedUser.email,
-      name: storedUser.name,
-      company: storedUser.company,
-      website: storedUser.website,
-      socialLinks: storedUser.socialLinks,
-      avatarId: storedUser.avatarId,
-      hasCompletedProfile: storedUser.hasCompletedProfile,
-      isVerified: storedUser.isVerified,
-      isAdmin: storedUser.isAdmin,
-      linkedProviders: (storedUser.accounts ?? []).map(
-        (a: { provider: string }) => a.provider
-      ),
-    };
+    const sanitizedUser = sanitizeUser(storedUser);
 
     // create session token
     let sessionToken;
     try {
       sessionToken = signSessionToken({
-        id: sanitizedUser._id.toString(),
+        id: sanitizedUser.id.toString(),
         username: sanitizedUser.username,
         email: sanitizedUser.email,
         hasCompletedProfile: sanitizedUser.hasCompletedProfile,

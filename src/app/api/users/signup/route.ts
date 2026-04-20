@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { getRequestBody } from "@/helpers/validate-request";
 import { excludesSpaces, meetsMinimum, validateEmail } from "@/helpers/expression-validation";
 import mongoose from "mongoose";
+import { sanitizeUser } from "@/helpers/user-dto";
 
 export async function POST(request: NextRequest) {
   try {
@@ -171,22 +172,7 @@ export async function POST(request: NextRequest) {
     }
 
     // create sanitized user for response
-    const sanitizedUser = {
-      _id: storedUser._id,
-      username: storedUser.username,
-      email: storedUser.email,
-      name: storedUser.name,
-      company: storedUser.company,
-      website: storedUser.website,
-      socialLinks: storedUser.socialLinks,
-      avatarId: storedUser.avatarId,
-      hasCompletedProfile: storedUser.hasCompletedProfile,
-      isVerified: storedUser.isVerified,
-      isAdmin: storedUser.isAdmin,
-      linkedProviders: (storedUser.accounts ?? []).map(
-        (a: { provider: string }) => a.provider
-      ),
-    };
+    const sanitizedUser = sanitizeUser(storedUser);
 
     return NextResponse.json(
       {

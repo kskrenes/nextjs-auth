@@ -4,6 +4,7 @@ import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
 import { signSessionToken, storeSessionCookie, TOKEN_COOKIE_NAME } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
+import { sanitizeUser } from "@/helpers/user-dto";
 
 export async function POST(request: NextRequest) {
   try {
@@ -64,28 +65,13 @@ export async function POST(request: NextRequest) {
     }
 
     // create sanitized user for response
-    const sanitizedUser = {
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-      name: user.name,
-      company: user.company,
-      website: user.website,
-      socialLinks: user.socialLinks,
-      avatarId: user.avatarId,
-      hasCompletedProfile: user.hasCompletedProfile,
-      isVerified: user.isVerified,
-      isAdmin: user.isAdmin,
-      linkedProviders: (user.accounts ?? []).map(
-        (a: { provider: string }) => a.provider
-      ),
-    };
+    const sanitizedUser = sanitizeUser(user);
 
     // create session token
     let sessionToken;
     try {
       sessionToken = signSessionToken({
-        id: sanitizedUser._id.toString(),
+        id: sanitizedUser.id.toString(),
         username: sanitizedUser.username,
         email: sanitizedUser.email,
         hasCompletedProfile: sanitizedUser.hasCompletedProfile,

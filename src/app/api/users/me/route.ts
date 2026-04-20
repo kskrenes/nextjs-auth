@@ -1,5 +1,6 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { getIdFromToken } from "@/helpers/token";
+import { sanitizeUser } from "@/helpers/user-dto";
 import User from "@/models/user-model";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -21,22 +22,7 @@ export async function GET(request: NextRequest) {
     }
 
     // create sanitized user for response
-    const sanitizedUser = {
-      _id: user._id,
-      username: user.username,
-      email: user.email,
-      name: user.name,
-      company: user.company,
-      website: user.website,
-      socialLinks: user.socialLinks,
-      avatarId: user.avatarId,
-      hasCompletedProfile: user.hasCompletedProfile,
-      isVerified: user.isVerified,
-      isAdmin: user.isAdmin,
-      linkedProviders: (user.accounts ?? []).map(
-        (a: { provider: string }) => a.provider
-      ),
-    };
+    const sanitizedUser = sanitizeUser(user);
 
     // return success
     return NextResponse.json({

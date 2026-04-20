@@ -10,6 +10,7 @@ import {
   signSessionToken,
   storeSessionCookie,
 } from "@/helpers/token";
+import { sanitizeUser } from "@/helpers/user-dto";
 
 export async function POST(request: NextRequest) {
   try {
@@ -118,32 +119,17 @@ export async function POST(request: NextRequest) {
     }
 
     // create sanitized user for the response
-    const sanitizedUser = {
-      _id: updatedUser._id,
-      username: updatedUser.username,
-      email: updatedUser.email,
-      name: updatedUser.name,
-      company: updatedUser.company,
-      website: updatedUser.website,
-      socialLinks: updatedUser.socialLinks,
-      avatarId: updatedUser.avatarId,
-      hasCompletedProfile: updatedUser.hasCompletedProfile,
-      isVerified: updatedUser.isVerified,
-      isAdmin: updatedUser.isAdmin,
-      linkedProviders: (updatedUser.accounts ?? []).map(
-        (a: { provider: string }) => a.provider
-      ),
-    };
+    const sanitizedUser = sanitizeUser(updatedUser);
 
     // Re-issue the session token: hasCompletedProfile may have just changed
     // from false → true, and the proxy uses that field for onboarding redirects.
     let sessionToken: string;
     try {
       sessionToken = signSessionToken({
-        id: updatedUser._id.toString(),
-        username: updatedUser.username,
-        email: updatedUser.email,
-        hasCompletedProfile: updatedUser.hasCompletedProfile,
+        id: sanitizedUser.id.toString(),
+        username: sanitizedUser.username,
+        email: sanitizedUser.email,
+        hasCompletedProfile: sanitizedUser.hasCompletedProfile,
       });
     } catch {
       return NextResponse.json(
