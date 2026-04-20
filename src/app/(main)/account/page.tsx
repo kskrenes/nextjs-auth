@@ -93,7 +93,8 @@ const AccountPage = () => {
     }
   }
   
-  const getNormalizedUrl = (input: string): string => {
+  const getNormalizedUrl = (input: string | undefined): string => {
+    if (!input) return "";
     const value = input.trim();
     if (!value) return "";
     if (/^https?:\/\//i.test(value)) {
@@ -131,7 +132,7 @@ const AccountPage = () => {
       name: user.name || "",
       company: user.company || "",
       website: user.website || "",
-      socialLinks: [...(user.socialLinks ?? []), "", "", "", ""].slice(0, 4),
+      socialLinks: ([...(user.socialLinks ?? []), "", "", "", ""] as string[]).slice(0, 4),
     });
 
     setActiveTab(0);
@@ -462,10 +463,10 @@ const AccountPage = () => {
                       </div>
                     )}
                     {/* social accounts */}
-                    {user?.socialLinks?.some((element: string) => element.trim() !== "") && (
+                    {user?.socialLinks?.some((element) => element && element.trim() !== "") && (
                       <div className="flex flex-col gap-1">
                         <label className="text-lg font-semibold">Social Accounts</label>
-                        {user?.socialLinks?.map((rawLink: string, index: React.Key | null | undefined) => {
+                        {user?.socialLinks?.map((rawLink, index: React.Key | null | undefined) => {
                           const link = getNormalizedUrl(rawLink);
                           return link !== '' && (
                             <div key={index} className="flex items-center gap-2">
