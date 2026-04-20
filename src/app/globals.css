@@ -194,7 +194,7 @@ body {
     data-selected:text-tab-foreground-selected
     text-lg 
     font-semibold 
-    outline-none
+    data-focus:outline-2
     cursor-pointer
     data-selected:cursor-default
     data-selected:shadow-[inset_0_-2px_0_0_var(--color-tab-foreground-selected)]
