@@ -239,16 +239,18 @@ const AccountPage = () => {
           <TabGroup 
             className="flex flex-col gap-8 max-w-150"
             selectedIndex={activeTab} 
-            onChange={setActiveTab}
+            // Programmatic tab changes (e.g. handleEditClick) bypass onChange,
+            // so setIsEditing(false) here won't conflict with setIsEditing(true) there.
+            onChange={(index) => {
+              setActiveTab(index);
+              setIsEditing(false)
+            }}
           >
             <TabList className="tab-list">
               <Tab className="tab-list-item">
                 Profile
               </Tab>
-              <Tab 
-                className="tab-list-item"
-                onClick={() => setIsEditing(false)}
-              >
+              <Tab className="tab-list-item">
                 Settings
               </Tab>
             </TabList>
