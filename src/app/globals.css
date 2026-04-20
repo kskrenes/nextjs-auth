@@ -85,6 +85,11 @@ body {
   color: var(--foreground-primary);
 }
 
+:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
 @utility button-base {
   @apply
     flex 
@@ -194,7 +199,6 @@ body {
     data-selected:text-tab-foreground-selected
     text-lg 
     font-semibold 
-    data-focus:outline-2
     cursor-pointer
     data-selected:cursor-default
     data-selected:shadow-[inset_0_-2px_0_0_var(--color-tab-foreground-selected)]
