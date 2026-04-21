@@ -88,6 +88,7 @@ look & feel
 - [x] make new (main) layout responsive
 - [x] define themes
 - [x] allow theme selection
+- [ ] fix google sign in button width
 - [ ] include password validation states in password component
 - [ ] lay out login and signup pages
 - [ ] lay out triggerpasswordreset page
