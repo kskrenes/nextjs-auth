@@ -77,6 +77,12 @@ session hardening
 - [ ] wire sign out per device, and sign out all devices
 - [ ] add worker to delete expired sessions from the DB
 
+session management lifecycle
+- [x] conceptual research
+- [ ] token expiration (logout/timeout)
+- [ ] active device monitoring
+- [ ] session revocation
+
 additional authentication methods
 - [x] add social login (google)
 - [ ] research multifactor auth (MFA)
@@ -85,12 +91,6 @@ additional authentication methods
 
 roles and permissions
 - [ ] research examples and determine what to implement
-
-session management lifecycle
-- [ ] conceptual research
-- [ ] token expiration (logout/timeout)
-- [ ] active device monitoring
-- [ ] session revocation
 
 look & feel
 - [x] improve style
