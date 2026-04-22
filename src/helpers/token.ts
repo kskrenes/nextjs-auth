@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -99,4 +100,14 @@ export const storeSessionCookie = (token: string, response: NextResponse) => {
       maxAge: 60 * 60 * 24,
     }
   );
+}
+
+// generate a cryptographically random raw token (32 bytes → 64-char hex string)
+export const getRandomToken = (): string => {
+  return crypto.randomBytes(32).toString("hex");
+}
+
+// hash with SHA-256 for DB storage (deterministic, fast, secure for high-entropy tokens)
+export const hashToken = (token: string): string => {
+  return crypto.createHash("sha256").update(token).digest("hex");
 }
