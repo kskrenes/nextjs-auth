@@ -5,7 +5,7 @@ import { getEmailHtml, getEmailSubject } from "./email-html";
 import { getRandomToken, hashToken } from "./token";
 
 // enum for each email type
-enum EmailType {
+export enum EmailType {
   VERIFY = 'VERIFY',
   RESET = 'RESET',
 }
@@ -58,9 +58,11 @@ function getEmailData(
       };
 
     default:
+    {
       // Exhaustiveness check (compile-time safety)
       const _exhaustive: never = emailType;
       return _exhaustive;
+    }
   }
 }
 
