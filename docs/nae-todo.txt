@@ -70,7 +70,7 @@ sso
 
 session hardening
 - [x] create session table on MongoDB cloud
-- [ ] create session mongoose model and types
+- [x] create session mongoose model and types
 - [ ] add session token utilities/helpers
 - [ ] add periodic session_id check to middleware
 - [ ] create account page security tab
