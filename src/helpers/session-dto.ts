@@ -13,8 +13,8 @@ const SessionDTOSchema = z.object({
   userId: objectIdSchema,
   userAgent: z.string().optional(),
   ipAddress: z.string().optional(),
-  expiresAt: z.date(),
-  lastActive: z.date()
+  expiresAt: z.coerce.date(),
+  lastActive: z.coerce.date()
 });
 
 // infer a typescript type from the zod schema
@@ -24,7 +24,7 @@ export type SessionDTO = z.infer<typeof SessionDTOSchema>;
 export function sanitizeSession(session: any): SessionDTO {
   return SessionDTOSchema.parse({
     sessionId: session.sessionId,
-    userId: session.userId.toString(),
+    userId: session.userId ? session.userId.toString() : session.userId,
     userAgent: session.userAgent,
     ipAddress: session.ipAddress,
     expiresAt: session.expiresAt,
