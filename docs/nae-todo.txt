@@ -71,7 +71,11 @@ sso
 session hardening
 - [x] create session table on MongoDB cloud
 - [x] create session mongoose model and types
-- [ ] add session token utilities/helpers
+- [x] add session token utilities/helpers
+- [ ] add session entry logic to login route and google auth route
+- [ ] add session delete and cookie clearing logic to logout route
+- [ ] create /api/auth/refresh route
+- [ ] create /api/auth/sessions route with GET and DELETE (or POST /revoke)
 - [ ] add periodic session_id check to middleware
 - [ ] create account page security tab
 - [ ] wire sign out per device, and sign out all devices
