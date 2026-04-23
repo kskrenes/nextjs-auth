@@ -19,7 +19,7 @@ export class AuthTokenError extends Error {
   }
 }
 
-const getToken = (request: NextRequest, name: string, error: string): string => {
+export const getToken = (request: NextRequest, name: string, error: string): string => {
   // throw if token is not found
   const token = request.cookies.get(name)?.value;
   if (!token) {
@@ -116,7 +116,7 @@ export const signSessionToken = (userData: {
   return sessionToken;
 }
       
-export const storeSessionCookie = (token: string, response: NextResponse) => {
+export const storeSessionCookie = (token: string, response: NextResponse): void => {
   // store token in client cookie
   response.cookies.set(
     TOKEN_COOKIE_NAME, 
@@ -160,7 +160,7 @@ export const signAccessToken = (userData: {
   return sessionToken;
 }
 
-export const storeAccessTokenCookie = (token: string, response: NextResponse) => {
+export const storeAccessTokenCookie = (token: string, response: NextResponse): void => {
   // store token in client cookie
   response.cookies.set(
     ACCESS_TOKEN_COOKIE_NAME, 
@@ -175,7 +175,7 @@ export const storeAccessTokenCookie = (token: string, response: NextResponse) =>
   );
 }
 
-export const storeRefreshTokenCookie = (token: string, response: NextResponse) => {
+export const storeRefreshTokenCookie = (token: string, response: NextResponse): void => {
   // store token in client cookie
   response.cookies.set(
     REFRESH_TOKEN_COOKIE_NAME, 
