@@ -23,7 +23,7 @@ const sessionSchema = new mongoose.Schema({
   expiresAt: { // Date for session expiration, required, indexed (for cleanup queries)
     type: Date,
     expires: 0,
-    required: true,
+    required: [true, "Please provide an expiration date"],
   },
   lastActive: { // Date for activity tracking, required
     type: Date,
