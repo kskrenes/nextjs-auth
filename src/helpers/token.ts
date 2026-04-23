@@ -2,6 +2,8 @@ import { cookies } from 'next/headers'
 import crypto from "crypto";
 import jwt, { Secret, type JwtPayload } from "jsonwebtoken";
 import { NextResponse, type NextRequest } from "next/server";
+import Session from "@/models/session-model";
+import { SessionDTO } from './session-dto';
 
 export const TOKEN_COOKIE_NAME = "naetoken" as const;
 export const ACCESS_TOKEN_COOKIE_NAME = "naetoken" as const;
@@ -17,56 +19,81 @@ export class AuthTokenError extends Error {
   }
 }
 
-export const getIdFromToken = async (request: NextRequest) => {
-  // throw if auth token is not found
-  const token = request.cookies.get(TOKEN_COOKIE_NAME)?.value;
+const getToken = (request: NextRequest, name: string, error: string): string => {
+  // throw if token is not found
+  const token = request.cookies.get(name)?.value;
   if (!token) {
-    throw new AuthTokenError(
-      "Missing auth token",
-      401
-    );
+    throw new AuthTokenError(error, 401);
   }
+  return token;
+}
 
+const verifySecret = (): Secret => {
   // throw if JWT secret is not configured
   const secret = process.env.JWT_SECRET;
   if (!secret) {
     throw new Error("JWT_SECRET is not configured");
   }
+  return secret;
+}
 
+const decodeToken = (
+  token: string, 
+  secret: Secret, 
+  error: string
+): string | JwtPayload | undefined => {
   let decodedToken: string | JwtPayload | undefined;
   try {
-    // verify auth token
+    // verify token
     decodedToken = jwt.verify(token, secret) as string | JwtPayload;
-  } catch (error: unknown) {
-    // throw if auth token is invalid or expired
+  } 
+  catch (e: unknown) {
+    // throw if token is invalid or expired
     if (
-      error instanceof jwt.TokenExpiredError || 
-      error instanceof jwt.JsonWebTokenError
+      e instanceof jwt.TokenExpiredError || 
+      e instanceof jwt.JsonWebTokenError
     ) {
-      throw new AuthTokenError(
-        "Invalid or expired auth token",
-        401
-      );
+      throw new AuthTokenError(error, 401);
     }
 
     // re-throw unexpected errors as server errors
     throw error;
   }
 
+  return decodedToken;
+}
+
+const validatePayload = (
+  payload: string | JwtPayload | undefined, 
+  schema: Record<string, string> | undefined = {}
+): JwtPayload => {
+  const error = new AuthTokenError("Invalid auth token payload", 401);
   // throw if token is missing or malformed 
-  if (
-    !decodedToken ||
-    typeof decodedToken !== "object" ||
-    Array.isArray(decodedToken) ||
-    typeof (decodedToken as JwtPayload).id !== "string"
-  ) {
-    throw new AuthTokenError(
-      "Invalid auth token payload",
-      401
-    );
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    throw error;
   }
 
-  return (decodedToken as JwtPayload).id;
+  // throw if required properties are missing or malformed
+  if (!Object.keys(schema).every((key) => {
+    const expectedType = schema[key];
+    const actualValue = payload[key];
+
+    // Check if key exists and its typeof matches the expected type string
+    return key in payload && typeof actualValue === expectedType;
+  })) {
+    throw error;
+  };
+
+  return payload;
+}
+
+export const getIdFromToken = async (request: NextRequest): Promise<string> => {
+  const token = getToken(request, TOKEN_COOKIE_NAME, "Missing auth token");
+  const secret = verifySecret();
+  const decodedToken = decodeToken(token, secret, "Invalid or expired auth token");
+  const payload = validatePayload(decodedToken, { id: "string" });
+
+  return payload.id as string;
 }
 
 export const signSessionToken = (userData: {
@@ -76,17 +103,13 @@ export const signSessionToken = (userData: {
   hasCompletedProfile: boolean;
 }): string => {
   // throw if token secret is not configured
-  const tokenSecret = process.env.JWT_SECRET;
-  if (!tokenSecret) {
-    console.error("JWT_SECRET is not configured");
-    throw new Error("Invalid server configuration");
-  }
+  const secret = verifySecret();
 
   // create session token
   const tokenData = { ...userData };
   const sessionToken = jwt.sign(
     tokenData, 
-    tokenSecret, 
+    secret, 
     { expiresIn: "1d" }
   );
 
@@ -124,18 +147,13 @@ export const signAccessToken = (userData: {
   email: string;
   hasCompletedProfile: boolean;
 }): string => {
-  // throw if token secret is not configured
-  const tokenSecret = process.env.JWT_SECRET as Secret;
-  if (!tokenSecret) {
-    console.error("JWT_SECRET is not configured");
-    throw new Error("Invalid server configuration");
-  }
-  
+  const secret = verifySecret();
+
   // create access token
   const tokenData = { ...userData };
   const sessionToken = jwt.sign(
     tokenData, 
-    tokenSecret, 
+    secret, 
     { expiresIn: ACCESS_TOKEN_EXPIRY }
   );
 
@@ -175,4 +193,30 @@ export const clearAuthCookies = async () => {
   const cookieStore = await cookies();
   cookieStore.delete(ACCESS_TOKEN_COOKIE_NAME);
   cookieStore.delete(REFRESH_TOKEN_COOKIE_NAME);
+}
+
+export const verifyAccessToken = (request: NextRequest): JwtPayload => {
+  const token = getToken(request, ACCESS_TOKEN_COOKIE_NAME, "Missing access token");
+  const secret = verifySecret();
+  const decodedToken = decodeToken(token, secret, "Invalid or expired access token");
+  const payload = validatePayload(decodedToken);
+  return payload;
+}
+
+export const validateRefreshSession = async (request: NextRequest): Promise<SessionDTO> => {
+  const rawToken = getToken(request, REFRESH_TOKEN_COOKIE_NAME, "Missing refresh token");
+  const hashedToken = hashToken(rawToken);
+
+  // Look up Session by hashed token in DB
+  const session = await Session.findOne({ 
+    refreshToken: hashedToken,
+    expiresAt: { $gt: new Date() }
+  }) as SessionDTO;
+
+  // Verify session exists and expiresAt > now
+  if (!session) {
+    throw new Error("Session expired or not found");
+  }
+  
+  return session;
 }
