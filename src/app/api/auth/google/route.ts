@@ -3,7 +3,7 @@ import User from "@/models/user-model";
 import { OAuth2Client } from "google-auth-library";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
-import { getIdFromToken, signSessionToken, storeSessionCookie } from "@/helpers/token";
+import { createSession, getIdFromToken, getRandomToken, hashToken, REFRESH_TOKEN_EXPIRY_MS, signAccessToken, signSessionToken, storeAccessTokenCookie, storeRefreshTokenCookie, storeSessionCookie } from "@/helpers/token";
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeUser } from "@/helpers/user-dto";
 
@@ -161,25 +161,39 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // build sanitized user and return success
+        // build sanitized user
         const sanitizedUser = sanitizeUser(updatedUser);
-
-        // re-issue session token with updated user data
-        let sessionToken;
+        
+        // store a new session document
+        let refreshToken;
         try {
-          sessionToken = signSessionToken({
+          refreshToken = await createSession(sanitizedUser, request);
+        } catch(error) {
+          console.error("Failed to create session document", error);
+          return NextResponse.json(
+            { error: "Unable to log in" },
+            { status: 500 }
+          );
+        }
+
+        // create access token
+        let accessToken;
+        try {
+          accessToken = signAccessToken({
             id: sanitizedUser.id.toString(),
             username: sanitizedUser.username,
             email: sanitizedUser.email,
             hasCompletedProfile: sanitizedUser.hasCompletedProfile,
           });
-        } catch {
+        } catch (error) {
+          console.error("Failed to sign access token", error);
           return NextResponse.json(
-            { error: "Unable to continue session" },
+            { error: "Unable to log in" },
             { status: 500 }
           );
         }
 
+        // create success response
         const response = NextResponse.json(
           {
             message: 'Account linked successfully',
@@ -188,8 +202,12 @@ export async function POST(request: NextRequest) {
           }, 
           { status: 200 }
         );
+        
+        // store access and refresh tokens in separate cookies
+        storeAccessTokenCookie(accessToken, response);
+        storeRefreshTokenCookie(refreshToken, response);
 
-        storeSessionCookie(sessionToken, response);
+        // return success
         return response;
       }
       
@@ -243,20 +261,32 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // create sanitized user for response
+    // build sanitized user
     const sanitizedUser = sanitizeUser(storedUser);
-
-    // create session token
-    let sessionToken;
+        
+    // store a new session document
+    let refreshToken;
     try {
-      sessionToken = signSessionToken({
+      refreshToken = await createSession(sanitizedUser, request);
+    } catch(error) {
+      console.error("Failed to create session document", error);
+      return NextResponse.json(
+        { error: "Unable to log in" },
+        { status: 500 }
+      );
+    }
+
+    // create access token
+    let accessToken;
+    try {
+      accessToken = signAccessToken({
         id: sanitizedUser.id.toString(),
         username: sanitizedUser.username,
         email: sanitizedUser.email,
         hasCompletedProfile: sanitizedUser.hasCompletedProfile,
       });
     } catch (error) {
-      console.error("Failed to sign session token", error);
+      console.error("Failed to sign access token", error);
       return NextResponse.json(
         { error: "Unable to log in" },
         { status: 500 }
@@ -273,8 +303,9 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
         
-    // store token in client cookie
-    storeSessionCookie(sessionToken, response);
+    // store access and refresh tokens in separate cookies
+    storeAccessTokenCookie(accessToken, response);
+    storeRefreshTokenCookie(refreshToken, response);
 
     // return success
     return response;

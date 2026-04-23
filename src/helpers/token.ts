@@ -3,14 +3,16 @@ import crypto from "crypto";
 import jwt, { Secret, type JwtPayload } from "jsonwebtoken";
 import { NextResponse, type NextRequest } from "next/server";
 import Session from "@/models/session-model";
-import { SessionDTO } from './session-dto';
+import { sanitizeSession, SessionDTO } from './session-dto';
+import { UserDTO } from './user-dto';
 
 export const TOKEN_COOKIE_NAME = "naetoken" as const;
 export const ACCESS_TOKEN_COOKIE_NAME = "naetoken" as const;
 export const REFRESH_TOKEN_COOKIE_NAME = "naerefresh" as const;
 export const ACCESS_TOKEN_EXPIRY = "15m" as const;
-export const ACCESS_TOKEN_EXPIRY_MS = 15 * 60 * 1000; // 15 minutes
-export const REFRESH_TOKEN_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+export const ACCESS_TOKEN_EXPIRY_SECONDS = 15 * 60; // 15 minutes
+export const REFRESH_TOKEN_EXPIRY_SECONDS = 7 * 24 * 60 * 60; // 7 days
+export const REFRESH_TOKEN_EXPIRY_DAYS = 7;
 
 export class AuthTokenError extends Error {
   constructor(message: string, public status: number) {
@@ -170,7 +172,7 @@ export const storeAccessTokenCookie = (token: string, response: NextResponse): v
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
-      maxAge: ACCESS_TOKEN_EXPIRY_MS,
+      maxAge: ACCESS_TOKEN_EXPIRY_SECONDS,
     }
   );
 }
@@ -185,7 +187,7 @@ export const storeRefreshTokenCookie = (token: string, response: NextResponse): 
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/api/auth",
-      maxAge: REFRESH_TOKEN_EXPIRY_MS,
+      maxAge: REFRESH_TOKEN_EXPIRY_SECONDS,
     }
   );
 }
@@ -218,5 +220,23 @@ export const validateRefreshSession = async (request: NextRequest): Promise<Sess
     throw new Error("Session expired or not found");
   }
   
-  return session;
+  return sanitizeSession(session);
+}
+
+export const createSession = async (user: UserDTO, request: NextRequest): Promise<string> => {
+  // generate raw refresh token 
+  const refreshToken = getRandomToken();
+
+  // create new session document
+  const now = new Date();
+  await Session.create({
+    userId: user.id,
+    refreshToken: hashToken(refreshToken),
+    expiresAt: now.setDate(now.getDate() + REFRESH_TOKEN_EXPIRY_DAYS),
+    lastActive: new Date(),
+    userAgent: request.headers.get('user-agent'),
+    ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0] || 'Unknown',
+  });
+
+  return refreshToken;
 }
