@@ -3,7 +3,7 @@ import User from "@/models/user-model";
 import { OAuth2Client } from "google-auth-library";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
-import { createSession, getIdFromToken, signAccessToken, storeAccessTokenCookie, storeRefreshTokenCookie, verifyAccessToken } from "@/helpers/token";
+import { createSession, getIdFromAccessToken, signAccessToken, storeAccessTokenCookie, storeRefreshTokenCookie, verifyAccessToken } from "@/helpers/token";
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeUser } from "@/helpers/user-dto";
 
@@ -130,8 +130,7 @@ export async function POST(request: NextRequest) {
       // check if the user has an authorized session
       let sessionUserId: string | undefined;
       try {
-        const payload = verifyAccessToken(request);
-        sessionUserId = payload.id;
+        sessionUserId = await getIdFromAccessToken(request);
       } catch {
         // ignore errors and fall through to new user flow
       }

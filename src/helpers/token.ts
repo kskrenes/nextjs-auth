@@ -89,8 +89,8 @@ const validatePayload = (
   return payload;
 }
 
-export const getIdFromToken = async (request: NextRequest): Promise<string> => {
-  const token = getToken(request, TOKEN_COOKIE_NAME, "Missing auth token");
+export const getIdFromAccessToken = async (request: NextRequest): Promise<string> => {
+  const token = getToken(request, ACCESS_TOKEN_COOKIE_NAME, "Missing auth token");
   const secret = verifySecret();
   const decodedToken = decodeToken(token, secret, "Invalid or expired auth token");
   const payload = validatePayload(decodedToken, { id: "string" });

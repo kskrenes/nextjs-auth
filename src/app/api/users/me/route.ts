@@ -1,5 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { getIdFromToken } from "@/helpers/token";
+import { getIdFromAccessToken } from "@/helpers/token";
 import { sanitizeUser } from "@/helpers/user-dto";
 import User from "@/models/user-model";
 import { NextResponse, type NextRequest } from "next/server";
@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     await connect();
 
     // fetch user associated with token
-    const userId = await getIdFromToken(request);
+    const userId = await getIdFromAccessToken(request);
     const user = await User.findById(userId)
       .select("-password");
 

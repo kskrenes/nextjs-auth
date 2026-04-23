@@ -1,4 +1,4 @@
-import { clearAuthCookies, getToken, hashToken, REFRESH_TOKEN_COOKIE_NAME, TOKEN_COOKIE_NAME } from "@/helpers/token";
+import { clearAuthCookies, getToken, hashToken, REFRESH_TOKEN_COOKIE_NAME } from "@/helpers/token";
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
 
