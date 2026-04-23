@@ -67,7 +67,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const login = async (email: string, password: string) => {
     setLoggingIn(true);
     try {
-      const res = await axios.post("/api/users/login", { email, password });
+      const res = await axios.post("/api/auth/login", { email, password });
       setUser(res.data.user);
       router.replace("/dashboard");
     } catch (error) {
@@ -80,7 +80,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = async () => {
     setLoggingOut(true);
     try {
-      await axios.post("/api/users/logout");
+      await axios.post("/api/auth/logout");
       // use browser redirect (instead of app router) to force a full page reload
       // user data is automatically cleared
       window.location.replace('/login');
