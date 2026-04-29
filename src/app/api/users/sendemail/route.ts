@@ -1,4 +1,4 @@
-import { sendEmail } from "@/helpers/mailer";
+import { EmailType, sendEmail } from "@/helpers/mailer";
 import { getRequestBody } from "@/helpers/validate-request";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if field types are invalid at runtime
-    const { email, type } = reqBody as { email?: string; type?: "VERIFY" | "RESET" };
+    const { email, type } = reqBody as { email?: string; type?: EmailType };
     if (
       typeof email !== "string" ||
       typeof type !== "string" ||
