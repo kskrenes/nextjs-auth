@@ -153,13 +153,13 @@ export const signAccessToken = (userData: {
 
   // create access token
   const tokenData = { ...userData };
-  const sessionToken = jwt.sign(
+  const accessToken = jwt.sign(
     tokenData, 
     secret, 
     { expiresIn: ACCESS_TOKEN_EXPIRY }
   );
 
-  return sessionToken;
+  return accessToken;
 }
 
 export const storeAccessTokenCookie = (token: string, response: NextResponse): void => {
