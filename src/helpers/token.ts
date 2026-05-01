@@ -110,7 +110,7 @@ export const signSessionToken = (userData: {
   const secret = verifySecret();
 
   // create session token
-  const tokenData = { ...userData };
+  const tokenData = { ...userData, tokenType: "session" as const };
   const sessionToken = jwt.sign(
     tokenData, 
     secret, 
@@ -154,7 +154,7 @@ export const signAccessToken = (userData: {
   const secret = verifySecret();
 
   // create access token
-  const tokenData = { ...userData };
+  const tokenData = { ...userData, tokenType: "access" as const };
   const accessToken = jwt.sign(
     tokenData, 
     secret, 
@@ -203,7 +203,10 @@ export const verifyAccessToken = (request: NextRequest): JwtPayload => {
   const token = getToken(request, ACCESS_TOKEN_COOKIE_NAME, "Missing access token");
   const secret = verifySecret();
   const decodedToken = decodeToken(token, secret, "Invalid or expired access token");
-  const payload = validatePayload(decodedToken);
+  const payload = validatePayload(decodedToken, { id: "string", tokenType: "string" });
+  if (payload.tokenType !== "access") {
+    throw new AuthTokenError('Invalid access token payload', 401);
+  }
   return payload;
 }
 
