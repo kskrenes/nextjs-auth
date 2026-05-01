@@ -15,7 +15,7 @@ function requireAuth(path: string) {
   const isProtectedApi = 
     path.startsWith('/api/sign-cloudinary-params') ||
     path.startsWith('/api/users/linkcredentials') ||
-    path.startsWith('/api/users/update')
+    path.startsWith('/api/users/update');
 
   return isProtectedPage || isProtectedApi;
 }
