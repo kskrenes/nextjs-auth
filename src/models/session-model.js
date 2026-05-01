@@ -32,6 +32,7 @@ const sessionSchema = new mongoose.Schema({
 });
 
 sessionSchema.index({ userId: 1, expiresAt: 1 });
+sessionSchema.index({ refreshToken: 1, expiresAt: 1 });
 
 const Session = mongoose.models.sessions || mongoose.model("sessions", sessionSchema);
 
