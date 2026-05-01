@@ -3,7 +3,7 @@ import User from "@/models/user-model";
 import { OAuth2Client } from "google-auth-library";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
-import { createSession, getIdFromAccessToken, signAccessToken, storeAccessTokenCookie, storeRefreshTokenCookie, verifyAccessToken } from "@/helpers/token";
+import { createSession, getIdFromAccessToken, signAccessToken, storeAccessTokenCookie, storeRefreshTokenCookie } from "@/helpers/token";
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeUser } from "@/helpers/user-dto";
 
