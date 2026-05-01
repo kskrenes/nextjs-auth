@@ -59,7 +59,7 @@ const decodeToken = (
     }
 
     // re-throw unexpected errors as server errors
-    throw error;
+    throw e;
   }
 
   return decodedToken;
