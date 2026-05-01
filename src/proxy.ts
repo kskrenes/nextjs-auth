@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { ACCESS_TOKEN_COOKIE_NAME, verifyAccessToken } from "./helpers/token";
+import { ACCESS_TOKEN_COOKIE_NAME, AuthTokenError, verifyAccessToken } from "./helpers/token";
 import { JwtPayload } from "jsonwebtoken";
 
 function requireAuth(path: string) {
@@ -29,10 +29,13 @@ async function getAuthTokenPayload(request: NextRequest): Promise<JwtPayload | n
 
   // validate token integrity
   try {
-    const payload = verifyAccessToken(request);
-    return payload as JwtPayload;
+    return verifyAccessToken(request);
   } catch (error) {
-    return null;
+    if (error instanceof AuthTokenError) {
+      return null;
+    }
+    // re-throw unexpected and non-auth errors
+    throw error;
   }
 }
 
