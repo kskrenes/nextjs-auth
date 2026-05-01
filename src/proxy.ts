@@ -65,6 +65,9 @@ export async function proxy(request: NextRequest) {
 
   // redirect authenticated users away from login page
   if (authTokenPayload && path === '/login') {
+    if (needsOnboarding) {
+      return NextResponse.redirect(new URL('/onboarding', request.nextUrl));
+    }
     return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
   }
   
