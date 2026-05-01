@@ -39,7 +39,10 @@ export function setupAuthInterceptor(onSignOut: () => void): () => void {
         return new Promise<void>((resolve, reject) => {
           failedQueue.push({ resolve, reject });
         })
-          .then(() => axiosClient(original));
+          .then(() => {
+            original._retry = true;
+            return axiosClient(original);
+          });
       }
 
       original._retry = true;
