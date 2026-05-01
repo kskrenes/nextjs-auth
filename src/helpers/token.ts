@@ -213,7 +213,7 @@ export const validateRefreshSession = async (request: NextRequest): Promise<Sess
   const session = await Session.findOne({ 
     refreshToken: hashedToken,
     expiresAt: { $gt: new Date() }
-  }) as SessionDTO;
+  });
 
   // Verify session exists and expiresAt > now
   if (!session) {
