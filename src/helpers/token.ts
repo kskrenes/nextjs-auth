@@ -227,12 +227,15 @@ export const createSession = async (user: UserDTO, request: NextRequest): Promis
   // generate raw refresh token 
   const refreshToken = getRandomToken();
 
+  // set session expiration
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
+
   // create new session document
-  const now = new Date();
   await Session.create({
     userId: user.id,
     refreshToken: hashToken(refreshToken),
-    expiresAt: now.setDate(now.getDate() + REFRESH_TOKEN_EXPIRY_DAYS),
+    expiresAt,
     lastActive: new Date(),
     userAgent: request.headers.get('user-agent'),
     ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0] || 'Unknown',
