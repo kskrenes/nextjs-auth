@@ -17,8 +17,8 @@ function processQueue(error: unknown) {
 }
 
 // ── call once from AuthProvider ───────────────────────────────────────────────
-export function setupAuthInterceptor(onSignOut: () => void) {
-  axiosClient.interceptors.response.use(
+export function setupAuthInterceptor(onSignOut: () => void): () => void {
+  const interceptorId = axiosClient.interceptors.response.use(
     (response) => response,
     async (error) => {
       const original = error.config;
@@ -58,4 +58,7 @@ export function setupAuthInterceptor(onSignOut: () => void) {
       }
     }
   );
+
+  // Return cleanup function
+  return () => axiosClient.interceptors.response.eject(interceptorId);
 }

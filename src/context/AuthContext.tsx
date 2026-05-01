@@ -79,7 +79,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     // Register the interceptor exactly once on mount
-    setupAuthInterceptor(() => onSignOut.current());
+    const eject = setupAuthInterceptor(onSignOut.current);
+    return eject; // cleanup on unmount
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── initial user fetch ───────────────────────────────────────────────────────
