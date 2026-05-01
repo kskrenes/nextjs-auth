@@ -20,8 +20,18 @@ const SessionDTOSchema = z.object({
 // infer a typescript type from the zod schema
 export type SessionDTO = z.infer<typeof SessionDTOSchema>;
 
-// sanitize a raw session object from the database
-export function sanitizeSession(session: any): SessionDTO {
+// define a minimal interface for the raw session
+interface RawSession {
+  sessionId?: unknown;
+  userId?: { toString(): string } | string;
+  userAgent?: unknown;
+  ipAddress?: unknown;
+  expiresAt?: unknown;
+  lastActive?: unknown;
+}
+
+// sanitize the raw session object from the database
+export function sanitizeSession(session: RawSession): SessionDTO {
   return SessionDTOSchema.parse({
     sessionId: session.sessionId,
     userId: session.userId ? session.userId.toString() : session.userId,
