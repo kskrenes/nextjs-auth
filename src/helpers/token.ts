@@ -219,7 +219,7 @@ export const validateRefreshSession = async (request: NextRequest): Promise<Sess
 
   // Verify session exists and expiresAt > now
   if (!session) {
-    throw new Error("Session expired or not found");
+    throw new AuthTokenError("Session expired or not found", 401);
   }
   
   return sanitizeSession(session);
