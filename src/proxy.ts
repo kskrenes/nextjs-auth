@@ -13,9 +13,9 @@ function requireAuth(path: string) {
 
   // protect all API routes that require authorized users
   const isProtectedApi = 
-    path.startsWith('api/sign-cloudinary-params') ||
-    path.startsWith('api/users/linkcredentials') ||
-    path.startsWith('api/users/update')
+    path.startsWith('/api/sign-cloudinary-params') ||
+    path.startsWith('/api/users/linkcredentials') ||
+    path.startsWith('/api/users/update')
 
   return isProtectedPage || isProtectedApi;
 }
