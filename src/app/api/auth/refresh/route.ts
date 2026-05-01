@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       {
         message: "Access token refreshed",
         success: true,
-        session: sanitizeSession(session),
+        session,
       }, 
       { status: 200 }
     );
