@@ -9,6 +9,8 @@ import { UserDTO } from './user-dto';
 export const TOKEN_COOKIE_NAME = "naetoken" as const;
 export const ACCESS_TOKEN_COOKIE_NAME = "naetoken" as const;
 export const REFRESH_TOKEN_COOKIE_NAME = "naerefresh" as const;
+export const ACCESS_TOKEN_COOKIE_PATH = "/" as const;
+export const REFRESH_TOKEN_COOKIE_PATH = "/api/auth" as const;
 export const ACCESS_TOKEN_EXPIRY = "15m" as const;
 export const ACCESS_TOKEN_EXPIRY_SECONDS = 15 * 60; // 15 minutes
 export const REFRESH_TOKEN_EXPIRY_SECONDS = 7 * 24 * 60 * 60; // 7 days
@@ -171,7 +173,7 @@ export const storeAccessTokenCookie = (token: string, response: NextResponse): v
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      path: "/",
+      path: ACCESS_TOKEN_COOKIE_PATH,
       maxAge: ACCESS_TOKEN_EXPIRY_SECONDS,
     }
   );
@@ -186,15 +188,15 @@ export const storeRefreshTokenCookie = (token: string, response: NextResponse): 
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      path: "/api/auth",
+      path: REFRESH_TOKEN_COOKIE_PATH,
       maxAge: REFRESH_TOKEN_EXPIRY_SECONDS,
     }
   );
 }
 export const clearAuthCookies = async () => {
   const cookieStore = await cookies();
-  cookieStore.delete(ACCESS_TOKEN_COOKIE_NAME);
-  cookieStore.delete(REFRESH_TOKEN_COOKIE_NAME);
+  cookieStore.set(ACCESS_TOKEN_COOKIE_NAME, '', { path: ACCESS_TOKEN_COOKIE_PATH, maxAge: 0 });
+  cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, '', { path: REFRESH_TOKEN_COOKIE_PATH, maxAge: 0 });
 }
 
 export const verifyAccessToken = (request: NextRequest): JwtPayload => {
