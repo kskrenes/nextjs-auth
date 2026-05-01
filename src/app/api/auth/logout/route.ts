@@ -1,9 +1,11 @@
+import { connect } from "@/dbconfig/dbconfig";
 import { clearAuthCookies, getToken, hashToken, REFRESH_TOKEN_COOKIE_NAME } from "@/helpers/token";
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
+    await connect();
 
     // retrieve refresh token
     let refreshToken;
