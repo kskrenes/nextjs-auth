@@ -9,8 +9,10 @@ import { UserDTO } from './user-dto';
 export const TOKEN_COOKIE_NAME = "naetoken" as const;
 export const ACCESS_TOKEN_COOKIE_NAME = "naetoken" as const;
 export const REFRESH_TOKEN_COOKIE_NAME = "naerefresh" as const;
+export const SESSION_HINT_COOKIE_NAME = "nae_has_session" as const;
 export const ACCESS_TOKEN_COOKIE_PATH = "/" as const;
 export const REFRESH_TOKEN_COOKIE_PATH = "/api/auth" as const;
+export const SESSION_HINT_COOKIE_PATH = "/" as const;
 export const ACCESS_TOKEN_EXPIRY = "15m" as const;
 export const ACCESS_TOKEN_EXPIRY_SECONDS = 15 * 60; // 15 minutes
 export const REFRESH_TOKEN_EXPIRY_SECONDS = 7 * 24 * 60 * 60; // 7 days
@@ -193,10 +195,27 @@ export const storeRefreshTokenCookie = (token: string, response: NextResponse): 
     }
   );
 }
+
+export const storeSessionHintCookie = (response: NextResponse): void => {
+  // store token in client cookie
+  response.cookies.set(
+    SESSION_HINT_COOKIE_NAME,
+    "1",
+    {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: SESSION_HINT_COOKIE_PATH,
+      maxAge: REFRESH_TOKEN_EXPIRY_SECONDS, // matches refresh token lifetime
+    }
+  );
+};
+
 export const clearAuthCookies = async () => {
   const cookieStore = await cookies();
   cookieStore.set(ACCESS_TOKEN_COOKIE_NAME, '', { path: ACCESS_TOKEN_COOKIE_PATH, maxAge: 0 });
   cookieStore.set(REFRESH_TOKEN_COOKIE_NAME, '', { path: REFRESH_TOKEN_COOKIE_PATH, maxAge: 0 });
+  cookieStore.set(SESSION_HINT_COOKIE_NAME, '', { path: SESSION_HINT_COOKIE_PATH, maxAge: 0 });
 }
 
 export const verifyAccessToken = (request: NextRequest): JwtPayload => {

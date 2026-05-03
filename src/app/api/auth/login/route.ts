@@ -2,7 +2,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextResponse, type NextRequest } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
-import { createSession, signAccessToken, storeAccessTokenCookie, storeRefreshTokenCookie } from "@/helpers/token";
+import { createSession, signAccessToken, storeAccessTokenCookie, storeRefreshTokenCookie, storeSessionHintCookie } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
 import { sanitizeUser } from "@/helpers/user-dto";
 
@@ -109,6 +109,7 @@ export async function POST(request: NextRequest) {
     // store access and refresh tokens in separate cookies
     storeAccessTokenCookie(accessToken, response);
     storeRefreshTokenCookie(refreshToken, response);
+    storeSessionHintCookie(response);
 
     // return success
     return response;
