@@ -1,4 +1,4 @@
-import { AuthTokenError, getIdFromAccessToken } from '@/helpers/token';
+import { AuthTokenError, getIdsFromAccessToken } from '@/helpers/token';
 import { v2 as cloudinary } from 'cloudinary';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   try {
     // throw if user is not authenticated
     try {
-      await getIdFromAccessToken(request);
+      await getIdsFromAccessToken(request);
     } catch (error: unknown) {
       if (error instanceof AuthTokenError) {
         return NextResponse.json(

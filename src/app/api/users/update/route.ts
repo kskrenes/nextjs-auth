@@ -1,5 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { AuthTokenError, getIdFromAccessToken, signAccessToken, storeAccessTokenCookie } from "@/helpers/token";
+import { AuthTokenError, getIdsFromAccessToken, signAccessToken, storeAccessTokenCookie } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -13,8 +13,9 @@ export async function POST(request: NextRequest) {
 
     // throw if user is not authenticated
     let authenticatedUserId: string;
+    let sessionId: string | undefined;
     try {
-      authenticatedUserId = await getIdFromAccessToken(request);
+      ({ id: authenticatedUserId, sessionId } = await getIdsFromAccessToken(request));
     } catch (error: unknown) {
       if (error instanceof AuthTokenError) {
         return NextResponse.json(
@@ -157,6 +158,7 @@ export async function POST(request: NextRequest) {
           username: sanitizedUser.username,
           email: sanitizedUser.email,
           hasCompletedProfile: sanitizedUser.hasCompletedProfile,
+          sessionId,
         });
       } catch (error) {
         console.error("Failed to sign access token", error);

@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
       username: user.username,
       email: user.email,
       hasCompletedProfile: user.hasCompletedProfile,
+      sessionId: session.sessionId,
     });
 
     // Update lastActive timestamp on Session document

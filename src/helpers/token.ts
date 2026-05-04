@@ -93,13 +93,21 @@ const validatePayload = (
   return payload;
 }
 
-export const getIdFromAccessToken = async (request: NextRequest): Promise<string> => {
+interface AccessTokenIds {
+  id: string;
+  sessionId?: string;
+}
+
+export const getIdsFromAccessToken = async (request: NextRequest): Promise<AccessTokenIds> => {
   const token = getToken(request, ACCESS_TOKEN_COOKIE_NAME, "Missing auth token");
   const secret = verifySecret();
   const decodedToken = decodeToken(token, secret, "Invalid or expired auth token");
   const payload = validatePayload(decodedToken, { id: "string" });
 
-  return payload.id as string;
+  return {
+    id: payload.id as string,
+    sessionId: payload.sessionId as string | undefined,
+  };
 }
 
 export const signSessionToken = (userData: {
@@ -152,6 +160,7 @@ export const signAccessToken = (userData: {
   username: string;
   email: string;
   hasCompletedProfile: boolean;
+  sessionId?: string;
 }): string => {
   const secret = verifySecret();
 
@@ -247,7 +256,12 @@ export const validateRefreshSession = async (request: NextRequest): Promise<Sess
   return sanitizeSession(session);
 }
 
-export const createSession = async (user: UserDTO, request: NextRequest): Promise<string> => {
+interface SessionCreationResult {
+  refreshToken: string;
+  sessionId: string;
+}
+
+export const createSession = async (user: UserDTO, request: NextRequest): Promise<SessionCreationResult> => {
   // generate raw refresh token 
   const refreshToken = getRandomToken();
 
@@ -256,7 +270,7 @@ export const createSession = async (user: UserDTO, request: NextRequest): Promis
   expiresAt.setDate(expiresAt.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
 
   // create new session document
-  await Session.create({
+  const session = await Session.create({
     userId: user.id,
     refreshToken: hashToken(refreshToken),
     expiresAt,
@@ -265,5 +279,8 @@ export const createSession = async (user: UserDTO, request: NextRequest): Promis
     ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0] || 'Unknown',
   });
 
-  return refreshToken;
+  return {
+    refreshToken,
+    sessionId: session._id.toString(),
+  };
 }
