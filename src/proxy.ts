@@ -76,8 +76,8 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // redirect authenticated users away from login page
-  if (path === '/login') {
+  // redirect authenticated users away from login page (must have auth token or session hint)
+  if (path === '/login' && (authTokenPayload || hasSessionHint)) {
     // if the user needs onboarding, or if there is no auth token but there is a session hint,
     // redirect to the onboarding page. If refresh returns a user that is already onboarded,
     // they'll be redirected from there.
