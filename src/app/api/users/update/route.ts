@@ -1,5 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { AuthTokenError, getIdFromToken, signSessionToken, storeSessionCookie } from "@/helpers/token";
+import { AuthTokenError, getIdFromAccessToken, signAccessToken, storeAccessTokenCookie } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     // throw if user is not authenticated
     let authenticatedUserId: string;
     try {
-      authenticatedUserId = await getIdFromToken(request);
+      authenticatedUserId = await getIdFromAccessToken(request);
     } catch (error: unknown) {
       if (error instanceof AuthTokenError) {
         return NextResponse.json(
@@ -142,25 +142,31 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
 
-    // if updating username, refresh session token
+    // if updating username, refresh access token
+    /*  
+      this would also be required if hasCompletedProfile changed, 
+      but it can only be changed when setting the username, as per
+      EditableProfileFields defined in AuthContext. so just check 
+      for settingUsername and reissue
+    */
     if (settingUsername) {
-      let sessionToken;
+      let accessToken;
       try {
-        sessionToken = signSessionToken({
+        accessToken = signAccessToken({
           id: sanitizedUser.id.toString(),
           username: sanitizedUser.username,
           email: sanitizedUser.email,
           hasCompletedProfile: sanitizedUser.hasCompletedProfile,
         });
       } catch (error) {
-        console.error("Failed to sign session token", error);
+        console.error("Failed to sign access token", error);
         return NextResponse.json(
           { error: "Unable to continue session" },
           { status: 500 }
         );
       }
 
-      storeSessionCookie(sessionToken, response);
+      storeAccessTokenCookie(accessToken, response);
     }
 
     // return success

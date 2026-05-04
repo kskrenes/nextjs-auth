@@ -68,6 +68,25 @@ sso
 - [x] move user sanitation into a helper using server-only package
 - [x] move password validation logic into a helper
 
+session hardening
+- [x] create session table on MongoDB cloud
+- [x] create session mongoose model and types
+- [x] add session token utilities/helpers
+- [x] add session entry logic to login route and google auth route
+- [x] add session delete and cookie clearing logic to logout route
+- [x] create /api/auth/refresh route
+- [x] create /api/auth/sessions route with GET and DELETE (or POST /revoke)
+- [ ] add periodic session_id check to middleware
+- [ ] create account page security tab
+- [ ] wire sign out per device, and sign out all devices
+- [ ] add worker to delete expired sessions from the DB
+
+session management lifecycle
+- [x] conceptual research
+- [ ] token expiration (logout/timeout)
+- [ ] active device monitoring
+- [ ] session revocation
+
 additional authentication methods
 - [x] add social login (google)
 - [ ] research multifactor auth (MFA)
@@ -77,17 +96,12 @@ additional authentication methods
 roles and permissions
 - [ ] research examples and determine what to implement
 
-session management lifecycle
-- [ ] conceptual research
-- [ ] token expiration (logout/timeout)
-- [ ] active device monitoring
-- [ ] session revocation
-
 look & feel
 - [x] improve style
 - [x] make new (main) layout responsive
 - [x] define themes
 - [x] allow theme selection
+- [ ] fix google sign in button width
 - [ ] include password validation states in password component
 - [ ] lay out login and signup pages
 - [ ] lay out triggerpasswordreset page

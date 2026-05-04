@@ -6,9 +6,9 @@ import { getRequestBody } from "@/helpers/validate-request";
 import { excludesSpaces, meetsMinimum } from "@/helpers/expression-validation";
 import {
   AuthTokenError,
-  getIdFromToken,
-  signSessionToken,
-  storeSessionCookie,
+  getIdFromAccessToken,
+  signAccessToken,
+  storeAccessTokenCookie,
 } from "@/helpers/token";
 import { sanitizeUser } from "@/helpers/user-dto";
 
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     // the cookie is absent, expired, or invalid
     let sessionUserId: string;
     try {
-      sessionUserId = await getIdFromToken(request);
+      sessionUserId = await getIdFromAccessToken(request);
     } catch (error: unknown) {
       if (error instanceof AuthTokenError) {
         return NextResponse.json(
@@ -121,11 +121,11 @@ export async function POST(request: NextRequest) {
     // create sanitized user for the response
     const sanitizedUser = sanitizeUser(updatedUser);
 
-    // Re-issue the session token: hasCompletedProfile may have just changed
+    // Re-issue the access token: hasCompletedProfile may have just changed
     // from false → true, and the proxy uses that field for onboarding redirects.
-    let sessionToken: string;
+    let accessToken: string;
     try {
-      sessionToken = signSessionToken({
+      accessToken = signAccessToken({
         id: sanitizedUser.id.toString(),
         username: sanitizedUser.username,
         email: sanitizedUser.email,
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
     );
 
     // store token in client cookie
-    storeSessionCookie(sessionToken, response);
+    storeAccessTokenCookie(accessToken, response);
 
     // return success
     return response;

@@ -8,11 +8,13 @@ import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
-import { useState, type SubmitEvent } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState, type SubmitEvent } from "react";
 
 const LoginPage = () => {
 
-  const { loggingIn, login } = useAuth();
+  const { user, login, fetchingUser, loggingIn } = useAuth();
+  const router = useRouter();
 
   const [isServerError, setIsServerError] = useState<boolean>(false);
   const [isInvalid, setIsInvalid] = useState<boolean>(false);
@@ -20,6 +22,13 @@ const LoginPage = () => {
     email: "",
     password: "",
   });
+
+  useEffect(() => {
+    if (!fetchingUser && user) {
+      // user was already authenticated (or token was transparently refreshed on mount)
+      router.replace(user.hasCompletedProfile ? '/dashboard' : '/onboarding');
+    }
+  }, [user, fetchingUser, router]);
 
   const buttonDisabled =
     loggingIn ||

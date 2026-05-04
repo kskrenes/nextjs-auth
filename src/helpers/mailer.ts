@@ -1,15 +1,77 @@
 import User from "@/models/user-model";
-import crypto from "crypto";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { getEmailHtml, getEmailSubject } from "./email-html";
+import { getRandomToken, hashToken } from "./token";
+
+// enum for each email type
+export enum EmailType {
+  VERIFY = 'VERIFY',
+  RESET = 'RESET',
+}
+
+// type definition for VERIFY email data
+type VerifyEmailData = {
+  route: "verifyemail";
+  userUpdate: {
+    verifyToken: string;
+    verifyTokenExpiry: number;
+  };
+};
+
+// type definition for RESET email data
+type ResetEmailData = {
+  route: "resetpassword";
+  userUpdate: {
+    forgotPasswordToken: string;
+    forgotPasswordTokenExpiry: number;
+  };
+};
+
+// discriminated union type including each email data type
+type EmailData = VerifyEmailData | ResetEmailData;
+
+// returns the appropriate route name and update data for each email type
+function getEmailData(
+  emailType: EmailType,
+  hashedToken: string
+): EmailData {
+  const expiry = Date.now() + 1000 * 60 * 60;
+
+  switch (emailType) {
+    case EmailType.RESET:
+      return {
+        route: "resetpassword",
+        userUpdate: {
+          forgotPasswordToken: hashedToken,
+          forgotPasswordTokenExpiry: expiry,
+        },
+      };
+
+    case EmailType.VERIFY:
+      return {
+        route: "verifyemail",
+        userUpdate: {
+          verifyToken: hashedToken,
+          verifyTokenExpiry: expiry,
+        },
+      };
+
+    default:
+    {
+      // Exhaustiveness check (compile-time safety)
+      const _exhaustive: never = emailType;
+      return _exhaustive;
+    }
+  }
+}
 
 export const sendEmail = async ({ 
   email, 
   emailType, 
 } : {
   email: string;
-  emailType: 'VERIFY' | 'RESET';
+  emailType: EmailType;
 }): Promise<SMTPTransport.SentMessageInfo> => {
   try {
     // validate smtp env variables first to avoid orphaning tokens
@@ -35,33 +97,14 @@ export const sendEmail = async ({
       );
     }
 
-    // generate a cryptographically random raw token (32 bytes → 64-char hex string)
-    const rawToken: string = crypto.randomBytes(32).toString("hex");
-
-    // hash with SHA-256 for DB storage (deterministic, fast, secure for high-entropy tokens)
-    const hashedToken: string = crypto.createHash("sha256").update(rawToken).digest("hex");
-
-    // set data based on emailType
-    let route: string = "verifyemail";
-    let action: string = "Verify your email";
-    let userUpdate: object = {
-      verifyToken: hashedToken,  // only the hash goes in the DB                
-      verifyTokenExpiry: Date.now() + (1000 * 60 * 60), // 1 hour
-    };
-
-    if (emailType === "RESET") {
-      route = "resetpassword";
-      action = "Reset your password";
-      userUpdate = {
-        forgotPasswordToken: hashedToken,  // only the hash goes in the DB
-        forgotPasswordTokenExpiry: Date.now() + (1000 * 60 * 60), // 1 hour
-      };
-    }
+    const rawToken: string = getRandomToken();
+    const hashedToken: string = hashToken(rawToken);
+    const emailData: EmailData = getEmailData(emailType, hashedToken);
 
     // update the user
     const updatedUser = await User.findOneAndUpdate( 
       { email },
-      userUpdate,
+      emailData.userUpdate,
       {
         returnDocument: 'after',
         runValidators: true,
@@ -85,7 +128,7 @@ export const sendEmail = async ({
 
     // expose only the raw token in the url
     const username = updatedUser.username;
-    const linkUrl = `${domain}/${route}?token=${encodeURIComponent(rawToken)}`;
+    const linkUrl = `${domain}/${emailData.route}?token=${encodeURIComponent(rawToken)}`;
     const subject = getEmailSubject(username, emailType);
     const html = getEmailHtml(username, linkUrl, emailType);
 

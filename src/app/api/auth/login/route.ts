@@ -2,7 +2,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextResponse, type NextRequest } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
-import { signSessionToken, storeSessionCookie, TOKEN_COOKIE_NAME } from "@/helpers/token";
+import { createSession, signAccessToken, storeAccessTokenCookie, storeRefreshTokenCookie, storeSessionHintCookie } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
 import { sanitizeUser } from "@/helpers/user-dto";
 
@@ -67,17 +67,29 @@ export async function POST(request: NextRequest) {
     // create sanitized user for response
     const sanitizedUser = sanitizeUser(user);
 
-    // create session token
-    let sessionToken;
+    // store a new session document
+    let refreshToken;
     try {
-      sessionToken = signSessionToken({
+      refreshToken = await createSession(sanitizedUser, request);
+    } catch(error) {
+      console.error("Failed to create session document", error);
+      return NextResponse.json(
+        { error: "Unable to log in" },
+        { status: 500 }
+      );
+    }
+
+    // create access token
+    let accessToken;
+    try {
+      accessToken = signAccessToken({
         id: sanitizedUser.id.toString(),
         username: sanitizedUser.username,
         email: sanitizedUser.email,
         hasCompletedProfile: sanitizedUser.hasCompletedProfile,
       });
     } catch (error) {
-      console.error("Failed to sign session token", error);
+      console.error("Failed to sign access token", error);
       return NextResponse.json(
         { error: "Unable to log in" },
         { status: 500 }
@@ -93,9 +105,11 @@ export async function POST(request: NextRequest) {
       }, 
       { status: 200 }
     );
-    
-    // store token in client cookie
-    storeSessionCookie(sessionToken, response);
+
+    // store access and refresh tokens in separate cookies
+    storeAccessTokenCookie(accessToken, response);
+    storeRefreshTokenCookie(refreshToken, response);
+    storeSessionHintCookie(response);
 
     // return success
     return response;

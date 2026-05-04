@@ -3,7 +3,14 @@ import User from "@/models/user-model";
 import { OAuth2Client } from "google-auth-library";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
-import { getIdFromToken, signSessionToken, storeSessionCookie } from "@/helpers/token";
+import { 
+  createSession, 
+  getIdFromAccessToken, 
+  signAccessToken, 
+  storeAccessTokenCookie, 
+  storeRefreshTokenCookie, 
+  storeSessionHintCookie 
+} from "@/helpers/token";
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeUser } from "@/helpers/user-dto";
 
@@ -41,6 +48,7 @@ async function getAvatarId(url: string) {
 }
 
 export async function POST(request: NextRequest) {
+  let successMessage = 'Authentication successful';
   try {
     await connect();
 
@@ -129,7 +137,7 @@ export async function POST(request: NextRequest) {
       // check if the user has an authorized session
       let sessionUserId: string | undefined;
       try {
-        sessionUserId = await getIdFromToken(request);
+        sessionUserId = await getIdFromAccessToken(request);
       } catch {
         // ignore errors and fall through to new user flow
       }
@@ -161,102 +169,88 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // build sanitized user and return success
-        const sanitizedUser = sanitizeUser(updatedUser);
-
-        // re-issue session token with updated user data
-        let sessionToken;
-        try {
-          sessionToken = signSessionToken({
-            id: sanitizedUser.id.toString(),
-            username: sanitizedUser.username,
-            email: sanitizedUser.email,
-            hasCompletedProfile: sanitizedUser.hasCompletedProfile,
-          });
-        } catch {
-          return NextResponse.json(
-            { error: "Unable to continue session" },
-            { status: 500 }
-          );
-        }
-
-        const response = NextResponse.json(
-          {
-            message: 'Account linked successfully',
-            success: true,
-            user: sanitizedUser,
-          }, 
-          { status: 200 }
-        );
-
-        storeSessionCookie(sessionToken, response);
-        return response;
+        storedUser = updatedUser;
+        successMessage = 'Account linked successfully';
       }
+      else {
+        // create a new user with google account provider
+        const username = await createUniqueUsername(name, email);
       
-      const username = await createUniqueUsername(name, email);
-    
-      const newUser = new User({
-        username, 
-        email: normalizedEmail, 
-        name,
-        hasCompletedProfile: false,
-        accounts: [{ 
-          provider: 'google',
-          providerId: sub,
-        }],
-        isVerified: email_verified,
-      });
+        const newUser = new User({
+          username, 
+          email: normalizedEmail, 
+          name,
+          hasCompletedProfile: false,
+          accounts: [{ 
+            provider: 'google',
+            providerId: sub,
+          }],
+          isVerified: email_verified,
+        });
 
-      // ensure cloudinary url configuration before attempting to import avatar
-      const cloudinaryUrl = process.env.CLOUDINARY_URL;
-      if (!cloudinaryUrl) {
-        console.error("Cloudinary URL not configured, cannot import Google avatar");
-      } else {
-        // import the avatar from Google
-        if (picture && typeof picture === 'string') {
-          try {
-            newUser.avatarId = await getAvatarId(picture);  
-          } catch (error) {
-            console.error("Failed to import Google avatar", error);
+        // ensure cloudinary url configuration before attempting to import avatar
+        const cloudinaryUrl = process.env.CLOUDINARY_URL;
+        if (!cloudinaryUrl) {
+          console.error("Cloudinary URL not configured, cannot import Google avatar");
+        } else {
+          // import the avatar from Google
+          if (picture && typeof picture === 'string') {
+            try {
+              newUser.avatarId = await getAvatarId(picture);  
+            } catch (error) {
+              console.error("Failed to import Google avatar", error);
+            }
           }
         }
-      }
 
-      // store user in the database
-      try {
-        storedUser = await newUser.save();
+        // store user in the database
+        try {
+          storedUser = await newUser.save();
 
-      // throw if database rejects duplicate with 11000
-      } catch (error: unknown) {
-        if (
-          typeof error === "object" &&
-          error !== null &&
-          "code" in error &&
-          (error as { code?: number }).code === 11000
-        ) {
-          return NextResponse.json(
-            { error: "User already exists" },
-            { status: 409 }
-          );
+        // throw if database rejects duplicate with 11000
+        } catch (error: unknown) {
+          if (
+            typeof error === "object" &&
+            error !== null &&
+            "code" in error &&
+            (error as { code?: number }).code === 11000
+          ) {
+            return NextResponse.json(
+              { error: "User already exists" },
+              { status: 409 }
+            );
+          }
+          throw error;
         }
-        throw error;
       }
     }
 
-    // create sanitized user for response
+    // build sanitized user
     const sanitizedUser = sanitizeUser(storedUser);
-
-    // create session token
-    let sessionToken;
+        
+    // store a new session document
+    let refreshToken;
     try {
-      sessionToken = signSessionToken({
+      refreshToken = await createSession(sanitizedUser, request);
+    } catch(error) {
+      console.error("Failed to create session document", error);
+      return NextResponse.json(
+        { error: "Unable to log in" },
+        { status: 500 }
+      );
+    }
+
+    // create access token
+    let accessToken;
+    try {
+      accessToken = signAccessToken({
         id: sanitizedUser.id.toString(),
         username: sanitizedUser.username,
         email: sanitizedUser.email,
         hasCompletedProfile: sanitizedUser.hasCompletedProfile,
       });
     } catch (error) {
-      console.error("Failed to sign session token", error);
+      console.error("Failed to sign access token", error);
       return NextResponse.json(
         { error: "Unable to log in" },
         { status: 500 }
@@ -266,15 +260,17 @@ export async function POST(request: NextRequest) {
     // create success response
     const response = NextResponse.json(
       {
-        message: 'Authentication successful',
+        message: successMessage,
         success: true,
         user: sanitizedUser,
       }, 
       { status: 200 }
     );
         
-    // store token in client cookie
-    storeSessionCookie(sessionToken, response);
+    // store access and refresh tokens in separate cookies
+    storeAccessTokenCookie(accessToken, response);
+    storeRefreshTokenCookie(refreshToken, response);
+    storeSessionHintCookie(response);
 
     // return success
     return response;

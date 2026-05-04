@@ -24,8 +24,13 @@ const OnboardingPage = () => {
 
   useEffect(() => {
     if (!user) return;
-    setUsername(user.username);
-  }, [user]);
+    
+    if (user.hasCompletedProfile) {
+      router.replace('/dashboard');
+    } else {
+      setUsername(user.username);
+    }
+  }, [user, router]);
 
   if (fetchingUser) return <FullScreenLoader />;
 
