@@ -284,3 +284,8 @@ export const createSession = async (user: UserDTO, request: NextRequest): Promis
     sessionId: session._id.toString(),
   };
 }
+
+export const validateSessionExists = async (sessionId: string): Promise<boolean> => {
+  const session = await Session.findOne({ sessionId, expiresAt: { $gt: new Date() } });
+  return !!session;
+}
