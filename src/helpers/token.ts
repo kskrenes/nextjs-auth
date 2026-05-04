@@ -281,7 +281,7 @@ export const createSession = async (user: UserDTO, request: NextRequest): Promis
 
   return {
     refreshToken,
-    sessionId: session._id.toString(),
+    sessionId: session.sessionId,
   };
 }
 
