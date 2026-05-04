@@ -1,6 +1,7 @@
+import { connect } from "@/dbconfig/dbconfig";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { ACCESS_TOKEN_COOKIE_NAME, AuthTokenError, SESSION_HINT_COOKIE_NAME, verifyAccessToken } from "./helpers/token";
+import { ACCESS_TOKEN_COOKIE_NAME, AuthTokenError, SESSION_HINT_COOKIE_NAME, validateSessionExists, verifyAccessToken } from "./helpers/token";
 import { JwtPayload } from "jsonwebtoken";
 
 function requireAuth(path: string) {
@@ -27,6 +28,8 @@ async function getAuthTokenPayload(request: NextRequest): Promise<JwtPayload | n
     return null;
   }
 
+  
+
   // validate token integrity
   try {
     return verifyAccessToken(request);
@@ -39,6 +42,12 @@ async function getAuthTokenPayload(request: NextRequest): Promise<JwtPayload | n
   }
 }
 
+async function validateSession(sessionId: string): Promise<boolean> {
+  await connect();
+  const isValid = await validateSessionExists(sessionId);
+  return isValid;
+}
+
 export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isApiRoute = path.startsWith('/api');
@@ -48,7 +57,8 @@ export async function proxy(request: NextRequest) {
 
   // intercept when path requires authentication
   if (requireAuth(path)) {
-    // handle unauthorized user
+
+    // handle invalid or missing access token
     if (!authTokenPayload) {
       // return a 401 for protected API routes — the axios interceptor handles refresh+retry
       if (isApiRoute) {
@@ -69,9 +79,23 @@ export async function proxy(request: NextRequest) {
       // Session hint present but no valid access token — pass through for client refresh.
       // Skip onboarding check since we don't have a valid payload yet.
       return NextResponse.next();
-    
-    // handle authorized but non-onboarded user
-    } else if (needsOnboarding && path !== '/onboarding') {
+    }
+
+    // handle revoked session
+    const sessionIsValid = await validateSession(authTokenPayload.sessionId);
+    if (!sessionIsValid) {
+      // return a 401 for protected API routes
+      if (isApiRoute) {
+        return new NextResponse(
+          JSON.stringify({ error: 'Unauthorized' }),
+          { status: 401, headers: { 'content-type': 'application/json' } }
+        );
+      }
+      return NextResponse.redirect(new URL('/login', request.nextUrl));
+    }
+
+    // if the user is authenticated but has not completed onboarding, redirect to onboarding page
+    if (needsOnboarding && path !== '/onboarding') {
       return NextResponse.redirect(new URL('/onboarding', request.nextUrl));
     }
   }
