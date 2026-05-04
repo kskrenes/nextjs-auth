@@ -231,9 +231,9 @@ export async function POST(request: NextRequest) {
         
     // store a new session document
     let refreshToken;
-    let sessionId;
+    let newSessionId;
     try {
-      ({ refreshToken, sessionId } = await createSession(sanitizedUser, request));
+      ({ refreshToken, sessionId: newSessionId } = await createSession(sanitizedUser, request));
     } catch(error) {
       console.error("Failed to create session document", error);
       return NextResponse.json(
@@ -250,7 +250,7 @@ export async function POST(request: NextRequest) {
         username: sanitizedUser.username,
         email: sanitizedUser.email,
         hasCompletedProfile: sanitizedUser.hasCompletedProfile,
-        sessionId,
+        sessionId: newSessionId,
       });
     } catch (error) {
       console.error("Failed to sign access token", error);
