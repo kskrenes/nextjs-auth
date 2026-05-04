@@ -8,7 +8,7 @@ import { createContext, ReactNode, useContext, useEffect, useRef, useState } fro
 import toast from 'react-hot-toast';
 
 // Public pages — onSignOut should NOT redirect away from these
-const PUBLIC_PATHS = new Set(['/login', '/signup', '/verifyemail', '/resetpassword', '/triggerpasswordreset']);
+const PUBLIC_PATHS = new Set(['/', '/login', '/signup', '/verifyemail', '/resetpassword', '/triggerpasswordreset']);
 
 type EditableProfileFields = {
   username?: string;
