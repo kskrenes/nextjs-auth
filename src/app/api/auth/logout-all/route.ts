@@ -1,0 +1,44 @@
+import { connect } from "@/dbconfig/dbconfig";
+import { AuthTokenError, clearAuthCookies, getIdsFromAccessToken } from "@/helpers/token";
+import Session from "@/models/session-model";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function POST(request: NextRequest) {
+  try {
+    await connect();
+
+    // validate the current access token to get the user id
+    let userId: string;
+    try {
+      ({ id: userId } = await getIdsFromAccessToken(request));
+    } catch (error: unknown) {
+      if (error instanceof AuthTokenError) {
+        return NextResponse.json(
+          { error: "Unauthorized" }, 
+          { status: error.status ?? 401 }
+        );
+      }
+      throw error;
+    }
+
+    // delete all session dosuments for the user
+    const result = await Session.deleteMany({ user: userId });
+    const deletedCount = result.deletedCount || 0;
+
+    // clear the access and refresh token cookies and session hint cookie
+    await clearAuthCookies();
+
+    // return success response with number of devices logged out
+    return NextResponse.json(
+      { message: `Logged out of ${deletedCount} device(s) successfully` }, 
+      { status: 200 }
+    );
+  } 
+  catch (error: unknown) {
+    console.error(error instanceof Error ? error.message : "Error logging out all devices");
+    return NextResponse.json(
+      { error: "Error logging out all devices" }, 
+      { status: 500 }
+    );
+  }
+}
