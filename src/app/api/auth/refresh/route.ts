@@ -3,7 +3,6 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";
 import Session from "@/models/session-model";
-import { sanitizeSession } from "@/helpers/session-dto";
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,6 +38,7 @@ export async function POST(request: NextRequest) {
       username: user.username,
       email: user.email,
       hasCompletedProfile: user.hasCompletedProfile,
+      sessionId: session.sessionId,
     });
 
     // Update lastActive timestamp on Session document

@@ -6,7 +6,7 @@ import { getRequestBody } from "@/helpers/validate-request";
 import { excludesSpaces, meetsMinimum } from "@/helpers/expression-validation";
 import {
   AuthTokenError,
-  getIdFromAccessToken,
+  getIdsFromAccessToken,
   signAccessToken,
   storeAccessTokenCookie,
 } from "@/helpers/token";
@@ -19,8 +19,9 @@ export async function POST(request: NextRequest) {
     // require an authenticated session — throws AuthTokenError (401) if
     // the cookie is absent, expired, or invalid
     let sessionUserId: string;
+    let sessionId: string | undefined;
     try {
-      sessionUserId = await getIdFromAccessToken(request);
+      ({ id: sessionUserId, sessionId } = await getIdsFromAccessToken(request));
     } catch (error: unknown) {
       if (error instanceof AuthTokenError) {
         return NextResponse.json(
@@ -130,6 +131,7 @@ export async function POST(request: NextRequest) {
         username: sanitizedUser.username,
         email: sanitizedUser.email,
         hasCompletedProfile: sanitizedUser.hasCompletedProfile,
+        sessionId,
       });
     } catch {
       return NextResponse.json(

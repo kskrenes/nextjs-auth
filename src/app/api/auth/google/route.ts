@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import { 
   createSession, 
-  getIdFromAccessToken, 
+  getIdsFromAccessToken, 
   signAccessToken, 
   storeAccessTokenCookie, 
   storeRefreshTokenCookie, 
@@ -136,8 +136,9 @@ export async function POST(request: NextRequest) {
 
       // check if the user has an authorized session
       let sessionUserId: string | undefined;
+      let sessionId: string | undefined;
       try {
-        sessionUserId = await getIdFromAccessToken(request);
+        ({ id: sessionUserId, sessionId } = await getIdsFromAccessToken(request));
       } catch {
         // ignore errors and fall through to new user flow
       }
@@ -230,8 +231,9 @@ export async function POST(request: NextRequest) {
         
     // store a new session document
     let refreshToken;
+    let newSessionId;
     try {
-      refreshToken = await createSession(sanitizedUser, request);
+      ({ refreshToken, sessionId: newSessionId } = await createSession(sanitizedUser, request));
     } catch(error) {
       console.error("Failed to create session document", error);
       return NextResponse.json(
@@ -248,6 +250,7 @@ export async function POST(request: NextRequest) {
         username: sanitizedUser.username,
         email: sanitizedUser.email,
         hasCompletedProfile: sanitizedUser.hasCompletedProfile,
+        sessionId: newSessionId,
       });
     } catch (error) {
       console.error("Failed to sign access token", error);
