@@ -4,6 +4,33 @@ import type { NextRequest } from "next/server";
 import { ACCESS_TOKEN_COOKIE_NAME, AuthTokenError, SESSION_HINT_COOKIE_NAME, validateSessionExists, verifyAccessToken } from "./helpers/token";
 import { JwtPayload } from "jsonwebtoken";
 
+// ── Session validation cache ──────────────────────────────────────────────────
+// Caches positive (valid) session lookups for up to SESSION_CACHE_TTL_MS to
+// avoid a DB round-trip on every protected request. Revoked sessions are NOT
+// cached so that logout-all takes effect on the very next request.
+const SESSION_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes (adjust as needed)
+
+interface SessionCacheEntry {
+  cachedAt: number;
+}
+
+export const sessionCache = new Map<string, SessionCacheEntry>();
+
+function getCachedSession(sessionId: string): boolean | null {
+  const entry = sessionCache.get(sessionId);
+  if (!entry) return null;
+  if (Date.now() - entry.cachedAt > SESSION_CACHE_TTL_MS) {
+    sessionCache.delete(sessionId);
+    return null;
+  }
+  return true; // only valid sessions are stored
+}
+
+function setCachedSession(sessionId: string): void {
+  sessionCache.set(sessionId, { cachedAt: Date.now() });
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function requireAuth(path: string) {
   // protect client pages that require authorized users
   const isProtectedPage = [
@@ -29,8 +56,6 @@ async function getAuthTokenPayload(request: NextRequest): Promise<JwtPayload | n
     return null;
   }
 
-  
-
   // validate token integrity
   try {
     return verifyAccessToken(request);
@@ -44,8 +69,20 @@ async function getAuthTokenPayload(request: NextRequest): Promise<JwtPayload | n
 }
 
 async function validateSession(sessionId: string): Promise<boolean> {
+  // check for cached valid session to avoid DB hit
+  const cached = getCachedSession(sessionId);
+  if (cached !== null) return cached;
+
+  // no valid cache entry, check DB and cache result if valid
   await connect();
   const isValid = await validateSessionExists(sessionId);
+
+  // only cache valid sessions; revoked/invalid sessions skip the cache 
+  // to ensure logout-all takes effect immediately
+  if (isValid) {
+    setCachedSession(sessionId);
+  }
+
   return isValid;
 }
 

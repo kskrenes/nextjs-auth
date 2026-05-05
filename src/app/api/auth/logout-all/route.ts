@@ -1,6 +1,7 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { AuthTokenError, clearAuthCookies, getIdsFromAccessToken } from "@/helpers/token";
 import Session from "@/models/session-model";
+import { sessionCache } from "@/proxy";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -24,6 +25,9 @@ export async function POST(request: NextRequest) {
     // delete all session dosuments for the user
     const result = await Session.deleteMany({ userId });
     const deletedCount = result.deletedCount || 0;
+
+    // evict all cached sessions for the user to ensure logout-all takes effect immediately
+    sessionCache.clear();
 
     // clear the access and refresh token cookies and session hint cookie
     await clearAuthCookies();
