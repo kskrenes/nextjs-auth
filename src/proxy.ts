@@ -75,15 +75,15 @@ async function validateSession(sessionId: string): Promise<boolean> {
 
   // no valid cache entry, check DB and cache result if valid
   await connect();
-  const isValid = await validateSessionExists(sessionId);
+  const { valid, expiresAt } = await validateSessionExists(sessionId);
 
   // only cache valid sessions; revoked/invalid sessions skip the cache 
   // to ensure logout-all takes effect immediately
-  if (isValid) {
+  if (valid) {
     setCachedSession(sessionId);
   }
 
-  return isValid;
+  return valid;
 }
 
 export async function proxy(request: NextRequest) {
