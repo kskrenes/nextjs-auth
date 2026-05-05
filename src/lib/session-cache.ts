@@ -41,3 +41,11 @@ export function evictUserSessions(userId: string): void {
     userSessionIndex.delete(userId);
   }
 }
+
+export function evictSession(sessionId: string): void {
+  const entry = sessionCache.get(sessionId);
+  if (entry) {
+    sessionCache.delete(sessionId);
+    userSessionIndex.get(entry.userId)?.delete(sessionId);
+  }
+}
