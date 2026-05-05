@@ -11,7 +11,7 @@ import { JwtPayload } from "jsonwebtoken";
 const SESSION_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes (adjust as needed)
 
 interface SessionCacheEntry {
-  cachedAt: number;
+  expiresAt: number; // real session expiry from DB, capped by SESSION_CACHE_TTL_MS
 }
 
 export const sessionCache = new Map<string, SessionCacheEntry>();
@@ -19,15 +19,16 @@ export const sessionCache = new Map<string, SessionCacheEntry>();
 function getCachedSession(sessionId: string): boolean | null {
   const entry = sessionCache.get(sessionId);
   if (!entry) return null;
-  if (Date.now() - entry.cachedAt > SESSION_CACHE_TTL_MS) {
+  if (Date.now() >= entry.expiresAt) {
     sessionCache.delete(sessionId);
     return null;
   }
   return true; // only valid sessions are stored
 }
 
-function setCachedSession(sessionId: string): void {
-  sessionCache.set(sessionId, { cachedAt: Date.now() });
+function setCachedSession(sessionId: string, dbExpiresAt: number): void {
+  const effectiveExpiry = Math.min(dbExpiresAt, Date.now() + SESSION_CACHE_TTL_MS);
+  sessionCache.set(sessionId, { expiresAt: effectiveExpiry });
 }
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -79,8 +80,8 @@ async function validateSession(sessionId: string): Promise<boolean> {
 
   // only cache valid sessions; revoked/invalid sessions skip the cache 
   // to ensure logout-all takes effect immediately
-  if (valid) {
-    setCachedSession(sessionId);
+  if (valid && expiresAt) {
+    setCachedSession(sessionId, expiresAt);
   }
 
   return valid;
