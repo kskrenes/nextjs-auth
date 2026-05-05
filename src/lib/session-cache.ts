@@ -21,6 +21,20 @@ export function getCachedSession(sessionId: string): boolean | null {
 export function setCachedSession(sessionId: string, userId: string, dbExpiresAt: number): void {
   const effectiveExpiry = Math.min(dbExpiresAt, Date.now() + SESSION_CACHE_TTL_MS);
   sessionCache.set(sessionId, { expiresAt: effectiveExpiry });
+
+  // maintain reverse index for per-user eviction
+  if (!userSessionIndex.has(userId)) {
+    userSessionIndex.set(userId, new Set());
+  }
+  userSessionIndex.get(userId)!.add(sessionId);
 }
 
-export function evictUserSessions(userId: string): void { /* ... */ }
+export function evictUserSessions(userId: string): void {
+  const sessionIds = userSessionIndex.get(userId);
+  if (sessionIds) {
+    for (const sessionId of sessionIds) {
+      sessionCache.delete(sessionId);
+    }
+    userSessionIndex.delete(userId);
+  }
+}
