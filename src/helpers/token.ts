@@ -160,7 +160,7 @@ export const signAccessToken = (userData: {
   username: string;
   email: string;
   hasCompletedProfile: boolean;
-  sessionId?: string;
+  sessionId: string;
 }): string => {
   const secret = verifySecret();
 
@@ -231,7 +231,14 @@ export const verifyAccessToken = (request: NextRequest): JwtPayload => {
   const token = getToken(request, ACCESS_TOKEN_COOKIE_NAME, "Missing access token");
   const secret = verifySecret();
   const decodedToken = decodeToken(token, secret, "Invalid or expired access token");
-  const payload = validatePayload(decodedToken, { id: "string", tokenType: "string" });
+  const payload = validatePayload(
+    decodedToken, 
+    { 
+      id: "string", 
+      sessionId: "string", 
+      tokenType: "string" 
+    }
+  );
   if (payload.tokenType !== "access") {
     throw new AuthTokenError('Invalid access token payload', 401);
   }
