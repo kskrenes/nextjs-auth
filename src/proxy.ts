@@ -3,34 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { ACCESS_TOKEN_COOKIE_NAME, AuthTokenError, SESSION_HINT_COOKIE_NAME, validateSessionExists, verifyAccessToken } from "./helpers/token";
 import { JwtPayload } from "jsonwebtoken";
-
-// ── Session validation cache ──────────────────────────────────────────────────
-// Caches positive (valid) session lookups for up to SESSION_CACHE_TTL_MS to
-// avoid a DB round-trip on every protected request. Revoked sessions are NOT
-// cached so that logout-all takes effect on the very next request.
-const SESSION_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes (adjust as needed)
-
-interface SessionCacheEntry {
-  expiresAt: number; // real session expiry from DB, capped by SESSION_CACHE_TTL_MS
-}
-
-export const sessionCache = new Map<string, SessionCacheEntry>();
-
-function getCachedSession(sessionId: string): boolean | null {
-  const entry = sessionCache.get(sessionId);
-  if (!entry) return null;
-  if (Date.now() >= entry.expiresAt) {
-    sessionCache.delete(sessionId);
-    return null;
-  }
-  return true; // only valid sessions are stored
-}
-
-function setCachedSession(sessionId: string, dbExpiresAt: number): void {
-  const effectiveExpiry = Math.min(dbExpiresAt, Date.now() + SESSION_CACHE_TTL_MS);
-  sessionCache.set(sessionId, { expiresAt: effectiveExpiry });
-}
-// ─────────────────────────────────────────────────────────────────────────────
+import { getCachedSession, setCachedSession } from "./lib/session-cache";
 
 function requireAuth(path: string) {
   // protect client pages that require authorized users
@@ -69,7 +42,7 @@ async function getAuthTokenPayload(request: NextRequest): Promise<JwtPayload | n
   }
 }
 
-async function validateSession(sessionId: string): Promise<boolean> {
+async function validateSession(sessionId: string, userId: string): Promise<boolean> {
   // check for cached valid session to avoid DB hit
   const cached = getCachedSession(sessionId);
   if (cached !== null) return cached;
@@ -81,7 +54,7 @@ async function validateSession(sessionId: string): Promise<boolean> {
   // only cache valid sessions; revoked/invalid sessions skip the cache 
   // to ensure logout-all takes effect immediately
   if (valid && expiresAt) {
-    setCachedSession(sessionId, expiresAt);
+    setCachedSession(sessionId, userId, expiresAt);
   }
 
   return valid;
@@ -122,7 +95,7 @@ export async function proxy(request: NextRequest) {
     }
 
     // handle revoked session
-    sessionIsValid = await validateSession(authTokenPayload.sessionId);
+    sessionIsValid = await validateSession(authTokenPayload.sessionId, authTokenPayload.id);
     if (!sessionIsValid) {
       // return a 401 for protected API routes
       if (isApiRoute) {
@@ -141,7 +114,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // redirect authenticated users away from login page (must have auth token and valid session, or session hint)
-  sessionIsValid = authTokenPayload ? await validateSession(authTokenPayload.sessionId) : false;
+  sessionIsValid = authTokenPayload ? await validateSession(authTokenPayload.sessionId, authTokenPayload.id) : false;
   if (path === '/login' && ((authTokenPayload && sessionIsValid) || hasSessionHint)) {
     // if the user needs onboarding, or if there is no auth token but there is a session hint,
     // redirect to the onboarding page. If refresh returns a user that is already onboarded,
