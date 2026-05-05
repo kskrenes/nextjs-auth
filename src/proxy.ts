@@ -113,19 +113,24 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // redirect authenticated users away from login page (must have auth token and valid session, or session hint)
   // reuse sessionIsValid from protected route check if already computed, otherwise compute now
   if (authTokenPayload && !sessionIsValid) {
     sessionIsValid = await validateSession(authTokenPayload.sessionId, authTokenPayload.id);
   }
-  if (path === '/login' && ((authTokenPayload && sessionIsValid) || hasSessionHint)) {
-    // if the user needs onboarding, or if there is no auth token but there is a session hint,
-    // redirect to the onboarding page. If refresh returns a user that is already onboarded,
-    // they'll be redirected from there.
-    if (needsOnboarding || (!authTokenPayload && hasSessionHint)) {
+  
+  // redirect authenticated users away from login page (must have auth token and valid session)
+  if (path === "/login" && authTokenPayload && sessionIsValid) {
+    // if the user needs onboarding, redirect to the onboarding page.
+    if (needsOnboarding) {
       return NextResponse.redirect(new URL('/onboarding', request.nextUrl));
     }
     return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
+  }
+  
+  // if there is no auth token but there is a session hint, redirect to the onboarding page. 
+  // if refresh returns a user that is already onboarded, they'll be redirected from there.
+  if (path === "/login" && !authTokenPayload && hasSessionHint) {
+    return NextResponse.redirect(new URL('/onboarding', request.nextUrl));
   }
   
   // redirect onboarded authenticated users away from onboarding
