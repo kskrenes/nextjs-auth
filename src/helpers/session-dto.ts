@@ -41,3 +41,8 @@ export function sanitizeSession(session: RawSession): SessionDTO {
     lastActive: session.lastActive,
   });
 }
+
+// array variant for multiple sessions
+export function sanitizeSessions(sessions: RawSession[]): SessionDTO[] {
+  return sessions.map(sanitizeSession);
+}

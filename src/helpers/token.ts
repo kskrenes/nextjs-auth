@@ -160,7 +160,7 @@ export const signAccessToken = (userData: {
   username: string;
   email: string;
   hasCompletedProfile: boolean;
-  sessionId: string;
+  sessionId?: string;
 }): string => {
   const secret = verifySecret();
 
