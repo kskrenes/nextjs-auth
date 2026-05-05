@@ -64,6 +64,8 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isApiRoute = path.startsWith('/api');
   const authTokenPayload = await getAuthTokenPayload(request);
+  const sessionId = typeof authTokenPayload?.sessionId === "string" ? authTokenPayload.sessionId : null;
+  const userId = typeof authTokenPayload?.id === "string" ? authTokenPayload.id : null;
   const needsOnboarding = authTokenPayload?.hasCompletedProfile === false;
   const hasSessionHint = !!request.cookies.get(SESSION_HINT_COOKIE_NAME)?.value;
   let sessionIsValid = false;
@@ -94,8 +96,21 @@ export async function proxy(request: NextRequest) {
       return NextResponse.next();
     }
 
+    // handle invalid session or user ids in the token payload
+    if (!sessionId || !userId) {
+      if (isApiRoute) {
+        return new NextResponse(
+          JSON.stringify({ error: 'Unauthorized' }),
+          { status: 401, headers: { 'content-type': 'application/json' } }
+        );
+      }
+      if (!hasSessionHint) return NextResponse.redirect(new URL("/login", request.nextUrl));
+      return NextResponse.next();
+    }
+
+    sessionIsValid = await validateSession(sessionId, userId);
+    
     // handle revoked session
-    sessionIsValid = await validateSession(authTokenPayload.sessionId, authTokenPayload.id);
     if (!sessionIsValid) {
       // return a 401 for protected API routes
       if (isApiRoute) {
@@ -114,8 +129,8 @@ export async function proxy(request: NextRequest) {
   }
 
   // reuse sessionIsValid from protected route check if already computed, otherwise compute now
-  if (authTokenPayload && !sessionIsValid) {
-    sessionIsValid = await validateSession(authTokenPayload.sessionId, authTokenPayload.id);
+  if (authTokenPayload && sessionId && userId && !sessionIsValid) {
+    sessionIsValid = await validateSession(sessionId, userId);
   }
   
   // redirect authenticated users away from login page (must have auth token and valid session)
