@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // delete all session dosuments for the user
-    const result = await Session.deleteMany({ user: userId });
+    const result = await Session.deleteMany({ userId });
     const deletedCount = result.deletedCount || 0;
 
     // clear the access and refresh token cookies and session hint cookie
