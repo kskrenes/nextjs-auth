@@ -92,6 +92,7 @@ export async function proxy(request: NextRequest) {
   const authTokenPayload = await getAuthTokenPayload(request);
   const needsOnboarding = authTokenPayload?.hasCompletedProfile === false;
   const hasSessionHint = !!request.cookies.get(SESSION_HINT_COOKIE_NAME)?.value;
+  let sessionIsValid = false;
 
   // intercept when path requires authentication
   if (requireAuth(path)) {
@@ -120,7 +121,7 @@ export async function proxy(request: NextRequest) {
     }
 
     // handle revoked session
-    const sessionIsValid = await validateSession(authTokenPayload.sessionId);
+    sessionIsValid = await validateSession(authTokenPayload.sessionId);
     if (!sessionIsValid) {
       // return a 401 for protected API routes
       if (isApiRoute) {
@@ -138,8 +139,9 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // redirect authenticated users away from login page (must have auth token or session hint)
-  if (path === '/login' && (authTokenPayload || hasSessionHint)) {
+  // redirect authenticated users away from login page (must have auth token and valid session, or session hint)
+  sessionIsValid = authTokenPayload ? await validateSession(authTokenPayload.sessionId) : false;
+  if (path === '/login' && ((authTokenPayload && sessionIsValid) || hasSessionHint)) {
     // if the user needs onboarding, or if there is no auth token but there is a session hint,
     // redirect to the onboarding page. If refresh returns a user that is already onboarded,
     // they'll be redirected from there.
