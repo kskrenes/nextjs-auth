@@ -114,7 +114,10 @@ export async function proxy(request: NextRequest) {
   }
 
   // redirect authenticated users away from login page (must have auth token and valid session, or session hint)
-  sessionIsValid = authTokenPayload ? await validateSession(authTokenPayload.sessionId, authTokenPayload.id) : false;
+  // reuse sessionIsValid from protected route check if already computed, otherwise compute now
+  if (authTokenPayload && !sessionIsValid) {
+    sessionIsValid = await validateSession(authTokenPayload.sessionId, authTokenPayload.id);
+  }
   if (path === '/login' && ((authTokenPayload && sessionIsValid) || hasSessionHint)) {
     // if the user needs onboarding, or if there is no auth token but there is a session hint,
     // redirect to the onboarding page. If refresh returns a user that is already onboarded,
