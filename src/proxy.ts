@@ -129,7 +129,8 @@ export async function proxy(request: NextRequest) {
   }
 
   // reuse sessionIsValid from protected route check if already computed, otherwise compute now
-  if (authTokenPayload && sessionId && userId && !sessionIsValid) {
+  // if the path is /login (session validity is only relevant for login page)
+  if (path === "/login" && authTokenPayload && sessionId && userId && !sessionIsValid) {
     sessionIsValid = await validateSession(sessionId, userId);
   }
   
