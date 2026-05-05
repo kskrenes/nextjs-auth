@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
       throw error;
     }
 
-    // delete all session dosuments for the user
+    // delete all session documents for the user
     const result = await Session.deleteMany({ userId });
     const deletedCount = result.deletedCount || 0;
 
