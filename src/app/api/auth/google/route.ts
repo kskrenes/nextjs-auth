@@ -13,6 +13,7 @@ import {
 } from "@/helpers/token";
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeUser } from "@/helpers/user-dto";
+import recordSecurityEvent from "@/helpers/record-security-event";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
   // generate a base username from the name or email
@@ -49,6 +50,7 @@ async function getAvatarId(url: string) {
 
 export async function POST(request: NextRequest) {
   let successMessage = 'Authentication successful';
+  let securityLogAction = "login";
   try {
     await connect();
 
@@ -136,9 +138,8 @@ export async function POST(request: NextRequest) {
 
       // check if the user has an authorized session
       let sessionUserId: string | undefined;
-      let sessionId: string | undefined;
       try {
-        ({ id: sessionUserId, sessionId } = await getIdsFromAccessToken(request));
+        ({ id: sessionUserId } = await getIdsFromAccessToken(request));
       } catch {
         // ignore errors and fall through to new user flow
       }
@@ -172,6 +173,7 @@ export async function POST(request: NextRequest) {
 
         storedUser = updatedUser;
         successMessage = 'Account linked successfully';
+        securityLogAction = "google_account_linked";
       }
       else {
         // create a new user with google account provider
@@ -259,6 +261,14 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // record security event for successful login or account linking
+    await recordSecurityEvent(
+      sanitizedUser.id, 
+      securityLogAction, 
+      request, 
+      { email: sanitizedUser.email }
+    );
     
     // create success response
     const response = NextResponse.json(

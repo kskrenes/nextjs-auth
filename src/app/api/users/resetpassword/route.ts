@@ -1,5 +1,6 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { excludesSpaces, meetsMinimum } from "@/helpers/expression-validation";
+import recordSecurityEvent from "@/helpers/record-security-event";
 import { getRequestBody } from "@/helpers/validate-request";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
@@ -107,6 +108,16 @@ export async function POST(request: NextRequest) {
         runValidators: true,
       }
     );
+
+    // record security event for successful password reset
+    if (updatedUser) {
+      await recordSecurityEvent(
+        updatedUser._id.toString(), 
+        "password_reset", 
+        request, 
+        { email: updatedUser.email }
+      );
+    }
 
     // return success
     return NextResponse.json({

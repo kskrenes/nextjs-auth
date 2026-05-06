@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import { createSession, signAccessToken, storeAccessTokenCookie, storeRefreshTokenCookie, storeSessionHintCookie } from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
 import { sanitizeUser } from "@/helpers/user-dto";
+import recordSecurityEvent from "@/helpers/record-security-event";
 
 export async function POST(request: NextRequest) {
   try {
@@ -97,6 +98,14 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // record security event for successful login
+    await recordSecurityEvent(
+      sanitizedUser.id, 
+      "login", 
+      request, 
+      { email: sanitizedUser.email }
+    );
 
     // create success response
     const response = NextResponse.json(

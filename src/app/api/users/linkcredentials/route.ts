@@ -11,6 +11,7 @@ import {
   storeAccessTokenCookie,
 } from "@/helpers/token";
 import { sanitizeUser } from "@/helpers/user-dto";
+import recordSecurityEvent from "@/helpers/record-security-event";
 
 export async function POST(request: NextRequest) {
   try {
@@ -139,6 +140,14 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       );
     }
+
+    // record security event for successful credential linking
+    await recordSecurityEvent(
+      sanitizedUser.id, 
+      "password_created", 
+      request, 
+      { email: sanitizedUser.email }
+    );
 
     // create success response
     const response = NextResponse.json(

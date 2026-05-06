@@ -1,4 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
+import recordSecurityEvent from "@/helpers/record-security-event";
 import { getRequestBody } from "@/helpers/validate-request";
 import User from "@/models/user-model";
 import crypto from "crypto";
@@ -54,6 +55,14 @@ export async function POST(request: NextRequest) {
     user.verifyToken = undefined;
     user.verifyTokenExpiry = undefined;
     await user.save();
+
+    // record security event for successful email verification
+    await recordSecurityEvent(
+      user._id.toString(), 
+      "email_verified", 
+      request, 
+      { email: user.email }
+    );
 
     return NextResponse.json({
       message: "Email verified successfully",

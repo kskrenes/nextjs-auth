@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import { defaultAvatarId } from "@/helpers/themes";
 import { sanitizeUser } from "@/helpers/user-dto";
+import recordSecurityEvent from "@/helpers/record-security-event";
 
 export async function POST(request: NextRequest) {
   try {
@@ -132,6 +133,14 @@ export async function POST(request: NextRequest) {
 
     // create sanitized user for response
     const sanitizedUser = sanitizeUser(updatedUser);
+
+    // record security event for profile update
+    await recordSecurityEvent(
+      sanitizedUser.id, 
+      "profile_updated", 
+      request, 
+      { email: sanitizedUser.email }
+    );
 
     // create success response
     const response = NextResponse.json(
