@@ -5,6 +5,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import Session from "@/models/session-model";
 import { sanitizeSession, SessionDTO } from './session-dto';
 import { UserDTO } from './user-dto';
+import getUAAndIpFromRequest from './request-headers';
 
 export const TOKEN_COOKIE_NAME = "naetoken" as const;
 export const ACCESS_TOKEN_COOKIE_NAME = "naetoken" as const;
@@ -277,13 +278,14 @@ export const createSession = async (user: UserDTO, request: NextRequest): Promis
   expiresAt.setDate(expiresAt.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
 
   // create new session document
+  const { userAgent, ipAddress } = getUAAndIpFromRequest(request);
   const session = await Session.create({
     userId: user.id,
     refreshToken: hashToken(refreshToken),
     expiresAt,
     lastActive: new Date(),
-    userAgent: request.headers.get('user-agent'),
-    ipAddress: request.headers.get('x-forwarded-for')?.split(',')[0] || 'Unknown',
+    userAgent,
+    ipAddress,
   });
 
   return {
