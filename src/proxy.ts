@@ -18,6 +18,7 @@ function requireAuth(path: string) {
     path.startsWith('/api/sign-cloudinary-params') ||
     path.startsWith('/api/users/linkcredentials') ||
     path.startsWith('/api/users/update') ||
+    path.startsWith('/api/users/security-logs') ||
     path.startsWith('/api/auth/logout-all') ||
     path.startsWith('/api/auth/sessions');
 
