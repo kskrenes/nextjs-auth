@@ -25,12 +25,13 @@ export async function GET(request: NextRequest) {
 
     // get the most recent 50 security logs for the user, sorted by creation date (newest first)
     const securityLogs = await SecurityLog.find({ userId }).sort({ createdAt: -1 }).limit(50);
+    const sanitizedLogs = sanitizeSecurityLogs(securityLogs);
 
     // return success response with security logs
     return NextResponse.json({
       message: "Security logs retrieved",
       success: true,
-      securityLogs: sanitizeSecurityLogs(securityLogs),
+      securityLogs: sanitizedLogs,
     });
   }
   catch (error: unknown) {
