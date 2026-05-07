@@ -1,13 +1,13 @@
 "use client";
-import parseUserAgent from "@/helpers/parse-user-agent";
 import { SessionDTO } from "@/helpers/session-dto";
-import { Cpu, Monitor, RectangleGoggles, Smartphone, Tablet, Tv, Watch } from "lucide-react";
-import { ReactElement, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import Badge from "./badge";
 import Button from "./nae-button";
-import axios from "axios";
-import toast from "react-hot-toast";
+import deviceIconMap from "./device-icons";
 import NaeLoader from "./nae-loader";
+import parseUserAgent from "@/helpers/parse-user-agent";
+import toast from "react-hot-toast";
 
 interface DeviceCardProps {
   session: SessionDTO;
@@ -22,17 +22,6 @@ interface ExpandedSessionDTO extends SessionDTO {
     deviceType: string;
   };
 }
-
-const deviceIconMap: { [key: string]: ReactElement } = {
-  mobile: <Smartphone className="text-brand-light w-8 h-8" />,
-  desktop: <Monitor className="text-brand-light w-8 h-8" />,
-  tablet: <Tablet className="text-brand-light w-8 h-8" />,
-  unknown: <Monitor className="text-brand-light w-8 h-8" />,
-  embedded: <Cpu className="text-brand-light w-8 h-8" />,
-  smarttv: <Tv className="text-brand-light w-8 h-8" />,
-  wearable: <Watch className="text-brand-light w-8 h-8" />,
-  xr: <RectangleGoggles className="text-brand-light w-8 h-8" />,
-};
 
 const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) => {
 
