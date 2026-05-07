@@ -77,7 +77,7 @@ session hardening
 - [x] create /api/auth/refresh route
 - [x] create /api/auth/sessions route with GET and DELETE (or POST /revoke)
 - [x] add periodic session_id check to middleware
-- [ ] create account page security tab
+- [x] create account page security tab
 - [ ] wire sign out per device, and sign out all devices
 - [ ] add worker to delete expired sessions from the DB
 
