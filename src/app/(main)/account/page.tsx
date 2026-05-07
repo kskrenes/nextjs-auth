@@ -2,7 +2,7 @@
 
 import { triggerEmail } from "@/helpers/trigger-email";
 import { KeyRound, Pencil, RotateCcwKey, ShieldAlert, ShieldUser, UserPlus } from "lucide-react";
-import React, { useState, type SubmitEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
@@ -20,6 +20,9 @@ import GoogleLoginButton from "@/components/google-login-button";
 import { getDisplayLink, getSocialIcon } from "@/helpers/display";
 import NaeLoader from "@/components/nae-loader";
 import axios from "axios";
+import DeviceCard from "@/components/device-card";
+import { SessionDTO } from "@/helpers/session-dto";
+import { SecurityLogDTO } from "@/helpers/security-log-dto";
 
 const AccountPage = () => {
 
@@ -31,8 +34,9 @@ const AccountPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
-  const [sessionsList, setSessionsList] = useState(null);
-  const [securityLogs, setSecurityLogs] = useState(null);
+  const [sessionsList, setSessionsList] = useState<[SessionDTO] | null>(null);
+  const [securityLogs, setSecurityLogs] = useState<[SecurityLogDTO] | null>(null);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [isLoadingSecurityData, setIsLoadingSecurityData] = useState(false);
   const [isSecurityDataError, setIsSecurityDataError] = useState(false);
   const [securityDataErrorMessage, setSecurityDataErrorMessage] = useState('');
@@ -197,6 +201,7 @@ const AccountPage = () => {
         axios.get("/api/auth/sessions"),
         axios.get("/api/users/security-logs")
       ]);
+      setCurrentSessionId(sessionsResponse.data.currentSessionId);
       setSessionsList(sessionsResponse.data.sessions);
       setSecurityLogs(logsResponse.data.securityLogs);
     }
@@ -210,8 +215,18 @@ const AccountPage = () => {
     }
   }
 
+  const handleDeviceSignout = async () => {
+    try {
+      const sessionsResponse = await axios.get("/api/auth/sessions");
+      setSessionsList(sessionsResponse.data.sessions);
+    } catch (error) {
+      console.error("Failed to update sessions:", error);
+      toast.error("Failed to update sessions");
+    }
+  }
+
   return (
-    <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
+    <div className="page-container">
 
       {/* page title */}
       <h1 className="text-2xl min-w-39 max-w-90 font-semibold mx-auto md:mx-0 mb-8">My Account</h1>
@@ -553,9 +568,24 @@ const AccountPage = () => {
                   </div>
                 ) : (
                   <div className="flex flex-col gap-8">
-                    <div className="flex flex-col gap-1">
-                      <label className="text-lg font-semibold">My Devices</label>
-                    </div>
+                    {sessionsList && sessionsList.length > 0 && (
+                      <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-1 mb-2">
+                          <label className="text-lg font-semibold">My Devices</label>
+                          <p className="text-foreground-secondary max-w-md">
+                            Manage your active sessions across all devices.
+                          </p>
+                        </div>
+                        {sessionsList.map((session) => (
+                          <DeviceCard 
+                            key={session.sessionId} 
+                            session={session} 
+                            isCurrentSession={currentSessionId === session.sessionId} 
+                            onSignOut={handleDeviceSignout}
+                          />
+                        ))}
+                      </div>
+                    )}
                     <div className="flex flex-col gap-1">
                       <label className="text-lg font-semibold">Recent Activity</label>
                     </div>
