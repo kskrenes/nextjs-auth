@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Badge from "./badge";
 import Button from "./nae-button";
-import deviceIconMap from "./device-icons";
+import { getDeviceIcon } from "./device-icons";
 import NaeLoader from "./nae-loader";
 import parseUserAgent from "@/helpers/parse-user-agent";
 import toast from "react-hot-toast";
@@ -19,7 +19,7 @@ interface ExpandedSessionDTO extends SessionDTO {
   deviceInfo: {
     browser: string;
     os: string;
-    deviceType: string;
+    deviceType: "mobile" | "desktop" | "tablet" | "console" | "embedded" | "smarttv" | "wearable" | "xr" | "unknown";
   };
 }
 
@@ -61,7 +61,7 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
       ) : (
         <>
           <div className="flex m-2">
-            {deviceIconMap[expandedSession.deviceInfo.deviceType] || deviceIconMap['unknown']}
+            {getDeviceIcon(expandedSession.deviceInfo.deviceType) || getDeviceIcon('unknown')}
           </div>
           <div className="flex flex-col">
             <p className="text-foreground-primary">
