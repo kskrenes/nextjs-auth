@@ -11,8 +11,9 @@ export async function GET(request: NextRequest) {
     // require an authenticated session — throws AuthTokenError (401) if
     // the cookie is absent, expired, or invalid
     let userId: string;
+    let currentSessionId: string | undefined;
     try {
-      ({ id: userId } = await getIdsFromAccessToken(request));
+      ({ id: userId, sessionId: currentSessionId } = await getIdsFromAccessToken(request));
     } catch (error: unknown) {
       if (error instanceof AuthTokenError) {
         return NextResponse.json(
@@ -25,12 +26,14 @@ export async function GET(request: NextRequest) {
 
     // retrieve all sessions associated with the user
     const sessions = await Session.find({ userId });
+    const sanitizedSessions = sanitizeSessions(sessions);
 
     // return success response with sanitized sessions
     return NextResponse.json({
       message: "Sessions retrieved",
       success: true,
-      sessions: sanitizeSessions(sessions),
+      sessions: sanitizedSessions,
+      currentSessionId,
     });
   }
   catch (error: unknown) {
