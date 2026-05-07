@@ -1,7 +1,6 @@
-import { Cpu, Monitor, RectangleGoggles, Smartphone, Tablet, Tv, Watch } from "lucide-react";
+import { Cpu, Monitor, RectangleGoggles, Smartphone, Tablet, Tv, Watch, LucideProps } from "lucide-react";
 
-// Map device keys to the Icon component references
-const ICON_COMPONENTS = {
+const ICON_MAP = {
   mobile: Smartphone,
   desktop: Monitor,
   tablet: Tablet,
@@ -13,12 +12,30 @@ const ICON_COMPONENTS = {
   xr: RectangleGoggles,
 } as const;
 
-type DeviceType = keyof typeof ICON_COMPONENTS;
+type DeviceType = keyof typeof ICON_MAP;
 
-// Create a single factory function or component
-export const getDeviceIcon = (type: DeviceType, size: 'small' | 'large' = 'large') => {
-  const Icon = ICON_COMPONENTS[type];
-  const className = size === 'large' ? "text-brand-light w-8 h-8" : "w-4 h-4";
+interface DeviceIconProps extends LucideProps {
+  type: DeviceType;
+  sizeVariant?: 'small' | 'large';
+}
+
+export const DeviceIcon = ({ 
+  type, 
+  sizeVariant = 'large', 
+  className = '', 
+  ...props 
+}: DeviceIconProps) => {
+  const Icon = ICON_MAP[type];
   
-  return <Icon className={className} />;
+  // Combine your base styles with any extra classes passed in via props
+  const variantStyles = sizeVariant === 'large' 
+    ? "text-brand-light w-8 h-8" 
+    : "w-4 h-4";
+
+  return (
+    <Icon 
+      className={`${variantStyles} ${className}`} 
+      {...props} 
+    />
+  );
 };

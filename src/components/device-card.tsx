@@ -4,10 +4,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Badge from "./badge";
 import Button from "./nae-button";
-import { getDeviceIcon } from "./device-icons";
 import NaeLoader from "./nae-loader";
 import parseUserAgent from "@/helpers/parse-user-agent";
 import toast from "react-hot-toast";
+import { DeviceIcon } from "./device-icons";
 
 interface DeviceCardProps {
   session: SessionDTO;
@@ -61,7 +61,7 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
       ) : (
         <>
           <div className="flex m-2">
-            {getDeviceIcon(expandedSession.deviceInfo.deviceType) || getDeviceIcon('unknown')}
+            <DeviceIcon type={expandedSession.deviceInfo.deviceType} />
           </div>
           <div className="flex flex-col">
             <p className="text-foreground-primary">
