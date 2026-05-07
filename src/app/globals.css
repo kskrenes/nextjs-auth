@@ -89,6 +89,14 @@ body {
   outline: 2px solid var(--brand);
 }
 
+@utility page-container {
+  @apply
+    pt-24 
+    mx-5 
+    xs:mx-8 
+    mb-8
+}
+
 @utility button-base {
   @apply
     flex 
