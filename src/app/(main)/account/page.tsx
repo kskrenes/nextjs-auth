@@ -18,6 +18,8 @@ import SetPasswordInputs from "@/components/nae-set-password";
 import { getValidPassword } from "@/helpers/expression-validation";
 import GoogleLoginButton from "@/components/google-login-button";
 import { getDisplayLink, getSocialIcon } from "@/helpers/display";
+import NaeLoader from "@/components/nae-loader";
+import axios from "axios";
 
 const AccountPage = () => {
 
@@ -29,6 +31,11 @@ const AccountPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+  const [sessionsList, setSessionsList] = useState(null);
+  const [securityLogs, setSecurityLogs] = useState(null);
+  const [isLoadingSecurityData, setIsLoadingSecurityData] = useState(false);
+  const [isSecurityDataError, setIsSecurityDataError] = useState(false);
+  const [securityDataErrorMessage, setSecurityDataErrorMessage] = useState('');
   const [editedFields, setEditedFields] = useState<{
     name: string;
     company: string;
@@ -180,6 +187,29 @@ const AccountPage = () => {
     }
   }
 
+  const loadSecurityTabData = async () => {
+    if (isLoadingSecurityData || isSecurityDataError) return;
+
+    setIsLoadingSecurityData(true);
+    try {
+      // fetch sessions and security logs
+      const [sessionsResponse, logsResponse] = await Promise.all([
+        axios.get("/api/auth/sessions"),
+        axios.get("/api/users/security-logs")
+      ]);
+      setSessionsList(sessionsResponse.data.sessions);
+      setSecurityLogs(logsResponse.data.securityLogs);
+    }
+    catch (error) {
+      console.error("Failed to load security tab data", error);
+      setIsSecurityDataError(true);
+      setSecurityDataErrorMessage(getErrorMessage(error, "Failed to load security data"));
+    }
+    finally {
+      setIsLoadingSecurityData(false);
+    }
+  }
+
   return (
     <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
 
@@ -249,6 +279,9 @@ const AccountPage = () => {
               setActiveTab(index);
               setIsEditing(false);
               resetPasswordFormState();
+              if (index === 2 && (!sessionsList || !securityLogs)) {
+                loadSecurityTabData();
+              }
             }}
           >
             <TabList className="tab-list">
@@ -257,6 +290,9 @@ const AccountPage = () => {
               </Tab>
               <Tab className="tab-list-item">
                 Settings
+              </Tab>
+              <Tab className="tab-list-item">
+                Security
               </Tab>
             </TabList>
             <TabPanels>
@@ -499,6 +535,32 @@ const AccountPage = () => {
                   )}
                   
                 </div>
+              </TabPanel>
+              <TabPanel>
+                {isLoadingSecurityData ? (
+                  <div 
+                    className='flex items-center justify-center mt-20'
+                    role='status'
+                    aria-live='polite'
+                    aria-busy='true'
+                  >
+                    <NaeLoader className='w-10 h-10' />
+                  </div>
+                ) : isSecurityDataError ? (
+                  <div role="alert" className="flex flex-col items-center gap-4 mt-4 px-4 text-red-500">
+                    <ShieldAlert className="w-10 h-10" />
+                    <span className="text-center">{securityDataErrorMessage}</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-8">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-lg font-semibold">My Devices</label>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-lg font-semibold">Recent Activity</label>
+                    </div>
+                  </div>
+                )}
               </TabPanel>
             </TabPanels>
           </TabGroup>          
