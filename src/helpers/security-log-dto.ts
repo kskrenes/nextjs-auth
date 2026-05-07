@@ -24,7 +24,7 @@ export type SecurityLogDTO = z.infer<typeof SecurityLogDTOSchema>;
 // sanitize a raw security log object from the database
 export function sanitizSecurityLog(securityLog: any): SecurityLogDTO {
   return SecurityLogDTOSchema.parse({
-    userId: securityLog.userId,
+    userId: securityLog.userId.toString(), // convert ObjectId to stringå
     action: securityLog.action,
     ipAddress: securityLog.ipAddress,
     userAgent: securityLog.userAgent,
