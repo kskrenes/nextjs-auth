@@ -10,7 +10,7 @@ const DashboardPage = () => {
   if (fetchingUser) return <FullScreenLoader />;
 
   return (
-    <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
+    <div className="page-container">
 
       {/* page title */}
       <h1 className="text-2xl min-w-39 max-w-90 font-semibold mx-auto md:mx-0 mb-8">My Dashboard</h1>
