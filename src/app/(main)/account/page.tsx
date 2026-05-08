@@ -23,6 +23,7 @@ import axios from "axios";
 import DeviceCard from "@/components/device-card";
 import { SessionDTO } from "@/helpers/session-dto";
 import { SecurityLogDTO } from "@/helpers/security-log-dto";
+import SecurityLogCard from "@/components/security-log-card";
 
 const AccountPage = () => {
 
@@ -239,7 +240,7 @@ const AccountPage = () => {
 
           {/* profile card */}
           <div 
-            className="flex flex-col w-full px-6 py-12 gap-8 rounded-md bg-panel" 
+            className="flex flex-col w-full px-6 py-12 gap-8 rounded-md bg-panel mb-6" 
           >
             {/* avatar */}
             <AvatarUpload />
@@ -294,7 +295,7 @@ const AccountPage = () => {
               setActiveTab(index);
               setIsEditing(false);
               resetPasswordFormState();
-              if (index === 2 && (!sessionsList || !securityLogs)) {
+              if (index === 2) {
                 loadSecurityTabData();
               }
             }}
@@ -570,7 +571,7 @@ const AccountPage = () => {
                   <div className="flex flex-col gap-8">
                     {sessionsList && sessionsList.length > 0 && (
                       <div className="flex flex-col gap-3">
-                        <div className="flex flex-col gap-1 mb-2">
+                        <div className="flex flex-col gap-1 mb-1">
                           <label className="text-lg font-semibold">My Devices</label>
                           <p className="text-foreground-secondary max-w-md">
                             Manage your active sessions across all devices.
@@ -586,8 +587,25 @@ const AccountPage = () => {
                         ))}
                       </div>
                     )}
-                    <div className="flex flex-col gap-1">
-                      <label className="text-lg font-semibold">Recent Activity</label>
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-1 mb-1">
+                        <label className="text-lg font-semibold">Recent Activity</label>
+                        <p className="text-foreground-secondary max-w-md">
+                          A log of recent activities on your account.
+                        </p>
+                      </div>
+                      {securityLogs && securityLogs.length > 0 ? (
+                        <>
+                        {securityLogs.map((log, index) => (
+                          <SecurityLogCard 
+                            key={new Date(log.createdAt).getTime() + index}
+                            securityLog={log}
+                          />
+                        ))}
+                        </>
+                      ) : (
+                        <p>No recent security activity.</p>
+                      )}
                     </div>
                   </div>
                 )}
