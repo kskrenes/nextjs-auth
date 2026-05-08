@@ -8,6 +8,8 @@ import NaeLoader from "./nae-loader";
 import parseUserAgent from "@/helpers/parse-user-agent";
 import toast from "react-hot-toast";
 import { DeviceIcon } from "./device-icons";
+import { useTimeTick } from "@/hooks/useTimeTick";
+import { formatRelativeTime } from "@/helpers/time-utils";
 
 interface DeviceCardProps {
   session: SessionDTO;
@@ -27,6 +29,9 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
 
   const [expandedSession, setExpandedSession] = useState<ExpandedSessionDTO | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // re-render whenever the global timer ticks, updating the relative time display
+  useTimeTick(60000);
 
   useEffect(() => {
     if (session) {
@@ -53,16 +58,14 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
   }
 
   return (
-    <div className="flex w-full gap-4 p-4 rounded-md bg-panel">
+    <div className="flex w-full gap-5 p-5 rounded-md bg-panel">
       {isDeleting || !expandedSession ? (
         <div className="flex w-full items-center justify-center py-8.5">
           <NaeLoader />
         </div>
       ) : (
         <>
-          <div className="flex m-2">
-            <DeviceIcon type={expandedSession.deviceInfo.deviceType} />
-          </div>
+          <DeviceIcon type={expandedSession.deviceInfo.deviceType} />
           <div className="flex flex-col">
             <p className="text-foreground-primary">
               {expandedSession.deviceInfo.os}
@@ -71,11 +74,11 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
             <p className="text-foreground-secondary">{expandedSession.deviceInfo.browser}</p>
             <p className="text-foreground-secondary">{expandedSession.ipAddress}</p>
             <p className="text-foreground-secondary">
-              Last Active: {new Intl.DateTimeFormat('en-US').format(new Date(expandedSession.lastActive).getTime())}
+              Active {formatRelativeTime(new Date(expandedSession.lastActive))}
             </p>
           </div>
           {!isCurrentSession && (
-            <div className="ml-auto pr-1 pt-1">
+            <div className="ml-auto">
               <Button 
                 size="small" 
                 className="ml-auto text-sm sm:text-base" 
