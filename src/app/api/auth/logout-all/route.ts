@@ -3,6 +3,7 @@ import { AuthTokenError, clearAuthCookies, getIdsFromAccessToken } from "@/helpe
 import { evictUserSessions } from '@/lib/session-cache'
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
+import { success } from "zod";
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,7 +35,11 @@ export async function POST(request: NextRequest) {
 
     // return success response with number of devices logged out
     return NextResponse.json(
-      { message: `Logged out of ${deletedCount} device(s) successfully` }, 
+      { 
+        message: `Logged out of ${deletedCount} device(s) successfully`,
+        success: true,
+        deletedCount,
+      }, 
       { status: 200 }
     );
   } 

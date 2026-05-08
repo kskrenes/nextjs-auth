@@ -235,8 +235,9 @@ const AccountPage = () => {
 
     setIsRevokingAll(true);
     try {
-      await axios.post("/api/auth/logout-all");
-      toast.success("Signed out of all devices");
+      const response = await axios.post("/api/auth/logout-all");
+      const count = response.data.deletedCount;
+      toast.success(`Signed out of ${count} device${count > 1 ? 's' : ''}`);
       router.replace("/login");
     } catch (error) {
       console.error("Failed to sign out of all devices:", error);
