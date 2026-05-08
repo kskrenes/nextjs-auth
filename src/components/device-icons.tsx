@@ -22,20 +22,24 @@ interface DeviceIconProps extends LucideProps {
 export const DeviceIcon = ({ 
   type, 
   sizeVariant = 'large', 
-  className = '', 
   ...props 
 }: DeviceIconProps) => {
   const Icon = ICON_MAP[type];
   
-  // Combine your base styles with any extra classes passed in via props
-  const variantStyles = sizeVariant === 'large' 
-    ? "text-brand-light w-8 h-8" 
+  const variantIconStyles = sizeVariant === 'large' 
+    ? "text-brand-light w-6 h-6" 
     : "w-4 h-4";
 
+  const variantContainerStyles = sizeVariant === 'large' 
+    ? "p-3 bg-brand-light/15 rounded-lg h-fit" 
+    : "";
+
   return (
-    <Icon 
-      className={`${variantStyles} ${className}`} 
-      {...props} 
-    />
+    <div className={variantContainerStyles}>
+      <Icon 
+        className={variantIconStyles} 
+        {...props} 
+      />
+    </div>
   );
 };
