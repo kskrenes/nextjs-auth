@@ -78,7 +78,9 @@ session hardening
 - [x] create /api/auth/sessions route with GET and DELETE (or POST /revoke)
 - [x] add periodic session_id check to middleware
 - [x] create account page security tab
-- [ ] wire sign out per device, and sign out all devices
+- [x] wire sign out per device, and sign out all devices
+- [ ] debug: security tab calls do not retry, fail on 401
+- [ ] debug: sign out all does not revoke remote session
 - [ ] add worker to delete expired sessions from the DB
 
 session management lifecycle
