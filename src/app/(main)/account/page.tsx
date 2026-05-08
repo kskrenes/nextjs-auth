@@ -24,6 +24,7 @@ import DeviceCard from "@/components/device-card";
 import { SessionDTO } from "@/helpers/session-dto";
 import { SecurityLogDTO } from "@/helpers/security-log-dto";
 import SecurityLogCard from "@/components/security-log-card";
+import { useRouter } from "next/navigation";
 
 const AccountPage = () => {
 
@@ -41,6 +42,7 @@ const AccountPage = () => {
   const [isLoadingSecurityData, setIsLoadingSecurityData] = useState(false);
   const [isSecurityDataError, setIsSecurityDataError] = useState(false);
   const [securityDataErrorMessage, setSecurityDataErrorMessage] = useState('');
+  const [isRevokingAll, setIsRevokingAll] = useState(false);
   const [editedFields, setEditedFields] = useState<{
     name: string;
     company: string;
@@ -61,6 +63,8 @@ const AccountPage = () => {
     updateUser, 
     linkCredentials 
   } = useAuth();
+
+  const router = useRouter();
 
   if (fetchingUser) return <FullScreenLoader />;
 
@@ -223,6 +227,22 @@ const AccountPage = () => {
     } catch (error) {
       console.error("Failed to update sessions:", error);
       toast.error("Failed to update sessions");
+    }
+  }
+
+  const handleSignOutAllDevices = async () => {
+    if (isRevokingAll) return;
+
+    setIsRevokingAll(true);
+    try {
+      await axios.post("/api/auth/logout-all");
+      toast.success("Signed out of all devices");
+      router.replace("/login");
+    } catch (error) {
+      console.error("Failed to sign out of all devices:", error);
+      toast.error("Failed to sign out of all devices");
+    } finally {
+      setIsRevokingAll(false);
     }
   }
 
@@ -585,6 +605,14 @@ const AccountPage = () => {
                             onSignOut={handleDeviceSignout}
                           />
                         ))}
+                        <div className="mt-2">
+                          <Button 
+                            onClick={handleSignOutAllDevices}
+                            disabled={isRevokingAll}
+                          >
+                            Sign Out All Devices
+                          </Button>
+                        </div>
                       </div>
                     )}
                     <div className="flex flex-col gap-3">
