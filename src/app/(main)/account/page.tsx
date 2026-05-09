@@ -35,8 +35,8 @@ const AccountPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
-  const [sessionsList, setSessionsList] = useState<[SessionDTO] | null>(null);
-  const [securityLogs, setSecurityLogs] = useState<[SecurityLogDTO] | null>(null);
+  const [sessionsList, setSessionsList] = useState<SessionDTO[] | null>(null);
+  const [securityLogs, setSecurityLogs] = useState<SecurityLogDTO[] | null>(null);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const [isLoadingSecurityData, setIsLoadingSecurityData] = useState(false);
   const [isSecurityDataError, setIsSecurityDataError] = useState(false);
@@ -72,7 +72,7 @@ const AccountPage = () => {
     try {
       await triggerEmail(user.email, "VERIFY", setIsSendingVerifyEmail);
       toast.success("Verification email sent");
-    } catch (error: unknown) {
+    } catch {
       toast.error("Failed to send verification email");
     }
   }
@@ -83,7 +83,7 @@ const AccountPage = () => {
     try {
       await triggerEmail(user.email, "RESET", setIsSendingResetEmail);
       toast.success("Reset password email sent");
-    } catch (error: unknown) {
+    } catch {
       toast.error("Failed to send reset password email");
     }
   }
@@ -500,7 +500,7 @@ const AccountPage = () => {
                         <label className="text-lg font-semibold">Reset Password</label>
                       </div>
                       <p className="text-foreground-secondary max-w-md">
-                        We'll send you an email with instructions to update your password.
+                        We&apos;ll send you an email with instructions to update your password.
                       </p>
                       <div className="mt-2">
                         <Button 
