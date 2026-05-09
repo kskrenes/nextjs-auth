@@ -6,7 +6,7 @@ const objectIdSchema = z.string().refine(
   { message: "Invalid Mongoose ObjectId" }
 );
 
-// define the seurity log fields available
+// define the security log fields available
 const SecurityLogDTOSchema = z.object({
   userId: objectIdSchema, 
   action: z.enum([
@@ -14,17 +14,27 @@ const SecurityLogDTOSchema = z.object({
   ]), 
   ipAddress: z.string(), 
   userAgent: z.string(), 
-  metadata: z.object(), 
+  metadata: z.record(z.string(), z.unknown()), 
   createdAt: z.coerce.date()
 });
 
 // infer a typescript type from the zod schema
 export type SecurityLogDTO = z.infer<typeof SecurityLogDTOSchema>;
 
+// define a minimal interface for the raw security log
+interface RawSecurityLog {
+  userId?: { toString(): string } | string;
+  action?: unknown;
+  ipAddress?: unknown;
+  userAgent?: unknown;
+  metadata?: unknown;
+  createdAt?: unknown;
+}
+
 // sanitize a raw security log object from the database
-export function sanitizSecurityLog(securityLog: any): SecurityLogDTO {
+export function sanitizSecurityLog(securityLog: RawSecurityLog): SecurityLogDTO {
   return SecurityLogDTOSchema.parse({
-    userId: securityLog.userId.toString(), // convert ObjectId to stringå
+    userId: securityLog.userId?.toString(), // convert ObjectId to string
     action: securityLog.action,
     ipAddress: securityLog.ipAddress,
     userAgent: securityLog.userAgent,
@@ -34,6 +44,6 @@ export function sanitizSecurityLog(securityLog: any): SecurityLogDTO {
 }
 
 // array variant for multiple logs
-export function sanitizeSecurityLogs(securityLogs: any[]): SecurityLogDTO[] {
+export function sanitizeSecurityLogs(securityLogs: RawSecurityLog[]): SecurityLogDTO[] {
   return securityLogs.map(sanitizSecurityLog);
 }
