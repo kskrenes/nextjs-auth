@@ -5,7 +5,7 @@ import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import { defaultAvatarId } from "@/helpers/themes";
-import { sanitizeUser } from "@/helpers/user-dto";
+import { sanitizeUser, UserDTO } from "@/helpers/user-dto";
 import recordSecurityEvent from "@/helpers/record-security-event";
 
 export async function POST(request: NextRequest) {
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if request json is invalid
-    let reqBody: any;
+    let reqBody: object;
     try {
       reqBody = await getRequestBody(request);
     } catch(error: unknown) {
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     // check for valid fields at runtime
-    const userUpdates = reqBody;
+    const userUpdates: Partial<UserDTO> = reqBody;
     if (
       (userUpdates.username !== undefined && typeof userUpdates.username !== "string") ||
       (userUpdates.name !== undefined && typeof userUpdates.name !== "string") ||
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       (userUpdates.avatarId !== undefined && typeof userUpdates.avatarId !== "string") ||
       (userUpdates.socialLinks !== undefined && 
         (!Array.isArray(userUpdates.socialLinks) || 
-        userUpdates.socialLinks.some((element: any) => typeof element !== "string")))
+        userUpdates.socialLinks.some((element: string) => typeof element !== "string")))
     ) {
       return NextResponse.json(
         { error: "Invalid user fields" }, 
@@ -60,13 +60,13 @@ export async function POST(request: NextRequest) {
     const settingUsername = userUpdates.username !== undefined;
 
     // set new values
-    const update: any = {
+    const update: Partial<UserDTO> = {
       ...(userUpdates.username !== undefined && { username: userUpdates.username.trim() }),
       ...(userUpdates.name !== undefined && { name: userUpdates.name.trim() }),
       ...(userUpdates.company !== undefined && { company: userUpdates.company.trim() }),
       ...(userUpdates.website !== undefined && { website: userUpdates.website.trim() }),
       ...(userUpdates.avatarId !== undefined && { avatarId: userUpdates.avatarId.trim() }),
-      ...(userUpdates.socialLinks !== undefined && { socialLinks: userUpdates.socialLinks.map((link: any) => link.trim()) }),
+      ...(userUpdates.socialLinks !== undefined && { socialLinks: userUpdates.socialLinks.map((link: string) => link.trim()) }),
     }
 
     if (settingUsername) {
@@ -135,12 +135,16 @@ export async function POST(request: NextRequest) {
     const sanitizedUser = sanitizeUser(updatedUser);
 
     // record security event for profile update
-    await recordSecurityEvent(
-      sanitizedUser.id, 
-      "profile_updated", 
-      request, 
-      { email: sanitizedUser.email }
-    );
+    try {
+      await recordSecurityEvent(
+        sanitizedUser.id, 
+        "profile_updated", 
+        request, 
+        { email: sanitizedUser.email }
+      );
+    } catch (error) {
+      console.error("Failed to record profile_updated security event", error);
+    }
 
     // create success response
     const response = NextResponse.json(

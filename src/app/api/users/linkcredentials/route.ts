@@ -142,12 +142,16 @@ export async function POST(request: NextRequest) {
     }
 
     // record security event for successful credential linking
-    await recordSecurityEvent(
-      sanitizedUser.id, 
-      "password_created", 
-      request, 
-      { email: sanitizedUser.email }
-    );
+    try {
+      await recordSecurityEvent(
+        sanitizedUser.id, 
+        "password_created", 
+        request, 
+        { email: sanitizedUser.email }
+      );
+    } catch (error) {
+      console.error("Failed to record password_created security event", error);
+    }
 
     // create success response
     const response = NextResponse.json(

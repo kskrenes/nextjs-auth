@@ -111,12 +111,16 @@ export async function POST(request: NextRequest) {
 
     // record security event for successful password reset
     if (updatedUser) {
-      await recordSecurityEvent(
-        updatedUser._id.toString(), 
-        "password_reset", 
-        request, 
-        { email: updatedUser.email }
-      );
+      try {
+        await recordSecurityEvent(
+          updatedUser._id.toString(), 
+          "password_reset", 
+          request, 
+          { email: updatedUser.email }
+        );
+      } catch (error) {
+        console.error("Failed to record password_reset security event", error);
+      }
     }
 
     // return success

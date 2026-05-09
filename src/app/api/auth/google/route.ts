@@ -263,13 +263,17 @@ export async function POST(request: NextRequest) {
     }
 
     // record security event for successful login or account linking
-    await recordSecurityEvent(
-      sanitizedUser.id, 
-      securityLogAction, 
-      request, 
-      { email: sanitizedUser.email }
-    );
-    
+    try {
+      await recordSecurityEvent(
+        sanitizedUser.id, 
+        securityLogAction, 
+        request, 
+        { email: sanitizedUser.email }
+      );
+    } catch (error) {
+      console.error(`Failed to record ${securityLogAction} security event`, error);
+    }
+
     // create success response
     const response = NextResponse.json(
       {

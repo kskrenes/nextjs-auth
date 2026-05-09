@@ -100,12 +100,16 @@ export async function POST(request: NextRequest) {
     }
 
     // record security event for successful login
-    await recordSecurityEvent(
-      sanitizedUser.id, 
-      "login", 
-      request, 
-      { email: sanitizedUser.email }
-    );
+    try {
+      await recordSecurityEvent(
+        sanitizedUser.id, 
+        "login", 
+        request, 
+        { email: sanitizedUser.email }
+      );
+    } catch (error) {
+      console.error("Failed to record login security event", error);
+    }
 
     // create success response
     const response = NextResponse.json(
