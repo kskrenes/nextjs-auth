@@ -6,7 +6,7 @@ export default async function recordSecurityEvent(
   userId: string, 
   action: string, 
   request: NextRequest, 
-  metadata?: any
+  metadata: Record<string, unknown> = {}
 ) {
   const { userAgent, ipAddress } = getUAAndIpFromRequest(request);
   await SecurityLog.create({
@@ -14,6 +14,6 @@ export default async function recordSecurityEvent(
     action,
     ipAddress,
     userAgent,
-    metadata: metadata || {}
+    metadata,
   });
 }
