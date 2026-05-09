@@ -9,11 +9,15 @@ export default async function recordSecurityEvent(
   metadata: Record<string, unknown> = {}
 ) {
   const { userAgent, ipAddress } = getUAAndIpFromRequest(request);
-  await SecurityLog.create({
-    userId,
-    action,
-    ipAddress,
-    userAgent,
-    metadata,
-  });
+  try {
+    await SecurityLog.create({
+      userId,
+      action,
+      ipAddress,
+      userAgent,
+      metadata,
+    });
+  } catch (error) {
+    console.error('Failed to record security event', error);
+  }
 }
