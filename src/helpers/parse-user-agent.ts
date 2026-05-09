@@ -8,11 +8,19 @@ export default function parseUserAgent(
   browser: string 
 } {
   const parser = new UAParser(userAgent);
-  const deviceType = parser.getDevice().type || 'unknown';
-  const osName = parser.getOS().name || 'Unknown OS';
-  const osVersion = parser.getOS().version;
-  const browser = parser.getBrowser().name || 'Unknown Browser';
+  const device = parser.getDevice();
+  const osInfo = parser.getOS();
+  const browserInfo = parser.getBrowser();
+
+  const osName = osInfo.name || 'Unknown OS';
+  const browser = browserInfo.name || 'Unknown Browser';
+  const osVersion = osInfo.version;
+
+  // combine os name and version, if version is available
   const os = osName + (osVersion ? ` ${osVersion}` : '');
+
+  // infer desktop device type, since getDevice().type returns undefined for desktop
+  const deviceType = device.type ?? (osInfo.name || browserInfo.name ? 'desktop' : 'unknown');
 
   return { deviceType, os, browser };
 }
