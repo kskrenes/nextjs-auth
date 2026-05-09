@@ -1,4 +1,5 @@
 import { Cpu, Monitor, RectangleGoggles, Smartphone, Tablet, Tv, Watch, LucideProps } from "lucide-react";
+import { twMerge } from "tailwind-merge";
 
 const ICON_MAP = {
   mobile: Smartphone,
@@ -22,6 +23,7 @@ interface DeviceIconProps extends LucideProps {
 export const DeviceIcon = ({ 
   type, 
   sizeVariant = 'large', 
+  className,
   ...props 
 }: DeviceIconProps) => {
   const Icon = ICON_MAP[type];
@@ -37,7 +39,7 @@ export const DeviceIcon = ({
   return (
     <div className={variantContainerStyles}>
       <Icon 
-        className={variantIconStyles} 
+        className={twMerge(variantIconStyles, className)} 
         {...props} 
       />
     </div>
