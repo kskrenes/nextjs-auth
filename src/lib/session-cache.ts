@@ -15,7 +15,11 @@ export function getCachedSession(sessionId: string): boolean | null {
   if (Date.now() >= entry.expiresAt) {
     sessionCache.delete(sessionId);
     // Clean up reverse index
-    userSessionIndex.get(entry.userId)?.delete(sessionId);
+    const sessions = userSessionIndex.get(entry.userId);
+    sessions?.delete(sessionId);
+    if (sessions && sessions.size === 0) {
+      userSessionIndex.delete(entry.userId);
+    }
     return null;
   }
   return true; // only valid sessions are stored
