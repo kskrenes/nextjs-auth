@@ -1,6 +1,6 @@
 "use client";
 import { SessionDTO } from "@/helpers/session-dto";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import axios from "axios";
 import Badge from "./badge";
 import Button from "./nae-button";
@@ -27,21 +27,15 @@ interface ExpandedSessionDTO extends SessionDTO {
 
 const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) => {
 
-  const [expandedSession, setExpandedSession] = useState<ExpandedSessionDTO | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // re-render whenever the global timer ticks, updating the relative time display
   useTimeTick(60000);
 
-  useEffect(() => {
-    if (session) {
-      const deviceInfo = parseUserAgent(session.userAgent);
-      setExpandedSession({
-        ...session,
-        deviceInfo,
-      });
-    }
-  }, [session]);
+  const expandedSession: ExpandedSessionDTO = useMemo(() => ({
+    ...session,
+    deviceInfo: parseUserAgent(session.userAgent),
+  }), [session]);
 
   const deleteSession = async () => {
     try {
@@ -59,7 +53,7 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
 
   return (
     <div className="flex w-full gap-5 p-5 rounded-md bg-panel">
-      {isDeleting || !expandedSession ? (
+      {isDeleting ? (
         <div className="flex w-full items-center justify-center py-8.5">
           <NaeLoader />
         </div>
