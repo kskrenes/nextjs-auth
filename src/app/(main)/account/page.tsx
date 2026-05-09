@@ -23,7 +23,6 @@ import DeviceCard from "@/components/device-card";
 import { SessionDTO } from "@/helpers/session-dto";
 import { SecurityLogDTO } from "@/helpers/security-log-dto";
 import SecurityLogCard from "@/components/security-log-card";
-import { useRouter } from "next/navigation";
 import { axiosClient } from "@/lib/axios-client";
 
 const AccountPage = () => {
@@ -64,8 +63,6 @@ const AccountPage = () => {
     linkCredentials,
     logout
   } = useAuth();
-
-  const router = useRouter();
 
   if (fetchingUser) return <FullScreenLoader />;
 
