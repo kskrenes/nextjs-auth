@@ -38,6 +38,8 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
   }), [session]);
 
   const deleteSession = async () => {
+    if (isDeleting) return;
+    
     try {
       setIsDeleting(true);
       await axios.delete("/api/auth/sessions/" + session.sessionId);
