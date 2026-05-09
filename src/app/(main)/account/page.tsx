@@ -19,12 +19,12 @@ import { getValidPassword } from "@/helpers/expression-validation";
 import GoogleLoginButton from "@/components/google-login-button";
 import { getDisplayLink, getSocialIcon } from "@/helpers/display";
 import NaeLoader from "@/components/nae-loader";
-import axios from "axios";
 import DeviceCard from "@/components/device-card";
 import { SessionDTO } from "@/helpers/session-dto";
 import { SecurityLogDTO } from "@/helpers/security-log-dto";
 import SecurityLogCard from "@/components/security-log-card";
 import { useRouter } from "next/navigation";
+import { axiosClient } from "@/lib/axios-client";
 
 const AccountPage = () => {
 
@@ -198,14 +198,15 @@ const AccountPage = () => {
   }
 
   const loadSecurityTabData = async () => {
-    if (isLoadingSecurityData || isSecurityDataError) return;
+    if (isLoadingSecurityData) return;
 
     setIsLoadingSecurityData(true);
+    setIsSecurityDataError(false);
     try {
       // fetch sessions and security logs
       const [sessionsResponse, logsResponse] = await Promise.all([
-        axios.get("/api/auth/sessions"),
-        axios.get("/api/users/security-logs")
+        axiosClient.get("/api/auth/sessions"),
+        axiosClient.get("/api/users/security-logs")
       ]);
       setCurrentSessionId(sessionsResponse.data.currentSessionId);
       setSessionsList(sessionsResponse.data.sessions);
@@ -223,7 +224,7 @@ const AccountPage = () => {
 
   const handleDeviceSignout = async () => {
     try {
-      const sessionsResponse = await axios.get("/api/auth/sessions");
+      const sessionsResponse = await axiosClient.get("/api/auth/sessions");
       setSessionsList(sessionsResponse.data.sessions);
     } catch (error) {
       console.error("Failed to update sessions:", error);
@@ -236,7 +237,7 @@ const AccountPage = () => {
 
     setIsRevokingAll(true);
     try {
-      const response = await axios.post("/api/auth/logout-all");
+      const response = await axiosClient.post("/api/auth/logout-all");
       const count = response.data.deletedCount;
       toast.success(`Signed out of ${count} device${count > 1 ? 's' : ''}`);
       await logout();
@@ -575,7 +576,7 @@ const AccountPage = () => {
                 </div>
               </TabPanel>
               <TabPanel>
-                {isLoadingSecurityData ? (
+                {isLoadingSecurityData && !sessionsList && !securityLogs ? (
                   <div 
                     className='flex items-center justify-center mt-20'
                     role='status'
