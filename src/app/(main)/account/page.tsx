@@ -235,17 +235,19 @@ const AccountPage = () => {
   const handleSignOutAllDevices = async () => {
     if (isRevokingAll) return;
 
-    setIsRevokingAll(true);
-    try {
-      const response = await axiosClient.post("/api/auth/logout-all");
-      const count = response.data.deletedCount;
-      toast.success(`Signed out of ${count} device${count > 1 ? 's' : ''}`);
-      await logout();
-    } catch (error) {
-      console.error("Failed to sign out of all devices:", error);
-      toast.error("Failed to sign out of all devices");
-    } finally {
-      setIsRevokingAll(false);
+    if (window.confirm("Are you sure you want to sign out all devices? You will be signed out from your current session.")) {
+      setIsRevokingAll(true);
+      try {
+        const response = await axiosClient.post("/api/auth/logout-all");
+        const count = response.data.deletedCount;
+        toast.success(`Signed out of ${count} device${count > 1 ? 's' : ''}`);
+        await logout();
+      } catch (error) {
+        console.error("Failed to sign out of all devices:", error);
+        toast.error("Failed to sign out of all devices");
+      } finally {
+        setIsRevokingAll(false);
+      }
     }
   }
 
