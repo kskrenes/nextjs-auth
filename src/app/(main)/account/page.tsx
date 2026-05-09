@@ -61,7 +61,8 @@ const AccountPage = () => {
     updatingUser, 
     linkingAccount, 
     updateUser, 
-    linkCredentials 
+    linkCredentials,
+    logout
   } = useAuth();
 
   const router = useRouter();
@@ -238,7 +239,7 @@ const AccountPage = () => {
       const response = await axios.post("/api/auth/logout-all");
       const count = response.data.deletedCount;
       toast.success(`Signed out of ${count} device${count > 1 ? 's' : ''}`);
-      router.replace("/login");
+      await logout();
     } catch (error) {
       console.error("Failed to sign out of all devices:", error);
       toast.error("Failed to sign out of all devices");
