@@ -9,7 +9,7 @@ export async function DELETE(
   { params }: { params: Promise<{ sessionId: string }> }
 ) {
   try {
-    connect();
+    await connect();
 
     // require an authenticated session — throws AuthTokenError (401) if
     // the cookie is absent, expired, or invalid
