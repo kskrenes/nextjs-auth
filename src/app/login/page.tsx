@@ -129,7 +129,7 @@ const LoginPage = () => {
         <div className="flex flex-col items-center gap-2">
           {/* sign up link */}
           <p className="text-xs">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link 
               href="/signup"
               className="text-brand hover:text-brand-highlight underline transition-colors"
