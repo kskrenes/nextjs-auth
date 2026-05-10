@@ -7,23 +7,24 @@ import { EmailIcon } from "@/components/profile-icons";
 import { useAuth } from "@/context/AuthContext";
 import { triggerEmail } from "@/helpers/trigger-email";
 import { MailCheck, ShieldAlert } from "lucide-react";
-import { useEffect, useState, type SubmitEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import toast from "react-hot-toast";
 
 const TriggerPasswordResetPage = () => {
+
+  const { user } = useAuth();
 
   const [isSending, setIsSending] = useState<boolean>(false);
   const [isSent, setIsSent] = useState<boolean>(false);
   const [isError, setIsError] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
+  const [prevUserId, setPrevUserId] = useState<string | undefined>(undefined);
 
-  const { user } = useAuth();
-
-  useEffect(() => {
-    if (!user) return;
-
-    setEmail((prev) => prev || user.email);
-  }, [user]);
+  // If the user identity changed, update the email state immediately
+  if (user?.id !== prevUserId) {
+    setPrevUserId(user?.id);
+    setEmail(user?.email || "");
+  }
   
   const handleReset = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
@@ -35,7 +36,7 @@ const TriggerPasswordResetPage = () => {
       await triggerEmail(email, "RESET", setIsSending);
       toast.success("Reset password email sent");
       setIsSent(true);
-    } catch (error: unknown) {
+    } catch {
       toast.error("Failed to send reset password email");
       setIsError(true);
     }
@@ -61,7 +62,7 @@ const TriggerPasswordResetPage = () => {
           >
             <h2 className="text-lg font-semibold">Reset Password</h2>
           </div>
-          <p className="text-foreground-secondary">We'll send you an email with instructions to update your password.</p>
+          <p className="text-foreground-secondary">We&apos;ll send you an email with instructions to update your password.</p>
           {isSent ? (
             <div className="flex flex-col items-center min-h-screen space-y-8">
               <MailCheck className="w-10 h-10 text-brand" />
