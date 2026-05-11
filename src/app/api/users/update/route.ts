@@ -28,13 +28,21 @@ export async function POST(request: NextRequest) {
     }
 
     // throw if request json is invalid
-    let reqBody: object;
+    let reqBody: unknown;
     try {
       reqBody = await getRequestBody(request);
     } catch(error: unknown) {
       const message = error instanceof Error ? error.message : "Invalid request";
       return NextResponse.json(
         { error: message }, 
+        { status: 400 }
+      );
+    }
+
+    // throw if request payload is invalid
+    if (!reqBody || typeof reqBody !== "object" || Array.isArray(reqBody)) {
+      return NextResponse.json(
+        { error: "Invalid request body" },
         { status: 400 }
       );
     }
