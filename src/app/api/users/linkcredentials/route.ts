@@ -11,6 +11,7 @@ import {
   storeAccessTokenCookie,
 } from "@/helpers/token";
 import { sanitizeUser } from "@/helpers/user-dto";
+import recordSecurityEvent from "@/helpers/record-security-event";
 
 export async function POST(request: NextRequest) {
   try {
@@ -138,6 +139,17 @@ export async function POST(request: NextRequest) {
         { error: "Unable to continue session" },
         { status: 500 }
       );
+    }
+
+    // record security event for successful credential linking
+    try {
+      await recordSecurityEvent(
+        sanitizedUser.id, 
+        "password_created", 
+        request,
+      );
+    } catch (error) {
+      console.error("Failed to record password_created security event", error);
     }
 
     // create success response

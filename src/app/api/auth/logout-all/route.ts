@@ -34,7 +34,11 @@ export async function POST(request: NextRequest) {
 
     // return success response with number of devices logged out
     return NextResponse.json(
-      { message: `Logged out of ${deletedCount} device(s) successfully` }, 
+      { 
+        message: `Logged out of ${deletedCount} device(s) successfully`,
+        success: true,
+        deletedCount,
+      }, 
       { status: 200 }
     );
   } 

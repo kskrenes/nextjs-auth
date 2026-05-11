@@ -2,9 +2,16 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextResponse, type NextRequest } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
-import { createSession, signAccessToken, storeAccessTokenCookie, storeRefreshTokenCookie, storeSessionHintCookie } from "@/helpers/token";
+import { 
+  createSession, 
+  signAccessToken, 
+  storeAccessTokenCookie, 
+  storeRefreshTokenCookie, 
+  storeSessionHintCookie 
+} from "@/helpers/token";
 import { getRequestBody } from "@/helpers/validate-request";
 import { sanitizeUser } from "@/helpers/user-dto";
+import recordSecurityEvent from "@/helpers/record-security-event";
 
 export async function POST(request: NextRequest) {
   try {
@@ -96,6 +103,17 @@ export async function POST(request: NextRequest) {
         { error: "Unable to log in" },
         { status: 500 }
       );
+    }
+
+    // record security event for successful login
+    try {
+      await recordSecurityEvent(
+        sanitizedUser.id, 
+        "login", 
+        request,
+      );
+    } catch (error) {
+      console.error("Failed to record login security event", error);
     }
 
     // create success response

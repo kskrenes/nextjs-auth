@@ -15,7 +15,11 @@ export function getCachedSession(sessionId: string): boolean | null {
   if (Date.now() >= entry.expiresAt) {
     sessionCache.delete(sessionId);
     // Clean up reverse index
-    userSessionIndex.get(entry.userId)?.delete(sessionId);
+    const sessions = userSessionIndex.get(entry.userId);
+    sessions?.delete(sessionId);
+    if (sessions && sessions.size === 0) {
+      userSessionIndex.delete(entry.userId);
+    }
     return null;
   }
   return true; // only valid sessions are stored
@@ -39,5 +43,19 @@ export function evictUserSessions(userId: string): void {
       sessionCache.delete(sessionId);
     }
     userSessionIndex.delete(userId);
+  }
+}
+
+export function evictSession(sessionId: string): void {
+  const entry = sessionCache.get(sessionId);
+  if (entry) {
+    sessionCache.delete(sessionId);
+    
+    // clean up empty userSessionIndex buckets in evictSession
+    const sessions = userSessionIndex.get(entry.userId);
+    sessions?.delete(sessionId);
+    if (sessions && sessions.size === 0) {
+      userSessionIndex.delete(entry.userId);
+    }
   }
 }

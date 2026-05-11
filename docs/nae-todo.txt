@@ -77,9 +77,31 @@ session hardening
 - [x] create /api/auth/refresh route
 - [x] create /api/auth/sessions route with GET and DELETE (or POST /revoke)
 - [x] add periodic session_id check to middleware
-- [ ] create account page security tab
-- [ ] wire sign out per device, and sign out all devices
+- [x] create account page security tab
+- [x] wire sign out per device, and sign out all devices
+- [x] debug: security tab calls do not retry, fail on 401
+- [x] debug: sign out all does not revoke remote session
 - [ ] add worker to delete expired sessions from the DB
+
+debug
+- [ ] onboarding isn't calling api, form seems to be posting
+
+refactor
+- [ ] display.tsx: follow device-icons convention for social icons
+- [ ] display.tsx: rename to url-utils.ts
+- [ ] themes.ts: rename to avatar-utils.ts
+- [ ] error-message.ts: rename to error-utils.ts
+- [ ] expression-validation.ts: rename to validation-utils.ts
+- [ ] parse-user-agent.ts: move to request-headers.ts
+- [ ] request-headers.ts: rename to request-utils.ts
+- [ ] token.ts: rename to token-utils.ts
+- [ ] trigger-email.ts: move to mailer.ts
+- [ ] mailer.ts: rename to email-utils.ts
+- [ ] validate-request.ts: move to request-utils.ts
+- [ ] nae-theme-provider.tsx: rename to theme-context-provider.tsx
+- [ ] AuthContext.tsx: rename to auth-context-provider.tsx
+- [ ] move theme-context-provider.tsx & auth-context-provider.tsx to /context-providers
+- [ ] move dtos to /helpers/dto
 
 session management lifecycle
 - [x] conceptual research

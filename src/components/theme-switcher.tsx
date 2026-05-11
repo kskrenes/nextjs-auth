@@ -20,7 +20,10 @@ const ThemeSwitcher = () => {
     themeItems.find((item) => item.name === "system");
 
   useEffect(() => {
-    setIsMounted(true);
+    async function loadTheme() {
+      setIsMounted(true);
+    }
+    loadTheme();
   }, []);
 
   if (!isMounted) return null;

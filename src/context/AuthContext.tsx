@@ -4,7 +4,7 @@ import { getErrorMessage } from '@/helpers/error-message';
 import type { UserDTO } from '@/helpers/user-dto';
 import { axiosClient, setupAuthInterceptor } from '@/lib/axios-client';
 import { useRouter } from 'next/navigation';
-import { createContext, ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
 // Public pages — onSignOut should NOT redirect away from these
@@ -79,12 +79,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     // Register the interceptor exactly once on mount
-    const eject = setupAuthInterceptor(onSignOut.current);
+    const eject = setupAuthInterceptor(() => onSignOut.current());
     return eject; // cleanup on unmount
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── initial user fetch ───────────────────────────────────────────────────────
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const res = await axiosClient.get('/api/users/me');
       setUser(res.data.user);
@@ -95,11 +95,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       setFetchingUser(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchUser();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    void fetchUser();
+  }, [fetchUser]);
 
   // ── auth actions ─────────────────────────────────────────────────────────────
   const login = async (email: string, password: string) => {
@@ -149,7 +149,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const verifyEmail = async (token: string) => {
+  const verifyEmail = useCallback(async (token: string) => {
     setVerifyingEmail(true);
     try {
       await axiosClient.post('/api/users/verifyemail', { token });
@@ -163,7 +163,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       setVerifyingEmail(false);
     }
-  };
+  }, []);
 
   const linkCredentials = async (password: string) => {
     setLinkingAccount(true);

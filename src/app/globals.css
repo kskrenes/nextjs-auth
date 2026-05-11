@@ -89,6 +89,14 @@ body {
   outline: 2px solid var(--brand);
 }
 
+@utility page-container {
+  @apply
+    pt-24 
+    mx-5 
+    xs:mx-8 
+    mb-8
+}
+
 @utility button-base {
   @apply
     flex 
@@ -98,6 +106,7 @@ body {
     transition-colors 
     cursor-pointer
     disabled:cursor-not-allowed
+    leading-tight
 }
 
 @utility button-primary {
@@ -149,7 +158,7 @@ body {
 @utility button-small {
   @apply 
     px-2.5 
-    py-0.5 
+    py-1 
     text-base
 }
 

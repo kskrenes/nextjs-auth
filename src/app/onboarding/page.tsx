@@ -13,24 +13,27 @@ import { useEffect, useState, type SubmitEvent } from "react";
 import toast from "react-hot-toast";
 
 const OnboardingPage = () => {
+  
+  const { user, fetchingUser, updatingUser, updateUser } = useAuth();
 
   const [isError, setIsError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [username, setUsername] = useState<string>("");
-
-  const { user, fetchingUser, updatingUser, updateUser } = useAuth();
+  const [prevUserId, setPrevUserId] = useState<string | undefined>(undefined);
 
   const router = useRouter();
+  
+  // If the user identity changed, update the email state immediately
+  if (user?.id !== prevUserId) {
+    setPrevUserId(user?.id);
+    setUsername(user?.username || "");
+  }
 
   useEffect(() => {
-    if (!user) return;
-    
-    if (user.hasCompletedProfile) {
+    if (user?.hasCompletedProfile) {
       router.replace('/dashboard');
-    } else {
-      setUsername(user.username);
     }
-  }, [user, router]);
+  }, [user?.hasCompletedProfile, router]);
 
   if (fetchingUser) return <FullScreenLoader />;
 
@@ -49,7 +52,7 @@ const OnboardingPage = () => {
 
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
-    e.preventDefault(); 
+    e.preventDefault();
 
     if (updatingUser) return;
     
@@ -66,6 +69,7 @@ const OnboardingPage = () => {
     }
 
     try {
+      // TODO: this call returns success but the username is not updated, and the onboarded flag is not set (and redirect fails)
       await updateUser({ username: validUsername });
       toast.success("Your username has been updated!")
       router.replace("/dashboard");

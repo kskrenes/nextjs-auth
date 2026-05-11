@@ -2,7 +2,7 @@
 
 import { triggerEmail } from "@/helpers/trigger-email";
 import { KeyRound, Pencil, RotateCcwKey, ShieldAlert, ShieldUser, UserPlus } from "lucide-react";
-import React, { useState, type SubmitEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context/AuthContext";
@@ -18,6 +18,12 @@ import SetPasswordInputs from "@/components/nae-set-password";
 import { getValidPassword } from "@/helpers/expression-validation";
 import GoogleLoginButton from "@/components/google-login-button";
 import { getDisplayLink, getSocialIcon } from "@/helpers/display";
+import NaeLoader from "@/components/nae-loader";
+import DeviceCard from "@/components/device-card";
+import { SessionDTO } from "@/helpers/session-dto";
+import { SecurityLogDTO } from "@/helpers/security-log-dto";
+import SecurityLogCard from "@/components/security-log-card";
+import { axiosClient } from "@/lib/axios-client";
 
 const AccountPage = () => {
 
@@ -29,6 +35,13 @@ const AccountPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
+  const [sessionsList, setSessionsList] = useState<SessionDTO[] | null>(null);
+  const [securityLogs, setSecurityLogs] = useState<SecurityLogDTO[] | null>(null);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const [isLoadingSecurityData, setIsLoadingSecurityData] = useState(false);
+  const [isSecurityDataError, setIsSecurityDataError] = useState(false);
+  const [securityDataErrorMessage, setSecurityDataErrorMessage] = useState('');
+  const [isRevokingAll, setIsRevokingAll] = useState(false);
   const [editedFields, setEditedFields] = useState<{
     name: string;
     company: string;
@@ -47,7 +60,8 @@ const AccountPage = () => {
     updatingUser, 
     linkingAccount, 
     updateUser, 
-    linkCredentials 
+    linkCredentials,
+    logout
   } = useAuth();
 
   if (fetchingUser) return <FullScreenLoader />;
@@ -58,7 +72,7 @@ const AccountPage = () => {
     try {
       await triggerEmail(user.email, "VERIFY", setIsSendingVerifyEmail);
       toast.success("Verification email sent");
-    } catch (error: unknown) {
+    } catch {
       toast.error("Failed to send verification email");
     }
   }
@@ -69,7 +83,7 @@ const AccountPage = () => {
     try {
       await triggerEmail(user.email, "RESET", setIsSendingResetEmail);
       toast.success("Reset password email sent");
-    } catch (error: unknown) {
+    } catch {
       toast.error("Failed to send reset password email");
     }
   }
@@ -180,8 +194,52 @@ const AccountPage = () => {
     }
   }
 
+  const fetchSecurityTabData = async () => {
+    if (isLoadingSecurityData) return;
+
+    setIsLoadingSecurityData(true);
+    setIsSecurityDataError(false);
+    try {
+      // fetch sessions and security logs
+      const [sessionsResponse, logsResponse] = await Promise.all([
+        axiosClient.get("/api/auth/sessions"),
+        axiosClient.get("/api/users/security-logs")
+      ]);
+      setCurrentSessionId(sessionsResponse.data.currentSessionId);
+      setSessionsList(sessionsResponse.data.sessions);
+      setSecurityLogs(logsResponse.data.securityLogs);
+    }
+    catch (error) {
+      console.error("Failed to load security tab data", error);
+      setIsSecurityDataError(true);
+      setSecurityDataErrorMessage(getErrorMessage(error, "Failed to load security data"));
+    }
+    finally {
+      setIsLoadingSecurityData(false);
+    }
+  }
+
+  const handleSignOutAllDevices = async () => {
+    if (isRevokingAll) return;
+
+    if (window.confirm("Are you sure you want to sign out all devices? You will be signed out from your current session.")) {
+      setIsRevokingAll(true);
+      try {
+        const response = await axiosClient.post("/api/auth/logout-all");
+        const count = response.data.deletedCount;
+        toast.success(`Signed out of ${count} device${count > 1 ? 's' : ''}`);
+        await logout();
+      } catch (error) {
+        console.error("Failed to sign out of all devices:", error);
+        toast.error("Failed to sign out of all devices");
+      } finally {
+        setIsRevokingAll(false);
+      }
+    }
+  }
+
   return (
-    <div className="pt-14 md:pt-24 mx-5 xs:mx-8 mb-8">
+    <div className="page-container">
 
       {/* page title */}
       <h1 className="text-2xl min-w-39 max-w-90 font-semibold mx-auto md:mx-0 mb-8">My Account</h1>
@@ -194,7 +252,7 @@ const AccountPage = () => {
 
           {/* profile card */}
           <div 
-            className="flex flex-col w-full px-6 py-12 gap-8 rounded-md bg-panel" 
+            className="flex flex-col w-full px-6 py-12 gap-8 rounded-md bg-panel mb-6" 
           >
             {/* avatar */}
             <AvatarUpload />
@@ -249,6 +307,9 @@ const AccountPage = () => {
               setActiveTab(index);
               setIsEditing(false);
               resetPasswordFormState();
+              if (index === 2) {
+                fetchSecurityTabData();
+              }
             }}
           >
             <TabList className="tab-list">
@@ -257,6 +318,9 @@ const AccountPage = () => {
               </Tab>
               <Tab className="tab-list-item">
                 Settings
+              </Tab>
+              <Tab className="tab-list-item">
+                Security
               </Tab>
             </TabList>
             <TabPanels>
@@ -426,7 +490,7 @@ const AccountPage = () => {
                         <label className="text-lg font-semibold">Reset Password</label>
                       </div>
                       <p className="text-foreground-secondary max-w-md">
-                        We'll send you an email with instructions to update your password.
+                        We&apos;ll send you an email with instructions to update your password.
                       </p>
                       <div className="mt-2">
                         <Button 
@@ -499,6 +563,73 @@ const AccountPage = () => {
                   )}
                   
                 </div>
+              </TabPanel>
+              <TabPanel>
+                {isLoadingSecurityData && !sessionsList && !securityLogs ? (
+                  <div 
+                    className='flex items-center justify-center mt-20'
+                    role='status'
+                    aria-live='polite'
+                    aria-busy='true'
+                  >
+                    <NaeLoader className='w-10 h-10' />
+                    <span className="sr-only">Loading security data...</span>
+                  </div>
+                ) : isSecurityDataError ? (
+                  <div role="alert" className="flex flex-col items-center gap-4 mt-4 px-4 text-red-500">
+                    <ShieldAlert className="w-10 h-10" />
+                    <span className="text-center">{securityDataErrorMessage}</span>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-8">
+                    {sessionsList && sessionsList.length > 0 && (
+                      <div className="flex flex-col gap-3">
+                        <div className="flex flex-col gap-1 mb-1">
+                          <label className="text-lg font-semibold">My Devices</label>
+                          <p className="text-foreground-secondary max-w-md">
+                            Manage your active sessions across all devices.
+                          </p>
+                        </div>
+                        {sessionsList.map((session) => (
+                          <DeviceCard 
+                            key={session.sessionId} 
+                            session={session} 
+                            isCurrentSession={currentSessionId === session.sessionId} 
+                            onSignOut={fetchSecurityTabData}
+                          />
+                        ))}
+                        <div className="mt-2">
+                          <Button 
+                            onClick={handleSignOutAllDevices}
+                            disabled={isRevokingAll}
+                          >
+                            Sign Out All Devices
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-1 mb-1">
+                        <label className="text-lg font-semibold">Recent Activity</label>
+                        <p className="text-foreground-secondary max-w-md">
+                          A log of recent activities on your account.
+                        </p>
+                      </div>
+                      {securityLogs && securityLogs.length > 0 ? (
+                        <>
+                        {securityLogs.map((log, index) => (
+                          <SecurityLogCard 
+                            key={new Date(log.createdAt).getTime() + index}
+                            securityLog={log}
+                          />
+                        ))}
+                        </>
+                      ) : (
+                        <p>No recent security activity.</p>
+                      )}
+                    </div>
+                  </div>
+                )}
               </TabPanel>
             </TabPanels>
           </TabGroup>          

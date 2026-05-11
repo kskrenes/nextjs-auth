@@ -35,8 +35,24 @@ const UserDTOSchema = z.object({
 // infer a typescript type from the zod schema
 export type UserDTO = z.infer<typeof UserDTOSchema>;
 
+// define a minimal interface for the raw session
+interface RawUser {
+  _id: { toString(): string } | string;
+  username: string;
+  email: string;
+  name?: string;
+  company?: string;
+  website?: string;
+  socialLinks?: string[];
+  avatarId?: string;
+  hasCompletedProfile: boolean;
+  isVerified: boolean;
+  isAdmin: boolean;
+  accounts?: { provider: string }[];
+}
+
 // sanitize a raw user object from the database
-export function sanitizeUser(user: any): UserDTO {
+export function sanitizeUser(user: RawUser): UserDTO {
   return UserDTOSchema.parse({
     id: user._id.toString(),
     username: user.username,

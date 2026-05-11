@@ -42,13 +42,13 @@ const VerifyEmailPage = () => {
         try {
           await verifyEmail(token);
           setIsVerified(true);
-        } catch (error: any) {
+        } catch (error: unknown) {
           setIsVerificationError(true);
           console.error(getErrorMessage(error, "Email verification failed"));
         }
       })();
     }
-  }, [token]);
+  }, [token, verifyEmail]);
 
   const handleResendClick = async () => {
     if (isRetrievingData || isSendingEmail || isEmailSent) return;
@@ -64,7 +64,7 @@ const VerifyEmailPage = () => {
         await triggerEmail(user.email, "VERIFY", setIsSendingEmail);
         toast.success("Verification email sent");
         setIsEmailSent(true);
-      } catch (error: unknown) {
+      } catch {
         toast.error("Failed to send verification email");
       }
     }

@@ -2,7 +2,7 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 interface GoogleLoginButtonProps {
   redirect?: boolean;
@@ -16,10 +16,26 @@ export default function GoogleLoginButton({
 
   const { loggingIn, loginViaGoogle } = useAuth();
   const router = useRouter();
+
+  const handleBackendAuth = useCallback(async (token: string) => {
+    try {
+      await loginViaGoogle(token);
+      if (callback) {
+        callback();
+      }
+      if (redirect) {
+        router.replace("/dashboard");
+      }
+    } catch (error) {
+      console.error('Error logging in via Google', error);
+    }
+  }, [loginViaGoogle, callback, redirect, router]);
   
   useEffect(() => {
+    let disposed = false;
+
     // define a local callback and expose it for cleanup
-    const handleCredentialResponseLocal = (response: any) => {
+    const handleCredentialResponseLocal = (response: CredentialResponse) => {
       const idToken = response?.credential;
       if (idToken) {
         handleBackendAuth(idToken);
@@ -39,40 +55,35 @@ export default function GoogleLoginButton({
     document.body.appendChild(script);
 
     script.onload = () => {
+      if (disposed) return;
+
       if (!clientId) {
         console.error("NEXT_PUBLIC_GOOGLE_CLIENT_ID is not configured");
         return;
       }
+
+      // ensure button container has not been removed from dom
+      const buttonContainer = document.getElementById('gsi-button');
+      if (!buttonContainer) return;
 
       window.google?.accounts.id.initialize({
         client_id: clientId,
         callback: handleCredentialResponseLocal,
       });
       window.google?.accounts.id.renderButton(
-        document.getElementById('gsi-button')!,
+        buttonContainer,
         { theme: 'outline', size: 'large' }
       );
     };
     
     return () => {
-      document.body.removeChild(script);
+      disposed = true;
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
       delete window.handleCredentialResponse;
     };
-  }, []);
-
-  const handleBackendAuth = async (token: string) => {
-    try {
-      await loginViaGoogle(token);
-      if (callback) {
-        callback();
-      }
-      if (redirect) {
-        router.replace("/dashboard");
-      }
-    } catch (error) {
-      console.error('Error logging in via Google', error);
-    }
-  }
+  }, [handleBackendAuth]);
 
   return (
     <div style={{colorScheme: 'auto'}} className='relative'>
