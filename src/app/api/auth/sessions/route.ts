@@ -25,7 +25,10 @@ export async function GET(request: NextRequest) {
     }
 
     // retrieve all sessions associated with the user
-    const sessions = await Session.find({ userId }).sort({ createdAt: -1 });
+    const sessions = await Session.find({ 
+      userId,
+      expiresAt: { $gt: new Date() }   // filter out expired-but-not-yet-TTL-deleted docs
+    }).sort({ lastActive: -1 });
     const sanitizedSessions = sanitizeSessions(sessions);
 
     // return success response with sanitized sessions
