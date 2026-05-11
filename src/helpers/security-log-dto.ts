@@ -12,8 +12,8 @@ const SecurityLogDTOSchema = z.object({
   action: z.enum([
     'login', 'password_reset', 'password_created', 'email_verified', 'profile_updated', 'google_account_linked'
   ]), 
-  ipAddress: z.string(), 
-  userAgent: z.string(), 
+  ipAddress: z.string().max(64).optional(), 
+  userAgent: z.string().max(512).optional(), 
   createdAt: z.coerce.date()
 });
 

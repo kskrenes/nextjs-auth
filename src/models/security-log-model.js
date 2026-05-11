@@ -12,8 +12,16 @@ const securityLogSchema = new mongoose.Schema({
     enum: Object.keys(activityConfig),
     required: [true, "Please provide an action type"], 
   },
-  ipAddress: String, // String for client IP, optional
-  userAgent: String, // String for browser/device identification, optional
+  ipAddress: {
+    type: String,
+    trim: true,
+    maxLength: [64, "IP address must be at most 64 characters long"],
+  }, // optional, bounded
+  userAgent: {
+    type: String,
+    trim: true,
+    maxLength: [512, "User agent string must be at most 512 characters long"],
+  }, // optional, bounded
   createdAt: { 
     type: Date, 
     default: Date.now, 
