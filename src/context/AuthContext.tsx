@@ -79,7 +79,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     // Register the interceptor exactly once on mount
-    const eject = setupAuthInterceptor(onSignOut.current);
+    const eject = setupAuthInterceptor(() => onSignOut.current());
     return eject; // cleanup on unmount
   }, []);
 
