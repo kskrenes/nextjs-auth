@@ -573,6 +573,7 @@ const AccountPage = () => {
                     aria-busy='true'
                   >
                     <NaeLoader className='w-10 h-10' />
+                    <span className="sr-only">Loading security data...</span>
                   </div>
                 ) : isSecurityDataError ? (
                   <div role="alert" className="flex flex-col items-center gap-4 mt-4 px-4 text-red-500">
