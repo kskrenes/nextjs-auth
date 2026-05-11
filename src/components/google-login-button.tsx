@@ -32,6 +32,8 @@ export default function GoogleLoginButton({
   }, [loginViaGoogle, callback, redirect, router]);
   
   useEffect(() => {
+    let disposed = false;
+
     // define a local callback and expose it for cleanup
     const handleCredentialResponseLocal = (response: CredentialResponse) => {
       const idToken = response?.credential;
@@ -53,23 +55,32 @@ export default function GoogleLoginButton({
     document.body.appendChild(script);
 
     script.onload = () => {
+      if (disposed) return;
+
       if (!clientId) {
         console.error("NEXT_PUBLIC_GOOGLE_CLIENT_ID is not configured");
         return;
       }
+
+      // ensure button container has not been removed from dom
+      const buttonContainer = document.getElementById('gsi-button');
+      if (!buttonContainer) return;
 
       window.google?.accounts.id.initialize({
         client_id: clientId,
         callback: handleCredentialResponseLocal,
       });
       window.google?.accounts.id.renderButton(
-        document.getElementById('gsi-button')!,
+        buttonContainer,
         { theme: 'outline', size: 'large' }
       );
     };
     
     return () => {
-      document.body.removeChild(script);
+      disposed = true;
+      if (script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
       delete window.handleCredentialResponse;
     };
   }, [handleBackendAuth]);
