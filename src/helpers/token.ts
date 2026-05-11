@@ -271,38 +271,47 @@ interface SessionCreationResult {
 
 export const createSession = async (user: UserDTO, request: NextRequest): Promise<SessionCreationResult> => {
   const SESSION_LIMIT = 10;
-
-  // enforce per-user session cap: delete oldest sessions beyond the limit
-  const sessionCount = await Session.countDocuments({ userId: user.id });
-  if (sessionCount >= SESSION_LIMIT) {
-    const oldest = await Session.find({ userId: user.id })
-      .sort({ lastActive: 1 })
-      .limit(sessionCount - SESSION_LIMIT + 1)
-      .select('_id');
-    await Session.deleteMany({ _id: { $in: oldest.map(s => s._id) } });
-  }
-
+  let createdSessionId = "";
+  
   // generate raw refresh token 
   const refreshToken = getRandomToken();
+  
+  // atomic prune (enforcing session limit) + create
+  const dbSession = await Session.startSession();
+  await dbSession.withTransaction(async () => {
+    const sessions = await Session.find({ userId: user.id })
+      .sort({ lastActive: 1 })
+      .select("_id")
+      .session(dbSession);
 
-  // set session expiration
-  const expiresAt = new Date();
-  expiresAt.setDate(expiresAt.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
+    const overflow = sessions.length - SESSION_LIMIT + 1;
+    if (overflow > 0) {
+      await Session.deleteMany(
+        { _id: { $in: sessions.slice(0, overflow).map((s) => s._id) } },
+        { session: dbSession }
+      );
+    }
+  
+    // set session expiration
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + REFRESH_TOKEN_EXPIRY_DAYS);
 
-  // create new session document
-  const { userAgent, ipAddress } = getUAAndIpFromRequest(request);
-  const session = await Session.create({
-    userId: user.id,
-    refreshToken: hashToken(refreshToken),
-    expiresAt,
-    lastActive: new Date(),
-    userAgent,
-    ipAddress,
+    const { userAgent, ipAddress } = getUAAndIpFromRequest(request);
+    const [created] = await Session.create([{
+      userId: user.id,
+      refreshToken: hashToken(refreshToken),
+      expiresAt,
+      lastActive: new Date(),
+      userAgent,
+      ipAddress,
+    }], { session: dbSession });
+    createdSessionId = created.sessionId;
   });
+  await dbSession.endSession();
 
   return {
     refreshToken,
-    sessionId: session.sessionId,
+    sessionId: createdSessionId,
   };
 }
 
