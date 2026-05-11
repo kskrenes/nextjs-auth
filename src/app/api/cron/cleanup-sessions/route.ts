@@ -21,13 +21,24 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // delete expired sessions
-  await connect();
-  const result = await Session.deleteMany({ expiresAt: { $lte: new Date() } });
+  try {
+    await connect();
 
-  // return success response
-  return NextResponse.json({
-    message: "Expired sessions cleaned up",
-    deletedCount: result.deletedCount,
-  });
+    // delete expired sessions
+    const result = await Session.deleteMany({ expiresAt: { $lte: new Date() } });
+
+    // return success response
+    return NextResponse.json({
+      message: "Expired sessions cleaned up",
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    console.error("Session cleanup failed:", error);
+    return NextResponse.json(
+      { error: "Failed to clean up expired sessions" },
+      { status: 500 }
+    );
+  }
+  
+
 }
