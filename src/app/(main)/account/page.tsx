@@ -194,7 +194,7 @@ const AccountPage = () => {
     }
   }
 
-  const loadSecurityTabData = async () => {
+  const fetchSecurityTabData = async () => {
     if (isLoadingSecurityData) return;
 
     setIsLoadingSecurityData(true);
@@ -216,16 +216,6 @@ const AccountPage = () => {
     }
     finally {
       setIsLoadingSecurityData(false);
-    }
-  }
-
-  const handleDeviceSignout = async () => {
-    try {
-      const sessionsResponse = await axiosClient.get("/api/auth/sessions");
-      setSessionsList(sessionsResponse.data.sessions);
-    } catch (error) {
-      console.error("Failed to update sessions:", error);
-      toast.error("Failed to update sessions");
     }
   }
 
@@ -318,7 +308,7 @@ const AccountPage = () => {
               setIsEditing(false);
               resetPasswordFormState();
               if (index === 2) {
-                loadSecurityTabData();
+                fetchSecurityTabData();
               }
             }}
           >
@@ -604,7 +594,7 @@ const AccountPage = () => {
                             key={session.sessionId} 
                             session={session} 
                             isCurrentSession={currentSessionId === session.sessionId} 
-                            onSignOut={handleDeviceSignout}
+                            onSignOut={fetchSecurityTabData}
                           />
                         ))}
                         <div className="mt-2">
