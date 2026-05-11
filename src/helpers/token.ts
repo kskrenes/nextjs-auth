@@ -270,6 +270,18 @@ interface SessionCreationResult {
 }
 
 export const createSession = async (user: UserDTO, request: NextRequest): Promise<SessionCreationResult> => {
+  const SESSION_LIMIT = 10;
+
+  // enforce per-user session cap: delete oldest sessions beyond the limit
+  const sessionCount = await Session.countDocuments({ userId: user.id });
+  if (sessionCount >= SESSION_LIMIT) {
+    const oldest = await Session.find({ userId: user.id })
+      .sort({ lastActive: 1 })
+      .limit(sessionCount - SESSION_LIMIT + 1)
+      .select('_id');
+    await Session.deleteMany({ _id: { $in: oldest.map(s => s._id) } });
+  }
+
   // generate raw refresh token 
   const refreshToken = getRandomToken();
 
