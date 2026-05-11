@@ -4,7 +4,7 @@ import { getErrorMessage } from '@/helpers/error-message';
 import type { UserDTO } from '@/helpers/user-dto';
 import { axiosClient, setupAuthInterceptor } from '@/lib/axios-client';
 import { useRouter } from 'next/navigation';
-import { createContext, ReactNode, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 
 // Public pages — onSignOut should NOT redirect away from these
@@ -149,7 +149,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const verifyEmail = async (token: string) => {
+  const verifyEmail = useCallback(async (token: string) => {
     setVerifyingEmail(true);
     try {
       await axiosClient.post('/api/users/verifyemail', { token });
@@ -163,7 +163,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       setVerifyingEmail(false);
     }
-  };
+  }, []);
 
   const linkCredentials = async (password: string) => {
     setLinkingAccount(true);
