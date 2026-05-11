@@ -31,7 +31,7 @@ interface RawSecurityLog {
 }
 
 // sanitize a raw security log object from the database
-export function sanitizSecurityLog(securityLog: RawSecurityLog): SecurityLogDTO {
+export function sanitizeSecurityLog(securityLog: RawSecurityLog): SecurityLogDTO {
   return SecurityLogDTOSchema.parse({
     userId: securityLog.userId?.toString(), // convert ObjectId to string
     action: securityLog.action,
@@ -43,5 +43,5 @@ export function sanitizSecurityLog(securityLog: RawSecurityLog): SecurityLogDTO 
 
 // array variant for multiple logs
 export function sanitizeSecurityLogs(securityLogs: RawSecurityLog[]): SecurityLogDTO[] {
-  return securityLogs.map(sanitizSecurityLog);
+  return securityLogs.map(sanitizeSecurityLog);
 }
