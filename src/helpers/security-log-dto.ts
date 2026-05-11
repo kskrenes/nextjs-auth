@@ -1,5 +1,8 @@
 import mongoose from 'mongoose';
 import { z } from 'zod';
+import { activityConfig } from './activity-config';
+
+const activityActions = Object.keys(activityConfig) as [string, ...string[]];
 
 const objectIdSchema = z.string().refine(
   (val) => mongoose.Types.ObjectId.isValid(val),
@@ -9,9 +12,7 @@ const objectIdSchema = z.string().refine(
 // define the security log fields available
 const SecurityLogDTOSchema = z.object({
   userId: objectIdSchema, 
-  action: z.enum([
-    'login', 'password_reset', 'password_created', 'email_verified', 'profile_updated', 'google_account_linked'
-  ]), 
+  action: z.enum(activityActions), 
   ipAddress: z.string().max(64).optional(), 
   userAgent: z.string().max(512).optional(), 
   createdAt: z.coerce.date()
