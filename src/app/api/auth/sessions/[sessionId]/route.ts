@@ -54,7 +54,7 @@ export async function DELETE(
     }
 
     // evict the deleted session from the cache
-    evictSession(sessionId);
+    await evictSession(sessionId);
 
     // return success response
     return NextResponse.json({

@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const deletedCount = result.deletedCount || 0;
 
     // evict all cached sessions for the user to ensure logout-all takes effect immediately
-    evictUserSessions(userId);
+    await evictUserSessions(userId);
 
     // clear the access and refresh token cookies and session hint cookie
     await clearAuthCookies();
