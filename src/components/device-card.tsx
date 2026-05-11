@@ -42,7 +42,7 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
     
     try {
       setIsDeleting(true);
-      await axios.delete("/api/auth/sessions/" + session.sessionId);
+      await axios.delete(`/api/auth/sessions/${encodeURIComponent(session.sessionId)}`);
       toast.success("Device signed out successfully");
       try {
         await onSignOut();
