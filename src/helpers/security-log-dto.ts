@@ -43,5 +43,14 @@ export function sanitizeSecurityLog(securityLog: RawSecurityLog): SecurityLogDTO
 
 // array variant for multiple logs
 export function sanitizeSecurityLogs(securityLogs: RawSecurityLog[]): SecurityLogDTO[] {
-  return securityLogs.map(sanitizeSecurityLog);
+  return securityLogs.flatMap((securityLog) => {
+    const parsed = SecurityLogDTOSchema.safeParse({
+      userId: securityLog.userId?.toString(),
+      action: securityLog.action,
+      ipAddress: securityLog.ipAddress,
+      userAgent: securityLog.userAgent,
+      createdAt: securityLog.createdAt,
+    });
+    return parsed.success ? [parsed.data] : [];
+  });
 }

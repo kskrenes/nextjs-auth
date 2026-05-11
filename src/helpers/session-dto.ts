@@ -44,5 +44,15 @@ export function sanitizeSession(session: RawSession): SessionDTO {
 
 // array variant for multiple sessions
 export function sanitizeSessions(sessions: RawSession[]): SessionDTO[] {
-  return sessions.map(sanitizeSession);
+  return sessions.flatMap((session) => {
+    const parsed = SessionDTOSchema.safeParse({
+      sessionId: session.sessionId,
+      userId: session.userId ? session.userId.toString() : session.userId,
+      userAgent: session.userAgent,
+      ipAddress: session.ipAddress,
+      expiresAt: session.expiresAt,
+      lastActive: session.lastActive,
+    });
+    return parsed.success ? [parsed.data] : [];
+  });
 }
