@@ -9,7 +9,7 @@ import { getErrorMessage } from "@/helpers/error-message";
 import { getValidUsername } from "@/helpers/expression-validation";
 import { ShieldAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, type SubmitEvent } from "react";
+import { useEffect, useState, type SubmitEvent } from "react";
 import toast from "react-hot-toast";
 
 const OnboardingPage = () => {
@@ -26,12 +26,14 @@ const OnboardingPage = () => {
   // If the user identity changed, update the email state immediately
   if (user?.id !== prevUserId) {
     setPrevUserId(user?.id);
+    setUsername(user?.username || "");
+  }
+
+  useEffect(() => {
     if (user?.hasCompletedProfile) {
       router.replace('/dashboard');
-    } else {
-      setUsername(user?.username || "");
     }
-  }
+  }, [user?.hasCompletedProfile, router]);
 
   if (fetchingUser) return <FullScreenLoader />;
 
