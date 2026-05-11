@@ -47,8 +47,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const userUpdates = reqBody as Partial<UserDTO>;
+    
     // check for valid fields at runtime
-    const userUpdates: Partial<UserDTO> = reqBody;
     if (
       (userUpdates.username !== undefined && typeof userUpdates.username !== "string") ||
       (userUpdates.name !== undefined && typeof userUpdates.name !== "string") ||
