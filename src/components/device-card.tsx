@@ -43,8 +43,12 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
     try {
       setIsDeleting(true);
       await axios.delete("/api/auth/sessions/" + session.sessionId);
-      await onSignOut();
       toast.success("Device signed out successfully");
+      try {
+        await onSignOut();
+      } catch (refreshError) {
+        console.error("Session revoked, but the UI refresh failed:", refreshError);
+      }
     } catch (error) {
       console.error("Error deleting session:", error);
       toast.error("Failed to sign out of device");
