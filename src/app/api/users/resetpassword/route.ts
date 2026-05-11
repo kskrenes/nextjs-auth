@@ -123,16 +123,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    let sessionCleanupFailed = false;
     try {
       await Session.deleteMany({ userId: user._id });
     } catch (error) {
       console.error("Failed to delete user sessions after password reset", error);
+      sessionCleanupFailed = true;
     }
 
     // return success
     return NextResponse.json({
       message: "Password reset successfully",
       success: true,
+      ...(sessionCleanupFailed && { warning: "Password reset successfully, but could not invalidate existing sessions. Please sign out of other devices manually." }),
     }, { status: 201 });
 
   } 

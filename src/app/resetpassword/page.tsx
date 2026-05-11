@@ -3,6 +3,7 @@
 import Button from "@/components/nae-button";
 import NaeLoader from "@/components/nae-loader";
 import SetPasswordInputs from "@/components/nae-set-password";
+import { useAuth } from "@/context/AuthContext";
 import { getErrorMessage } from "@/helpers/error-message";
 import { getValidPassword } from "@/helpers/expression-validation";
 import axios from "axios";
@@ -10,6 +11,7 @@ import { LaptopMinimalCheck, ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type SubmitEvent } from "react";
+import toast from "react-hot-toast";
 
 const ResetPasswordPage = () => {
 
@@ -23,6 +25,8 @@ const ResetPasswordPage = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
 
   const router = useRouter();
+
+  const { logout } = useAuth();
 
   useEffect(() => {
     const urlToken = new URLSearchParams(window.location.search).get("token") ?? "";
@@ -61,11 +65,23 @@ const ResetPasswordPage = () => {
 
     try {
       setIsPendingReset(true);
-      await axios.post(
+      const response = await axios.post(
         "/api/users/resetpassword", 
         { token, password: validPassword }
       );
       setIsReset(true);
+      if (response.data.warning) {
+        toast(response.data.warning, {
+          icon: '⚠️',
+          style: {
+            borderRadius: '10px',
+            background: '#333',
+            color: '#fff',
+          },
+        });
+      } else {
+        setTimeout(logout, 3000);
+      }
     } 
     catch (error: unknown) {
       const status = axios.isAxiosError(error) ? error.response?.status : undefined;
