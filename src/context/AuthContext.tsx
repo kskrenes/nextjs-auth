@@ -81,7 +81,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Register the interceptor exactly once on mount
     const eject = setupAuthInterceptor(onSignOut.current);
     return eject; // cleanup on unmount
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── initial user fetch ───────────────────────────────────────────────────────
   const fetchUser = async () => {
@@ -99,7 +99,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   useEffect(() => {
     fetchUser();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // ── auth actions ─────────────────────────────────────────────────────────────
   const login = async (email: string, password: string) => {
