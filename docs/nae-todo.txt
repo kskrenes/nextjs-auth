@@ -81,7 +81,7 @@ session hardening
 - [x] wire sign out per device, and sign out all devices
 - [x] debug: security tab calls do not retry, fail on 401
 - [x] debug: sign out all does not revoke remote session
-- [ ] add worker to delete expired sessions from the DB
+- [x] add worker to delete expired sessions from the DB
 
 debug
 - [ ] onboarding isn't calling api, form seems to be posting
