@@ -78,6 +78,14 @@ export async function POST(request: NextRequest) {
       ...(userUpdates.socialLinks !== undefined && { socialLinks: userUpdates.socialLinks.map((link: string) => link.trim()) }),
     }
 
+    // throw if no-op
+    if (Object.keys(update).length === 0) {
+      return NextResponse.json(
+        { error: "No updatable fields provided" },
+        { status: 400 }
+      );
+    }
+
     if (settingUsername) {
       update.hasCompletedProfile = true;
     }
