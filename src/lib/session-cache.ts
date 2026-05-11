@@ -50,6 +50,12 @@ export function evictSession(sessionId: string): void {
   const entry = sessionCache.get(sessionId);
   if (entry) {
     sessionCache.delete(sessionId);
-    userSessionIndex.get(entry.userId)?.delete(sessionId);
+    
+    // clean up empty userSessionIndex buckets in evictSession
+    const sessions = userSessionIndex.get(entry.userId);
+    sessions?.delete(sessionId);
+    if (sessions && sessions.size === 0) {
+      userSessionIndex.delete(entry.userId);
+    }
   }
 }
