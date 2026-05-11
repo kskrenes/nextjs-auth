@@ -1,3 +1,4 @@
+import { activityConfig } from "@/helpers/activity-config";
 import mongoose, { Schema } from "mongoose";
 
 const securityLogSchema = new mongoose.Schema({
@@ -8,7 +9,7 @@ const securityLogSchema = new mongoose.Schema({
   },
   action: { 
     type: String, 
-    enum: ['login', 'password_reset', 'password_created', 'email_verified', 'profile_updated', 'google_account_linked'], 
+    enum: Object.keys(activityConfig),
     required: [true, "Please provide an action type"], 
   },
   ipAddress: String, // String for client IP, optional
