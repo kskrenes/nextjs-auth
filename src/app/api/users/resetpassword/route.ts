@@ -2,6 +2,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { excludesSpaces, meetsMinimum } from "@/helpers/expression-validation";
 import recordSecurityEvent from "@/helpers/record-security-event";
 import { getRequestBody } from "@/helpers/validate-request";
+import Session from "@/models/session-model";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -122,10 +123,19 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    let sessionCleanupFailed = false;
+    try {
+      await Session.deleteMany({ userId: user._id });
+    } catch (error) {
+      console.error("Failed to delete user sessions after password reset", error);
+      sessionCleanupFailed = true;
+    }
+
     // return success
     return NextResponse.json({
       message: "Password reset successfully",
       success: true,
+      ...(sessionCleanupFailed && { warning: "Password reset successfully, but could not invalidate existing sessions. Please sign out of other devices manually." }),
     }, { status: 201 });
 
   } 
