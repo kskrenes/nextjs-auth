@@ -2,6 +2,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { excludesSpaces, meetsMinimum } from "@/helpers/expression-validation";
 import recordSecurityEvent from "@/helpers/record-security-event";
 import { getRequestBody } from "@/helpers/validate-request";
+import Session from "@/models/session-model";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
@@ -120,6 +121,12 @@ export async function POST(request: NextRequest) {
       } catch (error) {
         console.error("Failed to record password_reset security event", error);
       }
+    }
+
+    try {
+      await Session.deleteMany({ userId: user._id });
+    } catch (error) {
+      console.error("Failed to delete user sessions after password reset", error);
     }
 
     // return success
