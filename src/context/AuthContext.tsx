@@ -84,7 +84,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   // ── initial user fetch ───────────────────────────────────────────────────────
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const res = await axiosClient.get('/api/users/me');
       setUser(res.data.user);
@@ -95,11 +95,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       setFetchingUser(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchUser();
-  }, []);
+    void fetchUser();
+  }, [fetchUser]);
 
   // ── auth actions ─────────────────────────────────────────────────────────────
   const login = async (email: string, password: string) => {
