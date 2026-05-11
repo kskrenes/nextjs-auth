@@ -7,7 +7,7 @@ const urlValidator = {
     try {
       new URL(v);
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   },
