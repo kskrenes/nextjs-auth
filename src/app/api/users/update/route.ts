@@ -147,8 +147,7 @@ export async function POST(request: NextRequest) {
       await recordSecurityEvent(
         sanitizedUser.id, 
         "profile_updated", 
-        request, 
-        { email: sanitizedUser.email }
+        request,
       );
     } catch (error) {
       console.error("Failed to record profile_updated security event", error);

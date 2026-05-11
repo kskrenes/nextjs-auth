@@ -14,7 +14,6 @@ const securityLogSchema = new mongoose.Schema({
   },
   ipAddress: String, // String for client IP, optional
   userAgent: String, // String for browser/device identification, optional
-  metadata: Schema.Types.Mixed, // Flexible field for additional info
   createdAt: { 
     type: Date, 
     default: Date.now, 

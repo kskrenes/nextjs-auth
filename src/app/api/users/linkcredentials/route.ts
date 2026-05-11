@@ -146,8 +146,7 @@ export async function POST(request: NextRequest) {
       await recordSecurityEvent(
         sanitizedUser.id, 
         "password_created", 
-        request, 
-        { email: sanitizedUser.email }
+        request,
       );
     } catch (error) {
       console.error("Failed to record password_created security event", error);

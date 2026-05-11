@@ -61,8 +61,7 @@ export async function POST(request: NextRequest) {
       await recordSecurityEvent(
         user._id.toString(), 
         "email_verified", 
-        request, 
-        { email: user.email }
+        request,
       );
     } catch (error) {
       console.error("Failed to record email_verified security event", error);

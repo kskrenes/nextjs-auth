@@ -115,8 +115,7 @@ export async function POST(request: NextRequest) {
         await recordSecurityEvent(
           updatedUser._id.toString(), 
           "password_reset", 
-          request, 
-          { email: updatedUser.email }
+          request,
         );
       } catch (error) {
         console.error("Failed to record password_reset security event", error);

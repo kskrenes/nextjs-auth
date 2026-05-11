@@ -14,7 +14,6 @@ const SecurityLogDTOSchema = z.object({
   ]), 
   ipAddress: z.string(), 
   userAgent: z.string(), 
-  metadata: z.record(z.string(), z.unknown()), 
   createdAt: z.coerce.date()
 });
 
@@ -27,7 +26,6 @@ interface RawSecurityLog {
   action?: unknown;
   ipAddress?: unknown;
   userAgent?: unknown;
-  metadata?: unknown;
   createdAt?: unknown;
 }
 
@@ -38,7 +36,6 @@ export function sanitizSecurityLog(securityLog: RawSecurityLog): SecurityLogDTO 
     action: securityLog.action,
     ipAddress: securityLog.ipAddress,
     userAgent: securityLog.userAgent,
-    metadata: securityLog.metadata,
     createdAt: securityLog.createdAt,
   });
 }

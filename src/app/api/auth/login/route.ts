@@ -110,8 +110,7 @@ export async function POST(request: NextRequest) {
       await recordSecurityEvent(
         sanitizedUser.id, 
         "login", 
-        request, 
-        { email: sanitizedUser.email }
+        request,
       );
     } catch (error) {
       console.error("Failed to record login security event", error);

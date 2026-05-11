@@ -5,8 +5,7 @@ import SecurityLog from "@/models/security-log-model";
 export default async function recordSecurityEvent(
   userId: string, 
   action: string, 
-  request: NextRequest, 
-  metadata: Record<string, unknown> = {}
+  request: NextRequest
 ) {
   const { userAgent, ipAddress } = getUAAndIpFromRequest(request);
   try {
@@ -15,7 +14,6 @@ export default async function recordSecurityEvent(
       action,
       ipAddress,
       userAgent,
-      metadata,
     });
   } catch (error) {
     console.error('Failed to record security event', error);
