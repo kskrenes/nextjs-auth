@@ -47,7 +47,7 @@ async function getAuthTokenPayload(request: NextRequest): Promise<JwtPayload | n
 async function validateSession(sessionId: string, userId: string): Promise<boolean> {
   // check for cached valid session to avoid DB hit
   const cached = await getCachedSession(sessionId);
-  if (cached !== null) return cached;
+  if (cached) return cached;
 
   // no valid cache entry, check DB and cache result if valid
   await connect();
