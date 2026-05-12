@@ -35,6 +35,7 @@ export async function setCachedSession(sessionId: string, userId: string, dbExpi
   );
 
   p.sadd(userKey, sessionId);
+  p.pexpire(userKey, SESSION_CACHE_TTL_MS);
   await p.exec();
 }
 
