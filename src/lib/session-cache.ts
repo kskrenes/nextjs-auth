@@ -15,14 +15,22 @@ export async function getCachedSession(sessionId: string): Promise<boolean> {
 }
 
 export async function setCachedSession(sessionId: string, userId: string, dbExpiresAt: number): Promise<void> {
-  const effectiveExpiryMS = Math.min(dbExpiresAt - Date.now(), SESSION_CACHE_TTL_MS);
+  const now = Date.now();
+  const timeUntilDbExpiry = dbExpiresAt - now;
+
+  // don't cache expired sessions
+  if (timeUntilDbExpiry <= 0) return;
+
+  const effectiveExpiryMS = Math.min(timeUntilDbExpiry, SESSION_CACHE_TTL_MS);
+  const effectiveExpiresAt = now + effectiveExpiryMS;
+
   const sessionKey = redisKeys.session(sessionId);
   const userKey = redisKeys.userSessions(userId);
   const p = redis.pipeline();
 
   p.set(
     sessionKey, 
-    { expiresAt: effectiveExpiryMS, userId }, 
+    { expiresAt: effectiveExpiresAt, userId }, 
     { px: effectiveExpiryMS }
   );
 
