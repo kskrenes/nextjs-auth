@@ -7,12 +7,11 @@ interface SessionCacheEntry {
   userId: string;
 }
 
-export async function getCachedSession(sessionId: string): Promise<boolean | null> {
+export async function getCachedSession(sessionId: string): Promise<boolean> {
   const key = redisKeys.session(sessionId);
-  const entry = await redis.get(key) as SessionCacheEntry | null;
+  const entry = await redis.get<SessionCacheEntry>(key);
   
-  if (!entry) return null;
-  return true;
+  return entry != null;
 }
 
 export async function setCachedSession(sessionId: string, userId: string, dbExpiresAt: number): Promise<void> {
