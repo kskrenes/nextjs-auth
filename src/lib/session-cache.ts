@@ -50,7 +50,7 @@ export async function evictSession(sessionId: string): Promise<void> {
 
 export async function evictUserSessions(userId: string): Promise<void> {
   const userKey = redisKeys.userSessions(userId);
-  const sessionIds = await redis.smembers(userKey) as string[] | null;
+  const sessionIds = await redis.smembers<string[]>(userKey);
   if (!sessionIds || sessionIds.length === 0) return;
 
   const p = redis.pipeline();
