@@ -40,7 +40,7 @@ export async function setCachedSession(sessionId: string, userId: string, dbExpi
 
 export async function evictSession(sessionId: string): Promise<void> {
   const sessionKey = redisKeys.session(sessionId);
-  const entry = await redis.get(sessionKey) as SessionCacheEntry | null;
+  const entry = await redis.get<SessionCacheEntry>(sessionKey);
   if (entry) {
     const userId = entry.userId;
     const userKey = redisKeys.userSessions(userId);
