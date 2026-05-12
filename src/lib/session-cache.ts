@@ -1,3 +1,5 @@
+import { redis, redisKeys } from "./redis";
+
 export const SESSION_CACHE_TTL_MS = 5 * 60 * 1000;
 
 interface SessionCacheEntry {
@@ -5,57 +7,62 @@ interface SessionCacheEntry {
   userId: string;
 }
 
-export const sessionCache = new Map<string, SessionCacheEntry>();
-// userId → set of sessionIds for per-user eviction
-export const userSessionIndex = new Map<string, Set<string>>();
-
-export function getCachedSession(sessionId: string): boolean | null {
-  const entry = sessionCache.get(sessionId);
-  if (!entry) return null;
-  if (Date.now() >= entry.expiresAt) {
-    sessionCache.delete(sessionId);
-    // Clean up reverse index
-    const sessions = userSessionIndex.get(entry.userId);
-    sessions?.delete(sessionId);
-    if (sessions && sessions.size === 0) {
-      userSessionIndex.delete(entry.userId);
-    }
-    return null;
-  }
-  return true; // only valid sessions are stored
+export async function getCachedSession(sessionId: string): Promise<boolean> {
+  const key = redisKeys.session(sessionId);
+  const entry = await redis.get<SessionCacheEntry>(key);
+  
+  return entry != null;
 }
 
-export function setCachedSession(sessionId: string, userId: string, dbExpiresAt: number): void {
-  const effectiveExpiry = Math.min(dbExpiresAt, Date.now() + SESSION_CACHE_TTL_MS);
-  sessionCache.set(sessionId, { expiresAt: effectiveExpiry, userId });
+export async function setCachedSession(sessionId: string, userId: string, dbExpiresAt: number): Promise<void> {
+  const now = Date.now();
+  const timeUntilDbExpiry = dbExpiresAt - now;
 
-  // maintain reverse index for per-user eviction
-  if (!userSessionIndex.has(userId)) {
-    userSessionIndex.set(userId, new Set());
-  }
-  userSessionIndex.get(userId)!.add(sessionId);
+  // don't cache expired sessions
+  if (timeUntilDbExpiry <= 0) return;
+
+  const effectiveExpiryMS = Math.min(timeUntilDbExpiry, SESSION_CACHE_TTL_MS);
+  const effectiveExpiresAt = now + effectiveExpiryMS;
+
+  const sessionKey = redisKeys.session(sessionId);
+  const userKey = redisKeys.userSessions(userId);
+  const p = redis.pipeline();
+
+  p.set(
+    sessionKey, 
+    { expiresAt: effectiveExpiresAt, userId }, 
+    { px: effectiveExpiryMS }
+  );
+
+  p.sadd(userKey, sessionId);
+  p.pexpire(userKey, SESSION_CACHE_TTL_MS);
+  await p.exec();
 }
 
-export function evictUserSessions(userId: string): void {
-  const sessionIds = userSessionIndex.get(userId);
-  if (sessionIds) {
-    for (const sessionId of sessionIds) {
-      sessionCache.delete(sessionId);
-    }
-    userSessionIndex.delete(userId);
-  }
-}
-
-export function evictSession(sessionId: string): void {
-  const entry = sessionCache.get(sessionId);
+export async function evictSession(sessionId: string): Promise<void> {
+  const sessionKey = redisKeys.session(sessionId);
+  const entry = await redis.get<SessionCacheEntry>(sessionKey);
   if (entry) {
-    sessionCache.delete(sessionId);
-    
-    // clean up empty userSessionIndex buckets in evictSession
-    const sessions = userSessionIndex.get(entry.userId);
-    sessions?.delete(sessionId);
-    if (sessions && sessions.size === 0) {
-      userSessionIndex.delete(entry.userId);
-    }
+    const userId = entry.userId;
+    const userKey = redisKeys.userSessions(userId);
+    await redis.pipeline().del(sessionKey).srem(userKey, sessionId).exec();
   }
+}
+
+export async function evictUserSessions(userId: string): Promise<void> {
+  const userKey = redisKeys.userSessions(userId);
+  const sessionIds = await redis.smembers<string[]>(userKey);
+  if (!sessionIds || sessionIds.length === 0) return;
+
+  const p = redis.pipeline();
+
+  // Queue deletion for each "session:{id}"
+  sessionIds.forEach((id) => {
+    p.del(redisKeys.session(id));
+  });
+  
+  // Queue deletion for "user-sessions:{userId}"
+  p.del(userKey); 
+
+  await p.exec();
 }

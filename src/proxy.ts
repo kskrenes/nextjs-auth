@@ -46,7 +46,7 @@ async function getAuthTokenPayload(request: NextRequest): Promise<JwtPayload | n
 
 async function validateSession(sessionId: string, userId: string): Promise<boolean> {
   // check for cached valid session to avoid DB hit
-  const cached = getCachedSession(sessionId);
+  const cached = await getCachedSession(sessionId);
   if (cached !== null) return cached;
 
   // no valid cache entry, check DB and cache result if valid
@@ -56,7 +56,7 @@ async function validateSession(sessionId: string, userId: string): Promise<boole
   // only cache valid sessions; revoked/invalid sessions skip the cache 
   // to ensure logout-all takes effect immediately
   if (valid && expiresAt) {
-    setCachedSession(sessionId, userId, expiresAt);
+    await setCachedSession(sessionId, userId, expiresAt);
   }
 
   return valid;
