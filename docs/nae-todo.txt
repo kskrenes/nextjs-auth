@@ -85,9 +85,10 @@ session hardening
 debug
 - [ ] sign out all does not revoke remote session
 - [ ] onboarding isn't calling api, form seems to be posting
+- [x] sign in leaves user on /login, cannot nav to protected pages
 
 session cache
-- [ ] migrate to redis distributed cache
+- [x] migrate to redis distributed cache
 
 refactor
 - [ ] display.tsx: follow device-icons convention for social icons
