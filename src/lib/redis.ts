@@ -1,12 +1,16 @@
 import { Redis } from "@upstash/redis";
 
-// Automatically loads from process.env.UPSTASH_REDIS_REST_URL/TOKEN
-export const redis = Redis.fromEnv();
+// validate environment variables
+const url = process.env.UPSTASH_REDIS_REST_URL;
+const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+if (!url || !token) {
+  throw new Error('Missing required Upstash Redis environment variables: UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN');
+}
+
+export const redis = new Redis({ url, token });
 
 export const redisKeys = {
-  // Pattern: session:{sessionId}
   session: (sessionId: string) => `session:${sessionId}`,
-
-  // Pattern: user-sessions:{userId}
   userSessions: (userId: string) => `user-sessions:${userId}`,
 };
