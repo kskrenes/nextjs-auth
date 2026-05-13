@@ -125,7 +125,7 @@ export async function proxy(request: NextRequest) {
     }
 
     // if the user is authenticated but has not completed onboarding, redirect to onboarding page
-    if (needsOnboarding && path !== '/onboarding') {
+    if (!isApiRoute && needsOnboarding && path !== '/onboarding') {
       return NextResponse.redirect(new URL('/onboarding', request.nextUrl));
     }
   }
