@@ -92,8 +92,8 @@ session cache
 - [x] migrate to redis distributed cache
 
 refactor
-- [ ] display.tsx: follow device-icons convention for social icons
-- [ ] display.tsx: rename to url-utils.ts
+- [x] display.tsx: follow device-icons convention for social icons
+- [x] display.tsx: create icon-link component and move helper logic there
 - [ ] themes.ts: rename to avatar-utils.ts
 - [ ] error-message.ts: rename to error-utils.ts
 - [ ] expression-validation.ts: rename to validation-utils.ts
