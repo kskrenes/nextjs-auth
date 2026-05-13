@@ -111,8 +111,8 @@ refactor
 session management lifecycle
 - [x] conceptual research
 - [ ] token expiration (logout/timeout)
-- [ ] active device monitoring
-- [ ] session revocation
+- [x] active device monitoring
+- [x] session revocation
 
 additional authentication methods
 - [x] add social login (google)
