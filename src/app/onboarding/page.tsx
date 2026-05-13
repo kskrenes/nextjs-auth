@@ -69,7 +69,6 @@ const OnboardingPage = () => {
     }
 
     try {
-      // TODO: this call returns success but the username is not updated, and the onboarded flag is not set (and redirect fails)
       await updateUser({ username: validUsername });
       toast.success("Your username has been updated!")
       router.replace("/dashboard");
