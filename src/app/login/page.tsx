@@ -9,13 +9,14 @@ import axios from "axios";
 import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type SubmitEvent } from "react";
+import { useCallback, useEffect, useState, type SubmitEvent } from "react";
 
 const LoginPage = () => {
 
   const { user, login, fetchingUser, loggingIn } = useAuth();
   const router = useRouter();
 
+  const [awaitingRedirect, setAwaitingRedirect] = useState<boolean>(false);
   const [isServerError, setIsServerError] = useState<boolean>(false);
   const [isInvalid, setIsInvalid] = useState<boolean>(false);
   const [credentials, setCredentials] = useState({
@@ -24,27 +25,36 @@ const LoginPage = () => {
   });
 
   useEffect(() => {
-    if (!fetchingUser && user) {
-      // user was already authenticated (or token was transparently refreshed on mount)
+    if (fetchingUser || loggingIn) return;
+    if (user) {
       router.replace(user.hasCompletedProfile ? '/dashboard' : '/onboarding');
     }
-  }, [user, fetchingUser, router]);
+  }, [user, fetchingUser, loggingIn, router]);
 
   const buttonDisabled =
-    loggingIn ||
+    loggingIn || awaitingRedirect ||
     credentials.email.trim().length === 0 ||
     credentials.password.trim().length === 0;
+
+  const handleGoogleLoginAttempt = useCallback(() => {
+    setAwaitingRedirect(true);
+  }, []);
+
+  const handleGoogleLoginError = useCallback(() => {
+    setAwaitingRedirect(false);
+  }, []);
 
   const handleLogin = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
     e.preventDefault(); 
 
-    if (loggingIn) return;
+    if (loggingIn || awaitingRedirect) return;
 
     setIsInvalid(false);
     setIsServerError(false);
 
     try {
+      setAwaitingRedirect(true);
       await login(credentials.email, credentials.password);  
     } catch (error) {
       if (
@@ -55,6 +65,7 @@ const LoginPage = () => {
       } else {
         setIsServerError(true);
       }
+      setAwaitingRedirect(false);
     }
   };
 
@@ -112,7 +123,7 @@ const LoginPage = () => {
           className="w-full"
           disabled={buttonDisabled}
         >
-          {loggingIn 
+          {loggingIn || awaitingRedirect
             ? (
               <>
                 <NaeLoader />
@@ -123,7 +134,11 @@ const LoginPage = () => {
         </Button>
 
         {/* google sso button */}
-        <GoogleLoginButton redirect={true} />
+        <GoogleLoginButton 
+          onLoginAttempt={handleGoogleLoginAttempt} 
+          onLoginError={handleGoogleLoginError}
+          disabled={loggingIn || awaitingRedirect} 
+        />
 
         {/* links group */}
         <div className="flex flex-col items-center gap-2">

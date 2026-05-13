@@ -6,18 +6,27 @@ import { useCallback, useEffect } from 'react';
 
 interface GoogleLoginButtonProps {
   redirect?: boolean;
+  disabled?: boolean;
   callback?: () => void;
+  onLoginAttempt?: () => void;
+  onLoginError?: () => void;
 }
 
 export default function GoogleLoginButton({ 
   redirect = false,
+  disabled = false,
   callback,
+  onLoginAttempt,
+  onLoginError,
  }: GoogleLoginButtonProps) {
 
   const { loggingIn, loginViaGoogle } = useAuth();
   const router = useRouter();
 
   const handleBackendAuth = useCallback(async (token: string) => {
+    if (onLoginAttempt) {
+      onLoginAttempt();
+    }
     try {
       await loginViaGoogle(token);
       if (callback) {
@@ -28,8 +37,11 @@ export default function GoogleLoginButton({
       }
     } catch (error) {
       console.error('Error logging in via Google', error);
+      if (onLoginError) {
+        onLoginError();
+      }
     }
-  }, [loginViaGoogle, callback, redirect, router]);
+  }, [loginViaGoogle, callback, onLoginAttempt, onLoginError, redirect, router]);
   
   useEffect(() => {
     let disposed = false;
@@ -88,7 +100,7 @@ export default function GoogleLoginButton({
   return (
     <div style={{colorScheme: 'auto'}} className='relative'>
       <div id="gsi-button" data-type="standard"></div>
-      {loggingIn && <div className='absolute top-0 left-0 w-full h-full bg-page/80'></div>}
+      {(loggingIn || disabled) && <div className='absolute top-0 left-0 w-full h-full bg-page/80'></div>}
     </div>
   );
 }

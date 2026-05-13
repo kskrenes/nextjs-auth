@@ -86,7 +86,7 @@ debug
 - [x] sign out all does not revoke remote session
 - [x] onboarding isn't calling api, form seems to be posting
 - [x] sign in leaves user on /login, cannot nav to protected pages
-- [ ] sign in becomes active for some time betwen loading/disabled state and navigating to /dashboard
+- [x] sign in becomes active for some time between loading/disabled state and navigating to /dashboard
 
 session cache
 - [x] migrate to redis distributed cache
