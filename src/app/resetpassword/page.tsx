@@ -3,7 +3,7 @@
 import Button from "@/components/nae-button";
 import NaeLoader from "@/components/nae-loader";
 import SetPasswordInputs from "@/components/nae-set-password";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context-providers/auth-context-provider";
 import { getErrorMessage } from "@/helpers/util/error-utils";
 import { getValidPassword } from "@/helpers/util/form-validation-utils";
 import axios from "axios";

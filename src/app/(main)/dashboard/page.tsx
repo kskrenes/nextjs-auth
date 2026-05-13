@@ -1,7 +1,7 @@
 "use client";
 
 import FullScreenLoader from "@/components/full-screen-loader";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context-providers/auth-context-provider";
 
 const DashboardPage = () => {
 

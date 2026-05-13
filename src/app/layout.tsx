@@ -3,8 +3,8 @@ import { Roboto } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Header from "@/components/header";
-import { AuthProvider } from "../context/AuthContext";
-import NaeThemeProvider from "@/themes/nae-theme-provider";
+import { AuthProvider } from "@/context-providers/auth-context-provider";
+import { NaeThemeProvider } from "@/context-providers/theme-context-provider";
 
 const robotoSans = Roboto({
   subsets: ["latin"],

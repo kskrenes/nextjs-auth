@@ -4,7 +4,7 @@ import GoogleLoginButton from "@/components/google-login-button";
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context-providers/auth-context-provider";
 import axios from "axios";
 import { ShieldAlert } from "lucide-react";
 import Link from "next/link";

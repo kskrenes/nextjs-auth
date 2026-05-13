@@ -103,10 +103,10 @@ refactor
 - [x] trigger-email.ts: move to mailer.ts
 - [x] mailer.ts: rename to email-utils.ts
 - [x] validate-request.ts: move to request-utils.ts
-- [ ] nae-theme-provider.tsx: rename to theme-context-provider.tsx
-- [ ] AuthContext.tsx: rename to auth-context-provider.tsx
-- [ ] move theme-context-provider.tsx & auth-context-provider.tsx to /context-providers
-- [ ] move dtos to /helpers/dto
+- [x] nae-theme-provider.tsx: rename to theme-context-provider.tsx
+- [x] AuthContext.tsx: rename to auth-context-provider.tsx
+- [x] move theme-context-provider.tsx & auth-context-provider.tsx to /context-providers
+- [x] move dtos to /helpers/dto
 
 session management lifecycle
 - [x] conceptual research

@@ -5,7 +5,7 @@ import { KeyRound, Pencil, RotateCcwKey, ShieldAlert, ShieldUser, UserPlus } fro
 import { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context-providers/auth-context-provider";
 import { CompanyIcon, EmailIcon, LinkIcon } from "@/components/profile-icons";
 import Input from "@/components/nae-input";
 import { getErrorMessage } from "@/helpers/util/error-utils";

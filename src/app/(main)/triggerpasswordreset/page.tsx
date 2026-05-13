@@ -4,7 +4,7 @@ import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
 import { EmailIcon } from "@/components/profile-icons";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context-providers/auth-context-provider";
 import { triggerEmail } from "@/helpers/util/email-utils";
 import { MailCheck, ShieldAlert } from "lucide-react";
 import { useState, type SubmitEvent } from "react";

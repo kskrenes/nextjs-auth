@@ -2,7 +2,7 @@
 
 import Button from "@/components/nae-button";
 import NaeLoader from "@/components/nae-loader";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context-providers/auth-context-provider";
 import { getErrorMessage } from "@/helpers/util/error-utils";
 import { triggerEmail } from "@/helpers/util/email-utils";
 import type { UserDTO } from "@/helpers/dto/user-dto";

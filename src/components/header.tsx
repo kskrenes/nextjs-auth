@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context-providers/auth-context-provider";
 import Link from "next/link"
 import AvatarDisplay from "./avatar-display";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";

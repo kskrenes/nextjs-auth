@@ -4,7 +4,7 @@ import FullScreenLoader from "@/components/full-screen-loader";
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
-import { useAuth } from "@/context/AuthContext";
+import { useAuth } from "@/context-providers/auth-context-provider";
 import { getErrorMessage } from "@/helpers/util/error-utils";
 import { getValidUsername } from "@/helpers/util/form-validation-utils";
 import { ShieldAlert } from "lucide-react";

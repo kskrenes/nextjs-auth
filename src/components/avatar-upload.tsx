@@ -2,7 +2,7 @@
 
 import { CldUploadWidget } from 'next-cloudinary';
 import AvatarDisplay from './avatar-display';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth } from '@/context-providers/auth-context-provider';
 import { Camera } from 'lucide-react';
 import Button from './nae-button';
 import toast from 'react-hot-toast';
