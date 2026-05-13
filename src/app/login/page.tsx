@@ -9,7 +9,7 @@ import axios from "axios";
 import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type SubmitEvent } from "react";
+import { useCallback, useEffect, useState, type SubmitEvent } from "react";
 
 const LoginPage = () => {
 
@@ -35,6 +35,14 @@ const LoginPage = () => {
     loggingIn || awaitingRedirect ||
     credentials.email.trim().length === 0 ||
     credentials.password.trim().length === 0;
+
+  const handleGoogleLoginAttempt = useCallback(() => {
+    setAwaitingRedirect(true);
+  }, []);
+
+  const handleGoogleLoginError = useCallback(() => {
+    setAwaitingRedirect(false);
+  }, []);
 
   const handleLogin = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
@@ -127,8 +135,8 @@ const LoginPage = () => {
 
         {/* google sso button */}
         <GoogleLoginButton 
-          onLoginAttempt={() => setAwaitingRedirect(true)} 
-          onLoginError={() => setAwaitingRedirect(false)}
+          onLoginAttempt={handleGoogleLoginAttempt} 
+          onLoginError={handleGoogleLoginError}
           disabled={loggingIn || awaitingRedirect} 
         />
 
