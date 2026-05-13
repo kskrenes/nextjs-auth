@@ -1,5 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { AuthTokenError, clearAuthCookies, getIdsFromAccessToken } from "@/helpers/token";
+import { AuthTokenError, clearAuthCookies, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import { evictUserSessions } from '@/lib/session-cache'
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";

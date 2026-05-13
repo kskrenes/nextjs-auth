@@ -1,12 +1,12 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { AuthTokenError, getIdsFromAccessToken, signAccessToken, storeAccessTokenCookie } from "@/helpers/token";
-import { getRequestBody } from "@/helpers/validate-request";
+import { AuthTokenError, getIdsFromAccessToken, signAccessToken, storeAccessTokenCookie } from "@/helpers/util/token-utils";
+import { getRequestBody } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
-import { defaultAvatarId } from "@/helpers/themes";
-import { sanitizeUser, UserDTO } from "@/helpers/user-dto";
-import recordSecurityEvent from "@/helpers/record-security-event";
+import { defaultAvatarId } from "@/helpers/util/avatar-utils";
+import { sanitizeUser, UserDTO } from "@/helpers/dto/user-dto";
+import { recordSecurityEvent } from "@/helpers/util/security-event-utils";
 
 export async function POST(request: NextRequest) {
   try {

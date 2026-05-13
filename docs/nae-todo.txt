@@ -94,15 +94,15 @@ session cache
 refactor
 - [x] display.tsx: follow device-icons convention for social icons
 - [x] display.tsx: create icon-link component and move helper logic there
-- [ ] themes.ts: rename to avatar-utils.ts
-- [ ] error-message.ts: rename to error-utils.ts
-- [ ] expression-validation.ts: rename to validation-utils.ts
-- [ ] parse-user-agent.ts: move to request-headers.ts
-- [ ] request-headers.ts: rename to request-utils.ts
-- [ ] token.ts: rename to token-utils.ts
-- [ ] trigger-email.ts: move to mailer.ts
-- [ ] mailer.ts: rename to email-utils.ts
-- [ ] validate-request.ts: move to request-utils.ts
+- [x] themes.ts: rename to avatar-utils.ts
+- [x] error-message.ts: rename to error-utils.ts
+- [x] expression-validation.ts: rename to validation-utils.ts
+- [x] parse-user-agent.ts: move to request-headers.ts
+- [x] request-headers.ts: rename to request-utils.ts
+- [x] token.ts: rename to token-utils.ts
+- [x] trigger-email.ts: move to mailer.ts
+- [x] mailer.ts: rename to email-utils.ts
+- [x] validate-request.ts: move to request-utils.ts
 - [ ] nae-theme-provider.tsx: rename to theme-context-provider.tsx
 - [ ] AuthContext.tsx: rename to auth-context-provider.tsx
 - [ ] move theme-context-provider.tsx & auth-context-provider.tsx to /context-providers

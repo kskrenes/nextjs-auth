@@ -1,6 +1,6 @@
 import { connect } from "@/dbconfig/dbconfig";
-import recordSecurityEvent from "@/helpers/record-security-event";
-import { getRequestBody } from "@/helpers/validate-request";
+import { recordSecurityEvent } from "@/helpers/util/security-event-utils";
+import { getRequestBody } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import crypto from "crypto";
 import { NextResponse, type NextRequest } from "next/server";

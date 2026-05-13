@@ -1,5 +1,5 @@
-import { EmailType, sendEmail } from "@/helpers/mailer";
-import { getRequestBody } from "@/helpers/validate-request";
+import { EmailType, sendEmail } from "@/helpers/util/email-utils";
+import { getRequestBody } from "@/helpers/util/request-utils";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {

@@ -5,7 +5,7 @@ import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
 import { EmailIcon } from "@/components/profile-icons";
 import { useAuth } from "@/context/AuthContext";
-import { triggerEmail } from "@/helpers/trigger-email";
+import { triggerEmail } from "@/helpers/util/email-utils";
 import { MailCheck, ShieldAlert } from "lucide-react";
 import { useState, type SubmitEvent } from "react";
 import toast from "react-hot-toast";

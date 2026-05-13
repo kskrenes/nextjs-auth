@@ -1,11 +1,11 @@
-import parseUserAgent from "@/helpers/parse-user-agent";
-import { SecurityLogDTO } from "@/helpers/security-log-dto"
+import { parseUserAgent } from "@/helpers/util/request-utils";
+import { SecurityLogDTO } from "@/helpers/dto/security-log-dto"
 import { useTimeTick } from "@/hooks/useTimeTick";
 import { useMemo } from "react";
 import { ActivityIcon } from "./activity-icons";
-import { activityConfig } from "@/helpers/activity-config";
+import { activityConfig } from "@/helpers/util/security-event-utils";
 import { DeviceIcon } from "./device-icons";
-import { formatRelativeTime } from "@/helpers/time-utils";
+import { formatRelativeTime } from "@/helpers/util/time-utils";
 
 interface SecurityLogCardProps {
   securityLog: SecurityLogDTO

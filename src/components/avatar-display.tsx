@@ -1,4 +1,4 @@
-import { defaultAvatarId } from '@/helpers/themes';
+import { defaultAvatarId } from '@/helpers/util/avatar-utils';
 import { User } from 'lucide-react';
 import { CldImage } from 'next-cloudinary';
 import { useState } from 'react';

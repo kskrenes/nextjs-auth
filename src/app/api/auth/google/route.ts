@@ -1,4 +1,4 @@
-import { getRequestBody } from "@/helpers/validate-request";
+import { getRequestBody } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import { OAuth2Client } from "google-auth-library";
 import { NextRequest, NextResponse } from "next/server";
@@ -10,10 +10,10 @@ import {
   storeAccessTokenCookie, 
   storeRefreshTokenCookie, 
   storeSessionHintCookie 
-} from "@/helpers/token";
+} from "@/helpers/util/token-utils";
 import { connect } from "@/dbconfig/dbconfig";
-import { sanitizeUser } from "@/helpers/user-dto";
-import recordSecurityEvent from "@/helpers/record-security-event";
+import { sanitizeUser } from "@/helpers/dto/user-dto";
+import { recordSecurityEvent } from "@/helpers/util/security-event-utils";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
   // generate a base username from the name or email

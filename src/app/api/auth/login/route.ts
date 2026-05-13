@@ -8,10 +8,10 @@ import {
   storeAccessTokenCookie, 
   storeRefreshTokenCookie, 
   storeSessionHintCookie 
-} from "@/helpers/token";
-import { getRequestBody } from "@/helpers/validate-request";
-import { sanitizeUser } from "@/helpers/user-dto";
-import recordSecurityEvent from "@/helpers/record-security-event";
+} from "@/helpers/util/token-utils";
+import { getRequestBody } from "@/helpers/util/request-utils";
+import { sanitizeUser } from "@/helpers/dto/user-dto";
+import { recordSecurityEvent } from "@/helpers/util/security-event-utils";
 
 export async function POST(request: NextRequest) {
   try {

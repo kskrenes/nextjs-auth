@@ -1,8 +1,8 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/token";
+import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import { NextRequest, NextResponse } from "next/server";
 import SecurityLog from "@/models/security-log-model";
-import { sanitizeSecurityLogs } from "@/helpers/security-log-dto";
+import { sanitizeSecurityLogs } from "@/helpers/dto/security-log-dto";
 
 export async function GET(request: NextRequest) {
   try {

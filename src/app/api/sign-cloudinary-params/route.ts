@@ -1,4 +1,4 @@
-import { AuthTokenError, getIdsFromAccessToken } from '@/helpers/token';
+import { AuthTokenError, getIdsFromAccessToken } from '@/helpers/util/token-utils';
 import { v2 as cloudinary } from 'cloudinary';
 import { NextRequest, NextResponse } from 'next/server';
 

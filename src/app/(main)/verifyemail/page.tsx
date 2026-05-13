@@ -3,9 +3,9 @@
 import Button from "@/components/nae-button";
 import NaeLoader from "@/components/nae-loader";
 import { useAuth } from "@/context/AuthContext";
-import { getErrorMessage } from "@/helpers/error-message";
-import { triggerEmail } from "@/helpers/trigger-email";
-import type { UserDTO } from "@/helpers/user-dto";
+import { getErrorMessage } from "@/helpers/util/error-utils";
+import { triggerEmail } from "@/helpers/util/email-utils";
+import type { UserDTO } from "@/helpers/dto/user-dto";
 import axios from "axios";
 import { BadgeCheck, ShieldAlert } from "lucide-react";
 import Link from "next/link";

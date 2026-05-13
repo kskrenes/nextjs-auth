@@ -1,7 +1,7 @@
 'use client';
 
-import { getErrorMessage } from '@/helpers/error-message';
-import type { UserDTO } from '@/helpers/user-dto';
+import { getErrorMessage } from '@/helpers/util/error-utils';
+import type { UserDTO } from '@/helpers/dto/user-dto';
 import { axiosClient, setupAuthInterceptor } from '@/lib/axios-client';
 import { useRouter } from 'next/navigation';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';

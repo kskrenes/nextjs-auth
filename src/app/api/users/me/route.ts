@@ -1,6 +1,6 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { getIdsFromAccessToken } from "@/helpers/token";
-import { sanitizeUser } from "@/helpers/user-dto";
+import { getIdsFromAccessToken } from "@/helpers/util/token-utils";
+import { sanitizeUser } from "@/helpers/dto/user-dto";
 import User from "@/models/user-model";
 import { NextResponse, type NextRequest } from "next/server";
 

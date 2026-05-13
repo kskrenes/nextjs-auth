@@ -1,4 +1,4 @@
-import { signAccessToken, storeAccessTokenCookie, validateRefreshSession } from "@/helpers/token";
+import { signAccessToken, storeAccessTokenCookie, validateRefreshSession } from "@/helpers/util/token-utils";
 import { connect } from "@/dbconfig/dbconfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";

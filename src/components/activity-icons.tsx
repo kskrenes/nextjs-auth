@@ -1,4 +1,4 @@
-import { activityConfig } from "@/helpers/activity-config";
+import { activityConfig } from "@/helpers/util/security-event-utils";
 import { LucideProps } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 

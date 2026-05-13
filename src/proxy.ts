@@ -1,7 +1,7 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { ACCESS_TOKEN_COOKIE_NAME, AuthTokenError, SESSION_HINT_COOKIE_NAME, validateSessionExists, verifyAccessToken } from "./helpers/token";
+import { ACCESS_TOKEN_COOKIE_NAME, AuthTokenError, SESSION_HINT_COOKIE_NAME, validateSessionExists, verifyAccessToken } from "./helpers/util/token-utils";
 import { JwtPayload } from "jsonwebtoken";
 import { getCachedSession, setCachedSession } from "./lib/session-cache";
 

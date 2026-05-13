@@ -1,4 +1,4 @@
-import { activityConfig } from "@/helpers/activity-config";
+import { activityConfig } from "@/helpers/util/security-event-utils";
 import mongoose, { Schema } from "mongoose";
 
 const securityLogSchema = new mongoose.Schema({
