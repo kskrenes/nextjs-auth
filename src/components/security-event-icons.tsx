@@ -1,19 +1,17 @@
-import { activityConfig } from "@/helpers/util/security-event-utils";
+import { securityEventConfig, SecurityEventType } from "@/helpers/util/security-event-utils";
 import { LucideProps } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
-type ActivityType = keyof typeof activityConfig;
-
-interface ActivityIconProps extends LucideProps {
-  type: ActivityType;
+interface SecurityEventIconProps extends LucideProps {
+  type: SecurityEventType;
 }
 
-export const ActivityIcon = ({ 
+export const SecurityEventIcon = ({ 
   type,
   className,
   ...props 
-}: ActivityIconProps) => {
-  const config = activityConfig[type];
+}: SecurityEventIconProps) => {
+  const config = securityEventConfig[type];
   const Icon = config.icon;
 
   const iconStyles = `w-6 h-6 ${config.color}`;

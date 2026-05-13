@@ -1,4 +1,5 @@
-import { activityConfig } from "@/helpers/util/security-event-utils";
+
+import { securityEvents } from "@/helpers/util/security-event-utils";
 import mongoose, { Schema } from "mongoose";
 
 const securityLogSchema = new mongoose.Schema({
@@ -9,7 +10,7 @@ const securityLogSchema = new mongoose.Schema({
   },
   action: { 
     type: String, 
-    enum: Object.keys(activityConfig),
+    enum: securityEvents,
     required: [true, "Please provide an action type"], 
   },
   ipAddress: {

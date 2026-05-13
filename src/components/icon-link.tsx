@@ -15,6 +15,7 @@ const ICON_MAP = {
 } as const;
 
 type SocialType = keyof typeof ICON_MAP;
+const recognizedSocials = Object.keys(ICON_MAP) as SocialType[];
 
 const isHostMatch = (hostname: string, domain: string): boolean => {
   const plainHostname = hostname.replace(/^www\./, '').split('.')[0];
@@ -31,7 +32,7 @@ const getDisplayLink = (url: string) => {
     }
 
     const hostname = urlObj.hostname.toLowerCase();
-    const isSupportedSite = Object.keys(ICON_MAP).some(substring => isHostMatch(hostname, substring));
+    const isSupportedSite = recognizedSocials.some(substring => isHostMatch(hostname, substring));
 
     if (isSupportedSite) {
       return cleanPathname || urlObj.host;
@@ -54,7 +55,7 @@ const getSocialIcon = (url: string) => {
     
     const hostname = urlObj.hostname.toLowerCase();
 
-    const supportedSiteMatch = Object.keys(ICON_MAP).find(substring => isHostMatch(hostname, substring));
+    const supportedSiteMatch = recognizedSocials.find(substring => isHostMatch(hostname, substring));
     if (supportedSiteMatch) {
       const Icon = ICON_MAP[supportedSiteMatch as SocialType];
       return <Icon />;

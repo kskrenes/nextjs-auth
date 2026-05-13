@@ -1,8 +1,6 @@
 import mongoose from 'mongoose';
 import { z } from 'zod';
-import { activityConfig, ActivityType } from '../util/security-event-utils';
-
-const activityActions = Object.keys(activityConfig) as ActivityType[];
+import { securityEvents } from '../util/security-event-utils';
 
 const objectIdSchema = z.string().refine(
   (val) => mongoose.Types.ObjectId.isValid(val),
@@ -12,7 +10,7 @@ const objectIdSchema = z.string().refine(
 // define the security log fields available
 const SecurityLogDTOSchema = z.object({
   userId: objectIdSchema, 
-  action: z.enum(activityActions), 
+  action: z.enum(securityEvents), 
   ipAddress: z.string().max(64).optional(), 
   userAgent: z.string().max(512).optional(), 
   createdAt: z.coerce.date()

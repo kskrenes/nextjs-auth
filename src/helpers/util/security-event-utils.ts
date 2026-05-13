@@ -3,7 +3,7 @@ import { KeyRound, Link2, LogIn, Mail, User } from "lucide-react";
 import { NextRequest } from "next/server";
 import { getUAAndIpFromRequest } from "./request-utils";
 
-export const activityConfig = {
+export const securityEventConfig = {
   login: {
     icon: LogIn,
     label: 'Sign In',
@@ -42,7 +42,8 @@ export const activityConfig = {
   },
 } as const;
 
-export type ActivityType = keyof typeof activityConfig;
+export type SecurityEventType = keyof typeof securityEventConfig;
+export const securityEvents = Object.keys(securityEventConfig) as SecurityEventType[];
 
 export async function recordSecurityEvent(
   userId: string, 
