@@ -107,7 +107,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const res = await axiosClient.post("/api/auth/login", { email, password });
       setUser(res.data.user);
-      router.replace("/dashboard");
+      // Redirect is handled by the calling page (e.g. LoginPage.useEffect)
     } finally {
       setLoggingIn(false);
     }
