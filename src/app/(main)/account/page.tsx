@@ -10,20 +10,19 @@ import { CompanyIcon, EmailIcon, LinkIcon } from "@/components/profile-icons";
 import Input from "@/components/nae-input";
 import { getErrorMessage } from "@/helpers/error-message";
 import AvatarUpload from "@/components/avatar-upload";
-import ExternalLink from "@/components/external-link";
 import Badge from "@/components/badge";
 import FullScreenLoader from "@/components/full-screen-loader";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import SetPasswordInputs from "@/components/nae-set-password";
 import { getValidPassword } from "@/helpers/expression-validation";
 import GoogleLoginButton from "@/components/google-login-button";
-import { getDisplayLink, getSocialIcon } from "@/helpers/display";
 import NaeLoader from "@/components/nae-loader";
 import DeviceCard from "@/components/device-card";
 import { SessionDTO } from "@/helpers/session-dto";
 import { SecurityLogDTO } from "@/helpers/security-log-dto";
 import SecurityLogCard from "@/components/security-log-card";
 import { axiosClient } from "@/lib/axios-client";
+import IconLink from "@/components/icon-link";
 
 const AccountPage = () => {
 
@@ -435,16 +434,18 @@ const AccountPage = () => {
                       <div className="flex flex-col gap-1">
                         <label className="text-lg font-semibold">Email</label>
                         <div className="flex items-center gap-2">
-                          <EmailIcon />
                           {user.isVerified ? (
                             // verified email link
-                            <ExternalLink href={`mailto:${user.email}`}>{user.email}</ExternalLink>
+                            <IconLink url={`mailto:${user.email}`} />
                           ) : (
                             // unverified email with badge
-                            <span className="flex gap-2 text-foreground-secondary">
-                              {user.email}
-                              <Badge label="Unverified" variant="red" />
-                            </span>
+                            <>
+                              <EmailIcon />
+                              <span className="flex gap-2 text-foreground-secondary">
+                                {user.email}
+                                <Badge label="Unverified" variant="red" />
+                              </span>
+                            </>
                           )}
                         </div>
                       </div>
@@ -453,12 +454,7 @@ const AccountPage = () => {
                     {user?.website && getNormalizedUrl(user.website) && (
                       <div className="flex flex-col gap-1">
                         <label className="text-lg font-semibold">Website</label>
-                        <div className="flex items-center gap-2">
-                          <LinkIcon />
-                          <ExternalLink href={getNormalizedUrl(user.website)}>
-                            {getDisplayLink(getNormalizedUrl(user.website))}
-                          </ExternalLink>
-                        </div>
+                        <IconLink url={getNormalizedUrl(user.website)} />
                       </div>
                     )}
                     {/* social accounts */}
@@ -468,10 +464,7 @@ const AccountPage = () => {
                         {user?.socialLinks?.map((rawLink, index) => {
                           const link = getNormalizedUrl(rawLink);
                           return link !== '' && (
-                            <div key={index} className="flex items-center gap-2">
-                              {getSocialIcon(link)}
-                              <ExternalLink href={link}>{getDisplayLink(link)}</ExternalLink>
-                            </div>
+                            <IconLink key={index} url={link} />
                           );
                         })}
                       </div>
