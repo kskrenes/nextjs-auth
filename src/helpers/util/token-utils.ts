@@ -3,9 +3,9 @@ import crypto from "crypto";
 import jwt, { Secret, type JwtPayload } from "jsonwebtoken";
 import { NextResponse, type NextRequest } from "next/server";
 import Session from "@/models/session-model";
-import { sanitizeSession, SessionDTO } from './session-dto';
-import { UserDTO } from './user-dto';
-import getUAAndIpFromRequest from './request-headers';
+import { sanitizeSession, SessionDTO } from '../dto/session-dto';
+import { UserDTO } from '../dto/user-dto';
+import { getUAAndIpFromRequest } from './request-utils';
 
 export const TOKEN_COOKIE_NAME = "naetoken" as const;
 export const ACCESS_TOKEN_COOKIE_NAME = "naetoken" as const;

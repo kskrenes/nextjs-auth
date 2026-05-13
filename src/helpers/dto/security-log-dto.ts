@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 import { z } from 'zod';
-import { activityConfig } from './activity-config';
+import { activityConfig, ActivityType } from '../util/security-event-utils';
 
-const activityActions = Object.keys(activityConfig) as [string, ...string[]];
+const activityActions = Object.keys(activityConfig) as ActivityType[];
 
 const objectIdSchema = z.string().refine(
   (val) => mongoose.Types.ObjectId.isValid(val),
