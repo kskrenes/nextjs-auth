@@ -13,7 +13,7 @@ import {
 } from "@/helpers/util/token-utils";
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
-import { recordSecurityEvent } from "@/helpers/util/security-event-utils";
+import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
   // generate a base username from the name or email

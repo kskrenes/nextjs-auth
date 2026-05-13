@@ -1,6 +1,6 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { excludesSpaces, meetsMinimum } from "@/helpers/util/form-validation-utils";
-import { recordSecurityEvent } from "@/helpers/util/security-event-utils";
+import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { getRequestBody } from "@/helpers/util/request-utils";
 import Session from "@/models/session-model";
 import User from "@/models/user-model";

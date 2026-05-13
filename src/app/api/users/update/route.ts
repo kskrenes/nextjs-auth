@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import { defaultAvatarId } from "@/helpers/util/avatar-utils";
 import { sanitizeUser, UserDTO } from "@/helpers/dto/user-dto";
-import { recordSecurityEvent } from "@/helpers/util/security-event-utils";
+import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 
 export async function POST(request: NextRequest) {
   try {

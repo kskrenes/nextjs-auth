@@ -1,4 +1,3 @@
-
 import { securityEvents } from "@/helpers/util/security-event-utils";
 import mongoose, { Schema } from "mongoose";
 

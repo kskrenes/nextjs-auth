@@ -1,6 +1,9 @@
 import mongoose from 'mongoose';
 import { z } from 'zod';
 import { securityEvents } from '../util/security-event-utils';
+import { NextRequest } from 'next/server';
+import { getUAAndIpFromRequest } from '../util/request-utils';
+import SecurityLog from '@/models/security-log-model';
 
 const objectIdSchema = z.string().refine(
   (val) => mongoose.Types.ObjectId.isValid(val),
@@ -49,4 +52,22 @@ export function sanitizeSecurityLogs(securityLogs: RawSecurityLog[]): SecurityLo
     const parsed = SecurityLogDTOSchema.safeParse(toSecurityLogDTOInput(securityLog));
     return parsed.success ? [parsed.data] : [];
   });
+}
+
+export async function recordSecurityEvent(
+  userId: string, 
+  action: string, 
+  request: NextRequest
+) {
+  const { userAgent, ipAddress } = getUAAndIpFromRequest(request);
+  try {
+    await SecurityLog.create({
+      userId,
+      action,
+      ipAddress,
+      userAgent,
+    });
+  } catch (error) {
+    console.error('Failed to record security event', error);
+  }
 }

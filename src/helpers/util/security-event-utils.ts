@@ -1,7 +1,4 @@
-import SecurityLog from "@/models/security-log-model";
 import { KeyRound, Link2, LogIn, Mail, User } from "lucide-react";
-import { NextRequest } from "next/server";
-import { getUAAndIpFromRequest } from "./request-utils";
 
 export const securityEventConfig = {
   login: {
@@ -44,21 +41,3 @@ export const securityEventConfig = {
 
 export type SecurityEventType = keyof typeof securityEventConfig;
 export const securityEvents = Object.keys(securityEventConfig) as SecurityEventType[];
-
-export async function recordSecurityEvent(
-  userId: string, 
-  action: string, 
-  request: NextRequest
-) {
-  const { userAgent, ipAddress } = getUAAndIpFromRequest(request);
-  try {
-    await SecurityLog.create({
-      userId,
-      action,
-      ipAddress,
-      userAgent,
-    });
-  } catch (error) {
-    console.error('Failed to record security event', error);
-  }
-}

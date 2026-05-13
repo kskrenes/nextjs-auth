@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import 'server-only'; // do not allow this file to be used by the client
 import { z } from 'zod';
 
 const objectIdSchema = z.string().refine(

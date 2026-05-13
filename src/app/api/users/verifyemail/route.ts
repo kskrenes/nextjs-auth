@@ -1,5 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { recordSecurityEvent } from "@/helpers/util/security-event-utils";
+import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { getRequestBody } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import crypto from "crypto";

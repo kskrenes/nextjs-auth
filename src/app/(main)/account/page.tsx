@@ -1,6 +1,6 @@
 "use client";
 
-import { triggerEmail } from "@/helpers/util/email-utils";
+import { triggerEmail } from "@/helpers/util/email-trigger";
 import { KeyRound, Pencil, RotateCcwKey, ShieldAlert, ShieldUser, UserPlus } from "lucide-react";
 import { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";

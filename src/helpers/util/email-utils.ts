@@ -2,8 +2,6 @@ import User from "@/models/user-model";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { getRandomToken, hashToken } from "./token-utils";
-import axios from "axios";
-import { getErrorMessage } from "./error-utils";
 
 // styles
 const OUTER_BG_COLOR = '#f4f4f4';
@@ -247,30 +245,5 @@ export const sendEmail = async ({
   catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Error sending email";
     throw new Error(message, { cause: error });
-  }
-}
-
-export const triggerEmail = async (
-  email: string, 
-  type: 'VERIFY' | 'RESET', 
-  stateSetter: (loading: boolean) => void
-) => {
-  if (!email) return;
-
-  try {
-    stateSetter(true);
-    await axios.post(
-      "/api/users/sendemail", 
-      { email, type }
-    );
-  } 
-  catch (error: unknown) {
-    const typeMessage = type === 'VERIFY' ? 'verify' : 'reset password'
-    const errorMessage = getErrorMessage(error, `Error sending ${typeMessage} email`);
-    console.error(errorMessage);
-    throw new Error(errorMessage);
-  }
-  finally {
-    stateSetter(false);
   }
 }

@@ -11,7 +11,7 @@ import {
 } from "@/helpers/util/token-utils";
 import { getRequestBody } from "@/helpers/util/request-utils";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
-import { recordSecurityEvent } from "@/helpers/util/security-event-utils";
+import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 
 export async function POST(request: NextRequest) {
   try {
