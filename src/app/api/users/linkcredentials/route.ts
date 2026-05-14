@@ -2,16 +2,16 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
-import { getRequestBody } from "@/helpers/validate-request";
-import { excludesSpaces, meetsMinimum } from "@/helpers/expression-validation";
+import { getRequestBody } from "@/helpers/util/request-utils";
+import { excludesSpaces, meetsMinimum } from "@/helpers/util/form-validation-utils";
 import {
   AuthTokenError,
   getIdsFromAccessToken,
   signAccessToken,
   storeAccessTokenCookie,
-} from "@/helpers/token";
-import { sanitizeUser } from "@/helpers/user-dto";
-import recordSecurityEvent from "@/helpers/record-security-event";
+} from "@/helpers/util/token-utils";
+import { sanitizeUser } from "@/helpers/dto/user-dto";
+import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 
 export async function POST(request: NextRequest) {
   try {

@@ -1,6 +1,6 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { sanitizeSessions } from "@/helpers/session-dto";
-import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/token";
+import { sanitizeSessions } from "@/helpers/dto/session-dto";
+import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
 

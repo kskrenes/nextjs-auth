@@ -1,11 +1,11 @@
-import parseUserAgent from "@/helpers/parse-user-agent";
-import { SecurityLogDTO } from "@/helpers/security-log-dto"
+import { parseUserAgent } from "@/helpers/util/request-utils";
+import { SecurityLogDTO } from "@/helpers/dto/security-log-dto"
 import { useTimeTick } from "@/hooks/useTimeTick";
 import { useMemo } from "react";
-import { ActivityIcon } from "./activity-icons";
-import { activityConfig } from "@/helpers/activity-config";
 import { DeviceIcon } from "./device-icons";
-import { formatRelativeTime } from "@/helpers/time-utils";
+import { formatRelativeTime } from "@/helpers/util/time-utils";
+import { SecurityEventIcon } from "./security-event-icons";
+import { securityEventConfig } from "@/helpers/util/security-event-utils";
 
 interface SecurityLogCardProps {
   securityLog: SecurityLogDTO
@@ -31,10 +31,10 @@ const SecurityLogCard = ({ securityLog }: SecurityLogCardProps) => {
 
   return (
     <div className="flex w-full gap-5 p-5 rounded-md bg-panel">
-      <ActivityIcon type={expandedSecurityLog.action} />
+      <SecurityEventIcon type={expandedSecurityLog.action} />
       <div className="flex flex-col gap-1">
         <h3 className="text-foreground-primary text-lg">
-          {activityConfig[expandedSecurityLog.action].label}
+          {securityEventConfig[expandedSecurityLog.action].label}
         </h3>
 
         <div className="flex items-center text-foreground-secondary flex-wrap">

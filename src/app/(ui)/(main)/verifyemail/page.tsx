@@ -1,0 +1,137 @@
+"use client";
+
+import Button from "@/components/nae-button";
+import NaeLoader from "@/components/nae-loader";
+import { useAuth } from "@/context-providers/auth-context-provider";
+import { getErrorMessage } from "@/helpers/util/error-utils";
+import { triggerEmail } from "@/helpers/util/email-trigger";
+import type { UserDTO } from "@/helpers/dto/user-dto";
+import axios from "axios";
+import { BadgeCheck, ShieldAlert } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+
+const VerifyEmailPage = () => {
+
+  const [token, setToken] = useState<string>("");
+  const [isVerified, setIsVerified] = useState<boolean>(false);
+  const [isRetrievingData, setIsRetrievingData] = useState<boolean>(false);
+  const [isSendingEmail, setIsSendingEmail] = useState<boolean>(false);
+  const [isEmailSent, setIsEmailSent] = useState<boolean>(false);
+  const [isVerificationError, setIsVerificationError] = useState<boolean>(false);
+
+  const router = useRouter();
+  const { verifyEmail } = useAuth();
+
+  // get the user's url token when page loads
+  useEffect(() => {
+    const urlToken = new URLSearchParams(window.location.search).get("token") ?? "";
+    if (!urlToken) {
+      setIsVerificationError(true);
+      return;
+    }
+    setToken(urlToken);
+  }, []);
+
+  // verify email when token is available
+  useEffect(() => {
+    if (token?.length > 0) {
+      (async () => {
+        try {
+          await verifyEmail(token);
+          setIsVerified(true);
+        } catch (error: unknown) {
+          setIsVerificationError(true);
+          console.error(getErrorMessage(error, "Email verification failed"));
+        }
+      })();
+    }
+  }, [token, verifyEmail]);
+
+  const handleResendClick = async () => {
+    if (isRetrievingData || isSendingEmail || isEmailSent) return;
+    try {
+      setIsRetrievingData(true);
+      const res = await axios.get('/api/users/me');
+      const user = res.data?.user as UserDTO | undefined;
+      if (!user?.email) {
+        toast.error("No email found for this account");
+        return;
+      }
+      try {
+        await triggerEmail(user.email, "VERIFY", setIsSendingEmail);
+        toast.success("Verification email sent");
+        setIsEmailSent(true);
+      } catch {
+        toast.error("Failed to send verification email");
+      }
+    }
+    catch (error: unknown) {
+      const message = getErrorMessage(
+        error,
+        "Unable to retrieve account info. Please try again."
+      );
+      const lower = message.toLowerCase();
+      if (lower.includes("unauthorized") || lower.includes("forbidden")) {
+        toast.error("Please sign in to request a verification email");
+        router.push("/login");
+        return;
+      }
+      toast.error(message);
+    }
+    finally {
+      setIsRetrievingData(false);
+    }
+  }
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
+      {isVerified 
+          ? (
+            <BadgeCheck className="w-10 h-10 text-blue-600" />
+          ) 
+          : isVerificationError 
+            ? (
+              <ShieldAlert className="w-10 h-10 text-red-600" />
+            ) 
+            : (
+              <NaeLoader className="w-10 h-10" />
+            )
+      }
+      <h1 className="mb-6 text-3xl font-bold">
+        {isVerified ? 
+          "Your email has been verified." 
+          : isVerificationError ? 
+            "Error verifying email" : 
+            "Waiting for verification..."
+        }
+      </h1>
+      {isVerificationError && !isEmailSent && (
+        <Button
+          className="mt-4"
+          onClick={handleResendClick}
+        >
+          Resend Email
+        </Button>
+      )}
+      {isVerificationError && isEmailSent && (
+        <p>Email sent.</p>
+      )}
+      <div className="pt-8">
+        <p className="text-xs">
+          {'Go to '}
+          <Link 
+            href="/login"
+            className="text-blue-400 hover:text-blue-500 underline transition-colors"
+          >
+            Sign in
+          </Link>{' page.'}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+export default VerifyEmailPage

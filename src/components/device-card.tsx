@@ -1,15 +1,16 @@
 "use client";
-import { SessionDTO } from "@/helpers/session-dto";
+
+import { SessionDTO } from "@/helpers/dto/session-dto";
 import { useMemo, useState } from "react";
 import axios from "axios";
 import Badge from "./badge";
 import Button from "./nae-button";
 import NaeLoader from "./nae-loader";
-import parseUserAgent from "@/helpers/parse-user-agent";
 import toast from "react-hot-toast";
 import { DeviceIcon } from "./device-icons";
 import { useTimeTick } from "@/hooks/useTimeTick";
-import { formatRelativeTime } from "@/helpers/time-utils";
+import { formatRelativeTime } from "@/helpers/util/time-utils";
+import { parseUserAgent } from "@/helpers/util/request-utils";
 
 interface DeviceCardProps {
   session: SessionDTO;

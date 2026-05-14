@@ -1,4 +1,4 @@
-import { defaultAvatarId } from "@/helpers/themes";
+import { defaultAvatarId } from "@/helpers/util/avatar-utils";
 import mongoose from "mongoose";
 
 const urlValidator = {

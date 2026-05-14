@@ -2,10 +2,10 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
-import { getRequestBody } from "@/helpers/validate-request";
-import { excludesSpaces, meetsMinimum, validateEmail } from "@/helpers/expression-validation";
+import { getRequestBody } from "@/helpers/util/request-utils";
+import { excludesSpaces, meetsMinimum, validateEmail } from "@/helpers/util/form-validation-utils";
 import mongoose from "mongoose";
-import { sanitizeUser } from "@/helpers/user-dto";
+import { sanitizeUser } from "@/helpers/dto/user-dto";
 
 export async function POST(request: NextRequest) {
   try {
