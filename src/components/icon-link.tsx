@@ -2,9 +2,9 @@ import ExternalLink from "./external-link";
 import { BlueSkyIcon, EmailIcon, FacebookIcon, InstagramIcon, LinkedInIcon, LinkIcon, MastodonIcon, RedditIcon, TwitchIcon, TwitterIcon, YouTubeIcon } from "./profile-icons";
 
 const ICON_MAP = {
-  linkedin: LinkedInIcon,
-  twitter: TwitterIcon,
   x: TwitterIcon,
+  twitter: TwitterIcon,
+  linkedin: LinkedInIcon,
   facebook: FacebookIcon,
   instagram: InstagramIcon,
   youtube: YouTubeIcon,
@@ -18,8 +18,9 @@ type SocialType = keyof typeof ICON_MAP;
 const recognizedSocials = Object.keys(ICON_MAP) as SocialType[];
 
 const isHostMatch = (hostname: string, domain: string): boolean => {
-  const plainHostname = hostname.replace(/^www\./, '').split('.')[0];
-  return plainHostname === domain;
+  const labels = hostname.toLowerCase().split('.');
+  // Check all labels except the top level domain (last one)
+  return labels.slice(0, -1).includes(domain);
 }
 
 const getDisplayLink = (url: string) => {
