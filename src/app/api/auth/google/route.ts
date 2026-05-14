@@ -14,6 +14,7 @@ import {
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
+import { SecurityEventType } from "@/helpers/util/security-event-utils";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
   // generate a base username from the name or email
@@ -50,7 +51,7 @@ async function getAvatarId(url: string) {
 
 export async function POST(request: NextRequest) {
   let successMessage = 'Authentication successful';
-  let securityLogAction = "login";
+  let securityLogAction: SecurityEventType = "login";
   try {
     await connect();
 

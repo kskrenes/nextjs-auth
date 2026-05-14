@@ -56,7 +56,7 @@ export function sanitizeSecurityLogs(securityLogs: RawSecurityLog[]): SecurityLo
 
 export async function recordSecurityEvent(
   userId: string, 
-  action: string, 
+  action: (typeof securityEvents)[number], 
   request: NextRequest
 ) {
   const { userAgent, ipAddress } = getUAAndIpFromRequest(request);
