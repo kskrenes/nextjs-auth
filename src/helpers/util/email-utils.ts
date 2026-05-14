@@ -3,6 +3,12 @@ import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { getRandomToken, hashToken } from "./token-utils";
 
+// enum for each email type
+export enum EmailType {
+  VERIFY = 'VERIFY',
+  RESET = 'RESET',
+}
+
 // styles
 const OUTER_BG_COLOR = '#f4f4f4';
 const INNER_BG_COLOR = '#ffffff';
@@ -33,9 +39,9 @@ const BUTTON_LABEL_RESET = 'Reset Password';
 
 const getEmailSubject = (
   username: string, 
-  action: 'VERIFY' | 'RESET'
+  action: EmailType
 ): string => {
-  return `${username}, ${action === 'VERIFY' ? ACTION_VERIFY : ACTION_RESET}`;
+  return `${username}, ${action === EmailType.VERIFY ? ACTION_VERIFY : ACTION_RESET}`;
 }
 
 // escape dynamic values before injecting into the HTML template
@@ -50,16 +56,16 @@ const escapeHtml = (value: string): string =>
 const getEmailHtml = (
   username: string, 
   url: string, 
-  action: 'VERIFY' | 'RESET'
+  action: EmailType
 ): string => {
   const safeUsername = escapeHtml(username);
   const safeUrl = escapeHtml(url);
 
   // action-dependent text
-  const introMessage = action === 'VERIFY' ? INTRO_VERIFY : INTRO_RESET;
-  const actionMessage = action === 'VERIFY' ? ACTION_VERIFY : ACTION_RESET;
-  const ignoreMessage = action === 'VERIFY' ? IGNORE_VERIFY : IGNORE_RESET;
-  const buttonLabel = action === 'VERIFY' ? BUTTON_LABEL_VERIFY : BUTTON_LABEL_RESET;
+  const introMessage = action === EmailType.VERIFY ? INTRO_VERIFY : INTRO_RESET;
+  const actionMessage = action === EmailType.VERIFY ? ACTION_VERIFY : ACTION_RESET;
+  const ignoreMessage = action === EmailType.VERIFY ? IGNORE_VERIFY : IGNORE_RESET;
+  const buttonLabel = action === EmailType.VERIFY ? BUTTON_LABEL_VERIFY : BUTTON_LABEL_RESET;
 
   // full p tags
   const bodyPTag = `<p style="color: ${BODY_TEXT_COLOR}; font-size: ${BODY_FONT_SIZE}; line-height: ${BODY_LINE_HEIGHT}; margin: 0 0 30px 0;">`;
@@ -100,12 +106,6 @@ const getEmailHtml = (
   `;
 
   return html;
-}
-
-// enum for each email type
-export enum EmailType {
-  VERIFY = 'VERIFY',
-  RESET = 'RESET',
 }
 
 // type definition for VERIFY email data
