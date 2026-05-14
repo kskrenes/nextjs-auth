@@ -1,4 +1,4 @@
-import { KeyRound, Link2, LogIn, Mail, User } from "lucide-react";
+import { Key, KeyRound, Link2, LogIn, Mail, ShieldCheck, ShieldOff, User } from "lucide-react";
 
 export const securityEventConfig = {
   login: {
@@ -36,6 +36,30 @@ export const securityEventConfig = {
     label: 'Google Account Linked',
     color: 'text-pink-600',
     bg: 'bg-pink-100',
+  },
+  mfa_enabled: {
+    icon: ShieldCheck,
+    label: 'MFA Enabled',
+    color: 'text-emerald-600',
+    bg: 'bg-emerald-100',
+  },
+  mfa_disabled: {
+    icon: ShieldOff,
+    label: 'MFA Disabled',
+    color: 'text-red-600',
+    bg: 'bg-red-100',
+  },
+  mfa_verified: {
+    icon: ShieldCheck,
+    label: 'MFA Verified',
+    color: 'text-teal-600',
+    bg: 'bg-teal-100',
+  },
+  mfa_backup_used: {
+    icon: Key,
+    label: 'MFA Backup Used',
+    color: 'text-amber-600',
+    bg: 'bg-amber-100',
   },
 } as const;
 
