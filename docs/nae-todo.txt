@@ -116,7 +116,7 @@ session management lifecycle
 
 additional authentication methods
 - [x] add social login (google)
-- [ ] research multifactor auth (MFA)
+- [x] research multifactor auth (MFA)
 - [ ] research one-time passcodes
 - [ ] research passkeys
 
