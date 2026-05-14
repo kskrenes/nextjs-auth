@@ -45,7 +45,7 @@ export const getRequestBody = async (request: NextRequest):Promise<object> => {
     throw new Error("Invalid JSON body");
   }
 
-  if (!reqBody || typeof reqBody !== "object") {
+  if (!reqBody || typeof reqBody !== "object" || Array.isArray(reqBody)) {
     throw new Error("Invalid request body");
   }
 
