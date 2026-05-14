@@ -79,6 +79,18 @@ const userSchema = new mongoose.Schema({
   forgotPasswordTokenExpiry: Date,
   verifyToken: String,
   verifyTokenExpiry: Date,
+  mfaEnabled: {
+    type: Boolean,
+    default: false,
+  },
+  mfaSecret: {
+    type: String,
+    select: false, // exclude mfaSecret from query results by default
+  },
+  mfaBackupCodes: {
+    type: [String],
+    select: false, // exclude mfaBackupCodes from query results by default
+  },
 });
 
 userSchema.index({ "accounts.provider": 1, "accounts.providerId": 1 }, { unique: true });
