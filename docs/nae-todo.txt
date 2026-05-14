@@ -110,7 +110,7 @@ refactor
 
 session management lifecycle
 - [x] conceptual research
-- [ ] token expiration (logout/timeout)
+- [x] token expiration (logout/timeout)
 - [x] active device monitoring
 - [x] session revocation
 
@@ -149,7 +149,7 @@ feature research
 ## Homepage Feature Checklist
 - [x] Email/password authentication
 - [x] Protected routes and pages
-- [ ] Session management
+- [x] Session management
 - [x] Email verification
 - [x] Social login (Google)
 - [ ] Multifactor authentication
