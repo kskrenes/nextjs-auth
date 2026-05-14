@@ -59,8 +59,8 @@ export async function recordSecurityEvent(
   action: (typeof securityEvents)[number], 
   request: NextRequest
 ) {
-  const { userAgent, ipAddress } = getUAAndIpFromRequest(request);
   try {
+    const { userAgent, ipAddress } = getUAAndIpFromRequest(request);
     await SecurityLog.create({
       userId,
       action,
