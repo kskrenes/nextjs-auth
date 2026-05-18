@@ -29,7 +29,8 @@ const UserDTOSchema = z.object({
   linkedProviders: z.array(z.enum([
     "credentials", 
     "google"
-  ]))
+  ])),
+  mfaEnabled: z.boolean(),
 });
 
 // infer a typescript type from the zod schema
@@ -49,6 +50,7 @@ interface RawUser {
   isVerified: boolean;
   isAdmin: boolean;
   accounts?: { provider: string }[];
+  mfaEnabled?: boolean;
 }
 
 // sanitize a raw user object from the database
@@ -68,5 +70,6 @@ export function sanitizeUser(user: RawUser): UserDTO {
     linkedProviders: (user.accounts ?? []).map(
       (a: { provider: string }) => a.provider
     ),
+    mfaEnabled: user.mfaEnabled ?? false,
   });
 }

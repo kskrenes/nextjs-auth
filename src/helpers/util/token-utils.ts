@@ -99,6 +99,26 @@ interface AccessTokenIds {
   sessionId?: string;
 }
 
+export const storeCookie = (
+  response: NextResponse, 
+  token: string, 
+  name: string, 
+  path: string, 
+  secondsToExpiry: number
+): void => {
+  response.cookies.set(
+    name, 
+    token, 
+    { 
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path,
+      maxAge: secondsToExpiry,
+    }
+  );
+}
+
 export const getIdsFromAccessToken = async (request: NextRequest): Promise<AccessTokenIds> => {
   const token = getToken(request, ACCESS_TOKEN_COOKIE_NAME, "Missing auth token");
   const secret = verifySecret();
@@ -132,17 +152,12 @@ export const signSessionToken = (userData: {
 }
       
 export const storeSessionCookie = (token: string, response: NextResponse): void => {
-  // store token in client cookie
-  response.cookies.set(
-    TOKEN_COOKIE_NAME, 
+  storeCookie(
+    response, 
     token, 
-    { 
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 60 * 60 * 24,
-    }
+    TOKEN_COOKIE_NAME, 
+    '/', 
+    60 * 60 * 24
   );
 }
 
@@ -177,47 +192,32 @@ export const signAccessToken = (userData: {
 }
 
 export const storeAccessTokenCookie = (token: string, response: NextResponse): void => {
-  // store token in client cookie
-  response.cookies.set(
-    ACCESS_TOKEN_COOKIE_NAME, 
+  storeCookie(
+    response, 
     token, 
-    { 
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: ACCESS_TOKEN_COOKIE_PATH,
-      maxAge: ACCESS_TOKEN_EXPIRY_SECONDS,
-    }
+    ACCESS_TOKEN_COOKIE_NAME, 
+    ACCESS_TOKEN_COOKIE_PATH, 
+    ACCESS_TOKEN_EXPIRY_SECONDS
   );
 }
 
 export const storeRefreshTokenCookie = (token: string, response: NextResponse): void => {
-  // store token in client cookie
-  response.cookies.set(
-    REFRESH_TOKEN_COOKIE_NAME, 
+  storeCookie(
+    response, 
     token, 
-    { 
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: REFRESH_TOKEN_COOKIE_PATH,
-      maxAge: REFRESH_TOKEN_EXPIRY_SECONDS,
-    }
+    REFRESH_TOKEN_COOKIE_NAME, 
+    REFRESH_TOKEN_COOKIE_PATH, 
+    REFRESH_TOKEN_EXPIRY_SECONDS
   );
 }
 
 export const storeSessionHintCookie = (response: NextResponse): void => {
-  // store token in client cookie
-  response.cookies.set(
-    SESSION_HINT_COOKIE_NAME,
-    "1",
-    {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      path: SESSION_HINT_COOKIE_PATH,
-      maxAge: REFRESH_TOKEN_EXPIRY_SECONDS, // matches refresh token lifetime
-    }
+  storeCookie(
+    response, 
+    "1", 
+    SESSION_HINT_COOKIE_NAME, 
+    SESSION_HINT_COOKIE_PATH, 
+    REFRESH_TOKEN_EXPIRY_SECONDS // matches refresh token lifetime
   );
 };
 
