@@ -14,4 +14,5 @@ export const redisKeys = {
   session: (sessionId: string) => `session:${sessionId}`,
   userSessions: (userId: string) => `user-sessions:${userId}`,
   mfaToken: (token: string) => `mfa-pending:${token}`,
+  mfaSetup: (userId: string) => `mfa-setup:${userId}`,
 };
