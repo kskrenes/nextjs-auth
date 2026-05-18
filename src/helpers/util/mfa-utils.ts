@@ -75,6 +75,7 @@ export const generateBackupCodes = (): string[] => {
   // Generate 10 random 8-character alphanumeric codes
   const codes: string[] = [];
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  const length = 8;
 
   for (let i = 0; i < 10; i++) {
     let result = '';
