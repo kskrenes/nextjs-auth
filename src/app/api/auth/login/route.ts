@@ -12,6 +12,7 @@ import {
 import { getRequestBody } from "@/helpers/util/request-utils";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,8 +22,8 @@ export async function POST(request: NextRequest) {
     let reqBody: object;
     try {
       reqBody = await getRequestBody(request);
-    } catch(error: unknown) {
-      const message = error instanceof Error ? error.message : "Invalid request";
+    } catch(authError: unknown) {
+      const message = authError instanceof Error ? authError.message : "Invalid request";
       return NextResponse.json(
         { error: message }, 
         { status: 400 }
@@ -35,10 +36,7 @@ export async function POST(request: NextRequest) {
       typeof email !== "string" ||
       typeof password !== "string"
     ) {
-      return NextResponse.json(
-        { error: "Invalid email or password" },
-        { status: 401 }
-      );
+      return getErrorResponse(401, "Invalid email or password");
     }
 
     const normalizedEmail = email.trim().toLowerCase();
@@ -46,18 +44,12 @@ export async function POST(request: NextRequest) {
 
     // throw if email is not provided
     if (!normalizedEmail) {
-      return NextResponse.json(
-        { error: "Email is required" }, 
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Email is required");
     }
     
     // throw if password is not provided
     if (!normalizedPassword) {
-      return NextResponse.json(
-        { error: "Password is required" },
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Password is required");
     }
 
     // throw one error if user does not exist or if password is invalid
@@ -65,10 +57,7 @@ export async function POST(request: NextRequest) {
     const user = await User.findOne({ email: normalizedEmail }).select('+password');
     const isValidPassword = user ? await bcrypt.compare(normalizedPassword, user.password) : false;
     if (!isValidPassword) {
-      return NextResponse.json(
-        { error: "Invalid email or password" }, 
-        { status: 401 }
-      );
+      return getErrorResponse(401, "Invalid email or password");
     }
 
     // create sanitized user for response
@@ -79,12 +68,8 @@ export async function POST(request: NextRequest) {
     let sessionId;
     try {
       ({ refreshToken, sessionId } = await createSession(sanitizedUser, request));
-    } catch(error) {
-      console.error("Failed to create session document", error);
-      return NextResponse.json(
-        { error: "Unable to log in" },
-        { status: 500 }
-      );
+    } catch(sessionError) {
+      return getErrorResponse(500, "Unable to log in", sessionError);
     }
 
     // create access token
@@ -97,12 +82,8 @@ export async function POST(request: NextRequest) {
         hasCompletedProfile: sanitizedUser.hasCompletedProfile,
         sessionId,
       });
-    } catch (error) {
-      console.error("Failed to sign access token", error);
-      return NextResponse.json(
-        { error: "Unable to log in" },
-        { status: 500 }
-      );
+    } catch (tokenError) {
+      return getErrorResponse(500, "Failed to sign access token", tokenError);
     }
 
     // record security event for successful login
@@ -112,8 +93,8 @@ export async function POST(request: NextRequest) {
         "login", 
         request,
       );
-    } catch (error) {
-      console.error("Failed to record login security event", error);
+    } catch (logError) {
+      console.error("Failed to record login security event", logError);
     }
 
     // create success response
@@ -134,11 +115,7 @@ export async function POST(request: NextRequest) {
     // return success
     return response;
   } 
-  catch (error: unknown) {
-    console.error(error instanceof Error ? error.message : "Unable to log in");
-    return NextResponse.json(
-      { error: "Unable to log in" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to log in", routeError);
   }
 };
