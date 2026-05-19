@@ -17,22 +17,22 @@ export async function POST(request: NextRequest) {
     let authenticatedUserId: string;
     try {
       ({ id: authenticatedUserId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
+    } catch (authError: unknown) {
+      if (authError instanceof AuthTokenError) {
         return NextResponse.json(
           { error: "Unauthorized" }, 
-          { status: error.status ?? 401 }
+          { status: authError.status ?? 401 }
         );
       }
-      throw error;
+      throw authError;
     }
 
     // validate request json
     let reqBody: object;
     try {
       reqBody = await getRequestBody(request);
-    } catch(error: unknown) {
-      return getErrorResponse(400, "Invalid request", error);
+    } catch(jsonError: unknown) {
+      return getErrorResponse(400, "Invalid request", jsonError);
     }
 
     // validate request payload
@@ -87,12 +87,16 @@ export async function POST(request: NextRequest) {
         "mfa_enabled", 
         request,
       );
-    } catch (error) {
-      console.error("Failed to record mfa_enabled security event", error);
+    } catch (logError) {
+      console.error("Failed to record mfa_enabled security event", logError);
     }
 
     // delete the Redis setup key
-    redis.del(key);
+    try {
+      await redis.del(key);  
+    } catch (cleanupError) {
+      console.error("Failed to clear pending MFA setup key", cleanupError);
+    }
 
     // return success response
     return NextResponse.json({
@@ -102,7 +106,7 @@ export async function POST(request: NextRequest) {
       backupCodes
     });
   } 
-  catch (error: unknown) {
-    return getErrorResponse(500, "Failed to enable MFA", error);
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Failed to enable MFA", routeError);
   }
 }
