@@ -15,8 +15,8 @@ export function getErrorMessage(error: unknown, fallback: string): string {
 }
 
 export function getErrorResponse(status: number, fallback: string, error?: unknown): Response {
-  const message = error && error instanceof Error ? error.message : fallback;
-  console.error(message);
+  const message = status >= 500 ? fallback : getErrorMessage(error, fallback);
+  console.error(error ?? message);
   return NextResponse.json(
     { error: message }, 
     { status }
