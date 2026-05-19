@@ -1,4 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 import { generateOtpauthUri, generateSecret } from "@/helpers/util/mfa-utils";
 import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import { redis, redisKeys } from "@/lib/redis";
@@ -26,18 +27,12 @@ export async function POST(request: NextRequest) {
     // throw if authenticatedUserId does not match a user in the DB
     const user = await User.findById(authenticatedUserId);
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" }, 
-        { status: 404 }
-      );
+      return getErrorResponse(404, "User not found");
     }
 
     // throw if the user already has MFA enabled
     if (user.mfaEnabled) {
-      return NextResponse.json(
-        { error: "User has already enabled MFA" }, 
-        { status: 409 }
-      );
+      return getErrorResponse(409, "User has already enabled MFA");
     }
 
     // generate TOTP secret and URI
@@ -58,11 +53,6 @@ export async function POST(request: NextRequest) {
     });
   } 
   catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to generate TOTP";
-    console.error(message);
-    return NextResponse.json(
-      { error: "Unable to generate TOTP" }, 
-      { status: 500 }
-    );
+    return getErrorResponse(500, "Unable to generate TOTP", error);
   }
 }
