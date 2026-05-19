@@ -2,8 +2,8 @@ import crypto from "crypto";
 import { OTP } from 'otplib';
 import { generateTOTP } from '@otplib/uri';
 import { redis, redisKeys } from "@/lib/redis";
-import { getRandomToken, storeCookie } from "./token-utils";
-import { NextResponse } from "next/server";
+import { getRandomToken, getToken, storeCookie } from "./token-utils";
+import { NextRequest, NextResponse } from "next/server";
 import { RawUser } from "../dto/user-dto";
 
 const MFA_PENDING_COOKIE_NAME =  "naemfa" as const;
@@ -48,6 +48,11 @@ export const storeMfaPendingCookie = (token: string, response: NextResponse): vo
     '/',
     MFA_PENDING_TTL_SECONDS
   );
+}
+
+export const getMfaPendingToken = (request: NextRequest): string => {
+  const token = getToken(request, MFA_PENDING_COOKIE_NAME, "Missing MFA pending token");
+  return token;
 }
 
 export const clearMfaPendingCookie = (response: NextResponse) => {
