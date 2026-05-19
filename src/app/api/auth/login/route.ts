@@ -23,12 +23,8 @@ export async function POST(request: NextRequest) {
     let reqBody: object;
     try {
       reqBody = await getRequestBody(request);
-    } catch(authError: unknown) {
-      const message = authError instanceof Error ? authError.message : "Invalid request";
-      return NextResponse.json(
-        { error: message }, 
-        { status: 400 }
-      );
+    } catch(jsonError: unknown) {
+      return getErrorResponse(400, "Invalid request", jsonError);
     }
     
     // throw if field types are invalid at runtime
