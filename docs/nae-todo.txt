@@ -88,8 +88,11 @@ debug
 - [x] sign in leaves user on /login, cannot nav to protected pages
 - [x] sign in becomes active for some time between loading/disabled state and navigating to /dashboard
 
-session cache
-- [x] migrate to redis distributed cache
+session management lifecycle
+- [x] conceptual research
+- [x] token expiration (logout/timeout)
+- [x] active device monitoring
+- [x] session revocation
 
 refactor
 - [x] display.tsx: follow device-icons convention for social icons
@@ -107,12 +110,14 @@ refactor
 - [x] AuthContext.tsx: rename to auth-context-provider.tsx
 - [x] move theme-context-provider.tsx & auth-context-provider.tsx to /context-providers
 - [x] move dtos to /helpers/dto
+- [ ] refactor api routes to use getErrorResponse helper
 
-session management lifecycle
-- [x] conceptual research
-- [x] token expiration (logout/timeout)
-- [x] active device monitoring
-- [x] session revocation
+session cache
+- [x] migrate to redis distributed cache
+- [ ] research what to do with redis session records on logout (currently persisting until ttl expires)
+
+multi-factor authentication
+- [ ] implement ability to regen backup codes
 
 additional authentication methods
 - [x] add social login (google)
