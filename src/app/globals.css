@@ -16,6 +16,11 @@
   --foreground-primary: #353642;
   --foreground-secondary: #4b596d;
 
+  --success: #16a34a;
+  --error: #df2424;
+  --error-highlight: #cf1414;
+  --error-low: #ff8484;
+
   --brand: #6366f1;
   --brand-light: #818cf8;
   --brand-highlight: #4f46e5;
@@ -25,6 +30,9 @@
   --button-foreground-highlight: #ffffff;
   --button-foreground-low: #9a9dbf;
   --button-secondary-foreground: #6366f1;
+  --button-tertiary-background: #ffffff;
+  --button-tertiary-border: #d1d5db;
+  --button-warning-highlight: #eeeeee;
 
   --tab-foreground: #4b596d;
   --tab-foreground-selected: #6366f1;
@@ -43,6 +51,11 @@
   --foreground-primary: #e5e6f2;
   --foreground-secondary: #9ca3af;
 
+  --success: #4ADE80;
+  --error: #ef4444;
+  --error-highlight: #dc2626;
+  --error-low: #4c2b2d;
+
   --brand: #6366f1;
   --brand-light: #818cf8;
   --brand-highlight: #4f46e5;
@@ -52,6 +65,9 @@
   --button-foreground-highlight: #ffffff;
   --button-foreground-low: #4a4d6f;
   --button-secondary-foreground: #e5e6f2;
+  --button-tertiary-background: #282a36;
+  --button-tertiary-border: #4a4d5f;
+  --button-warning-highlight: #662010;
 
   --tab-foreground: #9ca3af;
   --tab-foreground-selected: #818cf8;
@@ -67,6 +83,10 @@
   --color-panel-active-foreground: var(--panel-active-foreground);
   --color-foreground-primary: var(--foreground-primary);
   --color-foreground-secondary: var(--foreground-secondary);
+  --color-success: var(--success);
+  --color-error: var(--error);
+  --color-error-highlight: var(--error-highlight);
+  --color-error-low: var(--error-low);
   --color-brand: var(--brand);
   --color-brand-light: var(--brand-light);
   --color-brand-highlight: var(--brand-highlight);
@@ -75,6 +95,9 @@
   --color-button-foreground-highlight: var(--button-foreground-highlight);
   --color-button-foreground-low: var(--button-foreground-low);
   --color-button-secondary-foreground: var(--button-secondary-foreground);
+  --color-button-tertiary-background: var(--button-tertiary-background);
+  --color-button-tertiary-border: var(--button-tertiary-border);
+  --color-button-warning-highlight: var(--button-warning-highlight);
   --color-tab-foreground: var(--tab-foreground);
   --color-tab-foreground-selected: var(--tab-foreground-selected);
   --background-image-logo: var(--logo);
@@ -137,6 +160,50 @@ body {
     disabled:border-brand-low
 }
 
+@utility button-tertiary {
+  @apply 
+    button-base
+    font-semibold 
+    text-foreground-primary 
+    hover:text-button-foreground-highlight 
+    disabled:text-button-tertiary-border
+    bg-button-tertiary-background
+    hover:bg-brand-highlight 
+    disabled:bg-panel
+    border
+    border-button-tertiary-border
+    hover:border-brand-highlight
+    disabled:border-button-tertiary-border
+}
+
+@utility button-warning {
+  @apply 
+    button-base
+    font-semibold 
+    text-error 
+    hover:text-button-foreground-highlight
+    disabled:text-error-low
+    bg-transparent 
+    hover:bg-error
+    disabled:bg-transparent
+    border-2
+    border-error
+    hover:border-error
+    disabled:border-error-low
+}
+
+@utility button-extreme {
+  @apply 
+    button-base
+    font-semibold 
+    text-button-foreground 
+    hover:text-button-foreground-highlight 
+    disabled:text-button-foreground-low
+    bg-error 
+    hover:bg-error-highlight
+    disabled:bg-error-low
+}
+
 @utility button-ghost {
   @apply 
     button-base 
@@ -158,7 +225,7 @@ body {
 @utility button-small {
   @apply 
     px-2.5 
-    py-1 
+    py-1.5 
     text-base
 }
 

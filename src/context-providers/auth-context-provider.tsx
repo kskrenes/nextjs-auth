@@ -33,6 +33,7 @@ export interface AuthContextType {
   updateUser: (user: EditableProfileFields) => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;
   linkCredentials: (password: string) => Promise<void>;
+  enableMFA: (code: string) => Promise<string[]>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -175,6 +176,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const enableMFA = async (code: string): Promise<string[]> => {
+    const res = await axiosClient.post("/api/users/mfa/enable", { code });
+    setUser(res.data.user);
+    return res.data.backupCodes;
+  }
+
   return (
     <AuthContext.Provider 
       value={{ 
@@ -191,6 +198,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         updateUser, 
         verifyEmail, 
         linkCredentials, 
+        enableMFA,
       }}
     >
       {children}

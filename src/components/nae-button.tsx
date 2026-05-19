@@ -1,6 +1,22 @@
 import React, { ButtonHTMLAttributes, ReactNode } from 'react';
 import { twMerge } from 'tailwind-merge';
 
+type Variant = 'primary' | 'secondary' | 'tertiary' | 'warning' | 'extreme';
+type Size = 'standard' | 'small';
+
+const variantMap: Record<Variant, string> = {
+  primary: 'button-primary',
+  secondary: 'button-secondary',
+  tertiary: 'button-tertiary',
+  warning: 'button-warning',
+  extreme: 'button-extreme',
+};
+
+const sizeMap: Record<Size, string> = {
+  standard: 'button-standard',
+  small: 'button-small',
+};
+
 /*
   Define the props interface by extending standard HTML button attributes.
   This allows the component to accept all standard button props without 
@@ -8,28 +24,21 @@ import { twMerge } from 'tailwind-merge';
 */
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;  // The content inside the button
-  variant?:             // Optional custom styling
-    'primary' | 'secondary';
-  size?:                // Optional size styling
-    'standard' | 'small';
+  variant?: Variant;    // Optional custom styling
+  size?: Size;          // Optional size styling
 }
 
 const Button: React.FC<ButtonProps> = ({
   children, 
   variant = 'primary', 
   size = 'standard',
-  onClick, 
+  onClick,   
   className = '',
   ...rest // Collect any other standard HTML button props
 }) => {
   
-  const variantStyles = variant === 'primary'
-    ? 'button-primary'
-    : 'button-secondary';
-
-  const sizeStyles = size === 'standard'
-    ? 'button-standard'
-    : 'button-small';
+  const variantStyles = variantMap[variant] ?? 'button-primary';
+  const sizeStyles = sizeMap[size] ?? 'button-standard';
 
   return (
     <button
