@@ -1,5 +1,6 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
+import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { generateBackupCodes, hashBackupCode, verifyTotpCode } from "@/helpers/util/mfa-utils";
 import { getRequestBody } from "@/helpers/util/request-utils";
@@ -71,17 +72,23 @@ export async function POST(request: NextRequest) {
       }
     );
 
+    // ensure a DB document was updated
+    if (!updatedUser) {
+      return getErrorResponse(404, "User not found");
+    }
+    
+    // build sanitized user
+    const sanitizedUser = sanitizeUser(updatedUser);
+
     // record security event for MFA enabled
-    if (updatedUser) {
-      try {
-        await recordSecurityEvent(
-          updatedUser._id.toString(), 
-          "mfa_enabled", 
-          request,
-        );
-      } catch (error) {
-        console.error("Failed to record mfa_enabled security event", error);
-      }
+    try {
+      await recordSecurityEvent(
+        sanitizedUser.id, 
+        "mfa_enabled", 
+        request,
+      );
+    } catch (error) {
+      console.error("Failed to record mfa_enabled security event", error);
     }
 
     // delete the Redis setup key
@@ -91,6 +98,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: "MFA enabled",
       success: true,
+      user: sanitizedUser,
       backupCodes
     });
   } 
