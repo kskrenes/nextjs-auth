@@ -1,7 +1,7 @@
 "use client";
 
 import { triggerEmail } from "@/helpers/util/email-trigger";
-import { KeyRound, Pencil, RotateCcwKey, ShieldAlert, ShieldUser, UserPlus } from "lucide-react";
+import { Pencil, ShieldAlert, ShieldUser } from "lucide-react";
 import { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
@@ -23,6 +23,7 @@ import { SecurityLogDTO } from "@/helpers/dto/security-log-dto";
 import SecurityLogCard from "@/components/security-log-card";
 import { axiosClient } from "@/lib/axios-client";
 import IconLink from "@/components/icon-link";
+import MFASetup from "@/components/mfa-setup";
 
 const AccountPage = () => {
 
@@ -479,7 +480,6 @@ const AccountPage = () => {
                   {user && user.linkedProviders?.includes('credentials') && (
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2">
-                        <RotateCcwKey className="w-5 h-5 text-brand-light -m-0.5" />
                         <label className="text-lg font-semibold">Reset Password</label>
                       </div>
                       <p className="text-foreground-secondary max-w-md">
@@ -502,7 +502,6 @@ const AccountPage = () => {
                   {user && !user.linkedProviders?.includes('credentials') && (
                     <div className="flex flex-col gap-1 max-w-md">
                       <div className="flex items-center gap-2">
-                        <KeyRound className="w-5 h-5 text-brand-light -m-0.5" />
                         <label className="text-lg font-semibold">Create Password</label>
                       </div>
                       <p className="text-foreground-secondary max-w-md">
@@ -543,14 +542,28 @@ const AccountPage = () => {
                   {user && !user.linkedProviders?.includes('google') && (
                     <div className="flex flex-col gap-1 max-w-md">
                       <div className="flex items-center gap-2">
-                        <UserPlus className="w-5 h-5 text-brand-light -m-0.5" />
                         <label className="text-lg font-semibold">Link Google Account</label>
                       </div>
                       <p className="text-foreground-secondary">
                         Connect your Google account to sign in securely with one click. You can still use your current username and password.
                       </p>
-                      <div className="mt-2">
+                      <div className="mt-2 max-w-46">
                         <GoogleLoginButton callback={handleGoogleLinkSuccess} />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* enable Multi-Factor Authentication */}
+                  {user && (
+                    <div className="flex flex-col gap-1 max-w-md">
+                      <div className="flex items-center gap-2">
+                        <label className="text-lg font-semibold">Multi-Factor Authentication</label>
+                      </div>
+                      <p className="text-foreground-secondary">
+                        Add an extra layer of security to your account by requiring a verification code in addition to your password.
+                      </p>
+                      <div className="mt-2">
+                        <MFASetup mfaEnabled={user.mfaEnabled} />
                       </div>
                     </div>
                   )}
