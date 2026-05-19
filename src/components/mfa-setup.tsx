@@ -196,7 +196,7 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
               <QRCode 
                 value={uri}
                 size={256}
-                style={{ height: "auto", maxWidth: "150", width: "150" }}
+                style={{ height: "auto", maxWidth: 150, width: 150 }}
               />
             </div>
           </div>
