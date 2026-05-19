@@ -61,7 +61,8 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
   }
 
   const submitEnableMfa = async () => {
-    const codes = await enableMFA(verificationCode);
+    const normalizedCode = verificationCode.replace(/\D/g, "").slice(0, 6);
+    const codes = await enableMFA(normalizedCode);
     setBackupCodes(codes);
   }
 
@@ -227,8 +228,10 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
                 placeholder="000000"
                 ref={codeInputRef}
                 maxLength={6}
+                inputMode="numeric"
+                autoComplete="one-time-code"
                 value={verificationCode} 
-                onChange={(e) => {setVerificationCode(e.target.value)}} 
+                onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                 className="tracking-widest"
               />
             </div>
