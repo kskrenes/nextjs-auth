@@ -16,6 +16,7 @@ import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { SecurityEventType } from "@/helpers/util/security-event-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
+import { initiateMfaChallenge } from "@/helpers/util/mfa-utils";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
   // generate a base username from the name or email
@@ -114,6 +115,12 @@ export async function POST(request: NextRequest) {
       if (!storedUser.isVerified && email_verified) {
         storedUser.isVerified = true;
         await storedUser.save();
+      }
+
+      // check if user has MFA enabled
+      if (storedUser.mfaEnabled === true) {
+        const mfaChallenge = await initiateMfaChallenge(storedUser);
+        return mfaChallenge;
       }
     }
     
