@@ -4,6 +4,7 @@ import { generateTOTP } from '@otplib/uri';
 import { redis, redisKeys } from "@/lib/redis";
 import { getRandomToken, storeCookie } from "./token-utils";
 import { NextResponse } from "next/server";
+import { RawUser } from "../dto/user-dto";
 
 const MFA_PENDING_COOKIE_NAME =  "naemfa" as const;
 const MFA_PENDING_TTL_SECONDS = 5 * 60; // 5 minutes
@@ -102,4 +103,24 @@ export const verifyBackupCode = (code: string, hashedCodes: string[]): number | 
   const inputHash = crypto.createHash("sha256").update(code).digest("hex");
   const index = hashedCodes.indexOf(inputHash);
   return index !== -1 ? index : null;
+}
+
+export const initiateMfaChallenge = async (user: RawUser) => {
+  // store pending state in Redis
+  const token = await createMfaPendingToken(user._id.toString());
+
+  // create challenge response for MFA
+  const response = NextResponse.json(
+    {
+      message: "MFA verification required",
+      mfaRequired: true,
+    }, 
+    { status: 200 }
+  );
+
+  // set MFA pending cookie
+  storeMfaPendingCookie(token, response);
+
+  // return MFA challenge response
+  return response;
 }
