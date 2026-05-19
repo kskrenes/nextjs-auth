@@ -13,6 +13,7 @@ import { getRequestBody } from "@/helpers/util/request-utils";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { getErrorResponse } from "@/helpers/util/error-utils";
+import { createMfaPendingToken, storeMfaPendingCookie } from "@/helpers/util/mfa-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -62,6 +63,27 @@ export async function POST(request: NextRequest) {
 
     // create sanitized user for response
     const sanitizedUser = sanitizeUser(user);
+
+    // check if user has MFA enabled
+    if (sanitizedUser.mfaEnabled === true) {
+      // store pending state in Redis
+      const mfaToken = await createMfaPendingToken(sanitizedUser.id);
+
+      // create challenge response for MFA
+      const mfaResponse = NextResponse.json(
+        {
+          message: "MFA verification required",
+          mfaRequired: true,
+        }, 
+        { status: 200 }
+      );
+
+      // set MFA pending cookie
+      storeMfaPendingCookie(mfaToken, mfaResponse);
+
+      // return MFA challenge response
+      return mfaResponse;
+    }
 
     // store a new session document
     let refreshToken;
