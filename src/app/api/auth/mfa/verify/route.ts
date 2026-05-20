@@ -9,6 +9,8 @@ import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
+  let token: string | null = null;
+  let claimed = false;
   try {
     await connect();
 
@@ -27,14 +29,28 @@ export async function POST(request: NextRequest) {
     }
 
     // Atomically claim the pending token — only one concurrent request succeeds.
-    const token = getMfaPendingToken(request);
+    token = getMfaPendingToken(request);
+    if (!token) {
+      return getErrorResponse(400, "MFA token missing");
+    }
     const userId = await claimMfaPendingToken(token);
+    if (!userId) {
+      return getErrorResponse(401, "MFA token invalid or expired");
+    }
+    claimed = true;
 
     // fetch user from DB with mfaSecret included
-    const user = await User.findById(userId).select('+mfaSecret +mfaBackupCodes');
+    let user;
+    try {
+      user = await User.findById(userId).select('+mfaSecret +mfaBackupCodes');
+    } catch (dbError) {
+      await unclaimMfaPendingToken(token);
+      return getErrorResponse(500, "Database error", dbError);
+    }
 
     // ensure a DB match was found
     if (!user) {
+      await unclaimMfaPendingToken(token);
       return getErrorResponse(404, "User not found");
     }
 
@@ -121,6 +137,9 @@ export async function POST(request: NextRequest) {
     return getErrorResponse(401, "Verification failed");
   } 
   catch (routeError) {
+    if (token && claimed) {
+      try { await unclaimMfaPendingToken(token); } catch { /* ignore */ }
+    }
     return getErrorResponse(500, "Failed to complete multi-factor authentication", routeError);
   }
 }
