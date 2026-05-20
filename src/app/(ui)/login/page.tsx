@@ -5,8 +5,8 @@ import MFAChallenge from "@/components/mfa-challenge";
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
-import { useAuth } from "@/context-providers/auth-context-provider";
-import axios, { AxiosResponse } from "axios";
+import { AuthLoginResponse, useAuth } from "@/context-providers/auth-context-provider";
+import axios from "axios";
 import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -46,7 +46,7 @@ const LoginPage = () => {
     setAwaitingRedirect(false);
   }, []);
 
-  const handleGoogleCallback = useCallback((res: AxiosResponse) => {
+  const handleGoogleCallback = useCallback((res: AuthLoginResponse) => {
     if (res.data.mfaRequired) {
       setAwaitingRedirect(false);
       setMfaPending(true);

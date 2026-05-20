@@ -1,14 +1,13 @@
 'use client';
 
-import { useAuth } from '@/context-providers/auth-context-provider';
-import { AxiosResponse } from 'axios';
+import { AuthLoginResponse, useAuth } from '@/context-providers/auth-context-provider';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
 
 interface GoogleLoginButtonProps {
   redirect?: boolean;
   disabled?: boolean;
-  callback?: (res: AxiosResponse) => void;
+  callback?: (res: AuthLoginResponse) => void;
   onLoginAttempt?: () => void;
   onLoginError?: () => void;
 }

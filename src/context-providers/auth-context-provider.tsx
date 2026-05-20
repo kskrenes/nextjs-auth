@@ -6,7 +6,6 @@ import { axiosClient, setupAuthInterceptor } from '@/lib/axios-client';
 import { useRouter } from 'next/navigation';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { AxiosResponse } from 'axios';
 
 // Public pages — onSignOut should NOT redirect away from these
 const PUBLIC_PATHS = new Set(['/', '/login', '/signup', '/verifyemail', '/resetpassword', '/triggerpasswordreset']);
@@ -29,14 +28,21 @@ export interface AuthContextType {
   verifyingEmail: boolean; 
   linkingAccount: boolean;
   verifyingMFA: boolean;
-  login: (email: string, password: string) => Promise<AxiosResponse>;
-  loginViaGoogle: (token: string) => Promise<AxiosResponse>
+  login: (email: string, password: string) => Promise<AuthLoginResponse>;
+  loginViaGoogle: (token: string) => Promise<AuthLoginResponse>
   logout: () => Promise<void>;
   updateUser: (user: EditableProfileFields) => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;
   linkCredentials: (password: string) => Promise<void>;
   enableMFA: (code: string) => Promise<string[]>;
   verifyMFA: (code: string) => Promise<void>;
+}
+
+export interface AuthLoginResponse {
+  data: {
+    user: UserDTO;
+    mfaRequired: boolean;
+  };
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -107,7 +113,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [fetchUser]);
 
   // ── auth actions ─────────────────────────────────────────────────────────────
-  const login = async (email: string, password: string): Promise<AxiosResponse> => {
+  const login = async (email: string, password: string): Promise<AuthLoginResponse> => {
     setLoggingIn(true);
     try {
       const res = await axiosClient.post("/api/auth/login", { email, password });
@@ -119,7 +125,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const loginViaGoogle = async (token: string): Promise<AxiosResponse> => {
+  const loginViaGoogle = async (token: string): Promise<AuthLoginResponse> => {
     setLoggingIn(true);
     try {
       const res = await axiosClient.post('/api/auth/google', { token });
