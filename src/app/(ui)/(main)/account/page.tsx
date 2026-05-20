@@ -143,7 +143,7 @@ const AccountPage = () => {
     });
   };
 
-  const handleGoogleLinkSuccess = async () => {
+  const handleGoogleLinkSuccess = () => {
     toast.success("Google account added successfully!");
   }
 
