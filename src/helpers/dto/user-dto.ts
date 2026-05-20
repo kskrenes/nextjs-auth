@@ -36,8 +36,8 @@ const UserDTOSchema = z.object({
 // infer a typescript type from the zod schema
 export type UserDTO = z.infer<typeof UserDTOSchema>;
 
-// define a minimal interface for the raw session
-interface RawUser {
+// define a minimal interface for the raw user
+export interface RawUser {
   _id: { toString(): string } | string;
   username: string;
   email: string;

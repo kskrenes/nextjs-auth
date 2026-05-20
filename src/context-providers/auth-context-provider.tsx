@@ -27,14 +27,29 @@ export interface AuthContextType {
   updatingUser: boolean;
   verifyingEmail: boolean; 
   linkingAccount: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  loginViaGoogle: (token: string) => Promise<void>
+  verifyingMFA: boolean;
+  login: (email: string, password: string) => Promise<AuthLoginResponse>;
+  loginViaGoogle: (token: string) => Promise<AuthLoginResponse>
   logout: () => Promise<void>;
   updateUser: (user: EditableProfileFields) => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;
   linkCredentials: (password: string) => Promise<void>;
   enableMFA: (code: string) => Promise<string[]>;
+  verifyMFA: (code: string) => Promise<void>;
 }
+
+export type AuthLoginResponse =
+  | {
+      data: {
+        mfaRequired: true;
+      }
+    }
+  | {
+      data: {
+        user: UserDTO;
+        mfaRequired: false;
+      }
+    };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -50,6 +65,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [updatingUser, setUpdatingUser] = useState<boolean>(false);
   const [verifyingEmail, setVerifyingEmail] = useState<boolean>(false);
   const [linkingAccount, setLinkingAccount] = useState<boolean>(false);
+  const [verifyingMFA, setVerifyingMFA] = useState<boolean>(false);
 
   const router = useRouter();
 
@@ -103,22 +119,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [fetchUser]);
 
   // ── auth actions ─────────────────────────────────────────────────────────────
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<AuthLoginResponse> => {
     setLoggingIn(true);
     try {
       const res = await axiosClient.post("/api/auth/login", { email, password });
-      setUser(res.data.user);
+      if (res.data?.user) {
+        setUser(res.data.user);
+      }
+      return res;
       // Redirect is handled by the calling page (e.g. LoginPage.useEffect)
     } finally {
       setLoggingIn(false);
     }
   };
 
-  const loginViaGoogle = async (token: string) => {
+  const loginViaGoogle = async (token: string): Promise<AuthLoginResponse> => {
     setLoggingIn(true);
     try {
       const res = await axiosClient.post('/api/auth/google', { token });
-      setUser(res.data.user);
+      if (res.data?.user) {
+        setUser(res.data.user);
+      }
+      return res;
       // Redirect handled by client component since it may not be required,
       // for example when linking a Google account on the account page
     } finally {
@@ -182,6 +204,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return res.data.backupCodes;
   }
 
+  const verifyMFA = async (code: string) => {
+    setVerifyingMFA(true);
+    try {
+      const res = await axiosClient.post("/api/auth/mfa/verify", { code });
+      setUser(res.data.user);
+    } finally {
+      setVerifyingMFA(false);
+    }
+  }
+
   return (
     <AuthContext.Provider 
       value={{ 
@@ -192,6 +224,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         updatingUser,
         verifyingEmail, 
         linkingAccount,
+        verifyingMFA,
         login, 
         loginViaGoogle, 
         logout, 
@@ -199,6 +232,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         verifyEmail, 
         linkCredentials, 
         enableMFA,
+        verifyMFA,
       }}
     >
       {children}

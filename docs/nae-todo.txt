@@ -117,6 +117,7 @@ session cache
 - [ ] research what to do with redis session records on logout (currently persisting until ttl expires)
 
 multi-factor authentication
+- [ ] use monospace font for codes
 - [ ] implement ability to regen backup codes
 
 additional authentication methods

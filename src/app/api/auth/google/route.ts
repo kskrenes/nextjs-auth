@@ -15,6 +15,8 @@ import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { SecurityEventType } from "@/helpers/util/security-event-utils";
+import { getErrorResponse } from "@/helpers/util/error-utils";
+import { initiateMfaChallenge } from "@/helpers/util/mfa-utils";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
   // generate a base username from the name or email
@@ -59,32 +61,20 @@ export async function POST(request: NextRequest) {
     let reqBody: object;
     try {
       reqBody = await getRequestBody(request);
-    } catch(error: unknown) {
-      console.error("Invalid request");
-      return NextResponse.json(
-        { error: error instanceof Error ? error.message : "Invalid request" }, 
-        { status: 400 }
-      );
+    } catch(jsonError: unknown) {
+      return getErrorResponse(400, "Invalid request", jsonError);
     }
 
     // throw if field types are invalid at runtime
     const { token } = reqBody as { token?: string; };
     if (typeof token !== "string") {
-      console.error("Invalid request");
-      return NextResponse.json(
-        { error: "Invalid request" },
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Invalid request");
     }
 
     // throw if google client id is not configured
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     if (!clientId) {
-      console.error("NEXT_PUBLIC_GOOGLE_CLIENT_ID is not configured");
-      return NextResponse.json(
-        { error: "Server configuration error" },
-        { status: 500 }
-      );
+      return getErrorResponse(500, "Server configuration error");
     }
 
     // verify the ID Token with google
@@ -104,11 +94,7 @@ export async function POST(request: NextRequest) {
       !payload.email ||
       typeof payload.email !== "string"
     ) {
-      console.error("Invalid token payload");
-      return NextResponse.json(
-        { error: 'Invalid token payload' }, 
-        { status: 401 }
-      );
+      return getErrorResponse(401, "Invalid token payload");
     }
 
     const { sub, email, picture, email_verified } = payload;
@@ -129,6 +115,12 @@ export async function POST(request: NextRequest) {
       if (!storedUser.isVerified && email_verified) {
         storedUser.isVerified = true;
         await storedUser.save();
+      }
+
+      // check if user has MFA enabled
+      if (storedUser.mfaEnabled === true) {
+        const mfaChallenge = await initiateMfaChallenge(storedUser);
+        return mfaChallenge;
       }
     }
     
@@ -166,10 +158,7 @@ export async function POST(request: NextRequest) {
 
         // if no user was found, current session user has a different email
         if (!updatedUser) {
-          return NextResponse.json(
-            { error: "Google email must match account email" },
-            { status: 409 }
-          );
+          return getErrorResponse(409, "Google email must match account email");
         }
 
         storedUser = updatedUser;
@@ -201,8 +190,8 @@ export async function POST(request: NextRequest) {
           if (picture && typeof picture === 'string') {
             try {
               newUser.avatarId = await getAvatarId(picture);  
-            } catch (error) {
-              console.error("Failed to import Google avatar", error);
+            } catch (avatarError) {
+              console.error("Failed to import Google avatar", avatarError);
             }
           }
         }
@@ -212,19 +201,16 @@ export async function POST(request: NextRequest) {
           storedUser = await newUser.save();
 
         // throw if database rejects duplicate with 11000
-        } catch (error: unknown) {
+        } catch (duplicateError: unknown) {
           if (
-            typeof error === "object" &&
-            error !== null &&
-            "code" in error &&
-            (error as { code?: number }).code === 11000
+            typeof duplicateError === "object" &&
+            duplicateError !== null &&
+            "code" in duplicateError &&
+            (duplicateError as { code?: number }).code === 11000
           ) {
-            return NextResponse.json(
-              { error: "User already exists" },
-              { status: 409 }
-            );
+            return getErrorResponse(409, "User already exists", duplicateError);
           }
-          throw error;
+          throw duplicateError;
         }
       }
     }
@@ -237,12 +223,8 @@ export async function POST(request: NextRequest) {
     let newSessionId;
     try {
       ({ refreshToken, sessionId: newSessionId } = await createSession(sanitizedUser, request));
-    } catch(error) {
-      console.error("Failed to create session document", error);
-      return NextResponse.json(
-        { error: "Unable to log in" },
-        { status: 500 }
-      );
+    } catch(sessionError) {
+      return getErrorResponse(500, "Failed to create session document", sessionError);
     }
 
     // create access token
@@ -255,12 +237,8 @@ export async function POST(request: NextRequest) {
         hasCompletedProfile: sanitizedUser.hasCompletedProfile,
         sessionId: newSessionId,
       });
-    } catch (error) {
-      console.error("Failed to sign access token", error);
-      return NextResponse.json(
-        { error: "Unable to log in" },
-        { status: 500 }
-      );
+    } catch (tokenError) {
+      return getErrorResponse(500, "Failed to sign access token", tokenError);
     }
 
     // record security event for successful login or account linking
@@ -270,8 +248,8 @@ export async function POST(request: NextRequest) {
         securityLogAction, 
         request,
       );
-    } catch (error) {
-      console.error(`Failed to record ${securityLogAction} security event`, error);
+    } catch (logError) {
+      console.error(`Failed to record ${securityLogAction} security event`, logError);
     }
 
     // create success response
@@ -292,11 +270,7 @@ export async function POST(request: NextRequest) {
     // return success
     return response;
   } 
-  catch (error) {
-    console.error(error instanceof Error ? error.message : "Unable to log in");
-    return NextResponse.json(
-      { error: "Unable to log in" }, 
-      { status: 500 }
-    );
+  catch (routeError) {
+    return getErrorResponse(500, "Unable to log in", routeError);
   }
 }

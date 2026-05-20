@@ -2,11 +2,54 @@ import crypto from "crypto";
 import { OTP } from 'otplib';
 import { generateTOTP } from '@otplib/uri';
 import { redis, redisKeys } from "@/lib/redis";
-import { getRandomToken, storeCookie } from "./token-utils";
-import { NextResponse } from "next/server";
+import { getRandomToken, getToken, storeCookie } from "./token-utils";
+import { NextRequest, NextResponse } from "next/server";
+import { RawUser } from "../dto/user-dto";
 
 const MFA_PENDING_COOKIE_NAME =  "naemfa" as const;
 const MFA_PENDING_TTL_SECONDS = 5 * 60; // 5 minutes
+const CLAIM_TTL_SECONDS = 30; // Short window for validation + session creation; protects against indefinite locks.
+
+/**
+ * Atomically transitions a pending MFA token from "pending" → "claimed".
+ * Only one concurrent caller can succeed; subsequent callers receive null.
+ * Stores the remaining TTL in the claimed record so it can be restored on failure.
+ *
+ * Returns userId if the claim succeeded, or null if the token is missing,
+ * expired, or already claimed by another request.
+ */
+const CLAIM_SCRIPT = `
+local key   = KEYS[1]
+local claimTTL = tonumber(ARGV[1])
+local val = redis.call('GET', key)
+if not val then return nil end
+local ok, data = pcall(cjson.decode, val)
+if not ok or data.claimed then return nil end
+local ttl = redis.call('TTL', key)
+if ttl < 0 then return nil end
+data.claimed     = true
+data.remainingTTL = ttl
+redis.call('SET', key, cjson.encode(data), 'EX', claimTTL)
+return val
+`;
+
+/**
+ * Atomically reverts a claimed token back to "pending", restoring the
+ * original TTL so the user can retry without restarting the login flow.
+ * No-ops gracefully if the token no longer exists (e.g. claim window expired).
+ */
+const UNCLAIM_SCRIPT = `
+local key = KEYS[1]
+local val = redis.call('GET', key)
+if not val then return nil end
+local ok, data = pcall(cjson.decode, val)
+if not ok or not data.claimed then return nil end
+local remainingTTL = data.remainingTTL or 60
+data.claimed      = nil
+data.remainingTTL = nil
+redis.call('SET', key, cjson.encode(data), 'EX', remainingTTL)
+return 1
+`;
 
 export const createMfaPendingToken = async (userId: string): Promise<string> => {
   // generate random token
@@ -20,23 +63,31 @@ export const createMfaPendingToken = async (userId: string): Promise<string> => 
   };
 
   // store in redis with expiration
-  await redis.setex(key, MFA_PENDING_TTL_SECONDS, JSON.stringify(data));
+  await redis.setex(key, MFA_PENDING_TTL_SECONDS, data);
   return token;
 }
 
-export const validateMfaPendingToken = async (token: string): Promise<string | null> => {
-  // get redis key for the given token
+interface MfaTokenData {
+  userId: string;
+  timestamp: number;
+}
+
+export const claimMfaPendingToken = async (token: string): Promise<string | null> => {
   const key = redisKeys.mfaToken(token);
-
-  // atomically retrieve the value and delete the key in one step
-  const result = await redis.getdel<string>(key);
-
-  // return null if expired or not found
+  // eval returns the original JSON string on success, null otherwise
+  const result = await redis.eval(CLAIM_SCRIPT, [key], [CLAIM_TTL_SECONDS]);
   if (!result) return null;
+  const data = (typeof result === "string" ? JSON.parse(result) : result) as MfaTokenData;
+  return data.userId ?? null;
+};
 
-  // return the userId
-  const data = JSON.parse(result);
-  return data.userId;
+export const unclaimMfaPendingToken = async (token: string): Promise<void> => {
+  const key = redisKeys.mfaToken(token);
+  await redis.eval(UNCLAIM_SCRIPT, [key], []);
+};
+
+export const deleteMfaPendingToken = async (token: string): Promise<void> => {
+  await redis.del(redisKeys.mfaToken(token));
 }
 
 export const storeMfaPendingCookie = (token: string, response: NextResponse): void => {
@@ -49,11 +100,17 @@ export const storeMfaPendingCookie = (token: string, response: NextResponse): vo
   );
 }
 
+export const getMfaPendingToken = (request: NextRequest): string => {
+  const token = getToken(request, MFA_PENDING_COOKIE_NAME, "Missing MFA pending token");
+  return token;
+}
+
 export const clearMfaPendingCookie = (response: NextResponse) => {
   response.cookies.delete(MFA_PENDING_COOKIE_NAME);
 }
 
 export const verifyTotpCode = async (secret: string, code: string): Promise<boolean> => { 
+  if (!code || code.length !== 6) return false;
   const otp = new OTP();
   const result = await otp.verify({ secret, token: code });
   return result.valid;
@@ -102,4 +159,24 @@ export const verifyBackupCode = (code: string, hashedCodes: string[]): number | 
   const inputHash = crypto.createHash("sha256").update(code).digest("hex");
   const index = hashedCodes.indexOf(inputHash);
   return index !== -1 ? index : null;
+}
+
+export const initiateMfaChallenge = async (user: RawUser) => {
+  // store pending state in Redis
+  const token = await createMfaPendingToken(user._id.toString());
+
+  // create challenge response for MFA
+  const response = NextResponse.json(
+    {
+      message: "MFA verification required",
+      mfaRequired: true,
+    }, 
+    { status: 200 }
+  );
+
+  // set MFA pending cookie
+  storeMfaPendingCookie(token, response);
+
+  // return MFA challenge response
+  return response;
 }

@@ -1,13 +1,13 @@
 'use client';
 
-import { useAuth } from '@/context-providers/auth-context-provider';
+import { AuthLoginResponse, useAuth } from '@/context-providers/auth-context-provider';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
 
 interface GoogleLoginButtonProps {
   redirect?: boolean;
   disabled?: boolean;
-  callback?: () => void;
+  callback?: (res: AuthLoginResponse) => void;
   onLoginAttempt?: () => void;
   onLoginError?: () => void;
 }
@@ -28,15 +28,15 @@ export default function GoogleLoginButton({
       onLoginAttempt();
     }
     try {
-      await loginViaGoogle(token);
+      const res = await loginViaGoogle(token);
       if (callback) {
-        callback();
+        callback(res);
       }
-      if (redirect) {
+      if (redirect && !res.data.mfaRequired) {
         router.replace("/dashboard");
       }
-    } catch (error) {
-      console.error('Error logging in via Google', error);
+    } catch {
+      console.error('Error logging in via Google');
       if (onLoginError) {
         onLoginError();
       }
