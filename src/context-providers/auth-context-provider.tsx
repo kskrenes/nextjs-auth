@@ -38,12 +38,18 @@ export interface AuthContextType {
   verifyMFA: (code: string) => Promise<void>;
 }
 
-export interface AuthLoginResponse {
-  data: {
-    user: UserDTO;
-    mfaRequired: boolean;
-  };
-}
+export type AuthLoginResponse =
+  | {
+      data: {
+        mfaRequired: true;
+      }
+    }
+  | {
+      data: {
+        user: UserDTO;
+        mfaRequired: false;
+      }
+    };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
