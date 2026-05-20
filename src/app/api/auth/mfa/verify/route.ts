@@ -61,6 +61,7 @@ export async function POST(request: NextRequest) {
       try {
         ({ refreshToken, sessionId } = await createSession(sanitizedUser, request));
       } catch(sessionError) {
+        await unclaimMfaPendingToken(token);
         return getErrorResponse(500, "Unable to log in", sessionError);
       }
   
@@ -75,6 +76,7 @@ export async function POST(request: NextRequest) {
           sessionId,
         });
       } catch (tokenError) {
+        await unclaimMfaPendingToken(token);
         return getErrorResponse(500, "Failed to sign access token", tokenError);
       }
   
