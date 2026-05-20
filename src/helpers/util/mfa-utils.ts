@@ -34,14 +34,18 @@ export const validateMfaPendingToken = async (token: string): Promise<string | n
   // get redis key for the given token
   const key = redisKeys.mfaToken(token);
 
-  // atomically retrieve the value and delete the key in one step
-  const result = await redis.getdel<MfaTokenData>(key);
+  // retrieve the value
+  const result = await redis.get<MfaTokenData>(key);
 
   // return null if expired or not found
   if (!result) return null;
 
   // return the userId
   return result.userId;
+}
+
+export const deleteMfaPendingToken = async (token: string): Promise<void> => {
+  await redis.del(redisKeys.mfaToken(token));
 }
 
 export const storeMfaPendingCookie = (token: string, response: NextResponse): void => {
