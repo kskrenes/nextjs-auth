@@ -72,7 +72,7 @@ const MFAChallenge = ({ onCancel }: MFAChallengeProps) => {
         <Input 
           id="mfachallengecode" 
           label={useBackupCode ? "Backup Code" : "Verification Code"}
-          placeholder={`000000${useBackupCode ? '00' : ''}`}
+          placeholder={useBackupCode ? "A1B2C3D4" : "000000"}
           ref={codeInputRef}
           maxLength={useBackupCode ? 8 : 6}
           inputMode={useBackupCode ? "text" : "numeric"}
