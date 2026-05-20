@@ -7,6 +7,8 @@ import Button from "./nae-button";
 import { Switch } from "@headlessui/react";
 import { ShieldAlert } from "lucide-react";
 import NaeLoader from "./nae-loader";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 interface MFAChallengeProps {
   onCancel: () => void;
@@ -41,9 +43,11 @@ const MFAChallenge = ({ onCancel }: MFAChallengeProps) => {
       // TODO: normalize code
       await verifyMFA(code);
     } catch (error) {
-      // TODO: handle error
-      console.error(error);
-      setIsInvalid(true);
+      if (axios.isAxiosError(error) && [400, 401].includes(error.response?.status ?? 0)) {
+        setIsInvalid(true);
+      } else {
+        toast.error("Error validating verification code");
+      }
       setAwaitingRedirect(false);
     }
   }
