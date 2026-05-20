@@ -117,7 +117,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setLoggingIn(true);
     try {
       const res = await axiosClient.post("/api/auth/login", { email, password });
-      setUser(res.data.user);
+      if (res.data?.user) {
+        setUser(res.data.user);
+      }
       return res;
       // Redirect is handled by the calling page (e.g. LoginPage.useEffect)
     } finally {
@@ -129,7 +131,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setLoggingIn(true);
     try {
       const res = await axiosClient.post('/api/auth/google', { token });
-      setUser(res.data.user);
+      if (res.data?.user) {
+        setUser(res.data.user);
+      }
       return res;
       // Redirect handled by client component since it may not be required,
       // for example when linking a Google account on the account page
