@@ -2,7 +2,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { getErrorResponse } from "@/helpers/util/error-utils";
-import { clearMfaPendingCookie, deleteMfaPendingToken, getMfaPendingToken, validateMfaPendingToken, verifyBackupCode, verifyTotpCode } from "@/helpers/util/mfa-utils";
+import { claimMfaPendingToken, clearMfaPendingCookie, deleteMfaPendingToken, getMfaPendingToken, unclaimMfaPendingToken, verifyBackupCode, verifyTotpCode } from "@/helpers/util/mfa-utils";
 import { getRequestBody } from "@/helpers/util/request-utils";
 import { createSession, signAccessToken, storeAccessTokenCookie, storeRefreshTokenCookie, storeSessionHintCookie } from "@/helpers/util/token-utils";
 import User from "@/models/user-model";
@@ -26,9 +26,9 @@ export async function POST(request: NextRequest) {
       return getErrorResponse(400, "Invalid request");
     }
 
-    // retrieve MFA pending token and userId
+    // Atomically claim the pending token — only one concurrent request succeeds.
     const token = getMfaPendingToken(request);
-    const userId = await validateMfaPendingToken(token);
+    const userId = await claimMfaPendingToken(token);
 
     // fetch user from DB with mfaSecret included
     const user = await User.findById(userId).select('+mfaSecret +mfaBackupCodes');
@@ -113,7 +113,9 @@ export async function POST(request: NextRequest) {
       return response;
     }
 
-    // verification failed response
+    // Wrong code: restore the token to pending so the user can retry
+    // without restarting the entire login flow.
+    await unclaimMfaPendingToken(token);
     return getErrorResponse(401, "Verification failed");
   } 
   catch (routeError) {
