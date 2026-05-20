@@ -35,8 +35,8 @@ export default function GoogleLoginButton({
       if (redirect && !res.data.mfaRequired) {
         router.replace("/dashboard");
       }
-    } catch (error) {
-      console.error('Error logging in via Google', error);
+    } catch {
+      console.error('Error logging in via Google');
       if (onLoginError) {
         onLoginError();
       }
