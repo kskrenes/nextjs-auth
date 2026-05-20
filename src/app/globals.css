@@ -258,6 +258,56 @@ body {
     cursor-default
 }
 
+@utility switch-base {
+  @apply
+    relative 
+    inline-flex 
+    h-6 
+    w-11 
+    items-center 
+    rounded-full 
+    cursor-pointer 
+    focus:outline-none 
+    data-focus:outline-2 
+    data-focus:outline-brand 
+    data-focus:outline-offset-2
+}
+
+@utility switch-on {
+  @apply
+    switch-base
+    bg-brand
+}
+
+@utility switch-off {
+  @apply
+    switch-base
+    bg-panel-highlight
+}
+
+@utility switch-handle-base {
+  @apply
+    inline-block 
+    h-4 
+    w-4 
+    transform 
+    rounded-full 
+    bg-white 
+    transition
+}
+
+@utility switch-handle-on {
+  @apply
+    switch-handle-base
+    translate-x-6
+}
+
+@utility switch-handle-off {
+  @apply
+    switch-handle-base
+    translate-x-1
+}
+
 @utility tab-list {
   @apply
     flex 

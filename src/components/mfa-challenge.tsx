@@ -110,16 +110,10 @@ const MFAChallenge = ({ onCancel }: MFAChallengeProps) => {
         <Switch
           checked={useBackupCode}
           onChange={setUseBackupCode}
-          className={`${
-            useBackupCode ? 'bg-brand' : 'bg-panel-highlight'
-          } relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer`}
+          className={useBackupCode ? 'switch-on' : 'switch-off'}
         >
           <span className="sr-only">Use backup code</span>
-          <span
-            className={`${
-              useBackupCode ? 'translate-x-6' : 'translate-x-1'
-            } inline-block h-4 w-4 transform rounded-full bg-white transition`}
-          />
+          <span className={useBackupCode ? 'switch-handle-on' : 'switch-handle-off'} />
         </Switch>
         <p>Use a backup code</p>
       </div>
