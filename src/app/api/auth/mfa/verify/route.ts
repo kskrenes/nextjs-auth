@@ -40,18 +40,18 @@ export async function POST(request: NextRequest) {
 
     // check if code is a TOTP code or backup code
     const isTotp = await verifyTotpCode(user.mfaSecret, code);
-    let isBakupCode = false;
+    let isBackupCode = false;
     if (!isTotp) {
       const backupCodes = user.mfaBackupCodes;
       const codeIndex = verifyBackupCode(code, backupCodes);
-      if (codeIndex) {
+      if (typeof codeIndex === 'number') {
+        isBackupCode = true;
         const filteredCodes = backupCodes.filter((_: string, index: number) => index !== codeIndex);
         await User.findByIdAndUpdate(userId, { mfaBackupCodes: filteredCodes });
-        isBakupCode = true;
       }
     }
 
-    if (isTotp || isBakupCode) {
+    if (isTotp || isBackupCode) {
       // create sanitized user for response
       const sanitizedUser = sanitizeUser(user);
   
