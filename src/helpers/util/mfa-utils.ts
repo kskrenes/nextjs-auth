@@ -25,19 +25,23 @@ export const createMfaPendingToken = async (userId: string): Promise<string> => 
   return token;
 }
 
+interface MfaTokenData {
+  userId: string;
+  timestamp: number;
+}
+
 export const validateMfaPendingToken = async (token: string): Promise<string | null> => {
   // get redis key for the given token
   const key = redisKeys.mfaToken(token);
 
   // atomically retrieve the value and delete the key in one step
-  const result = await redis.getdel<string>(key);
+  const result = await redis.getdel<MfaTokenData>(key);
 
   // return null if expired or not found
   if (!result) return null;
 
   // return the userId
-  const data = JSON.parse(result);
-  return data.userId;
+  return result.userId;
 }
 
 export const storeMfaPendingCookie = (token: string, response: NextResponse): void => {
@@ -60,6 +64,7 @@ export const clearMfaPendingCookie = (response: NextResponse) => {
 }
 
 export const verifyTotpCode = async (secret: string, code: string): Promise<boolean> => { 
+  if (!code || code.length !== 6) return false;
   const otp = new OTP();
   const result = await otp.verify({ secret, token: code });
   return result.valid;
