@@ -21,7 +21,7 @@ export const createMfaPendingToken = async (userId: string): Promise<string> => 
   };
 
   // store in redis with expiration
-  await redis.setex(key, MFA_PENDING_TTL_SECONDS, JSON.stringify(data));
+  await redis.setex(key, MFA_PENDING_TTL_SECONDS, data);
   return token;
 }
 
