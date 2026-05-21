@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // validate request payload
+    // code must be totp (6 chars) or backup (8 chars)
     const { code } = reqBody as { code?: string; };
     if (typeof code !== "string" || (code.length !==6 && code.length !== 8)) {
       return getErrorResponse(400, "Invalid request");
