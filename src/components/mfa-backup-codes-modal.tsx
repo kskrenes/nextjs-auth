@@ -29,8 +29,14 @@ const MFABackupCodesModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalPr
   const [invalid, setInvalid] = useState<boolean>(false);
 
   const handleOpenChange = (isOpen: boolean) => {
-    if (!isOpen) setDisabled(true);
-    if (!validating) onOpenChange(isOpen);
+    if (!isOpen) {
+      setDisabled(true);
+      setInvalid(false);
+      setCode('');
+    }
+    if (!validating) {
+      onOpenChange(isOpen);
+    }
   }
 
   const handleFormChange = (val: string, disabled: boolean) => {
