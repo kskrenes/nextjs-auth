@@ -31,14 +31,14 @@ export async function POST(request: NextRequest) {
     try {
       reqBody = await getRequestBody(request);
     } catch(jsonError: unknown) {
-      return getErrorResponse(400, "Invalid request", jsonError);
+      return getErrorResponse(400, "Invalid request JSON", jsonError);
     }
 
     // validate request payload
     // code must be totp (6 chars) or backup (8 chars)
     const { code } = reqBody as { code?: string; };
     if (typeof code !== "string" || (code.length !==6 && code.length !== 8)) {
-      return getErrorResponse(400, "Invalid request");
+      return getErrorResponse(400, "Invalid request payload");
     }
 
     // fetch user from DB with mfaSecret included
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
           mfaBackupCodes: "" 
         }
       },
-      { new: true }
+      { returnDocument: 'after' }
     );
 
     // ensure a DB document was updated
