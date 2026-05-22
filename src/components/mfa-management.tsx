@@ -12,15 +12,20 @@ import { useAuth } from "@/context-providers/auth-context-provider";
 
 const INIT_ERROR = "Failed to initialize Multi-Factor Authentication";
 const VERIFY_ERROR = "Could not verify authentication code";
-const FEATURE_INCOMPLETE = "Feature scheduled for future release";
+const CODES_SETUP_TITLE = "Step 3 of 3: Save your backup codes";
+const CODES_REGEN_TITLE = "Save your new backup codes";
 
-interface MFASetupProps {
+interface MFAManagementProps {
   mfaEnabled: boolean;
+  onRegenBackupCodesClick: (onSuccess: (codes: string[]) => void) => void;
+  onDisableConfirmClick: () => void;
+  regenCodes?: string[] | null;
 }
 
-const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
+const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmClick, regenCodes = null }: MFAManagementProps) => {
 
-  const [step, setStep] = useState<number>(1);
+  // initialize step dynamically: start at 5 if already enabled, otherwise 1
+  const [step, setStep] = useState<number>(mfaEnabled ? 5 : 1);
   const [loading, setLoading] = useState<boolean>(false);
   const [secret, setSecret] = useState<string>('');
   const [uri, setUri] = useState<string>('');
@@ -28,14 +33,17 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
   const [backupCodes, setBackupCodes] = useState<string[]>([]);
   const [copiedCodes, setCopiedCodes] = useState<boolean>(false);
   const [confirmDisable, setConfirmDisable] = useState<boolean>(false);
+  const [codesTitle, setCodesTitle] = useState<string>(CODES_SETUP_TITLE);
 
   const { enableMFA } = useAuth();
 
-  // Capture the initial mfaEnabled value on mount and never change it.
-  // This allows the copy backup codes step to display after user.mfaEnabled 
-  // is updated while progressing through the setup wizard.
-  const { current: restedAlreadyEnabled } = useRef(mfaEnabled);
-  const showEnabledView = restedAlreadyEnabled || step === 5;
+  // reset to step 1 when MFA is disabled, but allow 
+  // step 4 (backup codes) to display after MFA is enabled
+  useEffect(() => {
+    if (!mfaEnabled) {
+      setStep(1);
+    }
+  }, [mfaEnabled]);
 
   const codeInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -44,6 +52,14 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
       codeInputRef.current.focus();
     }
   }, [step]);
+
+  useEffect(() => {
+    if (regenCodes) {
+      setBackupCodes(regenCodes);
+      setCodesTitle(CODES_REGEN_TITLE);
+      setStep(4);
+    }
+  }, [regenCodes])
   
   const advance = () => {
     setStep((prev) => prev + 1)
@@ -95,11 +111,6 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
     setTimeout(() => setCopiedCodes(false), 2000);
   }
 
-  const handleRegenCodes = async () => {
-    // TODO: create endpoint to regen backup codes
-    toast.error(FEATURE_INCOMPLETE);
-  }
-
   const handleDisableRequest = () => {
     setConfirmDisable(true);
   }
@@ -109,11 +120,15 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
   }
 
   const handleDisableConfirm = async () => {
-    // TODO: create endpoint to disable mfa
-    toast.error(FEATURE_INCOMPLETE);
+    onDisableConfirmClick();
   }
 
-  if (showEnabledView) {
+  const handleRegenCodesSuccess = (codes: string[]) => {
+    setBackupCodes(codes);
+    setStep(4);
+  }
+
+  if (step === 5) {
     return (
       <div className="flex flex-col mt-2 gap-4">
         <div className="flex items-center gap-2 mb-3">
@@ -127,7 +142,7 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
             size="small"
             variant="secondary"
             disabled={loading}
-            onClick={handleRegenCodes}
+            onClick={() => {onRegenBackupCodesClick(handleRegenCodesSuccess)}}
           >
             Regenerate Backup Codes
           </Button>
@@ -253,7 +268,7 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
       {step === 4 && (
         <div className="flex flex-col mt-2 gap-5">
           <div className="flex flex-col gap-3">
-            <p>Step 3 of 3: Save your backup codes</p>
+            <p>{codesTitle}</p>
             <p className="text-foreground-secondary">Store these codes in a safe place. You can use them to access your account if you lose access to your authenticator app.</p>
             <div className="p-5 rounded-md bg-panel flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-2">
@@ -298,4 +313,4 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
   )
 }
 
-export default MFASetup
+export default MFAManagement
