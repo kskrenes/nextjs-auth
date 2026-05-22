@@ -1,4 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 import { AuthTokenError, clearAuthCookies, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import { evictUserSessions } from '@/lib/session-cache'
 import Session from "@/models/session-model";
@@ -12,14 +13,11 @@ export async function POST(request: NextRequest) {
     let userId: string;
     try {
       ({ id: userId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: "Unauthorized" }, 
-          { status: error.status ?? 401 }
-        );
+    } catch (tokenError: unknown) {
+      if (tokenError instanceof AuthTokenError) {
+        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
       }
-      throw error;
+      throw tokenError;
     }
 
     // delete all session documents for the user
@@ -42,11 +40,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } 
-  catch (error: unknown) {
-    console.error(error instanceof Error ? error.message : "Error logging out all devices");
-    return NextResponse.json(
-      { error: "Error logging out all devices" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Error logging out all devices", routeError);
   }
 }

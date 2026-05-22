@@ -15,7 +15,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { SecurityEventType } from "@/helpers/util/security-event-utils";
-import { getErrorResponse } from "@/helpers/util/error-utils";
+import { getErrorResponse, isDuplicateError } from "@/helpers/util/error-utils";
 import { initiateMfaChallenge } from "@/helpers/util/mfa-utils";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
@@ -201,16 +201,11 @@ export async function POST(request: NextRequest) {
           storedUser = await newUser.save();
 
         // throw if database rejects duplicate with 11000
-        } catch (duplicateError: unknown) {
-          if (
-            typeof duplicateError === "object" &&
-            duplicateError !== null &&
-            "code" in duplicateError &&
-            (duplicateError as { code?: number }).code === 11000
-          ) {
-            return getErrorResponse(409, "User already exists", duplicateError);
+        } catch (dbError: unknown) {
+          if (isDuplicateError(dbError)) {
+            return getErrorResponse(409, "User already exists", dbError);
           }
-          throw duplicateError;
+          throw dbError;
         }
       }
     }

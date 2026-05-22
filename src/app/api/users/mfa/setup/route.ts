@@ -14,14 +14,11 @@ export async function POST(request: NextRequest) {
     let authenticatedUserId: string;
     try {
       ({ id: authenticatedUserId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: "Unauthorized" }, 
-          { status: error.status ?? 401 }
-        );
+    } catch (tokenError: unknown) {
+      if (tokenError instanceof AuthTokenError) {
+        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
       }
-      throw error;
+      throw tokenError;
     }
 
     // throw if authenticatedUserId does not match a user in the DB
@@ -52,7 +49,7 @@ export async function POST(request: NextRequest) {
       totpUri: uri,
     });
   } 
-  catch (error: unknown) {
-    return getErrorResponse(500, "Unable to generate TOTP", error);
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to generate TOTP", routeError);
   }
 }

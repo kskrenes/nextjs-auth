@@ -7,6 +7,7 @@ import { v2 as cloudinary } from 'cloudinary';
 import { defaultAvatarId } from "@/helpers/util/avatar-utils";
 import { sanitizeUser, UserDTO } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
+import { getErrorResponse, isDuplicateError } from "@/helpers/util/error-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,34 +18,24 @@ export async function POST(request: NextRequest) {
     let sessionId: string | undefined;
     try {
       ({ id: authenticatedUserId, sessionId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: "Unauthorized" }, 
-          { status: error.status ?? 401 }
-        );
+    } catch (tokenError: unknown) {
+      if (tokenError instanceof AuthTokenError) {
+        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
       }
-      throw error;
+      throw tokenError;
     }
 
     // throw if request json is invalid
     let reqBody: unknown;
     try {
       reqBody = await getRequestBody(request);
-    } catch(error: unknown) {
-      const message = error instanceof Error ? error.message : "Invalid request";
-      return NextResponse.json(
-        { error: message }, 
-        { status: 400 }
-      );
+    } catch(jsonError: unknown) {
+      return getErrorResponse(400, "Invalid request JSON", jsonError);
     }
 
     // throw if request payload is invalid
     if (!reqBody || typeof reqBody !== "object" || Array.isArray(reqBody)) {
-      return NextResponse.json(
-        { error: "Invalid request body" },
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Invalid request payload");
     }
 
     const userUpdates = reqBody as Partial<UserDTO>;
@@ -60,10 +51,7 @@ export async function POST(request: NextRequest) {
         (!Array.isArray(userUpdates.socialLinks) || 
         userUpdates.socialLinks.some((element: string) => typeof element !== "string")))
     ) {
-      return NextResponse.json(
-        { error: "Invalid user fields" }, 
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Invalid user fields");
     }
 
     const settingUsername = userUpdates.username !== undefined;
@@ -80,10 +68,7 @@ export async function POST(request: NextRequest) {
 
     // throw if no-op
     if (Object.keys(update).length === 0) {
-      return NextResponse.json(
-        { error: "No updatable fields provided" },
-        { status: 400 }
-      );
+      return getErrorResponse(400, "No updatable fields provided");
     }
 
     if (settingUsername) {
@@ -116,35 +101,24 @@ export async function POST(request: NextRequest) {
         }
       );
     // throw if username is a duplicate
-    } catch (error: unknown) {
-      if (
-        typeof error === "object" &&
-        error !== null &&
-        "code" in error &&
-        (error as { code?: number }).code === 11000
-      ) {
-        return NextResponse.json(
-          { error: "Username already exists" },
-          { status: 409 }
-        );
+    } catch (dbError: unknown) {
+      if (isDuplicateError(dbError)) {
+        return getErrorResponse(409, "Username already exists", dbError);
       }
-      throw error;
+      throw dbError;
     }
 
     // throw if user not found
     if (!updatedUser) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return getErrorResponse(404, "User not found");
     }
 
     // delete old avatar if one exists
     if (oldAvatarId) {
       try {
         await cloudinary.uploader.destroy(oldAvatarId);  
-      } catch (error) {
-        console.error("Failed to delete old avatar", error);
+      } catch (avatarError) {
+        console.error("Failed to delete old avatar", avatarError);
       }
     }
 
@@ -158,8 +132,8 @@ export async function POST(request: NextRequest) {
         "profile_updated", 
         request,
       );
-    } catch (error) {
-      console.error("Failed to record profile_updated security event", error);
+    } catch (logError) {
+      console.error("Failed to record profile_updated security event", logError);
     }
 
     // create success response
@@ -189,12 +163,8 @@ export async function POST(request: NextRequest) {
           hasCompletedProfile: sanitizedUser.hasCompletedProfile,
           sessionId,
         });
-      } catch (error) {
-        console.error("Failed to sign access token", error);
-        return NextResponse.json(
-          { error: "Unable to continue session" },
-          { status: 500 }
-        );
+      } catch (resignError) {
+        return getErrorResponse(500, "Unable to continue session", resignError);
       }
 
       storeAccessTokenCookie(accessToken, response);
@@ -203,12 +173,7 @@ export async function POST(request: NextRequest) {
     // return success
     return response;
   } 
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to update user";
-    console.error(message);
-    return NextResponse.json(
-      { error: "Unable to update user" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to update user", routeError);
   }
 };

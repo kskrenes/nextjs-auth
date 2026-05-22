@@ -3,6 +3,7 @@ import { getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import User from "@/models/user-model";
 import { NextResponse, type NextRequest } from "next/server";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,10 +16,7 @@ export async function GET(request: NextRequest) {
 
     // throw if user not found
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" }, 
-        { status: 404 }
-      );
+      return getErrorResponse(404, "User not found");
     }
 
     // create sanitized user for response
@@ -30,22 +28,11 @@ export async function GET(request: NextRequest) {
       user: sanitizedUser,
     });
   } 
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to retrieve user";
-    console.error(message)
-
+  catch (routeError: unknown) {
     // check for authorization error
-    if (/token|jwt|auth/i.test(message)) {
-      return NextResponse.json(
-        { error: "Unauthorized" }, 
-        { status: 401 }
-      );
+    if (routeError instanceof Error && /token|jwt|auth/i.test(routeError.message)) {
+      return getErrorResponse(401, "Unauthorized");
     }
-
-    // throw general route error
-    return NextResponse.json(
-      { error: "Unable to retrieve user" }, 
-      { status: 500 }
-    );
+    return getErrorResponse(500, "Unable to retrieve user", routeError);
   }
 }

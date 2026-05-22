@@ -1,5 +1,6 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 import { getRequestBody } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import crypto from "crypto";
@@ -13,12 +14,8 @@ export async function POST(request: NextRequest) {
     let reqBody: object;
     try {
       reqBody = await getRequestBody(request);
-    } catch(error: unknown) {
-      const message = error instanceof Error ? error.message : "Invalid request";
-      return NextResponse.json(
-        { error: message }, 
-        { status: 400 }
-      );
+    } catch(jsonError: unknown) {
+      return getErrorResponse(400, "Invalid request JSON", jsonError);
     }
 
     // throw if field types are invalid at runtime
@@ -27,10 +24,7 @@ export async function POST(request: NextRequest) {
       typeof token !== "string" || 
       token.trim().length === 0
     ) {
-      return NextResponse.json(
-        { error: "Invalid token" },
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Invalid token")
     }
 
     // hash incoming raw token with SHA-256 just like when it was stored
@@ -44,10 +38,7 @@ export async function POST(request: NextRequest) {
 
     // throw if user not found with non-expired matching token
     if (!user) {
-      return NextResponse.json(
-        { error: "Invalid or expired token" }, 
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Invalid or expired token");
     }
 
     // mark user as verified and clear token fields
@@ -63,21 +54,17 @@ export async function POST(request: NextRequest) {
         "email_verified", 
         request,
       );
-    } catch (error) {
-      console.error("Failed to record email_verified security event", error);
+    } catch (logError) {
+      console.error("Failed to record email_verified security event", logError);
     }
 
+    // return success response
     return NextResponse.json({
       message: "Email verified successfully",
       success: true,
     })
   } 
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to verify email";
-    console.error(message);
-    return NextResponse.json(
-      { error: "Unable to verify email" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to verify email", routeError);
   }
 }

@@ -15,14 +15,11 @@ export async function POST(request: NextRequest) {
     let authenticatedUserId: string;
     try {
       ({ id: authenticatedUserId } = await getIdsFromAccessToken(request));
-    } catch (authError: unknown) {
-      if (authError instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: "Unauthorized" }, 
-          { status: authError.status ?? 401 }
-        );
+    } catch (tokenError: unknown) {
+      if (tokenError instanceof AuthTokenError) {
+        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
       }
-      throw authError;
+      throw tokenError;
     }
 
     // validate request json

@@ -1,3 +1,4 @@
+import { getErrorResponse } from '@/helpers/util/error-utils';
 import { AuthTokenError, getIdsFromAccessToken } from '@/helpers/util/token-utils';
 import { v2 as cloudinary } from 'cloudinary';
 import { NextRequest, NextResponse } from 'next/server';
@@ -7,14 +8,11 @@ export async function POST(request: NextRequest) {
     // throw if user is not authenticated
     try {
       await getIdsFromAccessToken(request);
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: "Unauthorized" }, 
-          { status: error.status ?? 401 }
-        );
+    } catch (tokenError: unknown) {
+      if (tokenError instanceof AuthTokenError) {
+        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
       }
-      throw error;
+      throw tokenError;
     }
 
     // throw if paramsToSign is missing or invalid
@@ -26,27 +24,17 @@ export async function POST(request: NextRequest) {
         typeof body.paramsToSign !== "object" ||
         Array.isArray(body.paramsToSign)
       ) {
-        return NextResponse.json(
-          { error: "Invalid paramsToSign" },
-          { status: 400 }
-        );
+        return getErrorResponse(400, "Invalid paramsToSign");
       }
       paramsToSign = body.paramsToSign;
     } catch {
-      return NextResponse.json(
-        { error: "Invalid request body" },
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Invalid request body");
     }
 
     // throw if secret is not configured
     const secret = process.env.CLOUDINARY_API_SECRET;
     if (!secret) {
-      console.error("CLOUDINARY_API_SECRET is not configured");
-      return NextResponse.json(
-        { error: "Server configuration error" },
-        { status: 500 }
-      );
+      return getErrorResponse(500, "CLOUDINARY_API_SECRET is not configured");
     }
 
     const signature = cloudinary.utils.api_sign_request(
@@ -55,11 +43,8 @@ export async function POST(request: NextRequest) {
     );
 
     return NextResponse.json({ signature });
-  } catch (error: unknown) {
-    console.error("Failed to sign Cloudinary params", error);
-    return NextResponse.json(
-      { error: "Failed to sign upload parameters" },
-      { status: 500 }
-    );
+  } 
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Failed to sign Cloudinary parameters", routeError);
   }
 }

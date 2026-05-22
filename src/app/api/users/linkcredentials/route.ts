@@ -12,6 +12,7 @@ import {
 } from "@/helpers/util/token-utils";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,29 +24,19 @@ export async function POST(request: NextRequest) {
     let sessionId: string | undefined;
     try {
       ({ id: sessionUserId, sessionId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: error.message },
-          { status: error.status }
-        );
+    } catch (tokenError: unknown) {
+      if (tokenError instanceof AuthTokenError) {
+        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
       }
-      throw error;
+      throw tokenError;
     }
 
     // parse and validate the request body - throw if request is invalid
     let reqBody: object;
     try {
       reqBody = await getRequestBody(request);
-    } catch (error: unknown) {
-      const message = error instanceof Error 
-        ? error.message 
-        : "Invalid request";
-      
-      return NextResponse.json(
-        { error: message }, 
-        { status: 400 }
-      );
+    } catch (jsonError: unknown) {
+      return getErrorResponse(400, "Invalid request JSON", jsonError);
     }
 
     // destructure request
@@ -53,34 +44,22 @@ export async function POST(request: NextRequest) {
 
     // validate variables from request body - password type must be string
     if (typeof password !== "string") {
-      return NextResponse.json(
-        { error: "Invalid request" }, 
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Invalid request payload");
     }
 
     // validate variables from request body - password must exist
     if (!password) {
-      return NextResponse.json(
-        { error: "Invalid password" }, 
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Invalid password");
     }
 
     // validate variables from request body - password must meet min length
     if (!meetsMinimum(password, 8)) {
-      return NextResponse.json(
-        { error: "Password must meet minimum character requirement" },
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Password must meet minimum character requirement");
     }
 
     // validate variables from request body - password must not include spaces
     if (!excludesSpaces(password)) {
-      return NextResponse.json(
-        { error: "Password cannot contain spaces" },
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Password cannot contain spaces");
     }
 
     // hash the new password before writing
@@ -114,10 +93,7 @@ export async function POST(request: NextRequest) {
       // Two possible causes, both safely reported as 409:
       //   1. User not found (session references a deleted account).
       //   2. Credentials were already linked (concurrent request won the race).
-      return NextResponse.json(
-        { error: "Credentials already linked or user not found" },
-        { status: 409 }
-      );
+      return getErrorResponse(409, "Credentials already linked or user not found");
     }
 
     // create sanitized user for the response
@@ -135,10 +111,7 @@ export async function POST(request: NextRequest) {
         sessionId,
       });
     } catch {
-      return NextResponse.json(
-        { error: "Unable to continue session" },
-        { status: 500 }
-      );
+      return getErrorResponse(500, "Unable to continue session");
     }
 
     // record security event for successful credential linking
@@ -168,15 +141,7 @@ export async function POST(request: NextRequest) {
     // return success
     return response;
   } 
-  catch (error: unknown) {
-    const message = error instanceof Error 
-      ? error.message 
-      : "Unable to link credentials";
-
-    console.error(message);
-    return NextResponse.json(
-      { error: "Unable to link credentials" },
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to link credentials", routeError);
   }
 }

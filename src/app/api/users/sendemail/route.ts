@@ -1,4 +1,5 @@
 import { EmailType, sendEmail } from "@/helpers/util/email-utils";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 import { getRequestBody } from "@/helpers/util/request-utils";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -8,12 +9,8 @@ export async function POST(request: NextRequest) {
     let reqBody: object;
     try {
       reqBody = await getRequestBody(request);
-    } catch(error: unknown) {
-      const message = error instanceof Error ? error.message : "Invalid request";
-      return NextResponse.json(
-        { error: message }, 
-        { status: 400 }
-      );
+    } catch(jsonError: unknown) {
+      return getErrorResponse(400, "Invalid request JSON", jsonError);
     }
 
     // throw if field types are invalid at runtime
@@ -23,10 +20,7 @@ export async function POST(request: NextRequest) {
       typeof type !== "string" ||
       (type !== "VERIFY" && type !== "RESET")
     ) {
-      return NextResponse.json(
-        { error: "Invalid request" },
-        { status: 400 }
-      );
+      return getErrorResponse(400, "Invalid request payload");
     }
     
     // attempt to send email
@@ -36,9 +30,9 @@ export async function POST(request: NextRequest) {
         email, 
         emailType: type, 
       });
-    } catch (error: unknown) {
+    } catch (mailError: unknown) {
       // log the real error server-side but return generic success to prevent enumeration
-      console.error("Mail send failed:", error);
+      console.error("Mail send failed:", mailError);
     }
 
     // log failures server-side but return generic success to prevent enumeration
@@ -52,12 +46,7 @@ export async function POST(request: NextRequest) {
       success: true,
     })
   }
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Failed to send email";
-    console.error(message);
-    return NextResponse.json(
-      { error: "Failed to send email" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Failed to send email", routeError);
   }
 }

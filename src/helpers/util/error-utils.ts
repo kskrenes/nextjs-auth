@@ -22,3 +22,10 @@ export function getErrorResponse(status: number, fallback: string, error?: unkno
     { status }
   );
 }
+
+export function isDuplicateError(error: unknown): boolean {
+  return typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: number }).code === 11000;
+}

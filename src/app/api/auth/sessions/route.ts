@@ -1,5 +1,6 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeSessions } from "@/helpers/dto/session-dto";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -14,14 +15,11 @@ export async function GET(request: NextRequest) {
     let currentSessionId: string | undefined;
     try {
       ({ id: userId, sessionId: currentSessionId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: error.message },
-          { status: error.status }
-        );
+    } catch (tokenError: unknown) {
+      if (tokenError instanceof AuthTokenError) {
+        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
       }
-      throw error;
+      throw tokenError;
     }
 
     // retrieve all sessions associated with the user
@@ -39,13 +37,7 @@ export async function GET(request: NextRequest) {
       currentSessionId,
     });
   }
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to retrieve sessions";
-    console.error(message);
-    // throw general route error
-    return NextResponse.json(
-      { error: "Unable to retrieve sessions" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to retrieve sessions", routeError);
   }
 }

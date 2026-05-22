@@ -1,4 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,19 +7,13 @@ export async function GET(request: NextRequest) {
   // verify configuration of secret
   const cronSecret = process.env.CRON_SECRET;
   if (!cronSecret) {
-    return NextResponse.json(
-      { error: "CRON_SECRET is not configured" }, 
-      { status: 500 }
-    );
+    return getErrorResponse(500, "CRON_SECRET is not configured");
   }
 
   // validate request header
   const authHeader = request.headers.get("authorization");
   if (authHeader !== `Bearer ${cronSecret}`) {
-    return NextResponse.json(
-      { error: "Unauthorized" }, 
-      { status: 401 }
-    );
+    return getErrorResponse(401, "Unauthorized");
   }
 
   try {
@@ -32,12 +27,9 @@ export async function GET(request: NextRequest) {
       message: "Expired sessions cleaned up",
       deletedCount: result.deletedCount,
     });
-  } catch (error) {
-    console.error("Session cleanup failed:", error);
-    return NextResponse.json(
-      { error: "Failed to clean up expired sessions" },
-      { status: 500 }
-    );
+  } 
+  catch (routeError) {
+    return getErrorResponse(500, "Failed to clean up expired sessions", routeError);
   }
   
 

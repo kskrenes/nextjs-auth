@@ -3,6 +3,7 @@ import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-util
 import { NextRequest, NextResponse } from "next/server";
 import SecurityLog from "@/models/security-log-model";
 import { sanitizeSecurityLogs } from "@/helpers/dto/security-log-dto";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,14 +14,11 @@ export async function GET(request: NextRequest) {
     let userId: string;
     try {
       ({ id: userId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: error.message },
-          { status: error.status }
-        );
+    } catch (tokenError: unknown) {
+      if (tokenError instanceof AuthTokenError) {
+        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
       }
-      throw error;
+      throw tokenError;
     }
 
     // get the most recent 50 security logs for the user, sorted by creation date (newest first)
@@ -34,13 +32,7 @@ export async function GET(request: NextRequest) {
       securityLogs: sanitizedLogs,
     });
   }
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to retrieve security logs";
-    console.error(message);
-    // throw general route error
-    return NextResponse.json(
-      { error: "Unable to retrieve security logs" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to retrieve security logs", routeError);
   }
 }
