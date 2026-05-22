@@ -36,7 +36,6 @@ const MFADisableModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProps)
   }
 
   const handleFormChange = (val: string, disabled: boolean) => {
-    console.log('form change:', val);
     setCode(val);
     setDisabled(disabled);
     setInvalid(false);
@@ -47,7 +46,6 @@ const MFADisableModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProps)
 
     try {
       setValidating(true);
-      console.log('code:', code);
       await disableMFA(code);
       onSuccess();
     } catch (error) {
