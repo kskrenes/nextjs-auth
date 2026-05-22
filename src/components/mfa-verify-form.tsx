@@ -73,7 +73,7 @@ const MFAVerifyForm = ({ onChange, onVerify, loading, invalid }: MFAVerifyFormPr
             onChange={(checked) => {
               setUseBackupCode(checked);
               setCode('');
-              onChange(code, true);
+              onChange('', true);
             }}
             className={useBackupCode ? 'switch-on' : 'switch-off'}
             disabled={loading}
