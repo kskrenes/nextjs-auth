@@ -38,7 +38,7 @@ export function parseUserAgent(
   return { deviceType, os, browser };
 }
 
-export const getRequestBody = async (request: NextRequest): Promise<object> => {
+const getRequestBody = async (request: NextRequest): Promise<object> => {
   let reqBody: unknown;
   try {
     reqBody = await request.json();
