@@ -23,10 +23,15 @@ import { SecurityLogDTO } from "@/helpers/dto/security-log-dto";
 import SecurityLogCard from "@/components/security-log-card";
 import { axiosClient } from "@/lib/axios-client";
 import IconLink from "@/components/icon-link";
-import MFASetup from "@/components/mfa-setup";
+import MFAManagement from "@/components/mfa-management";
+import MFABackupCodesModal from "@/components/mfa-backup-codes-modal";
+import MFADisableModal from "@/components/mfa-disable-modal";
 
 const AccountPage = () => {
 
+  const [showRegenModal, setShowRegenModal] = useState(false);
+  const [showDisableModal, setShowDisableModal] = useState(false);
+  const [regenCodes, setRegenCodes] = useState<string[] | null>(null);
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
   const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -236,6 +241,17 @@ const AccountPage = () => {
         setIsRevokingAll(false);
       }
     }
+  }
+
+  const handleRegenCodesSuccess = (codes: string[]) => {
+    setShowRegenModal(false);
+    setRegenCodes(codes);
+    toast.success("New backup codes generated successfully");
+  }
+
+  const handleDisableSuccess = () => {
+    setShowDisableModal(false);
+    toast.success("Multi-factor authentication disabled successfully");
   }
 
   return (
@@ -563,7 +579,12 @@ const AccountPage = () => {
                         Add an extra layer of security to your account by requiring a verification code in addition to your password.
                       </p>
                       <div className="mt-2">
-                        <MFASetup mfaEnabled={user.mfaEnabled} />
+                        <MFAManagement 
+                          mfaEnabled={user.mfaEnabled} 
+                          onRegenBackupCodesClick={() => setShowRegenModal(true)} 
+                          onDisableConfirmClick={() => setShowDisableModal(true)}
+                          regenCodes={regenCodes}
+                        />
                       </div>
                     </div>
                   )}
@@ -641,6 +662,18 @@ const AccountPage = () => {
           </TabGroup>          
         </div>
       </div>
+      <MFABackupCodesModal 
+        open={showRegenModal}
+        onOpenChange={setShowRegenModal}
+        onCancel={() => setShowRegenModal(false)}
+        onSuccess={handleRegenCodesSuccess}
+      />
+      <MFADisableModal
+        open={showDisableModal}
+        onOpenChange={setShowDisableModal}
+        onCancel={() => setShowDisableModal(false)}
+        onSuccess={handleDisableSuccess}
+      />
     </div>
   )
 }

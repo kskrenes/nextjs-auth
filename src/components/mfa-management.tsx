@@ -12,30 +12,37 @@ import { useAuth } from "@/context-providers/auth-context-provider";
 
 const INIT_ERROR = "Failed to initialize Multi-Factor Authentication";
 const VERIFY_ERROR = "Could not verify authentication code";
-const FEATURE_INCOMPLETE = "Feature scheduled for future release";
 
-interface MFASetupProps {
+interface MFAManagementProps {
   mfaEnabled: boolean;
+  onRegenBackupCodesClick: () => void;
+  onDisableConfirmClick: () => void;
+  regenCodes?: string[] | null;
 }
 
-const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
+const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmClick, regenCodes = null }: MFAManagementProps) => {
 
-  const [step, setStep] = useState<number>(1);
+  // initialize step dynamically: start at 5 if already enabled, otherwise 1
+  const [step, setStep] = useState<number>(mfaEnabled ? 5 : 1);
   const [loading, setLoading] = useState<boolean>(false);
   const [secret, setSecret] = useState<string>('');
   const [uri, setUri] = useState<string>('');
   const [verificationCode, setVerificationCode] = useState<string>('');
-  const [backupCodes, setBackupCodes] = useState<string[]>([]);
+  const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
+  const [codeCount, setCodeCount] = useState<number | null>(null);
   const [copiedCodes, setCopiedCodes] = useState<boolean>(false);
   const [confirmDisable, setConfirmDisable] = useState<boolean>(false);
+  const [showBackupCodes, setShowBackupCodes] = useState<boolean>(false);
 
   const { enableMFA } = useAuth();
 
-  // Capture the initial mfaEnabled value on mount and never change it.
-  // This allows the copy backup codes step to display after user.mfaEnabled 
-  // is updated while progressing through the setup wizard.
-  const { current: restedAlreadyEnabled } = useRef(mfaEnabled);
-  const showEnabledView = restedAlreadyEnabled || step === 5;
+  // reset to step 1 when MFA is disabled, but allow 
+  // step 4 (backup codes) to display after MFA is enabled
+  useEffect(() => {
+    if (!mfaEnabled) {
+      setStep(1);
+    }
+  }, [mfaEnabled]);
 
   const codeInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -44,6 +51,31 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
       codeInputRef.current.focus();
     }
   }, [step]);
+
+  useEffect(() => {
+    if (regenCodes) {
+      setBackupCodes(regenCodes);
+      setCodeCount(regenCodes.length);
+      setShowBackupCodes(true);
+    }
+  }, [regenCodes])
+
+  useEffect(() => {
+    if (mfaEnabled && !backupCodes && codeCount === null) {
+      const fetchCount = async () => {
+        try {
+          setLoading(true);
+          const res = await axiosClient.get('/api/users/mfa/backup-codes');
+          setCodeCount(res.data.count);
+        } catch {
+          toast.error("Failed to retrieve backup code count");
+        } finally {
+          setLoading(false);
+        }
+      }
+      fetchCount();
+    }
+  }, [mfaEnabled, backupCodes, codeCount])
   
   const advance = () => {
     setStep((prev) => prev + 1)
@@ -64,6 +96,7 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
     const normalizedCode = verificationCode.replace(/\D/g, "").slice(0, 6);
     const codes = await enableMFA(normalizedCode);
     setBackupCodes(codes);
+    setCodeCount(codes.length);
   }
 
   const postStep = async (action: () => Promise<void>, errorMessage: string) => {
@@ -90,14 +123,10 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
   }
 
   const copyBackupCodes = () => {
+    if (!backupCodes) return;
     navigator.clipboard.writeText(backupCodes.join('\n'));
     setCopiedCodes(true);
     setTimeout(() => setCopiedCodes(false), 2000);
-  }
-
-  const handleRegenCodes = async () => {
-    // TODO: create endpoint to regen backup codes
-    toast.error(FEATURE_INCOMPLETE);
   }
 
   const handleDisableRequest = () => {
@@ -109,11 +138,10 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
   }
 
   const handleDisableConfirm = async () => {
-    // TODO: create endpoint to disable mfa
-    toast.error(FEATURE_INCOMPLETE);
+    onDisableConfirmClick();
   }
 
-  if (showEnabledView) {
+  if (step === 5) {
     return (
       <div className="flex flex-col mt-2 gap-4">
         <div className="flex items-center gap-2 mb-3">
@@ -122,16 +150,84 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
             Two-Factor Authentication is enabled
           </span>
         </div>
-        <div>
-          <Button 
+
+        {/* Backup Codes Section */}
+        <div className="bg-panel rounded-md p-4">
+          <div className="flex items-start justify-between mb-3">
+            <div>
+              <h4 className="text-lg font-semibold mb-1">Backup Codes</h4>
+              {loading ? (
+                <NaeLoader />
+              ) : codeCount !== null ? (
+                <p className="text-foreground-secondary">
+                  You have <span className="font-medium text-foreground-primary">{codeCount} of 10</span> backup codes remaining.
+                </p>
+              ) : (
+                <p className="text-foreground-secondary">
+                  Backup code count is temporarily unavailable.
+                </p>
+              )}
+            </div>
+          </div>
+          <p className="text-foreground-secondary mb-4 text-sm">
+            Backup codes can be used to access your account if you lose access to your authenticator app. Each code can only be used once.
+          </p>
+
+          <Button
+            onClick={onRegenBackupCodesClick}
             size="small"
-            variant="secondary"
-            disabled={loading}
-            onClick={handleRegenCodes}
           >
             Regenerate Backup Codes
           </Button>
+
+          {/* Show newly generated codes */}
+          {showBackupCodes && (
+            <div className="mt-4 pt-4 border-t border-panel-highlight">
+              <p className="font-medium mb-2">Your New Backup Codes</p>
+              <p className="text-sm text-foreground-secondary mb-3">
+                Save these codes in a safe place. They won&apos;t be shown again.
+              </p>
+              <div className="p-5 rounded-md border border-panel-highlight flex flex-col gap-4">
+                <div className="grid grid-cols-2 gap-2">
+                  {backupCodes?.map((code, index) => (
+                    <p key={`backupcode${index}`}>{code}</p>
+                  ))}
+                </div>
+                <div className="mt-1">
+                  <Button 
+                    size="small" 
+                    variant="tertiary" 
+                    className="gap-2"
+                    onClick={copyBackupCodes}
+                    disabled={loading}
+                  >
+                    {copiedCodes ? (
+                      <>
+                        <Check className="w-4 h-4 text-success" />
+                        <span className="text-success">Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4" />
+                        <span>Copy Codes</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </div>
+              <div className="mt-4">
+                <Button 
+                  size="small"
+                  disabled={loading}
+                  onClick={() => {setShowBackupCodes(false)}}
+                >
+                  I&apos;ve Saved These Codes
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
+
         {confirmDisable ? (
           <div className="p-3 rounded-md bg-panel text-foreground-secondary">
             <p className="text-error mb-3 font-medium">
@@ -257,7 +353,7 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
             <p className="text-foreground-secondary">Store these codes in a safe place. You can use them to access your account if you lose access to your authenticator app.</p>
             <div className="p-5 rounded-md bg-panel flex flex-col gap-4">
               <div className="grid grid-cols-2 gap-2">
-                {backupCodes.map((code, index) => (
+                {backupCodes?.map((code, index) => (
                   <p key={`backupcode${index}`}>{code}</p>
                 ))}
               </div>
@@ -298,4 +394,4 @@ const MFASetup = ({ mfaEnabled }: MFASetupProps) => {
   )
 }
 
-export default MFASetup
+export default MFAManagement

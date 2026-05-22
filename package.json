@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@headlessui/react": "^2.2.10",
+    "@radix-ui/react-dialog": "^1.1.15",
     "@upstash/redis": "^1.38.0",
     "axios": "^1.13.6",
     "bcryptjs": "^3.0.3",
