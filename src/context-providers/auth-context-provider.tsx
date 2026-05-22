@@ -36,6 +36,7 @@ export interface AuthContextType {
   linkCredentials: (password: string) => Promise<void>;
   enableMFA: (code: string) => Promise<string[]>;
   verifyMFA: (code: string) => Promise<void>;
+  disableMFA: (code: string) => Promise<void>;
 }
 
 export type AuthLoginResponse =
@@ -214,6 +215,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const disableMFA = async (code: string): Promise<void> => {
+    const res = await axiosClient.post("/api/users/mfa/disable", { code });
+    setUser(res.data.user);
+  }
+
   return (
     <AuthContext.Provider 
       value={{ 
@@ -233,6 +239,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         linkCredentials, 
         enableMFA,
         verifyMFA,
+        disableMFA,
       }}
     >
       {children}
