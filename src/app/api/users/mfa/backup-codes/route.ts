@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     });
   }
   catch (routeError: unknown) {
-    getErrorResponse(500, "Failed to generate new backup codes", routeError);
+    return getErrorResponse(500, "Failed to generate new backup codes", routeError);
   }
 }
 
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
     ]);
 
     if (!result[0]) {
-      getErrorResponse(404, "User not found");
+      return getErrorResponse(404, "User not found");
     }
 
     const count = result[0].arrayLength;
@@ -140,6 +140,6 @@ export async function GET(request: NextRequest) {
     });
   } 
   catch (routeError) {
-    getErrorResponse(500, "Failed to retrieve backup codes", routeError);
+    return getErrorResponse(500, "Failed to retrieve backup codes", routeError);
   }
 }
