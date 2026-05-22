@@ -46,7 +46,7 @@ const MFABackupCodesModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalPr
   }
 
   const handleVerify = async () => {
-    if (validating) return;
+    if (validating || disabled || !code) return;
 
     try {
       setValidating(true);
