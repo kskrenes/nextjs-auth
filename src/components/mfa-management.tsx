@@ -62,7 +62,19 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
 
   useEffect(() => {
     if (mfaEnabled && !backupCodes && codeCount == -1) {
-      retrieveCodeCount();
+      const fetchCount = async () => {
+        try {
+          setLoading(true);
+          const res = await axiosClient.get('/api/users/mfa/backup-codes');
+          setCodeCount(res.data.count);
+        } catch {
+          toast.error("Failed to retrieve backup code count");
+          setCodeCount(0);
+        } finally {
+          setLoading(false);
+        }
+      }
+      fetchCount();
     }
   }, [mfaEnabled, backupCodes, codeCount])
   
@@ -128,19 +140,6 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
 
   const handleDisableConfirm = async () => {
     onDisableConfirmClick();
-  }
-
-  const retrieveCodeCount = async () => {
-    try {
-      setLoading(true);
-      const res = await axiosClient.get('/api/users/mfa/backup-codes');
-      setCodeCount(res.data.count);
-    } catch {
-      toast.error("Failed to retrieve backup code count");
-      setCodeCount(0);
-    } finally {
-      setLoading(false);
-    }
   }
 
   if (step === 5) {
