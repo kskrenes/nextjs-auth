@@ -122,8 +122,21 @@ export async function GET(request: NextRequest) {
 
     // use aggregate to retrieve just the length integer
     const result = await User.aggregate<AggregateResult>([
-      { $match: { _id: new mongoose.Types.ObjectId(authenticatedUserId) } },
-      { $project: { arrayLength: { $size: "$mfaBackupCodes" } } }
+      { 
+        $match: { 
+          _id: new mongoose.Types.ObjectId(authenticatedUserId),
+          mfaEnabled: true,
+        } 
+      },
+      { 
+        $project: { 
+          arrayLength: { 
+            $size: {
+              $ifNull: ["$mfaBackupCodes", []]
+            }
+          } 
+        } 
+      }
     ]);
 
     if (!result[0]) {
