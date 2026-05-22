@@ -2,7 +2,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { generateBackupCodes, hashBackupCode, verifyBackupCode, verifyTotpCode } from "@/helpers/util/mfa-utils";
-import { getRequestBody } from "@/helpers/util/request-utils";
+import { validateJSON } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
@@ -16,13 +16,9 @@ export async function POST(request: NextRequest) {
     if (auth instanceof Response) return auth;  // return error response
     const { userId } = auth;
 
-    // validate request json
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(jsonError: unknown) {
-      return getErrorResponse(400, "Invalid request", jsonError);
-    }
+    // validate JSON
+    const reqBody = await validateJSON(request);
+    if (reqBody instanceof Response) return reqBody;  // return error response
 
     // validate request payload
     // code must be totp (6 chars) or backup (8 chars)

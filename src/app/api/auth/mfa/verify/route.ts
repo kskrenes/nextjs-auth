@@ -3,7 +3,7 @@ import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { claimMfaPendingToken, clearMfaPendingCookie, deleteMfaPendingToken, getMfaPendingToken, unclaimMfaPendingToken, verifyBackupCode, verifyTotpCode } from "@/helpers/util/mfa-utils";
-import { getRequestBody } from "@/helpers/util/request-utils";
+import { validateJSON } from "@/helpers/util/request-utils";
 import { createSession, signAccessToken, storeAccessTokenCookie, storeRefreshTokenCookie, storeSessionHintCookie } from "@/helpers/util/token-utils";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -14,13 +14,9 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // validate request json
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(jsonError: unknown) {
-      return getErrorResponse(400, "Invalid request", jsonError);
-    }
+    // validate JSON
+    const reqBody = await validateJSON(request);
+    if (reqBody instanceof Response) return reqBody;  // return error response
 
     // validate request payload
     const { code } = reqBody as { code?: string; };

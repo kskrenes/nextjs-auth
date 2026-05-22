@@ -1,7 +1,7 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { excludesSpaces, meetsMinimum } from "@/helpers/util/form-validation-utils";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
-import { getRequestBody } from "@/helpers/util/request-utils";
+import { validateJSON } from "@/helpers/util/request-utils";
 import Session from "@/models/session-model";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
@@ -13,13 +13,9 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // throw if request json is invalid
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(jsonError: unknown) {
-      return getErrorResponse(400, "Invalid request JSON", jsonError);
-    }
+    // validate JSON
+    const reqBody = await validateJSON(request);
+    if (reqBody instanceof Response) return reqBody;  // return error response
 
     // throw if field types are invalid at runtime
     const { token, password } = reqBody as { token?: string; password?: string };

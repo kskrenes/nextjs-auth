@@ -1,17 +1,13 @@
 import { EmailType, sendEmail } from "@/helpers/util/email-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
-import { getRequestBody } from "@/helpers/util/request-utils";
+import { validateJSON } from "@/helpers/util/request-utils";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    // throw if request json is invalid
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(jsonError: unknown) {
-      return getErrorResponse(400, "Invalid request JSON", jsonError);
-    }
+    // validate JSON
+    const reqBody = await validateJSON(request);
+    if (reqBody instanceof Response) return reqBody;  // return error response
 
     // throw if field types are invalid at runtime
     const { email, type } = reqBody as { email?: string; type?: EmailType };

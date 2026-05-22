@@ -2,7 +2,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
-import { getRequestBody } from "@/helpers/util/request-utils";
+import { validateJSON } from "@/helpers/util/request-utils";
 import { excludesSpaces, meetsMinimum } from "@/helpers/util/form-validation-utils";
 import { signAccessToken, storeAccessTokenCookie, } from "@/helpers/util/token-utils";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
@@ -19,13 +19,9 @@ export async function POST(request: NextRequest) {
     if (auth instanceof Response) return auth;  // return error response
     const { userId, sessionId } = auth;
 
-    // parse and validate the request body - throw if request is invalid
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch (jsonError: unknown) {
-      return getErrorResponse(400, "Invalid request JSON", jsonError);
-    }
+    // validate JSON
+    const reqBody = await validateJSON(request);
+    if (reqBody instanceof Response) return reqBody;  // return error response
 
     // destructure request
     const { password } = reqBody as { password?: string };

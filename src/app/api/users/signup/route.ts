@@ -2,7 +2,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
-import { getRequestBody } from "@/helpers/util/request-utils";
+import { validateJSON } from "@/helpers/util/request-utils";
 import { excludesSpaces, meetsMinimum, validateEmail } from "@/helpers/util/form-validation-utils";
 import mongoose from "mongoose";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
@@ -12,13 +12,9 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // throw if request json is invalid
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(jsonError: unknown) {
-      return getErrorResponse(400, "Invalid request JSON", jsonError);
-    }
+    // validate JSON
+    const reqBody = await validateJSON(request);
+    if (reqBody instanceof Response) return reqBody;  // return error response
 
     // throw if field types are invalid at runtime
     const { username, email, password } = reqBody as { username?: string; email?: string; password?: string };

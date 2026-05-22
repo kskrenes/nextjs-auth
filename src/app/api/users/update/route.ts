@@ -1,6 +1,6 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { signAccessToken, storeAccessTokenCookie } from "@/helpers/util/token-utils";
-import { getRequestBody } from "@/helpers/util/request-utils";
+import { validateJSON } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
@@ -19,13 +19,9 @@ export async function POST(request: NextRequest) {
     if (auth instanceof Response) return auth;  // return error response
     const { userId, sessionId } = auth;
 
-    // throw if request json is invalid
-    let reqBody: unknown;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(jsonError: unknown) {
-      return getErrorResponse(400, "Invalid request JSON", jsonError);
-    }
+    // validate JSON
+    const reqBody = await validateJSON(request);
+    if (reqBody instanceof Response) return reqBody;  // return error response
 
     // throw if request payload is invalid
     if (!reqBody || typeof reqBody !== "object" || Array.isArray(reqBody)) {

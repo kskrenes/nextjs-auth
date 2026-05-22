@@ -1,7 +1,7 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { getErrorResponse } from "@/helpers/util/error-utils";
-import { getRequestBody } from "@/helpers/util/request-utils";
+import { validateJSON } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import crypto from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
@@ -10,13 +10,9 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
     
-    // throw if request json is invalid
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(jsonError: unknown) {
-      return getErrorResponse(400, "Invalid request JSON", jsonError);
-    }
+    // validate JSON
+    const reqBody = await validateJSON(request);
+    if (reqBody instanceof Response) return reqBody;  // return error response
 
     // throw if field types are invalid at runtime
     const { token } = reqBody as { token?: string; };
