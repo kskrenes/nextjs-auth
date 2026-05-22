@@ -6,6 +6,9 @@ import { getRandomToken, getToken, storeCookie } from "./token-utils";
 import { NextRequest, NextResponse } from "next/server";
 import { RawUser } from "../dto/user-dto";
 
+const TOTP_LENGTH = 6;
+const BACKUP_LENGTH = 8;
+
 const MFA_PENDING_COOKIE_NAME =  "naemfa" as const;
 const MFA_PENDING_TTL_SECONDS = 5 * 60; // 5 minutes
 const CLAIM_TTL_SECONDS = 30; // Short window for validation + session creation; protects against indefinite locks.
@@ -110,7 +113,7 @@ export const clearMfaPendingCookie = (response: NextResponse) => {
 }
 
 export const verifyTotpCode = async (secret: string, code: string): Promise<boolean> => { 
-  if (!code || code.length !== 6) return false;
+  if (!code || code.length !== TOTP_LENGTH) return false;
   const otp = new OTP();
   const result = await otp.verify({ secret, token: code });
   return result.valid;
@@ -132,7 +135,7 @@ export const generateBackupCodes = (): string[] => {
   // Generate 10 random 8-character alphanumeric codes
   const codes: string[] = [];
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  const length = 8;
+  const length = BACKUP_LENGTH;
 
   for (let i = 0; i < 10; i++) {
     let result = '';
