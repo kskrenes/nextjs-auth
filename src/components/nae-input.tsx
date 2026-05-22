@@ -24,6 +24,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       className = '', 
       error = false,
       onEnter = undefined,
+      onKeyDown,
       ...rest 
     }, 
     ref
@@ -57,7 +58,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           autoComplete={autoCompleteValue} 
           className={cn(baseStyles, borderStyle, className)} 
           ref={ref} 
-          onKeyDown={handleKeyDown}
+          onKeyDown={(e) => {
+            onKeyDown?.(e);
+            if (!e.defaultPrevented) handleKeyDown(e);
+          }}
           {...rest} 
         />
       </div>
