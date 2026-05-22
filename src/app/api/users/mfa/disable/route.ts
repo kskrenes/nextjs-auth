@@ -105,6 +105,6 @@ export async function POST(request: NextRequest) {
     });
   }
   catch (routeError: unknown) {
-    getErrorResponse(500, "Failed to disable MFA", routeError);
+    return getErrorResponse(500, "Failed to disable MFA", routeError);
   }
 }
