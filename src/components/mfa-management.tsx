@@ -29,7 +29,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
   const [uri, setUri] = useState<string>('');
   const [verificationCode, setVerificationCode] = useState<string>('');
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
-  const [codeCount, setCodeCount] = useState<number>(-1);
+  const [codeCount, setCodeCount] = useState<number | null>(null);
   const [copiedCodes, setCopiedCodes] = useState<boolean>(false);
   const [confirmDisable, setConfirmDisable] = useState<boolean>(false);
   const [showBackupCodes, setShowBackupCodes] = useState<boolean>(false);
@@ -61,7 +61,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
   }, [regenCodes])
 
   useEffect(() => {
-    if (mfaEnabled && !backupCodes && codeCount == -1) {
+    if (mfaEnabled && !backupCodes && codeCount === null) {
       const fetchCount = async () => {
         try {
           setLoading(true);
@@ -69,7 +69,6 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
           setCodeCount(res.data.count);
         } catch {
           toast.error("Failed to retrieve backup code count");
-          setCodeCount(0);
         } finally {
           setLoading(false);
         }
@@ -159,9 +158,13 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
               <h4 className="text-lg font-semibold mb-1">Backup Codes</h4>
               {loading ? (
                 <NaeLoader />
-              ) : (
+              ) : codeCount !== null ? (
                 <p className="text-foreground-secondary">
                   You have <span className="font-medium text-foreground-primary">{codeCount} of 10</span> backup codes remaining.
+                </p>
+              ) : (
+                <p className="text-foreground-secondary">
+                  Backup code count is temporarily unavailable.
                 </p>
               )}
             </div>
