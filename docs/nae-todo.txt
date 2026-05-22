@@ -112,13 +112,14 @@ refactor
 - [x] move dtos to /helpers/dto
 - [ ] refactor api routes to use getErrorResponse helper
 
+multi-factor authentication
+- [ ] use monospace font for codes
+- [x] implement ability to regen backup codes
+- [ ] refactor to use mfa-verify-form and mfa-verify-controls for any verification
+
 session cache
 - [x] migrate to redis distributed cache
 - [ ] research what to do with redis session records on logout (currently persisting until ttl expires)
-
-multi-factor authentication
-- [ ] use monospace font for codes
-- [ ] implement ability to regen backup codes
 
 additional authentication methods
 - [x] add social login (google)
@@ -134,7 +135,7 @@ look & feel
 - [x] make new (main) layout responsive
 - [x] define themes
 - [x] allow theme selection
-- [ ] fix google sign in button width
+- [x] fix google sign in button width
 - [ ] include password validation states in password component
 - [ ] lay out login and signup pages
 - [ ] lay out triggerpasswordreset page
@@ -158,7 +159,7 @@ feature research
 - [x] Session management
 - [x] Email verification
 - [x] Social login (Google)
-- [ ] Multifactor authentication
+- [x] Multifactor authentication
 - [ ] Roles and permissions
 - [x] Profile management
 - [ ] Restricted domains
