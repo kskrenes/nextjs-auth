@@ -4,6 +4,7 @@ import { generateBackupCodes, hashBackupCode, verifyBackupCode, verifyTotpCode }
 import { getRequestBody } from "@/helpers/util/request-utils";
 import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import User from "@/models/user-model";
+import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -93,5 +94,52 @@ export async function POST(request: NextRequest) {
   }
   catch (routeError: unknown) {
     getErrorResponse(500, "Failed to generate new backup codes", routeError);
+  }
+}
+
+interface AggregateResult {
+  _id: string;
+  arrayLength: number;
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    await connect();
+
+    // require authentication by validating access token
+    let authenticatedUserId: string;
+    try {
+      ({ id: authenticatedUserId } = await getIdsFromAccessToken(request));
+    } catch (authError: unknown) {
+      if (authError instanceof AuthTokenError) {
+        return NextResponse.json(
+          { error: "Unauthorized" }, 
+          { status: authError.status ?? 401 }
+        );
+      }
+      throw authError;
+    }
+
+    // use aggregate to retrieve just the length integer
+    const result = await User.aggregate<AggregateResult>([
+      { $match: { _id: new mongoose.Types.ObjectId(authenticatedUserId) } },
+      { $project: { arrayLength: { $size: "$mfaBackupCodes" } } }
+    ]);
+
+    if (!result[0]) {
+      getErrorResponse(404, "User not found");
+    }
+
+    const count = result[0].arrayLength;
+
+    // return success response
+    return NextResponse.json({
+      message: "Backup code count retrieved",
+      success: true,
+      count,
+    });
+  } 
+  catch (routeError) {
+    getErrorResponse(500, "Failed to retrieve backup codes", routeError);
   }
 }
