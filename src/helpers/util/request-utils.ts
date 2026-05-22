@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { UAParser } from "ua-parser-js";
+import { getErrorResponse } from "./error-utils";
 
 export function getUAAndIpFromRequest(request: Request): { userAgent: string; ipAddress: string } {
   const userAgent = request.headers.get('user-agent') || '';
@@ -37,7 +38,7 @@ export function parseUserAgent(
   return { deviceType, os, browser };
 }
 
-export const getRequestBody = async (request: NextRequest):Promise<object> => {
+export const getRequestBody = async (request: NextRequest): Promise<object> => {
   let reqBody: unknown;
   try {
     reqBody = await request.json();
@@ -50,4 +51,13 @@ export const getRequestBody = async (request: NextRequest):Promise<object> => {
   }
 
   return reqBody;
+}
+
+export const validateJSON = async (request: NextRequest): Promise<object | Response> => {
+  try {
+    const body = await getRequestBody(request);
+    return body;
+  } catch(jsonError: unknown) {
+    return getErrorResponse(400, "Invalid request", jsonError);
+  }
 }
