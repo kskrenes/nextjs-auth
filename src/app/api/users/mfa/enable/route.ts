@@ -1,10 +1,10 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { generateBackupCodes, hashBackupCode, verifyTotpCode } from "@/helpers/util/mfa-utils";
 import { getRequestBody } from "@/helpers/util/request-utils";
-import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import { redis, redisKeys } from "@/lib/redis";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -13,16 +13,10 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // require authentication by validating access token
-    let authenticatedUserId: string;
-    try {
-      ({ id: authenticatedUserId } = await getIdsFromAccessToken(request));
-    } catch (tokenError: unknown) {
-      if (tokenError instanceof AuthTokenError) {
-        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
-      }
-      throw tokenError;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId } = auth;
 
     // validate request json
     let reqBody: object;
@@ -39,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     // retrieve pending secret from Redis
-    const key = redisKeys.mfaSetup(authenticatedUserId);
+    const key = redisKeys.mfaSetup(userId);
     const secret = await redis.get<string>(key);
     if (!secret || typeof secret !== "string" || secret.length === 0) {
       return getErrorResponse(400, "Invalid TOTP secret");
@@ -57,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     // update the user document in the DB
     const updatedUser = await User.findByIdAndUpdate(
-      authenticatedUserId,
+      userId,
       {
         mfaEnabled: true,
         mfaSecret: secret,

@@ -4,32 +4,20 @@ import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
 import { getRequestBody } from "@/helpers/util/request-utils";
 import { excludesSpaces, meetsMinimum } from "@/helpers/util/form-validation-utils";
-import {
-  AuthTokenError,
-  getIdsFromAccessToken,
-  signAccessToken,
-  storeAccessTokenCookie,
-} from "@/helpers/util/token-utils";
+import { signAccessToken, storeAccessTokenCookie, } from "@/helpers/util/token-utils";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { getErrorResponse } from "@/helpers/util/error-utils";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
 
 export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // require an authenticated session — throws AuthTokenError (401) if
-    // the cookie is absent, expired, or invalid
-    let sessionUserId: string;
-    let sessionId: string | undefined;
-    try {
-      ({ id: sessionUserId, sessionId } = await getIdsFromAccessToken(request));
-    } catch (tokenError: unknown) {
-      if (tokenError instanceof AuthTokenError) {
-        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
-      }
-      throw tokenError;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId, sessionId } = auth;
 
     // parse and validate the request body - throw if request is invalid
     let reqBody: object;
@@ -71,14 +59,14 @@ export async function POST(request: NextRequest) {
     // concurrent request that races here will get null back and return 409.
     const updatedUser = await User.findOneAndUpdate(
       {
-        _id: sessionUserId,
+        _id: userId,
         "accounts.provider": { $ne: "credentials" },
       },
       {
         $push: {
           accounts: {
             provider: "credentials",
-            providerId: sessionUserId,
+            providerId: userId,
           },
         },
         $set: {

@@ -1,7 +1,7 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeSessions } from "@/helpers/dto/session-dto";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
-import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -9,18 +9,10 @@ export async function GET(request: NextRequest) {
   try {
     await connect();
 
-    // require an authenticated session — throws AuthTokenError (401) if
-    // the cookie is absent, expired, or invalid
-    let userId: string;
-    let currentSessionId: string | undefined;
-    try {
-      ({ id: userId, sessionId: currentSessionId } = await getIdsFromAccessToken(request));
-    } catch (tokenError: unknown) {
-      if (tokenError instanceof AuthTokenError) {
-        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
-      }
-      throw tokenError;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId, sessionId } = auth;
 
     // retrieve all sessions associated with the user
     const sessions = await Session.find({ 
@@ -34,7 +26,7 @@ export async function GET(request: NextRequest) {
       message: "Sessions retrieved",
       success: true,
       sessions: sanitizedSessions,
-      currentSessionId,
+      currentSessionId: sessionId,
     });
   }
   catch (routeError: unknown) {

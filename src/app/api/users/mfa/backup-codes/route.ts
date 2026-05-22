@@ -1,8 +1,8 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { generateBackupCodes, hashBackupCode, verifyBackupCode, verifyTotpCode } from "@/helpers/util/mfa-utils";
 import { getRequestBody } from "@/helpers/util/request-utils";
-import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import User from "@/models/user-model";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,16 +11,10 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // require authentication by validating access token
-    let authenticatedUserId: string;
-    try {
-      ({ id: authenticatedUserId } = await getIdsFromAccessToken(request));
-    } catch (tokenError: unknown) {
-      if (tokenError instanceof AuthTokenError) {
-        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
-      }
-      throw tokenError;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId } = auth;
 
     // validate request json
     let reqBody: object;
@@ -40,7 +34,7 @@ export async function POST(request: NextRequest) {
     // fetch user from DB with mfaSecret included
     let user;
     try {
-      user = await User.findById(authenticatedUserId).select('+mfaSecret +mfaBackupCodes');
+      user = await User.findById(userId).select('+mfaSecret +mfaBackupCodes');
     } catch (dbError) {
       return getErrorResponse(500, "Database error", dbError);
     }
@@ -67,7 +61,7 @@ export async function POST(request: NextRequest) {
 
     // update the user document in the DB
     const updatedUser = await User.findByIdAndUpdate(
-      authenticatedUserId,
+      userId,
       {
         mfaBackupCodes: hashedBackupCodes
       },
@@ -103,25 +97,16 @@ export async function GET(request: NextRequest) {
   try {
     await connect();
 
-    // require authentication by validating access token
-    let authenticatedUserId: string;
-    try {
-      ({ id: authenticatedUserId } = await getIdsFromAccessToken(request));
-    } catch (authError: unknown) {
-      if (authError instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: "Unauthorized" }, 
-          { status: authError.status ?? 401 }
-        );
-      }
-      throw authError;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId } = auth;
 
     // use aggregate to retrieve just the length integer
     const result = await User.aggregate<AggregateResult>([
       { 
         $match: { 
-          _id: new mongoose.Types.ObjectId(authenticatedUserId),
+          _id: new mongoose.Types.ObjectId(userId),
           mfaEnabled: true,
         } 
       },

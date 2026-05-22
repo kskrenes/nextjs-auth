@@ -1,25 +1,18 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import { NextRequest, NextResponse } from "next/server";
 import SecurityLog from "@/models/security-log-model";
 import { sanitizeSecurityLogs } from "@/helpers/dto/security-log-dto";
 import { getErrorResponse } from "@/helpers/util/error-utils";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
 
 export async function GET(request: NextRequest) {
   try {
     await connect();
 
-    // require an authenticated session — throws AuthTokenError (401) if
-    // the cookie is absent, expired, or invalid
-    let userId: string;
-    try {
-      ({ id: userId } = await getIdsFromAccessToken(request));
-    } catch (tokenError: unknown) {
-      if (tokenError instanceof AuthTokenError) {
-        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
-      }
-      throw tokenError;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId } = auth;
 
     // get the most recent 50 security logs for the user, sorted by creation date (newest first)
     const securityLogs = await SecurityLog.find({ userId }).sort({ createdAt: -1 }).limit(50);

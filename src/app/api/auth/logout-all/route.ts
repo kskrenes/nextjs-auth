@@ -1,6 +1,7 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
-import { AuthTokenError, clearAuthCookies, getIdsFromAccessToken } from "@/helpers/util/token-utils";
+import { clearAuthCookies } from "@/helpers/util/token-utils";
 import { evictUserSessions } from '@/lib/session-cache'
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -9,16 +10,10 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // validate the current access token to get the user id
-    let userId: string;
-    try {
-      ({ id: userId } = await getIdsFromAccessToken(request));
-    } catch (tokenError: unknown) {
-      if (tokenError instanceof AuthTokenError) {
-        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
-      }
-      throw tokenError;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId } = auth;
 
     // delete all session documents for the user
     const result = await Session.deleteMany({ userId });

@@ -1,5 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { AuthTokenError, getIdsFromAccessToken, signAccessToken, storeAccessTokenCookie } from "@/helpers/util/token-utils";
+import { signAccessToken, storeAccessTokenCookie } from "@/helpers/util/token-utils";
 import { getRequestBody } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,22 +8,16 @@ import { defaultAvatarId } from "@/helpers/util/avatar-utils";
 import { sanitizeUser, UserDTO } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { getErrorResponse, isDuplicateError } from "@/helpers/util/error-utils";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
 
 export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // throw if user is not authenticated
-    let authenticatedUserId: string;
-    let sessionId: string | undefined;
-    try {
-      ({ id: authenticatedUserId, sessionId } = await getIdsFromAccessToken(request));
-    } catch (tokenError: unknown) {
-      if (tokenError instanceof AuthTokenError) {
-        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
-      }
-      throw tokenError;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId, sessionId } = auth;
 
     // throw if request json is invalid
     let reqBody: unknown;
@@ -78,7 +72,7 @@ export async function POST(request: NextRequest) {
     // if avatar is being updated, set the old avatar image to be deleted unless it's the default
     let oldAvatarId: string | undefined;
     if (update.avatarId) {
-      const user = await User.findById(authenticatedUserId);
+      const user = await User.findById(userId);
       if (
         user && 
         user.avatarId && 
@@ -93,7 +87,7 @@ export async function POST(request: NextRequest) {
     let updatedUser;
     try {
       updatedUser = await User.findByIdAndUpdate(
-        authenticatedUserId,
+        userId,
         update,
         {
           returnDocument: 'after',

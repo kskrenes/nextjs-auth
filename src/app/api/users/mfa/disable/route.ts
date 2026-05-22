@@ -1,10 +1,10 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { verifyBackupCode, verifyTotpCode } from "@/helpers/util/mfa-utils";
 import { getRequestBody } from "@/helpers/util/request-utils";
-import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -12,16 +12,10 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // require authentication by validating access token
-    let authenticatedUserId: string;
-    try {
-      ({ id: authenticatedUserId } = await getIdsFromAccessToken(request));
-    } catch (tokenError: unknown) {
-      if (tokenError instanceof AuthTokenError) {
-        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
-      }
-      throw tokenError;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId } = auth;
 
     // validate request json
     let reqBody: object;
@@ -41,7 +35,7 @@ export async function POST(request: NextRequest) {
     // fetch user from DB with mfaSecret included
     let user;
     try {
-      user = await User.findById(authenticatedUserId).select('+mfaSecret +mfaBackupCodes');
+      user = await User.findById(userId).select('+mfaSecret +mfaBackupCodes');
     } catch (dbError) {
       return getErrorResponse(500, "Database error", dbError);
     }
@@ -64,7 +58,7 @@ export async function POST(request: NextRequest) {
 
     // code is valid, update the user document
     const updatedUser = await User.findByIdAndUpdate(
-      authenticatedUserId, 
+      userId, 
       {
         $set: { mfaEnabled: false },
         $unset: { 

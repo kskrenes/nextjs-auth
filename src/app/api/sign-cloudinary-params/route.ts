@@ -1,19 +1,13 @@
+import { authorizeRequest } from '@/helpers/util/auth-utils';
 import { getErrorResponse } from '@/helpers/util/error-utils';
-import { AuthTokenError, getIdsFromAccessToken } from '@/helpers/util/token-utils';
 import { v2 as cloudinary } from 'cloudinary';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    // throw if user is not authenticated
-    try {
-      await getIdsFromAccessToken(request);
-    } catch (tokenError: unknown) {
-      if (tokenError instanceof AuthTokenError) {
-        return getErrorResponse(tokenError.status ?? 401, "Unauthorized", tokenError);
-      }
-      throw tokenError;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
 
     // throw if paramsToSign is missing or invalid
     let paramsToSign: Record<string, unknown>;
