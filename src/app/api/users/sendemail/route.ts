@@ -20,12 +20,18 @@ export async function POST(request: NextRequest) {
       });
     } catch (mailError: unknown) {
       // log the real error server-side but return generic success to prevent enumeration
-      console.error("Mail send failed:", mailError);
+      console.error("Mail send failed", {
+        errorName: mailError instanceof Error ? mailError.name : "UnknownError",
+      });
     }
 
     // log failures server-side but return generic success to prevent enumeration
     if (!mailResponse || !mailResponse.response.includes("250")) {
-      console.error("Mail send failed:", mailResponse?.response ?? "No response");
+      const responseCode =
+        typeof mailResponse?.response === "string"
+          ? mailResponse.response.slice(0, 3)
+          : "no_response";
+      console.error("Mail send failed", { responseCode });
     }
 
     // return success
