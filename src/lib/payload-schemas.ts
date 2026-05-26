@@ -85,15 +85,32 @@ export const SignUpSchema = z.object({
 });
 
 export const UpdateUserSchema = z.object({
-  username: z.string({ error: "Invalid user fields" }),
-  name: z.string({ error: "Invalid user fields" }),
-  company: z.string({ error: "Invalid user fields" }),
-  website: z.string({ error: "Invalid user fields" }),
-  avatarId: z.string({ error: "Invalid user fields" }),
-  socialLinks: z.array(z.string({ error: "Invalid user fields" }), {
+  username: z.string({ error: "Invalid user fields" }).trim(),
+  name: z.string({ error: "Invalid user fields" }).trim(),
+  company: z.string({ error: "Invalid user fields" }).trim(),
+  website: z.string({ error: "Invalid user fields" }).trim(),
+  avatarId: z.string({ error: "Invalid user fields" }).trim(),
+  socialLinks: z.array(
+    z.string({ error: "Invalid user fields" }).trim(), {
     error: "Invalid user fields",
   }),
 }, {
   error: "Invalid request payload" // Catches null, arrays, numbers, or missing bodies
 })
-.partial(); // Makes every single field optional (allows them to be undefined)
+.partial() // Makes every single field optional (allows them to be undefined)
+.refine(
+  (data) => Object.keys(data).length > 0, 
+  { error: "No updatable fields provided" }
+)
+// Transform the validated input into the final Mongoose update object
+.transform((data) => {
+  // Define the base output type structure
+  const result: typeof data & { hasCompletedProfile?: true } = { ...data };
+
+  if (data.username !== undefined && data.username.length > 0) {
+    result.hasCompletedProfile = true;
+  }
+
+  // If username is missing, hasCompletedProfile is simply not added to the object keys
+  return result;
+});

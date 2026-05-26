@@ -5,7 +5,7 @@ import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import { defaultAvatarId } from "@/helpers/util/avatar-utils";
-import { sanitizeUser, UserDTO } from "@/helpers/dto/user-dto";
+import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { getErrorResponse, isDuplicateError } from "@/helpers/util/error-utils";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
@@ -21,40 +21,20 @@ export async function POST(request: NextRequest) {
     const { userId, sessionId } = auth;
 
     // parse json, ensure it's an object, and validate any existing fields
+    // hasCompletedProfile is added when username is updated
     const validation = await validateRequestBody(request, UpdateUserSchema);
     if (!validation.success) return validation.errorResponse;
-    const userUpdates = validation.data; 
-
-    const settingUsername = userUpdates.username !== undefined;
-
-    // set new values - TODO: move normalization into zod schema
-    const update: Partial<UserDTO> = {
-      ...(userUpdates.username !== undefined && { username: userUpdates.username.trim() }),
-      ...(userUpdates.name !== undefined && { name: userUpdates.name.trim() }),
-      ...(userUpdates.company !== undefined && { company: userUpdates.company.trim() }),
-      ...(userUpdates.website !== undefined && { website: userUpdates.website.trim() }),
-      ...(userUpdates.avatarId !== undefined && { avatarId: userUpdates.avatarId.trim() }),
-      ...(userUpdates.socialLinks !== undefined && { socialLinks: userUpdates.socialLinks.map((link: string) => link.trim()) }),
-    }
-
-    // throw if no-op
-    if (Object.keys(update).length === 0) {
-      return getErrorResponse(400, "No updatable fields provided");
-    }
-
-    if (settingUsername) {
-      update.hasCompletedProfile = true;
-    }
+    const userUpdates = validation.data;
 
     // if avatar is being updated, set the old avatar image to be deleted unless it's the default
     let oldAvatarId: string | undefined;
-    if (update.avatarId) {
+    if (userUpdates.avatarId) {
       const user = await User.findById(userId);
       if (
         user && 
         user.avatarId && 
         user.avatarId !== defaultAvatarId && 
-        user.avatarId !== update.avatarId
+        user.avatarId !== userUpdates.avatarId
       ) {
         oldAvatarId = user.avatarId;
       }
@@ -65,7 +45,7 @@ export async function POST(request: NextRequest) {
     try {
       updatedUser = await User.findByIdAndUpdate(
         userId,
-        update,
+        userUpdates,
         {
           returnDocument: 'after',
           runValidators: true,
@@ -117,14 +97,8 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
 
-    // if updating username, refresh access token
-    /*  
-      this would also be required if hasCompletedProfile changed, 
-      but it can only be changed when setting the username, as per
-      EditableProfileFields defined in AuthContext. so just check 
-      for settingUsername and reissue
-    */
-    if (settingUsername) {
+    // if hasCompletedProfile changed, refresh access token
+    if (userUpdates.hasCompletedProfile) {
       let accessToken;
       try {
         accessToken = signAccessToken({
