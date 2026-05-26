@@ -28,16 +28,6 @@ export async function POST(request: NextRequest) {
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedPassword = password;
 
-    // throw if email is not provided
-    if (!normalizedEmail) {
-      return getErrorResponse(400, "Email is required");
-    }
-    
-    // throw if password is not provided
-    if (!normalizedPassword) {
-      return getErrorResponse(400, "Password is required");
-    }
-
     // throw one error if user does not exist or if password is invalid
     // to avoid account enumeration
     const user = await User.findOne({ email: normalizedEmail }).select('+password');
