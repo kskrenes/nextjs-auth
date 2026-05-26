@@ -1,6 +1,8 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
+import { validatePayload } from "@/helpers/util/request-utils";
+import { SessionParamsSchema } from "@/lib/payload-schemas";
 import { evictSession } from "@/lib/session-cache";
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -17,11 +19,11 @@ export async function DELETE(
     if (auth instanceof Response) return auth;  // return error response
     const { userId, sessionId: currentSessionId } = auth;
 
-    // validate sessionId param
-    const { sessionId: sessionIdParam } = await params;
-    if (typeof sessionIdParam !== "string" || !sessionIdParam.trim()) {
-      return getErrorResponse(400, "Invalid session ID");
-    }
+    // validate params
+    const resolvedParams = await params;
+    const validation = validatePayload(SessionParamsSchema, resolvedParams, 400);
+    if (!validation.success) return validation.errorResponse;
+    const { sessionId: sessionIdParam } = validation.data;
 
     // prevent users from revoking their own current session
     if (sessionIdParam === currentSessionId) {

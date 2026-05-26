@@ -1,6 +1,6 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { signAccessToken, storeAccessTokenCookie } from "@/helpers/util/token-utils";
-import { validateJSON } from "@/helpers/util/request-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
@@ -9,6 +9,7 @@ import { sanitizeUser, UserDTO } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { getErrorResponse, isDuplicateError } from "@/helpers/util/error-utils";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
+import { UpdateUserSchema } from "@/lib/payload-schemas";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,34 +20,14 @@ export async function POST(request: NextRequest) {
     if (auth instanceof Response) return auth;  // return error response
     const { userId, sessionId } = auth;
 
-    // validate JSON
-    const reqBody = await validateJSON(request);
-    if (reqBody instanceof Response) return reqBody;  // return error response
-
-    // throw if request payload is invalid
-    if (!reqBody || typeof reqBody !== "object" || Array.isArray(reqBody)) {
-      return getErrorResponse(400, "Invalid request payload");
-    }
-
-    const userUpdates = reqBody as Partial<UserDTO>;
-    
-    // check for valid fields at runtime
-    if (
-      (userUpdates.username !== undefined && typeof userUpdates.username !== "string") ||
-      (userUpdates.name !== undefined && typeof userUpdates.name !== "string") ||
-      (userUpdates.company !== undefined && typeof userUpdates.company !== "string") ||
-      (userUpdates.website !== undefined && typeof userUpdates.website !== "string") ||
-      (userUpdates.avatarId !== undefined && typeof userUpdates.avatarId !== "string") ||
-      (userUpdates.socialLinks !== undefined && 
-        (!Array.isArray(userUpdates.socialLinks) || 
-        userUpdates.socialLinks.some((element: string) => typeof element !== "string")))
-    ) {
-      return getErrorResponse(400, "Invalid user fields");
-    }
+    // parse json, ensure it's an object, and validate any existing fields
+    const validation = await validateRequestBody(request, UpdateUserSchema);
+    if (!validation.success) return validation.errorResponse;
+    const userUpdates = validation.data; 
 
     const settingUsername = userUpdates.username !== undefined;
 
-    // set new values
+    // set new values - TODO: move normalization into zod schema
     const update: Partial<UserDTO> = {
       ...(userUpdates.username !== undefined && { username: userUpdates.username.trim() }),
       ...(userUpdates.name !== undefined && { name: userUpdates.name.trim() }),

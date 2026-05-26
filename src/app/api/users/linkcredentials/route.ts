@@ -2,13 +2,13 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
-import { validateJSON } from "@/helpers/util/request-utils";
-import { excludesSpaces, meetsMinimum } from "@/helpers/util/form-validation-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
 import { signAccessToken, storeAccessTokenCookie, } from "@/helpers/util/token-utils";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
+import { LinkCredentialsSchema } from "@/lib/payload-schemas";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,32 +19,10 @@ export async function POST(request: NextRequest) {
     if (auth instanceof Response) return auth;  // return error response
     const { userId, sessionId } = auth;
 
-    // validate JSON
-    const reqBody = await validateJSON(request);
-    if (reqBody instanceof Response) return reqBody;  // return error response
-
-    // destructure request
-    const { password } = reqBody as { password?: string };
-
-    // validate variables from request body - password type must be string
-    if (typeof password !== "string") {
-      return getErrorResponse(400, "Invalid request payload");
-    }
-
-    // validate variables from request body - password must exist
-    if (!password) {
-      return getErrorResponse(400, "Invalid password");
-    }
-
-    // validate variables from request body - password must meet min length
-    if (!meetsMinimum(password, 8)) {
-      return getErrorResponse(400, "Password must meet minimum character requirement");
-    }
-
-    // validate variables from request body - password must not include spaces
-    if (!excludesSpaces(password)) {
-      return getErrorResponse(400, "Password cannot contain spaces");
-    }
+    // parse json, ensure it's an object, and validate all fields
+    const validation = await validateRequestBody(request, LinkCredentialsSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { password } = validation.data;
 
     // hash the new password before writing
     const salt = await bcrypt.genSalt(10);

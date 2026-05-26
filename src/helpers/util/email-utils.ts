@@ -2,12 +2,7 @@ import User from "@/models/user-model";
 import nodemailer from "nodemailer";
 import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { getRandomToken, hashToken } from "./token-utils";
-
-// enum for each email type
-export enum EmailType {
-  VERIFY = 'VERIFY',
-  RESET = 'RESET',
-}
+import { EmailType } from "@/lib/payload-schemas";
 
 // styles
 const OUTER_BG_COLOR = '#f4f4f4';

@@ -1,6 +1,6 @@
-import { NextRequest } from "next/server";
 import { UAParser } from "ua-parser-js";
 import { getErrorResponse } from "./error-utils";
+import { ZodType } from "zod";
 
 export function getUAAndIpFromRequest(request: Request): { userAgent: string; ipAddress: string } {
   const userAgent = request.headers.get('user-agent') || '';
@@ -38,26 +38,43 @@ export function parseUserAgent(
   return { deviceType, os, browser };
 }
 
-const getRequestBody = async (request: NextRequest): Promise<object> => {
-  let reqBody: unknown;
-  try {
-    reqBody = await request.json();
-  } catch {
-    throw new Error("Invalid JSON body");
-  }
+type ValidationResult<T> = 
+  | { success: false; errorResponse: Response } 
+  | { success: true; data: T };
 
-  if (!reqBody || typeof reqBody !== "object" || Array.isArray(reqBody)) {
-    throw new Error("Invalid request body");
+export function validatePayload<T>(
+  schema: ZodType<T>, 
+  data: unknown, 
+  statusCode = 400
+): ValidationResult<T> {
+  const result = schema.safeParse(data);
+  
+  if (!result.success) {
+    // extract the first validation error message defined in the schema
+    const firstIssue = result.error.issues[0];
+    const errorMessage = firstIssue.message ?? "Invalid request payload";
+    
+    return { 
+      success: false, 
+      errorResponse: getErrorResponse(statusCode, errorMessage)
+    };
   }
-
-  return reqBody;
+  
+  return { success: true, data: result.data };
 }
 
-export const validateJSON = async (request: NextRequest): Promise<object | Response> => {
+export async function validateRequestBody<T>(
+  request: Request, 
+  schema: ZodType<T>, 
+  statusCode = 400
+): Promise<ValidationResult<T>> {
   try {
-    const body = await getRequestBody(request);
-    return body;
-  } catch(jsonError: unknown) {
-    return getErrorResponse(400, "Invalid request", jsonError);
+    const body = await request.json();
+    return validatePayload(schema, body, statusCode);
+  } catch {
+    return { 
+      success: false, 
+      errorResponse: getErrorResponse(400, "Invalid JSON body") 
+    };
   }
 }

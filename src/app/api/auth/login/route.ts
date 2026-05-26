@@ -9,28 +9,21 @@ import {
   storeRefreshTokenCookie, 
   storeSessionHintCookie 
 } from "@/helpers/util/token-utils";
-import { validateJSON } from "@/helpers/util/request-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { initiateMfaChallenge } from "@/helpers/util/mfa-utils";
+import { LoginSchema } from "@/lib/payload-schemas";
 
 export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // validate JSON
-    const reqBody = await validateJSON(request);
-    if (reqBody instanceof Response) return reqBody;  // return error response
-    
-    // throw if field types are invalid at runtime
-    const { email, password } = reqBody as { email?: string; password?: string };
-    if (
-      typeof email !== "string" ||
-      typeof password !== "string"
-    ) {
-      return getErrorResponse(401, "Invalid email or password");
-    }
+    // parse json, ensure it's an object, and validate all properties
+    const validation = await validateRequestBody(request, LoginSchema, 401);
+    if (!validation.success) return validation.errorResponse;
+    const { email, password } = validation.data;
 
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedPassword = password;

@@ -1,4 +1,4 @@
-import { validateJSON } from "@/helpers/util/request-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import { OAuth2Client } from "google-auth-library";
 import { NextRequest, NextResponse } from "next/server";
@@ -17,6 +17,7 @@ import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { SecurityEventType } from "@/helpers/util/security-event-utils";
 import { getErrorResponse, isDuplicateError } from "@/helpers/util/error-utils";
 import { initiateMfaChallenge } from "@/helpers/util/mfa-utils";
+import { GoogleTokenSchema } from "@/lib/payload-schemas";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
   // generate a base username from the name or email
@@ -57,15 +58,10 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // validate JSON
-    const reqBody = await validateJSON(request);
-    if (reqBody instanceof Response) return reqBody;  // return error response
-
-    // throw if field types are invalid at runtime
-    const { token } = reqBody as { token?: string; };
-    if (typeof token !== "string") {
-      return getErrorResponse(400, "Invalid request");
-    }
+    // parse json, ensure it's an object, and validate all properties
+    const validation = await validateRequestBody(request, GoogleTokenSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { token } = validation.data;
 
     // throw if google client id is not configured
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;

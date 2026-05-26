@@ -1,23 +1,15 @@
-import { EmailType, sendEmail } from "@/helpers/util/email-utils";
+import { sendEmail } from "@/helpers/util/email-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
-import { validateJSON } from "@/helpers/util/request-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
+import { EmailTypeSchema } from "@/lib/payload-schemas";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    // validate JSON
-    const reqBody = await validateJSON(request);
-    if (reqBody instanceof Response) return reqBody;  // return error response
-
-    // throw if field types are invalid at runtime
-    const { email, type } = reqBody as { email?: string; type?: EmailType };
-    if (
-      typeof email !== "string" ||
-      typeof type !== "string" ||
-      (type !== "VERIFY" && type !== "RESET")
-    ) {
-      return getErrorResponse(400, "Invalid request payload");
-    }
+    // parse json, ensure it's an object, and validate all fields
+    const validation = await validateRequestBody(request, EmailTypeSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { email, type } = validation.data;
     
     // attempt to send email
     let mailResponse;

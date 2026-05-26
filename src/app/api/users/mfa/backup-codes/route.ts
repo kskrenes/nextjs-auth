@@ -2,7 +2,8 @@ import { connect } from "@/dbconfig/dbconfig";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { generateBackupCodes, hashBackupCode, verifyBackupCode, verifyTotpCode } from "@/helpers/util/mfa-utils";
-import { validateJSON } from "@/helpers/util/request-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
+import { MFACodeSchema } from "@/lib/payload-schemas";
 import User from "@/models/user-model";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
@@ -16,16 +17,10 @@ export async function POST(request: NextRequest) {
     if (auth instanceof Response) return auth;  // return error response
     const { userId } = auth;
 
-    // validate JSON
-    const reqBody = await validateJSON(request);
-    if (reqBody instanceof Response) return reqBody;  // return error response
-
-    // validate request payload
-    // code must be totp (6 chars) or backup (8 chars)
-    const { code } = reqBody as { code?: string; };
-    if (typeof code !== "string" || (code.length !==6 && code.length !== 8)) {
-      return getErrorResponse(400, "Invalid request");
-    }
+    // parse json, ensure it's an object, and validate all fields
+    const validation = await validateRequestBody(request, MFACodeSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { code } = validation.data;
 
     // fetch user from DB with mfaSecret included
     let user;

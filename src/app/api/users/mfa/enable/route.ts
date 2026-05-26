@@ -4,7 +4,8 @@ import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { generateBackupCodes, hashBackupCode, verifyTotpCode } from "@/helpers/util/mfa-utils";
-import { validateJSON } from "@/helpers/util/request-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
+import { MFACodeSchema } from "@/lib/payload-schemas";
 import { redis, redisKeys } from "@/lib/redis";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -17,16 +18,11 @@ export async function POST(request: NextRequest) {
     const auth = await authorizeRequest(request);
     if (auth instanceof Response) return auth;  // return error response
     const { userId } = auth;
-
-    // validate JSON
-    const reqBody = await validateJSON(request);
-    if (reqBody instanceof Response) return reqBody;  // return error response
-
-    // validate request payload
-    const { code } = reqBody as { code?: string; };
-    if (typeof code !== "string") {
-      return getErrorResponse(400, "Invalid request");
-    }
+    
+    // parse json, ensure it's an object, and validate all fields
+    const validation = await validateRequestBody(request, MFACodeSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { code } = validation.data;
 
     // retrieve pending secret from Redis
     const key = redisKeys.mfaSetup(userId);

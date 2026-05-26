@@ -1,48 +1,22 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { excludesSpaces, meetsMinimum } from "@/helpers/util/form-validation-utils";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
-import { validateJSON } from "@/helpers/util/request-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
 import Session from "@/models/session-model";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getErrorResponse } from "@/helpers/util/error-utils";
+import { ResetPasswordSchema } from "@/lib/payload-schemas";
 
 export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // validate JSON
-    const reqBody = await validateJSON(request);
-    if (reqBody instanceof Response) return reqBody;  // return error response
-
-    // throw if field types are invalid at runtime
-    const { token, password } = reqBody as { token?: string; password?: string };
-    if (
-      typeof token !== "string" ||
-      typeof password !== "string"
-    ) {
-      return getErrorResponse(400, "Invalid request payload");
-    }
-
-    // throw if valid token is not provided
-    if (token.trim().length === 0) {
-      return getErrorResponse(401, "Invalid token, please follow the link from your email");
-    }
-
-    // throw if valid password is not provided
-    if (!password) {
-      return getErrorResponse(400, "Invalid password");
-    }
-
-    if (!meetsMinimum(password, 8)) {
-      return getErrorResponse(422, "Password must meet minimum character requirement");
-    }
-
-    if (!excludesSpaces(password)) {
-      return getErrorResponse(422, "Password cannot contain spaces");
-    }
+    // parse json, ensure it's an object, and validate all fields
+    const validation = await validateRequestBody(request, ResetPasswordSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { token, password } = validation.data;
 
     // hash incoming raw token with SHA-256 just like when it was stored
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
