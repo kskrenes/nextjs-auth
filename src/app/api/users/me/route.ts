@@ -1,17 +1,20 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import User from "@/models/user-model";
 import { NextResponse, type NextRequest } from "next/server";
 import { getErrorResponse } from "@/helpers/util/error-utils";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
 
 export async function GET(request: NextRequest) {
   try {
     await connect();
 
-    // fetch user associated with token
-    const { id } = await getIdsFromAccessToken(request);
-    const user = await User.findById(id)
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId } = auth;
+
+    const user = await User.findById(userId)
       .select("-password");
 
     // throw if user not found
@@ -29,10 +32,6 @@ export async function GET(request: NextRequest) {
     });
   } 
   catch (routeError: unknown) {
-    // check for authorization error
-    if (routeError instanceof Error && /token|jwt|auth/i.test(routeError.message)) {
-      return getErrorResponse(401, "Unauthorized");
-    }
     return getErrorResponse(500, "Unable to retrieve user", routeError);
   }
 }
