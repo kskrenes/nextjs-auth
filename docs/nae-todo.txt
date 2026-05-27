@@ -113,7 +113,7 @@ refactor
 - [x] refactor api routes to use getErrorResponse helper
 
 multi-factor authentication
-- [ ] use monospace font for codes
+- [x] use monospace font for codes
 - [x] implement ability to regen backup codes
 - [ ] refactor to use mfa-verify-form and mfa-verify-controls for any verification
 
