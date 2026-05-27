@@ -27,7 +27,7 @@ const MFAChallenge = ({ onCancel }: MFAChallengeProps) => {
   }
 
   const handleVerify = async () => {
-    if (verifyingMFA) return;
+    if (verifyingMFA || awaitingRedirect || disabled || !code) return;
 
     try {
       setInvalid(false);
