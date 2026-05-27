@@ -31,7 +31,7 @@ export async function DELETE(
     }
 
     // delete the session from MongoDB only if the session belongs to the authenticated user
-    const targetSession = await Session.findOneAndDelete({ sessionIdParam, userId });
+    const targetSession = await Session.findOneAndDelete({ sessionId: sessionIdParam, userId });
     if (!targetSession) {
       return getErrorResponse(404, "Session not found");
     }
