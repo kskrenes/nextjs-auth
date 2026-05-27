@@ -122,6 +122,37 @@ session cache
 - [x] research what to do with redis session records on logout (currently persisting until ttl expires)
 - [x] explicitly remove session cache records from redis on logout
 
+Role-Based Access Control (RBAC)
+- [ ] create roles for Owner, Admin, and Member (existing standard user)
+
+Admin-specific features (leverage dashboard page as needed)
+- [ ] view all users
+- [ ] trigger password resets
+- [ ] temporarily ban/freeze Member accounts
+- [ ] impersonate users (for support debugging)
+- [ ] view system-wide activity logs including IP addresses and User Agents to investigate malicious behavior
+- [ ] force-evict specific sessions of standard Members
+
+Owner-specific features (leverage dashboard page as needed)
+- [ ] turn off registration globally or toggle "Maintenance Mode" via Redis cache flags
+- [ ] cannot be banned, deleted, or impersonated by standard Admins
+- [ ] promote a Member to an Admin, or strip an Admin of their privileges
+
+optional role-based API rate limits
+- [ ] enforce API rate limiting for Members
+- [ ] place Admin on a higher API rate-limit bucket than standard Members
+- [ ] bypass API rate limiting completely for Owner
+
+role-switcher impersonation widget
+- [ ] add a widget visible in the demo environment allowing users to change their role on the fly
+- [ ] update the user's role in the database and/or alter their active JWT/session token payload when role is switched
+- [ ] update UI instantly via auth context/react context
+
+shared demo environment guardrails
+- [ ] (maybe) bake roles directly into Dual-Token Session / Redis Cache
+- [ ] (maybe) run a Database Seed Reset cron job every hour
+- [ ] (maybe) intercept write operations on critical demo tables and return a fake success response (keep base data immutable)
+
 additional authentication methods
 - [x] add social login (google)
 - [x] research multifactor auth (MFA)
@@ -129,7 +160,7 @@ additional authentication methods
 - [ ] research passkeys
 
 roles and permissions
-- [ ] research examples and determine what to implement
+- [x] research examples and determine what to implement
 
 look & feel
 - [x] improve style
