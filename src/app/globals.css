@@ -76,6 +76,8 @@
 }
 
 @theme inline {
+  --font-sans: var(--font-roboto-sans), sans-serif;
+  --font-mono: var(--font-roboto-mono), monospace;
   --color-page: var(--page);
   --color-panel: var(--panel);
   --color-panel-highlight: var(--panel-highlight);
