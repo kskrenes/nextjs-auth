@@ -120,7 +120,7 @@ multi-factor authentication
 session cache
 - [x] migrate to redis distributed cache
 - [x] research what to do with redis session records on logout (currently persisting until ttl expires)
-- [ ] explicitly remove session cache records from redis on logout
+- [x] explicitly remove session cache records from redis on logout
 
 additional authentication methods
 - [x] add social login (google)
