@@ -125,7 +125,7 @@ session cache
 Role-Based Access Control (RBAC)
 - [ ] create roles for Owner, Admin, and Member (existing standard user)
 
-Admin-specific features (leverage dashboard page as needed)
+Admin-specific features (leverage dashboard page as appropriate)
 - [ ] view all users
 - [ ] trigger password resets
 - [ ] temporarily ban/freeze Member accounts
@@ -133,7 +133,7 @@ Admin-specific features (leverage dashboard page as needed)
 - [ ] view system-wide activity logs including IP addresses and User Agents to investigate malicious behavior
 - [ ] force-evict specific sessions of standard Members
 
-Owner-specific features (leverage dashboard page as needed)
+Owner-specific features (leverage dashboard page as appropriate)
 - [ ] turn off registration globally or toggle "Maintenance Mode" via Redis cache flags
 - [ ] cannot be banned, deleted, or impersonated by standard Admins
 - [ ] promote a Member to an Admin, or strip an Admin of their privileges
