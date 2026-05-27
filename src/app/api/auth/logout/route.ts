@@ -1,4 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 import { clearAuthCookies, getToken, hashToken, REFRESH_TOKEN_COOKIE_NAME } from "@/helpers/util/token-utils";
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,8 +12,8 @@ export async function POST(request: NextRequest) {
     let refreshToken;
     try {
       refreshToken = getToken(request, REFRESH_TOKEN_COOKIE_NAME, "Missing refresh token");
-    } catch(error: unknown) {
-      console.error(error);
+    } catch(tokenError: unknown) {
+      console.error(tokenError);
       // fall through if missing, log out anyway
     }
 
@@ -22,8 +23,8 @@ export async function POST(request: NextRequest) {
         await Session.findOneAndDelete({
           refreshToken: hashToken(refreshToken)
         })
-      } catch (error: unknown) {
-        console.error(error);
+      } catch (dbError: unknown) {
+        console.error(dbError);
         // fall through if already deleted, log out anyway
       }
     }
@@ -37,12 +38,7 @@ export async function POST(request: NextRequest) {
       success: true,
     });
   } 
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to log out";
-    console.error(message);
-    return NextResponse.json(
-      { error: "Unable to log out" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to log out", routeError);
   }
 }

@@ -1,6 +1,7 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeSessions } from "@/helpers/dto/session-dto";
-import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,21 +9,10 @@ export async function GET(request: NextRequest) {
   try {
     await connect();
 
-    // require an authenticated session — throws AuthTokenError (401) if
-    // the cookie is absent, expired, or invalid
-    let userId: string;
-    let currentSessionId: string | undefined;
-    try {
-      ({ id: userId, sessionId: currentSessionId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: error.message },
-          { status: error.status }
-        );
-      }
-      throw error;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId, sessionId } = auth;
 
     // retrieve all sessions associated with the user
     const sessions = await Session.find({ 
@@ -36,16 +26,10 @@ export async function GET(request: NextRequest) {
       message: "Sessions retrieved",
       success: true,
       sessions: sanitizedSessions,
-      currentSessionId,
+      currentSessionId: sessionId,
     });
   }
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to retrieve sessions";
-    console.error(message);
-    // throw general route error
-    return NextResponse.json(
-      { error: "Unable to retrieve sessions" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to retrieve sessions", routeError);
   }
 }

@@ -1,4 +1,4 @@
-import { getRequestBody } from "@/helpers/util/request-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import { OAuth2Client } from "google-auth-library";
 import { NextRequest, NextResponse } from "next/server";
@@ -15,8 +15,9 @@ import { connect } from "@/dbconfig/dbconfig";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { SecurityEventType } from "@/helpers/util/security-event-utils";
-import { getErrorResponse } from "@/helpers/util/error-utils";
+import { getErrorResponse, isDuplicateError } from "@/helpers/util/error-utils";
 import { initiateMfaChallenge } from "@/helpers/util/mfa-utils";
+import { GoogleTokenSchema } from "@/lib/payload-schemas";
 
 const createUniqueUsername = async (name: string, email: string): Promise<string> => {
   // generate a base username from the name or email
@@ -57,19 +58,10 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // throw if request json is invalid
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(jsonError: unknown) {
-      return getErrorResponse(400, "Invalid request", jsonError);
-    }
-
-    // throw if field types are invalid at runtime
-    const { token } = reqBody as { token?: string; };
-    if (typeof token !== "string") {
-      return getErrorResponse(400, "Invalid request");
-    }
+    // parse json, ensure it's an object, and validate all properties
+    const validation = await validateRequestBody(request, GoogleTokenSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { token } = validation.data;
 
     // throw if google client id is not configured
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
@@ -201,16 +193,11 @@ export async function POST(request: NextRequest) {
           storedUser = await newUser.save();
 
         // throw if database rejects duplicate with 11000
-        } catch (duplicateError: unknown) {
-          if (
-            typeof duplicateError === "object" &&
-            duplicateError !== null &&
-            "code" in duplicateError &&
-            (duplicateError as { code?: number }).code === 11000
-          ) {
-            return getErrorResponse(409, "User already exists", duplicateError);
+        } catch (dbError: unknown) {
+          if (isDuplicateError(dbError)) {
+            return getErrorResponse(409, "User already exists", dbError);
           }
-          throw duplicateError;
+          throw dbError;
         }
       }
     }

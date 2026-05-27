@@ -2,86 +2,27 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
-import { getRequestBody } from "@/helpers/util/request-utils";
-import { excludesSpaces, meetsMinimum } from "@/helpers/util/form-validation-utils";
-import {
-  AuthTokenError,
-  getIdsFromAccessToken,
-  signAccessToken,
-  storeAccessTokenCookie,
-} from "@/helpers/util/token-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
+import { signAccessToken, storeAccessTokenCookie, } from "@/helpers/util/token-utils";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
+import { getErrorResponse } from "@/helpers/util/error-utils";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
+import { LinkCredentialsSchema } from "@/lib/payload-schemas";
 
 export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // require an authenticated session — throws AuthTokenError (401) if
-    // the cookie is absent, expired, or invalid
-    let sessionUserId: string;
-    let sessionId: string | undefined;
-    try {
-      ({ id: sessionUserId, sessionId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: error.message },
-          { status: error.status }
-        );
-      }
-      throw error;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId, sessionId } = auth;
 
-    // parse and validate the request body - throw if request is invalid
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch (error: unknown) {
-      const message = error instanceof Error 
-        ? error.message 
-        : "Invalid request";
-      
-      return NextResponse.json(
-        { error: message }, 
-        { status: 400 }
-      );
-    }
-
-    // destructure request
-    const { password } = reqBody as { password?: string };
-
-    // validate variables from request body - password type must be string
-    if (typeof password !== "string") {
-      return NextResponse.json(
-        { error: "Invalid request" }, 
-        { status: 400 }
-      );
-    }
-
-    // validate variables from request body - password must exist
-    if (!password) {
-      return NextResponse.json(
-        { error: "Invalid password" }, 
-        { status: 400 }
-      );
-    }
-
-    // validate variables from request body - password must meet min length
-    if (!meetsMinimum(password, 8)) {
-      return NextResponse.json(
-        { error: "Password must meet minimum character requirement" },
-        { status: 400 }
-      );
-    }
-
-    // validate variables from request body - password must not include spaces
-    if (!excludesSpaces(password)) {
-      return NextResponse.json(
-        { error: "Password cannot contain spaces" },
-        { status: 400 }
-      );
-    }
+    // parse json, ensure it's an object, and validate all fields
+    const validation = await validateRequestBody(request, LinkCredentialsSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { password } = validation.data;
 
     // hash the new password before writing
     const salt = await bcrypt.genSalt(10);
@@ -92,14 +33,14 @@ export async function POST(request: NextRequest) {
     // concurrent request that races here will get null back and return 409.
     const updatedUser = await User.findOneAndUpdate(
       {
-        _id: sessionUserId,
+        _id: userId,
         "accounts.provider": { $ne: "credentials" },
       },
       {
         $push: {
           accounts: {
             provider: "credentials",
-            providerId: sessionUserId,
+            providerId: userId,
           },
         },
         $set: {
@@ -114,10 +55,7 @@ export async function POST(request: NextRequest) {
       // Two possible causes, both safely reported as 409:
       //   1. User not found (session references a deleted account).
       //   2. Credentials were already linked (concurrent request won the race).
-      return NextResponse.json(
-        { error: "Credentials already linked or user not found" },
-        { status: 409 }
-      );
+      return getErrorResponse(409, "Credentials already linked or user not found");
     }
 
     // create sanitized user for the response
@@ -135,10 +73,7 @@ export async function POST(request: NextRequest) {
         sessionId,
       });
     } catch {
-      return NextResponse.json(
-        { error: "Unable to continue session" },
-        { status: 500 }
-      );
+      return getErrorResponse(500, "Unable to continue session");
     }
 
     // record security event for successful credential linking
@@ -168,15 +103,7 @@ export async function POST(request: NextRequest) {
     // return success
     return response;
   } 
-  catch (error: unknown) {
-    const message = error instanceof Error 
-      ? error.message 
-      : "Unable to link credentials";
-
-    console.error(message);
-    return NextResponse.json(
-      { error: "Unable to link credentials" },
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to link credentials", routeError);
   }
 }

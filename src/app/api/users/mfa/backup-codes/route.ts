@@ -1,8 +1,9 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { generateBackupCodes, hashBackupCode, verifyBackupCode, verifyTotpCode } from "@/helpers/util/mfa-utils";
-import { getRequestBody } from "@/helpers/util/request-utils";
-import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
+import { MFACodeSchema } from "@/lib/payload-schemas";
 import User from "@/models/user-model";
 import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,39 +12,20 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // require authentication by validating access token
-    let authenticatedUserId: string;
-    try {
-      ({ id: authenticatedUserId } = await getIdsFromAccessToken(request));
-    } catch (authError: unknown) {
-      if (authError instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: "Unauthorized" }, 
-          { status: authError.status ?? 401 }
-        );
-      }
-      throw authError;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId } = auth;
 
-    // validate request json
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(jsonError: unknown) {
-      return getErrorResponse(400, "Invalid request", jsonError);
-    }
-
-    // validate request payload
-    // code must be totp (6 chars) or backup (8 chars)
-    const { code } = reqBody as { code?: string; };
-    if (typeof code !== "string" || (code.length !==6 && code.length !== 8)) {
-      return getErrorResponse(400, "Invalid request");
-    }
+    // parse json, ensure it's an object, and validate all fields
+    const validation = await validateRequestBody(request, MFACodeSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { code } = validation.data;
 
     // fetch user from DB with mfaSecret included
     let user;
     try {
-      user = await User.findById(authenticatedUserId).select('+mfaSecret +mfaBackupCodes');
+      user = await User.findById(userId).select('+mfaSecret +mfaBackupCodes');
     } catch (dbError) {
       return getErrorResponse(500, "Database error", dbError);
     }
@@ -70,7 +52,7 @@ export async function POST(request: NextRequest) {
 
     // update the user document in the DB
     const updatedUser = await User.findByIdAndUpdate(
-      authenticatedUserId,
+      userId,
       {
         mfaBackupCodes: hashedBackupCodes
       },
@@ -106,25 +88,16 @@ export async function GET(request: NextRequest) {
   try {
     await connect();
 
-    // require authentication by validating access token
-    let authenticatedUserId: string;
-    try {
-      ({ id: authenticatedUserId } = await getIdsFromAccessToken(request));
-    } catch (authError: unknown) {
-      if (authError instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: "Unauthorized" }, 
-          { status: authError.status ?? 401 }
-        );
-      }
-      throw authError;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId } = auth;
 
     // use aggregate to retrieve just the length integer
     const result = await User.aggregate<AggregateResult>([
       { 
         $match: { 
-          _id: new mongoose.Types.ObjectId(authenticatedUserId),
+          _id: new mongoose.Types.ObjectId(userId),
           mfaEnabled: true,
         } 
       },

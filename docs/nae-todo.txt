@@ -110,7 +110,7 @@ refactor
 - [x] AuthContext.tsx: rename to auth-context-provider.tsx
 - [x] move theme-context-provider.tsx & auth-context-provider.tsx to /context-providers
 - [x] move dtos to /helpers/dto
-- [ ] refactor api routes to use getErrorResponse helper
+- [x] refactor api routes to use getErrorResponse helper
 
 multi-factor authentication
 - [ ] use monospace font for codes

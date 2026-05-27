@@ -1,24 +1,25 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import User from "@/models/user-model";
 import { NextResponse, type NextRequest } from "next/server";
+import { getErrorResponse } from "@/helpers/util/error-utils";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
 
 export async function GET(request: NextRequest) {
   try {
     await connect();
 
-    // fetch user associated with token
-    const { id } = await getIdsFromAccessToken(request);
-    const user = await User.findById(id)
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId } = auth;
+
+    const user = await User.findById(userId)
       .select("-password");
 
     // throw if user not found
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" }, 
-        { status: 404 }
-      );
+      return getErrorResponse(404, "User not found");
     }
 
     // create sanitized user for response
@@ -30,22 +31,7 @@ export async function GET(request: NextRequest) {
       user: sanitizedUser,
     });
   } 
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to retrieve user";
-    console.error(message)
-
-    // check for authorization error
-    if (/token|jwt|auth/i.test(message)) {
-      return NextResponse.json(
-        { error: "Unauthorized" }, 
-        { status: 401 }
-      );
-    }
-
-    // throw general route error
-    return NextResponse.json(
-      { error: "Unable to retrieve user" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to retrieve user", routeError);
   }
 }

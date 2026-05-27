@@ -1,104 +1,40 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { AuthTokenError, getIdsFromAccessToken, signAccessToken, storeAccessTokenCookie } from "@/helpers/util/token-utils";
-import { getRequestBody } from "@/helpers/util/request-utils";
+import { signAccessToken, storeAccessTokenCookie } from "@/helpers/util/token-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
 import { v2 as cloudinary } from 'cloudinary';
 import { defaultAvatarId } from "@/helpers/util/avatar-utils";
-import { sanitizeUser, UserDTO } from "@/helpers/dto/user-dto";
+import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
+import { getErrorResponse, isDuplicateError } from "@/helpers/util/error-utils";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
+import { UpdateUserSchema } from "@/lib/payload-schemas";
 
 export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // throw if user is not authenticated
-    let authenticatedUserId: string;
-    let sessionId: string | undefined;
-    try {
-      ({ id: authenticatedUserId, sessionId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: "Unauthorized" }, 
-          { status: error.status ?? 401 }
-        );
-      }
-      throw error;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId, sessionId } = auth;
 
-    // throw if request json is invalid
-    let reqBody: unknown;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(error: unknown) {
-      const message = error instanceof Error ? error.message : "Invalid request";
-      return NextResponse.json(
-        { error: message }, 
-        { status: 400 }
-      );
-    }
-
-    // throw if request payload is invalid
-    if (!reqBody || typeof reqBody !== "object" || Array.isArray(reqBody)) {
-      return NextResponse.json(
-        { error: "Invalid request body" },
-        { status: 400 }
-      );
-    }
-
-    const userUpdates = reqBody as Partial<UserDTO>;
-    
-    // check for valid fields at runtime
-    if (
-      (userUpdates.username !== undefined && typeof userUpdates.username !== "string") ||
-      (userUpdates.name !== undefined && typeof userUpdates.name !== "string") ||
-      (userUpdates.company !== undefined && typeof userUpdates.company !== "string") ||
-      (userUpdates.website !== undefined && typeof userUpdates.website !== "string") ||
-      (userUpdates.avatarId !== undefined && typeof userUpdates.avatarId !== "string") ||
-      (userUpdates.socialLinks !== undefined && 
-        (!Array.isArray(userUpdates.socialLinks) || 
-        userUpdates.socialLinks.some((element: string) => typeof element !== "string")))
-    ) {
-      return NextResponse.json(
-        { error: "Invalid user fields" }, 
-        { status: 400 }
-      );
-    }
-
-    const settingUsername = userUpdates.username !== undefined;
-
-    // set new values
-    const update: Partial<UserDTO> = {
-      ...(userUpdates.username !== undefined && { username: userUpdates.username.trim() }),
-      ...(userUpdates.name !== undefined && { name: userUpdates.name.trim() }),
-      ...(userUpdates.company !== undefined && { company: userUpdates.company.trim() }),
-      ...(userUpdates.website !== undefined && { website: userUpdates.website.trim() }),
-      ...(userUpdates.avatarId !== undefined && { avatarId: userUpdates.avatarId.trim() }),
-      ...(userUpdates.socialLinks !== undefined && { socialLinks: userUpdates.socialLinks.map((link: string) => link.trim()) }),
-    }
-
-    // throw if no-op
-    if (Object.keys(update).length === 0) {
-      return NextResponse.json(
-        { error: "No updatable fields provided" },
-        { status: 400 }
-      );
-    }
-
-    if (settingUsername) {
-      update.hasCompletedProfile = true;
-    }
+    // parse json, ensure it's an object, and validate any existing fields
+    // hasCompletedProfile is added when username is updated
+    const validation = await validateRequestBody(request, UpdateUserSchema);
+    if (!validation.success) return validation.errorResponse;
+    const userUpdates = validation.data;
 
     // if avatar is being updated, set the old avatar image to be deleted unless it's the default
     let oldAvatarId: string | undefined;
-    if (update.avatarId) {
-      const user = await User.findById(authenticatedUserId);
+    if (userUpdates.avatarId) {
+      const user = await User.findById(userId);
       if (
         user && 
         user.avatarId && 
         user.avatarId !== defaultAvatarId && 
-        user.avatarId !== update.avatarId
+        user.avatarId !== userUpdates.avatarId
       ) {
         oldAvatarId = user.avatarId;
       }
@@ -108,43 +44,32 @@ export async function POST(request: NextRequest) {
     let updatedUser;
     try {
       updatedUser = await User.findByIdAndUpdate(
-        authenticatedUserId,
-        update,
+        userId,
+        userUpdates,
         {
           returnDocument: 'after',
           runValidators: true,
         }
       );
     // throw if username is a duplicate
-    } catch (error: unknown) {
-      if (
-        typeof error === "object" &&
-        error !== null &&
-        "code" in error &&
-        (error as { code?: number }).code === 11000
-      ) {
-        return NextResponse.json(
-          { error: "Username already exists" },
-          { status: 409 }
-        );
+    } catch (dbError: unknown) {
+      if (isDuplicateError(dbError)) {
+        return getErrorResponse(409, "Username already exists", dbError);
       }
-      throw error;
+      throw dbError;
     }
 
     // throw if user not found
     if (!updatedUser) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return getErrorResponse(404, "User not found");
     }
 
     // delete old avatar if one exists
     if (oldAvatarId) {
       try {
         await cloudinary.uploader.destroy(oldAvatarId);  
-      } catch (error) {
-        console.error("Failed to delete old avatar", error);
+      } catch (avatarError) {
+        console.error("Failed to delete old avatar", avatarError);
       }
     }
 
@@ -158,8 +83,8 @@ export async function POST(request: NextRequest) {
         "profile_updated", 
         request,
       );
-    } catch (error) {
-      console.error("Failed to record profile_updated security event", error);
+    } catch (logError) {
+      console.error("Failed to record profile_updated security event", logError);
     }
 
     // create success response
@@ -172,14 +97,8 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
 
-    // if updating username, refresh access token
-    /*  
-      this would also be required if hasCompletedProfile changed, 
-      but it can only be changed when setting the username, as per
-      EditableProfileFields defined in AuthContext. so just check 
-      for settingUsername and reissue
-    */
-    if (settingUsername) {
+    // if hasCompletedProfile changed, refresh access token
+    if (userUpdates.hasCompletedProfile) {
       let accessToken;
       try {
         accessToken = signAccessToken({
@@ -189,12 +108,8 @@ export async function POST(request: NextRequest) {
           hasCompletedProfile: sanitizedUser.hasCompletedProfile,
           sessionId,
         });
-      } catch (error) {
-        console.error("Failed to sign access token", error);
-        return NextResponse.json(
-          { error: "Unable to continue session" },
-          { status: 500 }
-        );
+      } catch (resignError) {
+        return getErrorResponse(500, "Unable to continue session", resignError);
       }
 
       storeAccessTokenCookie(accessToken, response);
@@ -203,12 +118,7 @@ export async function POST(request: NextRequest) {
     // return success
     return response;
   } 
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to update user";
-    console.error(message);
-    return NextResponse.json(
-      { error: "Unable to update user" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to update user", routeError);
   }
 };

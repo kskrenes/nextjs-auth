@@ -1,5 +1,8 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
+import { getErrorResponse } from "@/helpers/util/error-utils";
+import { validatePayload } from "@/helpers/util/request-utils";
+import { SessionParamsSchema } from "@/lib/payload-schemas";
 import { evictSession } from "@/lib/session-cache";
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -11,50 +14,30 @@ export async function DELETE(
   try {
     await connect();
 
-    // require an authenticated session — throws AuthTokenError (401) if
-    // the cookie is absent, expired, or invalid
-    let userId: string;
-    let currentSessionId: string | undefined;
-    try {
-      ({ id: userId, sessionId: currentSessionId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: error.message },
-          { status: error.status }
-        );
-      }
-      throw error;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId, sessionId: currentSessionId } = auth;
 
-    // validate sessionId param
-    const { sessionId } = await params;
-    if (typeof sessionId !== "string" || !sessionId.trim()) {
-      return NextResponse.json(
-        { error: "Invalid session ID" },
-        { status: 400 }
-      );
-    }
+    // validate params
+    const resolvedParams = await params;
+    const validation = validatePayload(SessionParamsSchema, resolvedParams, 400);
+    if (!validation.success) return validation.errorResponse;
+    const { sessionId: sessionIdParam } = validation.data;
 
     // prevent users from revoking their own current session
-    if (sessionId === currentSessionId) {
-      return NextResponse.json(
-        { error: "Cannot revoke current session. Please use the standard logout endpoint." },
-        { status: 400 }
-      );
+    if (sessionIdParam === currentSessionId) {
+      return getErrorResponse(400, "Cannot revoke current session. Please use the standard logout endpoint.");
     }
 
     // delete the session from MongoDB only if the session belongs to the authenticated user
-    const targetSession = await Session.findOneAndDelete({ sessionId, userId });
+    const targetSession = await Session.findOneAndDelete({ sessionId: sessionIdParam, userId });
     if (!targetSession) {
-      return NextResponse.json(
-        { error: "Session not found" },
-        { status: 404 }
-      );
+      return getErrorResponse(404, "Session not found");
     }
 
     // evict the deleted session from the cache
-    await evictSession(sessionId);
+    await evictSession(sessionIdParam);
 
     // return success response
     return NextResponse.json({
@@ -62,13 +45,7 @@ export async function DELETE(
       success: true,
     });
   }
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to delete session";
-    console.error(message);
-    // throw general route error
-    return NextResponse.json(
-      { error: "Unable to delete session" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to delete session", routeError);
   }
 }

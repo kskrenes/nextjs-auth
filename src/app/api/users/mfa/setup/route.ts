@@ -1,7 +1,7 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { generateOtpauthUri, generateSecret } from "@/helpers/util/mfa-utils";
-import { AuthTokenError, getIdsFromAccessToken } from "@/helpers/util/token-utils";
 import { redis, redisKeys } from "@/lib/redis";
 import User from "@/models/user-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -10,22 +10,13 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // require authentication by validating access token
-    let authenticatedUserId: string;
-    try {
-      ({ id: authenticatedUserId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: "Unauthorized" }, 
-          { status: error.status ?? 401 }
-        );
-      }
-      throw error;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId } = auth;
 
     // throw if authenticatedUserId does not match a user in the DB
-    const user = await User.findById(authenticatedUserId);
+    const user = await User.findById(userId);
     if (!user) {
       return getErrorResponse(404, "User not found");
     }
@@ -40,7 +31,7 @@ export async function POST(request: NextRequest) {
     const uri = generateOtpauthUri(user.email, secret);
 
     // store secret in Redis
-    const key = redisKeys.mfaSetup(authenticatedUserId);
+    const key = redisKeys.mfaSetup(userId);
     const expirySeconds = 60 * 10; // expire after 10 min
     await redis.setex(key, expirySeconds, secret);
 
@@ -52,7 +43,7 @@ export async function POST(request: NextRequest) {
       totpUri: uri,
     });
   } 
-  catch (error: unknown) {
-    return getErrorResponse(500, "Unable to generate TOTP", error);
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to generate TOTP", routeError);
   }
 }

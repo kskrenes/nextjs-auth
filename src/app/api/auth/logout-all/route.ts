@@ -1,5 +1,7 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { AuthTokenError, clearAuthCookies, getIdsFromAccessToken } from "@/helpers/util/token-utils";
+import { authorizeRequest } from "@/helpers/util/auth-utils";
+import { getErrorResponse } from "@/helpers/util/error-utils";
+import { clearAuthCookies } from "@/helpers/util/token-utils";
 import { evictUserSessions } from '@/lib/session-cache'
 import Session from "@/models/session-model";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,19 +10,10 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // validate the current access token to get the user id
-    let userId: string;
-    try {
-      ({ id: userId } = await getIdsFromAccessToken(request));
-    } catch (error: unknown) {
-      if (error instanceof AuthTokenError) {
-        return NextResponse.json(
-          { error: "Unauthorized" }, 
-          { status: error.status ?? 401 }
-        );
-      }
-      throw error;
-    }
+    // require auth
+    const auth = await authorizeRequest(request);
+    if (auth instanceof Response) return auth;  // return error response
+    const { userId } = auth;
 
     // delete all session documents for the user
     const result = await Session.deleteMany({ userId });
@@ -42,11 +35,7 @@ export async function POST(request: NextRequest) {
       { status: 200 }
     );
   } 
-  catch (error: unknown) {
-    console.error(error instanceof Error ? error.message : "Error logging out all devices");
-    return NextResponse.json(
-      { error: "Error logging out all devices" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Error logging out all devices", routeError);
   }
 }

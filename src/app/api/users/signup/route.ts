@@ -2,146 +2,63 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
-import { getRequestBody } from "@/helpers/util/request-utils";
-import { excludesSpaces, meetsMinimum, validateEmail } from "@/helpers/util/form-validation-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
 import mongoose from "mongoose";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
+import { getErrorResponse, isDuplicateError } from "@/helpers/util/error-utils";
+import { SignUpSchema } from "@/lib/payload-schemas";
 
 export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // throw if request json is invalid
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(error: unknown) {
-      const message = error instanceof Error ? error.message : "Invalid request";
-      return NextResponse.json(
-        { error: message }, 
-        { status: 400 }
-      );
-    }
-
-    // throw if field types are invalid at runtime
-    const { username, email, password } = reqBody as { username?: string; email?: string; password?: string };
-    if (
-      typeof username !== "string" ||
-      typeof email !== "string" ||
-      typeof password !== "string"
-    ) {
-      return NextResponse.json(
-        { error: "Invalid request" },
-        { status: 400 }
-      );
-    }
-
-    const normalizedUsername = username.trim();
-    const normalizedEmail = email.trim().toLowerCase();
-    const normalizedPassword = password;
-
-    // throw if valid username is not provided
-    if (!normalizedUsername) {
-      return NextResponse.json(
-        { error: "Invalid username" }, 
-        { status: 400 }
-      );
-    }
-
-    if (!meetsMinimum(normalizedUsername, 4)) {
-      return NextResponse.json(
-        { error: "Username must meet minimum character requirement" }, 
-        { status: 400 }
-      );
-    }
-
-    if (!excludesSpaces(normalizedUsername)) {
-      return NextResponse.json(
-        { error: "Username cannot contain spaces" }, 
-        { status: 400 }
-      );
-    }
-
-    // throw if valid email is not provided
-    if (!normalizedEmail || !validateEmail(normalizedEmail)) {
-      return NextResponse.json(
-        { error: "Invalid email" }, 
-        { status: 400 }
-      );
-    }
-    
-    // throw if valid password is not provided
-    if (!normalizedPassword) {
-      return NextResponse.json(
-        { error: "Invalid password" },
-        { status: 400 }
-      );
-    }
-
-    if (!meetsMinimum(normalizedPassword, 8)) {
-      return NextResponse.json(
-        { error: "Password must meet minimum character requirement" }, 
-        { status: 400 }
-      );
-    }
-
-    if (!excludesSpaces(normalizedPassword)) {
-      return NextResponse.json(
-        { error: "Password cannot contain spaces" }, 
-        { status: 400 }
-      );
-    }
+    // parse json, ensure it's an object, and validate all fields
+    // schema ensures all values are normalized
+    const validation = await validateRequestBody(request, SignUpSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { username, email, password } = validation.data;
 
     // check for existing username or email
     const existingUsers = await User.find({
       $or: [
-        { username: normalizedUsername },
-        { email: normalizedEmail }
+        { username },
+        { email }
       ]
     });
 
     const usernameInUse = existingUsers.some(
-      (existingUser) => existingUser.username === normalizedUsername
+      (existingUser) => existingUser.username === username
     );
 
     const emailInUse = existingUsers.some(
-      (existingUser) => existingUser.email === normalizedEmail
+      (existingUser) => existingUser.email === email
     );
 
     // throw if both already exist
     if (usernameInUse && emailInUse) {
-      return NextResponse.json(
-        { error: "Username and email both in use" }, 
-        { status: 409 }
-      );
+      return getErrorResponse(409, "Username and email both in use");
     }
 
     // throw if username already exists
     if (usernameInUse) {
-      return NextResponse.json(
-        { error: "Username already in use" }, 
-        { status: 409 }
-      );
+      return getErrorResponse(409, "Username already in use");
     }
 
     // throw if email already exists
     if (emailInUse) {
-      return NextResponse.json(
-        { error: "Email already in use" }, 
-        { status: 409 }
-      );
+      return getErrorResponse(409, "Email already in use");
     }
 
     // hash password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(normalizedPassword, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // with email conflicts resolved, go ahead with creating a brand new user
     const userId = new mongoose.Types.ObjectId();
     const user = new User({
       _id: userId,
-      username: normalizedUsername, 
-      email: normalizedEmail, 
+      username, 
+      email, 
       password: hashedPassword,
       hasCompletedProfile: true,
       accounts: [{ 
@@ -156,24 +73,17 @@ export async function POST(request: NextRequest) {
       storedUser = await user.save();
 
     // throw if database rejects duplicate with 11000
-    } catch (error: unknown) {
-      if (
-        typeof error === "object" &&
-        error !== null &&
-        "code" in error &&
-        (error as { code?: number }).code === 11000
-      ) {
-        return NextResponse.json(
-          { error: "User already exists" },
-          { status: 409 }
-        );
+    } catch (dbError: unknown) {
+      if (isDuplicateError(dbError)) {
+        return getErrorResponse(409, "User already exists");
       }
-      throw error;
+      throw dbError;
     }
 
     // create sanitized user for response
     const sanitizedUser = sanitizeUser(storedUser);
 
+    // return success response
     return NextResponse.json(
       {
         message: "User created successfully",
@@ -183,12 +93,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } 
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to create user";
-    console.error(message);
-    return NextResponse.json(
-      { error: "Unable to create user" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to create user", routeError);
   }
 };

@@ -3,6 +3,7 @@ import { connect } from "@/dbconfig/dbconfig";
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/user-model";
 import Session from "@/models/session-model";
+import { getErrorResponse } from "@/helpers/util/error-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,13 +13,8 @@ export async function POST(request: NextRequest) {
     let session;
     try {
       session = await validateRefreshSession(request);
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : "Unable to validate session";
-      console.error(message);
-      return NextResponse.json(
-        { error: message }, 
-        { status: 401 }
-      );
+    } catch (validateError: unknown) {
+      return getErrorResponse(401, "Unable to validate session", validateError);
     }
 
     // get session user
@@ -26,10 +22,7 @@ export async function POST(request: NextRequest) {
 
     // throw if user not found
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" }, 
-        { status: 404 }
-      );
+      return getErrorResponse(404, "User not found");
     }
 
     // Generate new access token using signAccessToken
@@ -63,12 +56,7 @@ export async function POST(request: NextRequest) {
     // return success
     return response;
   } 
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Unable to refresh access token";
-    console.error(message);
-    return NextResponse.json(
-      { error: "Unable to refresh access token" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Unable to refresh access token", routeError);
   }
 }

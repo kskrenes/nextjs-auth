@@ -1,75 +1,22 @@
 import { connect } from "@/dbconfig/dbconfig";
-import { excludesSpaces, meetsMinimum } from "@/helpers/util/form-validation-utils";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
-import { getRequestBody } from "@/helpers/util/request-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
 import Session from "@/models/session-model";
 import User from "@/models/user-model";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { getErrorResponse } from "@/helpers/util/error-utils";
+import { ResetPasswordSchema } from "@/lib/payload-schemas";
 
 export async function POST(request: NextRequest) {
   try {
     await connect();
 
-    // throw if request json is invalid
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(error: unknown) {
-      const message = error instanceof Error ? error.message : "Invalid request";
-      return NextResponse.json(
-        { error: message }, 
-        { status: 400 }
-      );
-    }
-
-    // throw if field types are invalid at runtime
-    const { token, password } = reqBody as { token?: string; password?: string };
-    if (
-      typeof token !== "string" ||
-      typeof password !== "string"
-    ) {
-      console.error("Invalid request");
-      return NextResponse.json(
-        { error: "Unable to reset password" },
-        { status: 400 }
-      );
-    }
-
-    // throw if valid token is not provided
-    if (token.trim().length === 0) {
-      console.error("Invalid token");
-      return NextResponse.json(
-        { error: "Please follow the link from your email" }, 
-        { status: 401 }
-      );
-    }
-
-    // throw if valid password is not provided
-    if (!password) {
-      console.error("Invalid password");
-      return NextResponse.json(
-        { error: "Invalid password" },
-        { status: 400 }
-      );
-    }
-
-    if (!meetsMinimum(password, 8)) {
-      console.error("Password failed minimum character test");
-      return NextResponse.json(
-        { error: "Password must meet minimum character requirement" }, 
-        { status: 422 }
-      );
-    }
-
-    if (!excludesSpaces(password)) {
-      console.error("Password contains spaces");
-      return NextResponse.json(
-        { error: "Password cannot contain spaces" }, 
-        { status: 422 }
-      );
-    }
+    // parse json, ensure it's an object, and validate all fields
+    const validation = await validateRequestBody(request, ResetPasswordSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { token, password } = validation.data;
 
     // hash incoming raw token with SHA-256 just like when it was stored
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -82,11 +29,7 @@ export async function POST(request: NextRequest) {
 
     // throw if user not found with non-expired matching token
     if (!user) {
-      console.error("Invalid or expired token");
-      return NextResponse.json(
-        { error: "Your token has expired" }, 
-        { status: 410 }
-      );
+      return getErrorResponse(410, "Invalid or expired token");
     }
 
     // hash normalized password
@@ -118,16 +61,17 @@ export async function POST(request: NextRequest) {
           "password_reset", 
           request,
         );
-      } catch (error) {
-        console.error("Failed to record password_reset security event", error);
+      } catch (logError) {
+        console.error("Failed to record password_reset security event", logError);
       }
     }
 
+    // delete all active sessions on password reset
     let sessionCleanupFailed = false;
     try {
       await Session.deleteMany({ userId: user._id });
-    } catch (error) {
-      console.error("Failed to delete user sessions after password reset", error);
+    } catch (dbError) {
+      console.error("Failed to delete user sessions after password reset", dbError);
       sessionCleanupFailed = true;
     }
 
@@ -139,12 +83,7 @@ export async function POST(request: NextRequest) {
     }, { status: 201 });
 
   } 
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Failed to reset password";
-    console.error(message);
-    return NextResponse.json(
-      { error: "Failed to reset password" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Failed to reset password", routeError);
   }
 };

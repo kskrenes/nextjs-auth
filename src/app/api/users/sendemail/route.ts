@@ -1,33 +1,15 @@
-import { EmailType, sendEmail } from "@/helpers/util/email-utils";
-import { getRequestBody } from "@/helpers/util/request-utils";
+import { sendEmail } from "@/helpers/util/email-utils";
+import { getErrorResponse } from "@/helpers/util/error-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
+import { EmailTypeSchema } from "@/lib/payload-schemas";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    // throw if request json is invalid
-    let reqBody: object;
-    try {
-      reqBody = await getRequestBody(request);
-    } catch(error: unknown) {
-      const message = error instanceof Error ? error.message : "Invalid request";
-      return NextResponse.json(
-        { error: message }, 
-        { status: 400 }
-      );
-    }
-
-    // throw if field types are invalid at runtime
-    const { email, type } = reqBody as { email?: string; type?: EmailType };
-    if (
-      typeof email !== "string" ||
-      typeof type !== "string" ||
-      (type !== "VERIFY" && type !== "RESET")
-    ) {
-      return NextResponse.json(
-        { error: "Invalid request" },
-        { status: 400 }
-      );
-    }
+    // parse json, ensure it's an object, and validate all fields
+    const validation = await validateRequestBody(request, EmailTypeSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { email, type } = validation.data;
     
     // attempt to send email
     let mailResponse;
@@ -36,14 +18,20 @@ export async function POST(request: NextRequest) {
         email, 
         emailType: type, 
       });
-    } catch (error: unknown) {
+    } catch (mailError: unknown) {
       // log the real error server-side but return generic success to prevent enumeration
-      console.error("Mail send failed:", error);
+      console.error("Mail send failed", {
+        errorName: mailError instanceof Error ? mailError.name : "UnknownError",
+      });
     }
 
     // log failures server-side but return generic success to prevent enumeration
     if (!mailResponse || !mailResponse.response.includes("250")) {
-      console.error("Mail send failed:", mailResponse?.response ?? "No response");
+      const responseCode =
+        typeof mailResponse?.response === "string"
+          ? mailResponse.response.slice(0, 3)
+          : "no_response";
+      console.error("Mail send failed", { responseCode });
     }
 
     // return success
@@ -52,12 +40,7 @@ export async function POST(request: NextRequest) {
       success: true,
     })
   }
-  catch (error: unknown) {
-    const message = error instanceof Error ? error.message : "Failed to send email";
-    console.error(message);
-    return NextResponse.json(
-      { error: "Failed to send email" }, 
-      { status: 500 }
-    );
+  catch (routeError: unknown) {
+    return getErrorResponse(500, "Failed to send email", routeError);
   }
 }
