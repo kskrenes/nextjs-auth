@@ -8,6 +8,7 @@ import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { ResetPasswordSchema } from "@/lib/payload-schemas";
+import { evictUserSessions } from "@/lib/session-cache";
 
 export async function POST(request: NextRequest) {
   try {
@@ -70,6 +71,7 @@ export async function POST(request: NextRequest) {
     let sessionCleanupFailed = false;
     try {
       await Session.deleteMany({ userId: user._id });
+      evictUserSessions(user._id.toString());
     } catch (dbError) {
       console.error("Failed to delete user sessions after password reset", dbError);
       sessionCleanupFailed = true;
