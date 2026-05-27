@@ -114,3 +114,7 @@ export const UpdateUserSchema = z.object({
   // If username is missing, hasCompletedProfile is simply not added to the object keys
   return result;
 });
+
+export const VerifyEmailSchema = z.object({ 
+  token: requiredString("Invalid token, please follow the link from your email")
+});

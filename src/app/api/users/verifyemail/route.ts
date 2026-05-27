@@ -1,7 +1,8 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { getErrorResponse } from "@/helpers/util/error-utils";
-import { validateJSON } from "@/helpers/util/request-utils";
+import { validateRequestBody } from "@/helpers/util/request-utils";
+import { VerifyEmailSchema } from "@/lib/payload-schemas";
 import User from "@/models/user-model";
 import crypto from "crypto";
 import { NextResponse, type NextRequest } from "next/server";
@@ -10,18 +11,10 @@ export async function POST(request: NextRequest) {
   try {
     await connect();
     
-    // validate JSON
-    const reqBody = await validateJSON(request);
-    if (reqBody instanceof Response) return reqBody;  // return error response
-
-    // throw if field types are invalid at runtime
-    const { token } = reqBody as { token?: string; };
-    if (
-      typeof token !== "string" || 
-      token.trim().length === 0
-    ) {
-      return getErrorResponse(400, "Invalid token")
-    }
+    // parse json, ensure it's an object, and validate all fields
+    const validation = await validateRequestBody(request, VerifyEmailSchema);
+    if (!validation.success) return validation.errorResponse;
+    const { token } = validation.data;
 
     // hash incoming raw token with SHA-256 just like when it was stored
     const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
