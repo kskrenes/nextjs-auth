@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
         // delete session cache
         if (deletedSession) {
-          evictSession(deletedSession.sessionId);
+          await evictSession(deletedSession.sessionId);
         }
       } catch (dbError: unknown) {
         console.error(dbError);
