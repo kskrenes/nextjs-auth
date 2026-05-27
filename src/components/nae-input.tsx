@@ -29,8 +29,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     }, 
     ref
   ) => {
-    const baseStyles = 'p-2 border text-foreground-secondary rounded-lg focus:outline-none focus:border-brand-light';
-    const borderStyle = error ? 'border-error' : 'border-panel-highlight';
+    const style = error ? 'input-error' : 'input-standard';
     const autoCompleteValue = autoComplete || id;
 
     const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -45,10 +44,10 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         {(label || instruction) && (
           <div className='flex justify-between items-center'>
             {/* show label top left */}
-            {label && <label className='text-base font-semibold' htmlFor={id}>{label}</label>}
+            {label && <label className='input-label' htmlFor={id}>{label}</label>}
             
             {/* show instruction text top right */}
-            {instruction && <p className='text-xs text-foreground-secondary'>{instruction}</p>}
+            {instruction && <p className='input-instruction'>{instruction}</p>}
           </div>
         )}
         {/* spread the rest of the props onto the native input element */}
@@ -56,7 +55,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           id={id} 
           name={id} 
           autoComplete={autoCompleteValue} 
-          className={cn(baseStyles, borderStyle, className)} 
+          className={cn(style, className)} 
           ref={ref} 
           onKeyDown={(e) => {
             onKeyDown?.(e);
