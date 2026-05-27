@@ -52,7 +52,7 @@ const MFADisableModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProps)
       if (axios.isAxiosError(error) && [400, 401].includes(error.response?.status ?? 0)) {
         setInvalid(true);
       } else {
-        toast.error("There was an error validating the code");
+        toast.error("There was an error validating the verification code");
       }
     } finally {
       setValidating(false);
