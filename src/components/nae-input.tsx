@@ -55,6 +55,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           id={id} 
           name={id} 
           autoComplete={autoCompleteValue} 
+          aria-invalid={error || undefined}
           className={cn(style, className)} 
           ref={ref} 
           onKeyDown={(e) => {
