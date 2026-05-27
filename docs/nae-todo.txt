@@ -115,7 +115,7 @@ refactor
 multi-factor authentication
 - [x] use monospace font for codes
 - [x] implement ability to regen backup codes
-- [ ] refactor to use mfa-verify-form and mfa-verify-controls for any verification
+- [x] refactor to use mfa-verify-form and mfa-verify-controls for any verification
 
 session cache
 - [x] migrate to redis distributed cache

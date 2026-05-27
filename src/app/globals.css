@@ -231,6 +231,41 @@ body {
     text-base
 }
 
+@utility input-base {
+  @apply
+    p-2 
+    border 
+    text-foreground-secondary 
+    rounded-lg 
+    focus:outline-none
+}
+
+@utility input-standard {
+  @apply
+    input-base
+    border-panel-highlight 
+    focus:border-brand-light
+}
+
+@utility input-label {
+  @apply
+    text-base 
+    font-semibold
+}
+
+@utility input-instruction {
+  @apply
+    text-xs 
+    text-foreground-secondary
+}
+
+@utility input-error {
+  @apply
+    input-base
+    border-error 
+    focus:border-error
+}
+
 @utility nav-item-base {
   @apply
     flex 

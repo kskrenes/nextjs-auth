@@ -22,17 +22,18 @@ const MFAVerifyForm = ({ onChange, onVerify, loading, invalid }: MFAVerifyFormPr
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (invalid && inputRef.current) {
-      inputRef.current.blur();
+    // focus the verification code input
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
-  }, [invalid])
+  }, [invalid, useBackupCode]);
 
   return (
     <>
       <div className="space-y-4 py-2">
         <div className="space-y-2">
           <Input 
-            id="regen-verification-input"
+            id="verification-input"
             label={useBackupCode ? 'Backup Code' : 'Verification Code'}
             ref={inputRef}
             value={code}
