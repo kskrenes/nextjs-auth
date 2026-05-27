@@ -188,7 +188,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
                 Save these codes in a safe place. They won&apos;t be shown again.
               </p>
               <div className="p-5 rounded-md border border-panel-highlight flex flex-col gap-4">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2 font-mono">
                   {backupCodes?.map((code, index) => (
                     <p key={`backupcode${index}`}>{code}</p>
                   ))}
@@ -352,7 +352,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
             <p>Step 3 of 3: Save your backup codes</p>
             <p className="text-foreground-secondary">Store these codes in a safe place. You can use them to access your account if you lose access to your authenticator app.</p>
             <div className="p-5 rounded-md bg-panel flex flex-col gap-4">
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-2 font-mono">
                 {backupCodes?.map((code, index) => (
                   <p key={`backupcode${index}`}>{code}</p>
                 ))}

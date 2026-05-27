@@ -73,7 +73,7 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
               {isCurrentSession && <span className="ml-3"><Badge label="Current Session" variant="green" /></span>}
             </p>
             <p className="text-foreground-secondary">{expandedSession.deviceInfo.browser}</p>
-            <p className="text-foreground-secondary">{expandedSession.ipAddress}</p>
+            <p className="text-foreground-secondary font-mono">{expandedSession.ipAddress}</p>
             <p className="text-foreground-secondary">
               Active {formatRelativeTime(new Date(expandedSession.lastActive))}
             </p>
