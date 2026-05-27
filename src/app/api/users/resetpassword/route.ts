@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
     let sessionCleanupFailed = false;
     try {
       await Session.deleteMany({ userId: user._id });
-      evictUserSessions(user._id.toString());
+      await evictUserSessions(user._id.toString());
     } catch (dbError) {
       console.error("Failed to delete user sessions after password reset", dbError);
       sessionCleanupFailed = true;
