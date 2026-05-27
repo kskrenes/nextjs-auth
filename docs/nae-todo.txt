@@ -122,6 +122,12 @@ session cache
 - [x] research what to do with redis session records on logout (currently persisting until ttl expires)
 - [x] explicitly remove session cache records from redis on logout
 
+dashboard content
+- [ ] add a visual widget calculating a health score based on whether the user has MFA enabled, a strong password, and verified email
+- [ ] add charts (like Tremor or Chart.js) showing fake system metrics like "API Requests", "Cache Hit Rate (Redis)", or "Auth Success vs Failures"
+- [ ] add card showing which email domains are allowed to sign up (requires "restricted domains" feature)
+- [ ] (maybe) add active session cards from account/security tab
+
 Role-Based Access Control (RBAC)
 - [ ] create roles for Owner, Admin, and Member (existing standard user)
 
@@ -137,6 +143,7 @@ Owner-specific features (leverage dashboard page as appropriate)
 - [ ] turn off registration globally or toggle "Maintenance Mode" via Redis cache flags
 - [ ] cannot be banned, deleted, or impersonated by standard Admins
 - [ ] promote a Member to an Admin, or strip an Admin of their privileges
+- [ ] toggle domain restriction for registration with a whitelist for email domains
 
 optional role-based API rate limits
 - [ ] enforce API rate limiting for Members
@@ -152,6 +159,10 @@ shared demo environment guardrails
 - [ ] (maybe) bake roles directly into Dual-Token Session / Redis Cache
 - [ ] (maybe) run a Database Seed Reset cron job every hour
 - [ ] (maybe) intercept write operations on critical demo tables and return a fake success response (keep base data immutable)
+
+restricted domains
+- [ ] allow toggling an option to "Restrict registration to specific domains." (signup API rejects any email not ending in specified domains)
+- [ ] use a public list or regex array to block common burner email providers (e.g., Mailinator, Yopmail) during registration
 
 additional authentication methods
 - [x] add social login (google)
