@@ -144,7 +144,7 @@ export default function GoogleLoginButton({
       (script as HTMLScriptElement).removeEventListener('load', initAndRender);
       // Note: initializedRef is NOT reset here — see comment above.
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   // Re-render the button whenever the debounced container width changes.
   // initialize is NOT called again here; only the visual button is updated.
@@ -170,10 +170,7 @@ export default function GoogleLoginButton({
       className='relative w-full max-w-sm mx-auto flex justify-center'
     >
       {/* Target Mount Container */}
-      <div
-        id="gsi-target-btn"
-        className={`w-full flex justify-center [&>div]:w-full! [&>div>iframe]:w-[${containerWidth}px]!`}
-      ></div>
+      <div id="gsi-target-btn"></div>
 
       {/* Loading & Disabled Overlay mask */}
       {(loggingIn || disabled) && (
