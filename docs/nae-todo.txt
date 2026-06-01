@@ -180,9 +180,9 @@ look & feel
 - [x] allow theme selection
 - [x] fix google sign in button width
 - [x] lay out login and signup pages
+- [ ] lay out dashboard page
 - [ ] lay out triggerpasswordreset page
 - [ ] lay out verifyemail page
-- [ ] lay out dashboard page
 - [ ] include password validation states in password component
 - [ ] refactor to components where applicable
 
