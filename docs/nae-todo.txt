@@ -179,12 +179,15 @@ look & feel
 - [x] define themes
 - [x] allow theme selection
 - [x] fix google sign in button width
-- [ ] include password validation states in password component
 - [ ] lay out login and signup pages
 - [ ] lay out triggerpasswordreset page
 - [ ] lay out verifyemail page
 - [ ] lay out dashboard page
+- [ ] include password validation states in password component
 - [ ] refactor to components where applicable
+
+errors & warnings
+- [ ] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
 
 multiple pages
 - [x] either display or discard toast
