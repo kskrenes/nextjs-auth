@@ -5,9 +5,10 @@ import MFAChallenge from "@/components/mfa-challenge";
 import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
+import PanelError from "@/components/panel-error";
+import PanelHeader from "@/components/panel-header";
 import { AuthLoginResponse, useAuth } from "@/context-providers/auth-context-provider";
 import axios from "axios";
-import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type SubmitEvent } from "react";
@@ -16,15 +17,12 @@ const LoginPage = () => {
 
   const { user, login, fetchingUser, loggingIn } = useAuth();
   const router = useRouter();
-
-  const [mfaPending, setMfaPending] = useState<boolean>(false);
-  const [awaitingRedirect, setAwaitingRedirect] = useState<boolean>(false);
-  const [isServerError, setIsServerError] = useState<boolean>(false);
-  const [isInvalid, setIsInvalid] = useState<boolean>(false);
-  const [credentials, setCredentials] = useState({
-    email: "",
-    password: "",
-  });
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [mfaPending, setMfaPending] = useState(false);
+  const [awaitingRedirect, setAwaitingRedirect] = useState(false);
 
   useEffect(() => {
     if (fetchingUser || loggingIn) return;
@@ -33,10 +31,31 @@ const LoginPage = () => {
     }
   }, [user, fetchingUser, loggingIn, router]);
 
-  const buttonDisabled =
-    loggingIn || awaitingRedirect ||
-    credentials.email.trim().length === 0 ||
-    credentials.password.trim().length === 0;
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
+    // suppress native html form submit behavior
+    e.preventDefault(); 
+
+    if (loggingIn || awaitingRedirect) return;
+
+    if (!email || !password) {
+      setError('Please enter both email and password');
+      return;
+    }
+    
+    try {
+      setError('');
+      setAwaitingRedirect(true);
+      const res = await login(email, password);
+      if (res.data.mfaRequired) {
+        setAwaitingRedirect(false);
+        setMfaPending(true);
+      }
+    } catch (error) {
+      const invalid = axios.isAxiosError(error) && error.response?.status === 401;
+      setError(invalid ? 'Invalid email or password' : 'Server error. Please try again later.');
+      setAwaitingRedirect(false);
+    }
+  };
 
   const handleGoogleLoginAttempt = useCallback(() => {
     setAwaitingRedirect(true);
@@ -53,138 +72,116 @@ const LoginPage = () => {
     }
   }, []);
 
-  const handleLogin = async (e: SubmitEvent<HTMLFormElement>) => {
-    // suppress native html form submit behavior
-    e.preventDefault(); 
-
-    if (loggingIn || awaitingRedirect) return;
-
-    setIsInvalid(false);
-    setIsServerError(false);
-
-    try {
-      setAwaitingRedirect(true);
-      const res = await login(credentials.email, credentials.password);
-      if (res.data.mfaRequired) {
-        setAwaitingRedirect(false);
-        setMfaPending(true);
-      }
-    } catch (error) {
-      if (
-        axios.isAxiosError(error) && 
-        error.response?.status === 401
-      ) {
-        setIsInvalid(true);
-      } else {
-        setIsServerError(true);
-      }
-      setAwaitingRedirect(false);
-    }
-  };
-
   const handleMfaChallengeCancel = () => {
     setAwaitingRedirect(false);
     setMfaPending(false);
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      {mfaPending ? (
-        /* MFA challenge form */
-        <MFAChallenge onCancel={handleMfaChallengeCancel} />
-      ) : (
-        /* sign in form */
-        <form 
-          className="flex w-75 flex-col items-center py-2 gap-8" 
-          onSubmit={handleLogin}
-        >
-          {/* title */}
-          <h1 className="text-3xl font-bold">Sign In</h1>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full">
+        <div className="bg-panel rounded-lg p-8">
 
-          {/* error message */}
-          {(isInvalid || isServerError) && (
-            <div role="alert" className="flex items-center gap-2 text-error">
-              <ShieldAlert className="w-6 h-6" />
-              <span>
-                {isInvalid 
-                  ? "Invalid email or password" 
-                  : "Server error. Please try again later."
-                }
-              </span>
-            </div>
-          )}
+          {mfaPending ? (
+            // Multi-Factor Authentication Challenge
+            <MFAChallenge onCancel={handleMfaChallengeCancel} />
+          ) : (
+            <>
+              {/* Header */}
+              <PanelHeader 
+                title="Welcome back" 
+                description="Sign in to your account to continue"
+              />
 
-          {/* input group */}
-          <div className="flex flex-col gap-4 w-full">
-            {/* email */}
-            <Input 
-              id="email" 
-              label="Email"
-              placeholder="email"
-              type="email"
-              required
-              value={credentials.email}
-              onChange={(e) => setCredentials({...credentials, email: e.target.value})}
-            />
-            {/* password */}
-            <Input 
-              id="password" 
-              label="Password"
-              placeholder="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={credentials.password}
-              onChange={(e) => setCredentials({...credentials, password: e.target.value})}
-            />
-          </div>
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Error Message */}
+                {error && <PanelError message={error} />}
 
-          {/* submit button */}
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={buttonDisabled}
-          >
-            {loggingIn || awaitingRedirect
-              ? (
-                <>
-                  <NaeLoader />
-                  <span className="sr-only">Signing in</span>
-                </>
-              )
-              : 'Sign In'}
-          </Button>
+                {/* Email Field */}
+                <Input 
+                  id="email" 
+                  type="email"
+                  label="Email address"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (error) setError('');
+                  }}
+                  placeholder="you@example.com"
+                  disabled={awaitingRedirect}
+                />
 
-          {/* google sso button */}
-          <GoogleLoginButton 
-            onLoginAttempt={handleGoogleLoginAttempt} 
-            onLoginError={handleGoogleLoginError}
-            callback={handleGoogleCallback}
-            disabled={loggingIn || awaitingRedirect} 
-          />
+                {/* Password Field */}
+                <Input
+                  id="password" 
+                  type="password"
+                  label="Password"
+                  value={password}
+                  link={{
+                    label: 'Forgot password?',
+                    href: '/triggerpasswordreset'
+                  }}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (error) setError('');
+                  }}
+                  placeholder="Enter your password"
+                  disabled={awaitingRedirect}
+                  autoComplete="current-password"
+                />
 
-          {/* links group */}
-          <div className="flex flex-col items-center gap-2">
-            {/* sign up link */}
-            <p className="text-xs">
-              Don&apos;t have an account?{' '}
-              <Link 
-                href="/signup"
-                className="text-brand hover:text-brand-highlight underline transition-colors"
-              >
-                Sign up here
-              </Link>.
-            </p>
-            {/* reset password link */}
-            <Link 
-              href="/triggerpasswordreset"
-              className="text-xs text-brand hover:text-brand-highlight underline transition-colors"
-            >
-              Forgot password
-            </Link>
-          </div>
-        </form>
-      )}
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  disabled={awaitingRedirect}
+                  className="w-full gap-2"
+                >
+                  {awaitingRedirect ? (
+                    <>
+                      <NaeLoader />
+                      Signing in...
+                    </>
+                  ) : (
+                    'Sign in'
+                  )}
+                </Button>
+              </form>
+
+              {/* Divider */}
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-panel-highlight" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-4 bg-panel text-foreground-muted">Or continue with</span>
+                </div>
+              </div>
+
+              {/* Google Sign In */}
+              <GoogleLoginButton 
+                onLoginAttempt={handleGoogleLoginAttempt} 
+                onLoginError={handleGoogleLoginError}
+                callback={handleGoogleCallback}
+                disabled={awaitingRedirect} 
+              />
+
+              {/* Sign Up Link */}
+              <div className="mt-6 text-center">
+                <p className="text-sm text-foreground-secondary">
+                  Don&apos;t have an account?{' '}
+                  <Link 
+                    href="/signup"
+                    className="text-brand hover:text-brand-highlight font-medium transition-colors"
+                  >
+                    Sign up
+                  </Link>
+                </p>
+              </div>
+            </>
+          )}  
+        </div>
+      </div>
     </div>
   )
 }
