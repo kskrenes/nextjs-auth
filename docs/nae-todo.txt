@@ -188,6 +188,7 @@ look & feel
 
 errors & warnings
 - [ ] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
+- [ ] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
 
 multiple pages
 - [x] either display or discard toast
