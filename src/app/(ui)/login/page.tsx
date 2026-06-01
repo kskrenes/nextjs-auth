@@ -172,7 +172,7 @@ const LoginPage = () => {
                   Don&apos;t have an account?{' '}
                   <Link 
                     href="/signup"
-                    className="text-brand hover:text-brand-highlight font-medium transition-colors"
+                    className="input-link"
                   >
                     Sign up
                   </Link>
