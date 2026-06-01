@@ -30,7 +30,7 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
         id={passwordId}
         label={label}
         type="password"
-        instruction='8 character minimum, no spaces'
+        placeholder='Enter a strong password'
         minLength={8}
         required
         value={password}
@@ -40,6 +40,7 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
         id={confirmId}
         label={`Confirm ${label}`}
         type="password"
+        placeholder='Re-enter your password'
         minLength={8}
         required
         value={confirmPassword}

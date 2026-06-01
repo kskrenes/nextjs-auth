@@ -125,7 +125,7 @@ session cache
 dashboard content
 - [ ] add a visual widget calculating a health score based on whether the user has MFA enabled, a strong password, and verified email
 - [ ] add charts (like Tremor or Chart.js) showing fake system metrics like "API Requests", "Cache Hit Rate (Redis)", or "Auth Success vs Failures"
-- [ ] add card showing which email domains are allowed to sign up (requires "restricted domains" feature)
+- [ ] add card showing which email domains are allowed to sign up (mock until "restricted domains" feature is implemented)
 - [ ] (maybe) add active session cards from account/security tab
 
 Role-Based Access Control (RBAC)
@@ -179,12 +179,16 @@ look & feel
 - [x] define themes
 - [x] allow theme selection
 - [x] fix google sign in button width
-- [ ] include password validation states in password component
-- [ ] lay out login and signup pages
+- [x] lay out login and signup pages
 - [ ] lay out triggerpasswordreset page
 - [ ] lay out verifyemail page
 - [ ] lay out dashboard page
+- [ ] include password validation states in password component
 - [ ] refactor to components where applicable
+
+errors & warnings
+- [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
+- [ ] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
 
 multiple pages
 - [x] either display or discard toast

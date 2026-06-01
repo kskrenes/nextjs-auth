@@ -12,12 +12,15 @@
   --panel-highlight: #d1d5db;
   --panel-active: #444b5a;
   --panel-active-foreground: #eee;
+  --panel-error: #fef3f3;
+  --panel-error-border: #ffcaca;
 
   --foreground-primary: #353642;
   --foreground-secondary: #4b596d;
+  --foreground-muted: #6B7280;
 
   --success: #16a34a;
-  --error: #df2424;
+  --error: #9e0812;
   --error-highlight: #cf1414;
   --error-low: #ff8484;
 
@@ -47,12 +50,15 @@
   --panel-highlight: #374151;
   --panel-active: #f3f4f6;
   --panel-active-foreground: #111827;
+  --panel-error: #3d3640;
+  --panel-error-border: #644a52;
 
   --foreground-primary: #e5e6f2;
   --foreground-secondary: #9ca3af;
+  --foreground-muted: #7B8290;
 
   --success: #4ADE80;
-  --error: #ef4444;
+  --error: #ef7474;
   --error-highlight: #dc2626;
   --error-low: #4c2b2d;
 
@@ -83,8 +89,11 @@
   --color-panel-highlight: var(--panel-highlight);
   --color-panel-active: var(--panel-active);
   --color-panel-active-foreground: var(--panel-active-foreground);
+  --color-panel-error: var(--panel-error);
+  --color-panel-error-border: var(--panel-error-border);
   --color-foreground-primary: var(--foreground-primary);
   --color-foreground-secondary: var(--foreground-secondary);
+  --color-foreground-muted: var(--foreground-muted);
   --color-success: var(--success);
   --color-error: var(--error);
   --color-error-highlight: var(--error-highlight);
@@ -238,6 +247,8 @@ body {
     text-foreground-secondary 
     rounded-lg 
     focus:outline-none
+    focus-visible:outline-2
+    focus-visible:outline-brand
 }
 
 @utility input-standard {
@@ -249,8 +260,8 @@ body {
 
 @utility input-label {
   @apply
-    text-base 
-    font-semibold
+    text-sm 
+    font-medium
 }
 
 @utility input-instruction {
@@ -259,11 +270,23 @@ body {
     text-foreground-secondary
 }
 
+@utility input-link {
+  @apply
+    text-sm
+    text-brand
+    hover:text-brand-highlight
+    font-medium
+    transition-colors
+}
+
 @utility input-error {
   @apply
     input-base
     border-error 
-    focus:border-error
+    bg-panel-error
+    focus:border-error 
+    focus-visible:outline-2
+    focus-visible:outline-error-highlight
 }
 
 @utility nav-item-base {

@@ -6,6 +6,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import MFAVerifyForm from "./mfa-verify-form";
 import MFAVerifyControls from "./mfa-verify-controls";
+import PanelHeader from "./panel-header";
 
 interface MFAChallengeProps {
   onCancel: () => void;
@@ -48,24 +49,28 @@ const MFAChallenge = ({ onCancel }: MFAChallengeProps) => {
   }
 
   return (
-    <div className="flex flex-col w-sm gap-4">
-      <h1 className="text-3xl font-bold">Two-Step Verification</h1>
-      <p className="text-foreground-secondary">Enter the verification code from your authentication app to complete your sign-in.</p>
-      <MFAVerifyForm 
-        onChange={handleFormChange}
-        onVerify={handleVerify}
-        loading={verifyingMFA || awaitingRedirect}
-        invalid={invalid}
+    <>
+      <PanelHeader 
+        title="Two-Factor Authentication" 
+        description="Enter your verification code to continue"
       />
-      <div className="flex gap-2 justify-end">
-        <MFAVerifyControls 
-          onCancel={handleCancel}
+      <div className="space-y-5">
+        <MFAVerifyForm 
+          onChange={handleFormChange}
           onVerify={handleVerify}
-          loading={verifyingMFA || awaitingRedirect} 
-          disabled={disabled || verifyingMFA || awaitingRedirect}
+          loading={verifyingMFA || awaitingRedirect}
+          invalid={invalid}
         />
+        <div className="grid grid-cols-2 gap-2 pt-2">
+          <MFAVerifyControls 
+            onCancel={handleCancel}
+            onVerify={handleVerify}
+            loading={verifyingMFA || awaitingRedirect} 
+            disabled={disabled || verifyingMFA || awaitingRedirect}
+          />
+        </div>
       </div>
-    </div>
+    </>
   )
 }
 
