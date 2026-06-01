@@ -1,9 +1,14 @@
 import { cn } from '@/helpers/util/classname-util';
+import Link from 'next/link';
 import { InputHTMLAttributes, KeyboardEvent, forwardRef } from 'react';
 
 type BaseInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'aria-label' | 'aria-labelledby'> & {
-  instruction?: string;
   id: string;
+  instruction?: string;
+  link?: {
+    label: string;
+    href: string;
+  };
   autoComplete?: string;
   error?: boolean;
   onEnter?: () => void;
@@ -17,9 +22,10 @@ type InputProps =
 const Input = forwardRef<HTMLInputElement, InputProps>(
   (
     { 
+      id, 
       label, 
       instruction = '', 
-      id, 
+      link = null,
       autoComplete, 
       className = '', 
       error = false,
@@ -39,15 +45,25 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     }
     
     return (
-      <div className="flex flex-col gap-2 w-full">
+      <div className="flex flex-col gap-1 w-full">
 
-        {(label || instruction) && (
+        {(label || instruction || link) && (
           <div className='flex justify-between items-center'>
             {/* show label top left */}
             {label && <label className='input-label' htmlFor={id}>{label}</label>}
             
             {/* show instruction text top right */}
             {instruction && <p className='input-instruction'>{instruction}</p>}
+
+            {/* show button top right */}
+            {link && (
+              <Link 
+                href={link.href}
+                className="input-link"
+              >
+                {link.label}
+              </Link>
+            )}
           </div>
         )}
         {/* spread the rest of the props onto the native input element */}
