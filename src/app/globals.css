@@ -285,7 +285,8 @@ body {
     border-error 
     bg-panel-error
     focus:border-error 
-    focus:outline-error-highlight
+    focus-visible:outline-2
+    focus-visible:outline-error-highlight
 }
 
 @utility nav-item-base {
