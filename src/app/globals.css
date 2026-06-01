@@ -247,6 +247,8 @@ body {
     text-foreground-secondary 
     rounded-lg 
     focus:outline-none
+    focus-visible:outline-2
+    focus-visible:outline-brand
 }
 
 @utility input-standard {
@@ -281,7 +283,9 @@ body {
   @apply
     input-base
     border-error 
-    focus:border-error
+    bg-panel-error
+    focus:border-error 
+    focus:outline-error-highlight
 }
 
 @utility nav-item-base {

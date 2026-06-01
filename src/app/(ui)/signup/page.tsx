@@ -4,10 +4,11 @@ import Button from "@/components/nae-button";
 import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
 import SetPasswordInputs from "@/components/nae-set-password";
+import PanelError from "@/components/panel-error";
+import PanelHeader from "@/components/panel-header";
 import { getErrorMessage } from "@/helpers/util/error-utils";
 import { getValidEmail, getValidPassword, getValidUsername } from "@/helpers/util/form-validation-utils";
 import axios from "axios";
-import { ShieldAlert } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type SubmitEvent } from "react";
@@ -18,8 +19,7 @@ const SignupPage = () => {
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [user, setUser] = useState({
     email: "",
@@ -27,25 +27,13 @@ const SignupPage = () => {
     username: "",
   });
 
-  // allow button to enable as long as all fields have input.
-  // this gives more feedback to the user, since each field
-  // will enforce its own minimum requirements, and password matching
-  // will show a dedicated error instead of silently dissallowing submit.
-  const buttonDisabled =
-    isLoading ||
-    user.username.trim().length === 0 ||
-    user.email.trim().length === 0 ||
-    user.password.length === 0 ||
-    confirmPassword.length === 0;
-
-  const handleSignup = async (e: SubmitEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
     e.preventDefault(); 
 
     if (isLoading) return;
 
-    setIsError(false);
-    setErrorMessage("");
+    setError('');
 
     let validEmail;
     let validUsername;
@@ -55,8 +43,7 @@ const SignupPage = () => {
       validUsername = getValidUsername(user.username);
       validPassword = getValidPassword(user.password, confirmPassword);
     } catch (error: unknown) {
-      setErrorMessage((error as Error).message);
-      setIsError(true);
+      setError((error as Error).message);
       return;
     }
     
@@ -71,8 +58,7 @@ const SignupPage = () => {
       router.push("/login");
     } 
     catch (error: unknown) {
-      setErrorMessage(getErrorMessage(error, "An error occurred. Please try again."));
-      setIsError(true);
+      setError(getErrorMessage(error, "An error occurred. Please try again."));
     } 
     finally {
       setIsLoading(false);
@@ -81,9 +67,8 @@ const SignupPage = () => {
 
   // clear inline errors when fields change
   const clearInlineError = () => {
-    if (isError) {
-      setIsError(false);
-      setErrorMessage("");
+    if (error) {
+      setError('');
     }
   }
 
@@ -108,71 +93,87 @@ const SignupPage = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <form 
-        className="flex w-75 flex-col items-center py-2 gap-8" 
-        onSubmit={handleSignup} 
-      >
-        <h1 className="text-3xl font-bold">Sign Up</h1>
-        {isError && (
-          <div role="alert" className="flex items-center space-x-2 text-sm text-red-500">
-            <ShieldAlert className="w-4 h-4" />
-            <span className="text-center">{errorMessage}</span>
+    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full">
+        <div className="bg-panel rounded-lg p-8">
+
+          {/* Header */}
+          <PanelHeader 
+            title="Create your account" 
+            description="Sign up to get started with your new account"
+          />
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Error Message */}
+            {error && <PanelError message={error} />}
+
+            {/* Username Field */}
+            <Input 
+              id="username" 
+              label="Username"
+              type="text"
+              placeholder="Enter a username"
+              value={user.username}
+              onChange={(e) => handleUsernameChange(e.target.value)}
+              disabled={isLoading}
+              minLength={4}
+              required
+            />
+
+            {/* Email Field */}
+            <Input 
+              id="email" 
+              label="Email address"
+              type="email"
+              placeholder="you@example.com"
+              value={user.email}
+              onChange={(e) => handleEmailChange(e.target.value)}
+              disabled={isLoading}
+              required
+            />
+
+            {/* Password Field */}
+            <SetPasswordInputs 
+              label="Password"
+              password={user.password}
+              confirmPassword={confirmPassword}
+              onPasswordChange={handlePasswordChange}
+              onConfirmPasswordChange={handleConfirmPasswordChange}
+            />
+
+            {/* Submit Button */}
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={isLoading}
+            >
+              {isLoading 
+                ? (
+                 <>
+                  <NaeLoader />
+                  Creating account...
+                </>
+              ) : (
+                'Create account'
+              )}
+            </Button>
+          </form>
+
+          {/* Sign In Link */}
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Already have an account?{' '}
+              <Link 
+                href="/login"
+                className="text-brand hover:text-brand-highlight font-medium transition-colors"
+              >
+                Sign in
+              </Link>
+            </p>
           </div>
-        )}
-        <div className="flex flex-col gap-4 w-full">
-          <Input 
-            id="username" 
-            label="Username"
-            placeholder="username"
-            type="text"
-            instruction="4 character minimum, no spaces"
-            minLength={4}
-            required
-            value={user.username}
-            onChange={(e) => handleUsernameChange(e.target.value)}
-          />
-          <Input 
-            id="email" 
-            label="Email"
-            placeholder="email@example.com"
-            type="email"
-            required
-            value={user.email}
-            onChange={(e) => handleEmailChange(e.target.value)}
-          />
-          <SetPasswordInputs 
-            label="Password"
-            password={user.password}
-            confirmPassword={confirmPassword}
-            onPasswordChange={handlePasswordChange}
-            onConfirmPasswordChange={handleConfirmPasswordChange}
-          />
         </div>
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={buttonDisabled}
-        >
-          {isLoading 
-            ? (
-              <>
-                <NaeLoader />
-                <span className="sr-only">Creating account</span>
-              </>
-            )
-            : 'Sign Up'}
-        </Button>
-        <p className="text-xs">
-          Already have an account?{' '}
-          <Link 
-            href="/login"
-            className="text-brand hover:text-brand-highlight underline transition-colors"
-          >
-            Sign in here
-          </Link>.
-        </p>
-      </form>
+      </div>
     </div>
   )
 }
