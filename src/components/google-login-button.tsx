@@ -12,7 +12,12 @@ interface GoogleLoginButtonProps {
   onLoginError?: () => void;
 }
 
-export default function GoogleLoginButton({ 
+const GSI_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
+const GSI_MIN_WIDTH = 240;
+const GSI_MAX_WIDTH = 400;
+const RESIZE_DEBOUNCE_MS = 150;
+
+export default function GoogleLoginButton({
   redirect = false,
   disabled = false,
   callback,
@@ -22,9 +27,14 @@ export default function GoogleLoginButton({
 
   const { loggingIn, loginViaGoogle } = useAuth();
   const router = useRouter();
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState<number>(384); // Default to max-w-sm (384px)
+  const [containerWidth, setContainerWidth] = useState<number>(GSI_MAX_WIDTH);
+
+  // Refs that stay stable across renders without triggering re-initialization
+  const containerWidthRef = useRef<number>(GSI_MAX_WIDTH);
+  const initializedRef = useRef<boolean>(false);
+  const callbackRef = useRef<typeof handleBackendAuth | null>(null);
 
   const handleBackendAuth = useCallback(async (token: string) => {
     if (onLoginAttempt) onLoginAttempt();
@@ -40,84 +50,128 @@ export default function GoogleLoginButton({
     }
   }, [loginViaGoogle, callback, onLoginAttempt, onLoginError, redirect, router]);
 
-  // Handle standard tracking of container width changes (Responsive layout)
+  // Keep callbackRef current on every render so the GSI callback always
+  // calls the latest version without re-running the initialization effect.
+  useEffect(() => {
+    callbackRef.current = handleBackendAuth;
+  });
+
+  // Track container width with a debounced ResizeObserver.
+  // The debounce prevents excessive renderButton calls during window resizing.
   useEffect(() => {
     if (!containerRef.current) return;
 
+    let debounceTimer: ReturnType<typeof setTimeout>;
+
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        // Google's button component limits widths between 240px and 400px
-        const width = Math.min(Math.max(entry.contentRect.width, 240), 400);
-        setContainerWidth(width);
+        const clamped = Math.min(
+          Math.max(Math.floor(entry.contentRect.width), GSI_MIN_WIDTH),
+          GSI_MAX_WIDTH,
+        );
+        containerWidthRef.current = clamped;
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => setContainerWidth(clamped), RESIZE_DEBOUNCE_MS);
       }
     });
 
     observer.observe(containerRef.current);
-    return () => observer.disconnect();
+    return () => {
+      clearTimeout(debounceTimer);
+      observer.disconnect();
+    };
   }, []);
 
+  // Load the GSI script and call initialize exactly once.
+  // initializedRef is intentionally NOT reset in the cleanup so that
+  // React Strict Mode's double-invoke of effects does not trigger a second
+  // initialize call (which would produce the [GSI_LOGGER] warning).
   useEffect(() => {
-    let disposed = false;
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
-    if (!clientId) return;
+    if (initializedRef.current) return;
 
-    let script = document.querySelector('script[src="https://accounts.google.com/gsi/client"]') as HTMLScriptElement;
-    if (!script) {
-      script = document.createElement('script');
-      script.src = 'https://accounts.google.com/gsi/client';
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
+    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      console.error('NEXT_PUBLIC_GOOGLE_CLIENT_ID is not configured');
+      return;
     }
 
-    const renderGoogleButton = () => {
-      if (disposed || !window.google?.accounts) return;
+    const initAndRender = () => {
+      if (!window.google?.accounts) return;
 
       const targetDiv = document.getElementById('gsi-target-btn');
       if (!targetDiv) return;
 
-      // 1. Initialize to capture the JWT ID Token for your backend POST route
+      // Mark as initialized before the call so any re-entrant invocation is a no-op
+      initializedRef.current = true;
+
       window.google.accounts.id.initialize({
         client_id: clientId,
+        // Use callbackRef so this closure never goes stale, even when
+        // React recreates handleBackendAuth due to dependency changes.
         callback: (response: google.accounts.id.CredentialResponse) => {
           if (response.credential) {
-            handleBackendAuth(response.credential);
+            callbackRef.current?.(response.credential);
           }
         },
       });
 
-      // 2. Render Google's secure button using the dynamically updated container width
       window.google.accounts.id.renderButton(targetDiv, {
         type: 'standard',
         theme: 'outline',
         size: 'large',
         text: 'signin_with',
-        logo_alignment: 'center', // Centers the text smoothly inside the boundary
-        width: Math.floor(containerWidth), // Passes explicit verified pixel values
+        logo_alignment: 'center',
+        width: containerWidthRef.current,
       });
     };
 
+    let script = document.querySelector(`script[src="${GSI_SCRIPT_SRC}"]`) as HTMLScriptElement | null;
+    if (!script) {
+      script = document.createElement('script');
+      script.src = GSI_SCRIPT_SRC;
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+    }
+
     if (window.google?.accounts) {
-      renderGoogleButton();
+      initAndRender();
     } else {
-      script.addEventListener('load', renderGoogleButton);
+      script.addEventListener('load', initAndRender);
     }
 
     return () => {
-      disposed = true;
-      script.removeEventListener('load', renderGoogleButton);
+      (script as HTMLScriptElement).removeEventListener('load', initAndRender);
+      // Note: initializedRef is NOT reset here — see comment above.
     };
-    // Re-renders the button correctly if the container container width changes
-  }, [handleBackendAuth, containerWidth]);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Re-render the button whenever the debounced container width changes.
+  // initialize is NOT called again here; only the visual button is updated.
+  useEffect(() => {
+    if (!initializedRef.current || !window.google?.accounts) return;
+
+    const targetDiv = document.getElementById('gsi-target-btn');
+    if (!targetDiv) return;
+
+    window.google.accounts.id.renderButton(targetDiv, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      text: 'signin_with',
+      logo_alignment: 'center',
+      width: containerWidth,
+    });
+  }, [containerWidth]);
 
   return (
-    <div 
-      ref={containerRef} 
+    <div
+      ref={containerRef}
       className='relative w-full max-w-sm mx-auto flex justify-center'
     >
       {/* Target Mount Container */}
-      <div 
-        id="gsi-target-btn" 
+      <div
+        id="gsi-target-btn"
         className={`w-full flex justify-center [&>div]:w-full! [&>div>iframe]:w-[${containerWidth}px]!`}
       ></div>
 
