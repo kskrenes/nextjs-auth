@@ -125,7 +125,7 @@ session cache
 dashboard content
 - [ ] add a visual widget calculating a health score based on whether the user has MFA enabled, a strong password, and verified email
 - [ ] add charts (like Tremor or Chart.js) showing fake system metrics like "API Requests", "Cache Hit Rate (Redis)", or "Auth Success vs Failures"
-- [ ] add card showing which email domains are allowed to sign up (requires "restricted domains" feature)
+- [ ] add card showing which email domains are allowed to sign up (mock until "restricted domains" feature is implemented)
 - [ ] (maybe) add active session cards from account/security tab
 
 Role-Based Access Control (RBAC)
