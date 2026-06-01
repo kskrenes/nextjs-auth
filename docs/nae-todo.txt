@@ -179,7 +179,7 @@ look & feel
 - [x] define themes
 - [x] allow theme selection
 - [x] fix google sign in button width
-- [ ] lay out login and signup pages
+- [x] lay out login and signup pages
 - [ ] lay out triggerpasswordreset page
 - [ ] lay out verifyemail page
 - [ ] lay out dashboard page
