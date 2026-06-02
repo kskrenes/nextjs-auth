@@ -18,9 +18,10 @@
   --foreground-primary: #353642;
   --foreground-secondary: #4b596d;
   --foreground-muted: #6B7280;
+  --foreground-error: #9e0812;
 
   --success: #16a34a;
-  --error: #9e0812;
+  --error: #e70009;
   --error-highlight: #cf1414;
   --error-low: #ff8484;
 
@@ -56,9 +57,10 @@
   --foreground-primary: #e5e6f2;
   --foreground-secondary: #9ca3af;
   --foreground-muted: #7B8290;
+  --foreground-error: #ef7474;
 
   --success: #4ADE80;
-  --error: #ef7474;
+  --error: #e70009;
   --error-highlight: #dc2626;
   --error-low: #4c2b2d;
 
@@ -94,6 +96,7 @@
   --color-foreground-primary: var(--foreground-primary);
   --color-foreground-secondary: var(--foreground-secondary);
   --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-error: var(--foreground-error);
   --color-success: var(--success);
   --color-error: var(--error);
   --color-error-highlight: var(--error-highlight);

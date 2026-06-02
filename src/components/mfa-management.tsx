@@ -230,7 +230,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
 
         {confirmDisable ? (
           <div className="p-3 rounded-md bg-panel text-foreground-secondary">
-            <p className="text-error mb-3 font-medium">
+            <p className="text-foreground-error mb-3 font-medium">
               Are you sure you want to disable two-factor authentication? This will make your account less secure.
             </p>
             <div className="flex gap-2">

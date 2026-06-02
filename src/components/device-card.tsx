@@ -82,6 +82,7 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
             <div className="ml-auto">
               <Button 
                 size="small" 
+                variant="warning"
                 className="ml-auto text-sm sm:text-base" 
                 onClick={deleteSession}
               >
