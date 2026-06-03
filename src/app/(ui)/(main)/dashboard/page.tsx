@@ -4,6 +4,7 @@ import FullScreenLoader from "@/components/full-screen-loader";
 import { useAuth } from "@/context-providers/auth-context-provider";
 import HealthScoreWidget from '@/components/dashboard/health-score-widget';
 import APIRequestsChart from "@/components/dashboard/api-requests-chart";
+import CacheHitRateChart from "@/components/dashboard/cache-hit-rate-chart";
 
 const DashboardPage = () => {
 
@@ -29,24 +30,7 @@ const DashboardPage = () => {
         <APIRequestsChart />
 
         {/* Cache Hit Rate */}
-        {/* <Card>
-          <Text className="text-gray-700 font-medium mb-1">Session Cache Hit Rate (Redis)</Text>
-          <Metric className="text-gray-900">92.3%</Metric>
-          <Text className="text-gray-500 text-sm mb-4">Average cache efficiency</Text>
-          <AreaChart
-            className="h-52"
-            data={cacheHitRateData}
-            index="time"
-            categories={['Hit Rate']}
-            colors={['emerald']}
-            valueFormatter={(value) => `${value.toFixed(1)}%`}
-            showLegend={false}
-            showGridLines={true}
-            showAnimation={true}
-            minValue={85}
-            maxValue={100}
-          />
-        </Card> */}
+        <CacheHitRateChart />
 
         {/* Auth Success vs Failures */}
         {/* <Card>
