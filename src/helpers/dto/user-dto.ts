@@ -24,6 +24,7 @@ const UserDTOSchema = z.object({
   ])).optional(),
   avatarId: z.string().optional(),
   hasCompletedProfile: z.boolean(),
+  hasStrongPassword: z.boolean(),
   isVerified: z.boolean(),
   isAdmin: z.boolean(),
   linkedProviders: z.array(z.enum([
@@ -47,6 +48,7 @@ export interface RawUser {
   socialLinks?: string[];
   avatarId?: string;
   hasCompletedProfile: boolean;
+  hasStrongPassword: boolean;
   isVerified: boolean;
   isAdmin: boolean;
   accounts?: { provider: string }[];
@@ -65,6 +67,7 @@ export function sanitizeUser(user: RawUser): UserDTO {
     socialLinks: user.socialLinks,
     avatarId: user.avatarId,
     hasCompletedProfile: user.hasCompletedProfile,
+    hasStrongPassword: user.hasStrongPassword,
     isVerified: user.isVerified,
     isAdmin: user.isAdmin,
     linkedProviders: (user.accounts ?? []).map(
