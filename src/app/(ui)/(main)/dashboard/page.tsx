@@ -3,6 +3,7 @@
 import FullScreenLoader from "@/components/full-screen-loader";
 import { useAuth } from "@/context-providers/auth-context-provider";
 import HealthScoreWidget from '@/components/dashboard/health-score-widget';
+import APIRequestsChart from "@/components/dashboard/api-requests-chart";
 
 const DashboardPage = () => {
 
@@ -23,24 +24,9 @@ const DashboardPage = () => {
       <HealthScoreWidget hasMFA={user.mfaEnabled} hasStrongPassword={user.hasStrongPassword} hasVerifiedEmail={user.isVerified} />
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-6">
         {/* API Requests */}
-        {/* <Card>
-          <Text className="text-gray-700 font-medium mb-1">API Requests</Text>
-          <Metric className="text-gray-900">2,456</Metric>
-          <Text className="text-gray-500 text-sm mb-4">Current hourly rate</Text>
-          <AreaChart
-            className="h-52"
-            data={apiRequestsData}
-            index="time"
-            categories={['requests']}
-            colors={['blue']}
-            valueFormatter={(value) => `${value.toLocaleString()}`}
-            showLegend={false}
-            showGridLines={true}
-            showAnimation={true}
-          />
-        </Card> */}
+        <APIRequestsChart />
 
         {/* Cache Hit Rate */}
         {/* <Card>
