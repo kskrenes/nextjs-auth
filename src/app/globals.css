@@ -39,6 +39,7 @@
   --brand-light: #818cf8;
   --brand-highlight: #4f46e5;
   --brand-low: #c1ccff;
+  --brand-outline: #4f46e5;
 
   --button-foreground: #e5e6f2;
   --button-foreground-highlight: #ffffff;
@@ -97,6 +98,7 @@
   --brand-light: #818cf8;
   --brand-highlight: #4f46e5;
   --brand-low: #2b295c;
+  --brand-outline: #818cf8;
 
   --button-foreground: #e5e6f2;
   --button-foreground-highlight: #ffffff;
@@ -153,6 +155,7 @@
   --color-brand-light: var(--brand-light);
   --color-brand-highlight: var(--brand-highlight);
   --color-brand-low: var(--brand-low);
+  --color-brand-outline: var(--brand-outline);
   --color-button-foreground: var(--button-foreground);
   --color-button-foreground-highlight: var(--button-foreground-highlight);
   --color-button-foreground-low: var(--button-foreground-low);
@@ -449,4 +452,40 @@ body {
     data-selected:cursor-default
     data-selected:shadow-[inset_0_-2px_0_0_var(--color-tab-foreground-selected)]
     py-3
+}
+
+@utility custom-chart {
+  & .recharts-text {
+    fill: var(--foreground-muted);
+  }
+
+  & .stroke-1 {
+    stroke: var(--panel-highlight);
+  }
+
+  & linearGradient {
+    color: var(--brand);
+  }
+
+  & .recharts-tooltip-wrapper > div {
+    background-color: var(--panel);
+  }
+
+  & .recharts-tooltip-wrapper .text-tremor-content-emphasis {
+    color: var(--foreground-primary);
+  }
+
+  & .recharts-tooltip-wrapper .text-tremor-content {
+    color: var(--foreground-secondary);
+  }
+
+  & .recharts-dot {
+    fill: var(--brand);
+    stroke: var(--brand-outline);
+  }
+
+  & .recharts-tooltip-wrapper span {
+    background-color: var(--brand);
+    border-color: var(--brand-outline);
+  }
 }
