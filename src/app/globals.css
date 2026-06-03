@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@config "../../tailwind.config.ts";
+@tailwind utilities;
 
 @theme {
   --breakpoint-xs: 438px;
@@ -12,18 +14,26 @@
   --panel-highlight: #d1d5db;
   --panel-active: #444b5a;
   --panel-active-foreground: #eee;
-  --panel-error: #fef3f3;
-  --panel-error-border: #ffcaca;
+  --panel-excellent: #d1fae5;
+  --panel-good: #d1eaf5;
+  --panel-fair: #f1ead5;
+  --panel-poor: #fef3f3;
+  --panel-poor-border: #ffcaca;
 
   --foreground-primary: #353642;
   --foreground-secondary: #4b596d;
   --foreground-muted: #6B7280;
-  --foreground-error: #9e0812;
+  --foreground-excellent: #2e9936;
+  --foreground-good: #2e6892;
+  --foreground-fair: #d6933a;
+  --foreground-poor: #9e0812;
 
-  --success: #16a34a;
-  --error: #e70009;
-  --error-highlight: #cf1414;
-  --error-low: #ff8484;
+  --excellent: #16a34a;
+  --good: #1693aa;
+  --fair: #e6a34a;
+  --poor: #e70009;
+  --poor-highlight: #cf1414;
+  --poor-low: #ff8484;
 
   --brand: #6366f1;
   --brand-light: #818cf8;
@@ -42,6 +52,17 @@
   --tab-foreground-selected: #6366f1;
 
   --logo: url('/nAuth-logo-light.png');
+
+  /* Add mappings for Tremor Light Theme variables */
+  --tremor-brand-faint: #ecfdf5;    /* emerald 50 */
+  --tremor-brand-muted: #a7f3d0;    /* emerald 200 */
+  --tremor-brand-subtle: #34d399;   /* emerald 400 */
+  --tremor-brand-default: #10b981;  /* emerald 500 */
+  --tremor-brand-emphasis: #047857; /* emerald 700 */
+  --tremor-brand-inverted: #ffffff;
+  
+  --tremor-bg-default: #ffffff;
+  --tremor-border-default: #e5e7eb;
 }
 
 [data-theme="dark"] {
@@ -51,18 +72,26 @@
   --panel-highlight: #374151;
   --panel-active: #f3f4f6;
   --panel-active-foreground: #111827;
-  --panel-error: #3d3640;
-  --panel-error-border: #644a52;
+  --panel-excellent: #303934;
+  --panel-good: #313a46;
+  --panel-fair: #3a3b30;
+  --panel-poor: #3d3640;
+  --panel-poor-border: #644a52;
 
   --foreground-primary: #e5e6f2;
   --foreground-secondary: #9ca3af;
   --foreground-muted: #7B8290;
-  --foreground-error: #ef7474;
+  --foreground-excellent: #2abe60;
+  --foreground-good: #3f94d4;
+  --foreground-fair: #ae9812;
+  --foreground-poor: #ef7474;
 
-  --success: #4ADE80;
-  --error: #e70009;
-  --error-highlight: #dc2626;
-  --error-low: #4c2b2d;
+  --excellent: #4ADE80;
+  --good: #1663aa;
+  --fair: #b6a34a;
+  --poor: #f73039;
+  --poor-highlight: #dc2626;
+  --poor-low: #4c2b2d;
 
   --brand: #6366f1;
   --brand-light: #818cf8;
@@ -81,6 +110,17 @@
   --tab-foreground-selected: #818cf8;
 
   --logo: url('/nAuth-logo.png');
+
+  /* Override mappings for Tremor Dark Theme variables */
+  --tremor-brand-faint: #064e3b;    /* emerald 900 */
+  --tremor-brand-muted: #065f46;    /* emerald 800 */
+  --tremor-brand-subtle: #059669;   /* emerald 600 */
+  --tremor-brand-default: #10b981;  /* emerald 500 */
+  --tremor-brand-emphasis: #34d399; /* emerald 400 */
+  --tremor-brand-inverted: #060f0e;
+  
+  --tremor-bg-default: #0f172a;     /* slate 900 */
+  --tremor-border-default: #334155; /* slate 700 */
 }
 
 @theme inline {
@@ -91,16 +131,24 @@
   --color-panel-highlight: var(--panel-highlight);
   --color-panel-active: var(--panel-active);
   --color-panel-active-foreground: var(--panel-active-foreground);
-  --color-panel-error: var(--panel-error);
-  --color-panel-error-border: var(--panel-error-border);
+  --color-panel-excellent: var(--panel-excellent);
+  --color-panel-good: var(--panel-good);
+  --color-panel-fair: var(--panel-fair);
+  --color-panel-poor: var(--panel-poor);
+  --color-panel-poor-border: var(--panel-poor-border);
   --color-foreground-primary: var(--foreground-primary);
   --color-foreground-secondary: var(--foreground-secondary);
   --color-foreground-muted: var(--foreground-muted);
-  --color-foreground-error: var(--foreground-error);
-  --color-success: var(--success);
-  --color-error: var(--error);
-  --color-error-highlight: var(--error-highlight);
-  --color-error-low: var(--error-low);
+  --color-foreground-excellent: var(--foreground-excellent);
+  --color-foreground-good: var(--foreground-good);
+  --color-foreground-fair: var(--foreground-fair);
+  --color-foreground-poor: var(--foreground-poor);
+  --color-excellent: var(--excellent);
+  --color-good: var(--good);
+  --color-fair: var(--fair);
+  --color-poor: var(--poor);
+  --color-poor-highlight: var(--poor-highlight);
+  --color-poor-low: var(--poor-low);
   --color-brand: var(--brand);
   --color-brand-light: var(--brand-light);
   --color-brand-highlight: var(--brand-highlight);
@@ -115,6 +163,16 @@
   --color-tab-foreground: var(--tab-foreground);
   --color-tab-foreground-selected: var(--tab-foreground-selected);
   --background-image-logo: var(--logo);
+
+  --color-tremor-brand-faint: var(--tremor-brand-faint);
+  --color-tremor-brand-muted: var(--tremor-brand-muted);
+  --color-tremor-brand-subtle: var(--tremor-brand-subtle);
+  --color-tremor-brand-default: var(--tremor-brand-default);
+  --color-tremor-brand-emphasis: var(--tremor-brand-emphasis);
+  --color-tremor-brand-inverted: var(--tremor-brand-inverted);
+  
+  --color-tremor-bg-default: var(--tremor-bg-default);
+  --color-tremor-border-default: var(--tremor-border-default);
 }
 
 body {
@@ -194,16 +252,16 @@ body {
   @apply 
     button-base
     font-semibold 
-    text-error 
+    text-poor 
     hover:text-button-foreground-highlight
-    disabled:text-error-low
+    disabled:text-poor-low
     bg-transparent 
-    hover:bg-error
+    hover:bg-poor
     disabled:bg-transparent
     border-2
-    border-error
-    hover:border-error
-    disabled:border-error-low
+    border-poor
+    hover:border-poor
+    disabled:border-poor-low
 }
 
 @utility button-extreme {
@@ -213,9 +271,9 @@ body {
     text-button-foreground 
     hover:text-button-foreground-highlight 
     disabled:text-button-foreground-low
-    bg-error 
-    hover:bg-error-highlight
-    disabled:bg-error-low
+    bg-poor 
+    hover:bg-poor-highlight
+    disabled:bg-poor-low
 }
 
 @utility button-ghost {
@@ -282,14 +340,14 @@ body {
     transition-colors
 }
 
-@utility input-error {
+@utility input-poor {
   @apply
     input-base
-    border-error 
-    bg-panel-error
-    focus:border-error 
+    border-poor 
+    bg-panel-poor
+    focus:border-poor 
     focus-visible:outline-2
-    focus-visible:outline-error-highlight
+    focus-visible:outline-poor-highlight
 }
 
 @utility nav-item-base {
