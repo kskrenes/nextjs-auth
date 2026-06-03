@@ -57,3 +57,22 @@ export const getValidEmail = (email: string): string => {
   
   return normalizedEmail;
 }
+
+export const getIsStrongPassword = (password: string): boolean => {
+  // Enforce a strong 12-character minimum length
+  if (password.length < 12) return false;
+
+  // Check for uppercase letter
+  if (!/[A-Z]/.test(password)) return false;
+
+  // Check for lowercase letter
+  if (!/[a-z]/.test(password)) return false;
+
+  // Check for digit
+  if (!/[0-9]/.test(password)) return false;
+
+  // Check for special character
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) return false;
+
+  return true;
+}
