@@ -9,6 +9,7 @@ import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { LinkCredentialsSchema } from "@/lib/payload-schemas";
+import { getIsStrongPassword } from "@/helpers/util/form-validation-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,6 +24,9 @@ export async function POST(request: NextRequest) {
     const validation = await validateRequestBody(request, LinkCredentialsSchema);
     if (!validation.success) return validation.errorResponse;
     const { password } = validation.data;
+
+    // determine password strength
+    const hasStrongPassword = getIsStrongPassword(password);
 
     // hash the new password before writing
     const salt = await bcrypt.genSalt(10);
@@ -46,6 +50,7 @@ export async function POST(request: NextRequest) {
         $set: {
           password: hashedPassword,
           hasCompletedProfile: true,
+          hasStrongPassword,
         },
       },
       { returnDocument: 'after' }

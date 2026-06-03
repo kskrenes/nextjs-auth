@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { ResetPasswordSchema } from "@/lib/payload-schemas";
 import { evictUserSessions } from "@/lib/session-cache";
+import { getIsStrongPassword } from "@/helpers/util/form-validation-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,6 +34,9 @@ export async function POST(request: NextRequest) {
       return getErrorResponse(410, "Invalid or expired token");
     }
 
+    // determine password strength
+    const hasStrongPassword = getIsStrongPassword(password);
+
     // hash normalized password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -42,6 +46,7 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
       forgotPasswordToken: null,
       forgotPasswordTokenExpiry: null,
+      hasStrongPassword,
     }
 
     // update user
