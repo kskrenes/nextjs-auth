@@ -12,10 +12,13 @@ const apiRequestsData = [
 ];
 
 const APIRequestsChart = () => {
+
+  const currentHourlyRate = apiRequestsData[apiRequestsData.length - 1]?.requests || 0;
+
   return (
     <Card className="bg-page shadow-none ring-0">
       <Text className="font-medium mb-1 text-foreground-primary">API Requests</Text>
-      <Metric className="font-bold">2,456</Metric>
+      <Metric className="font-bold">{currentHourlyRate.toLocaleString()}</Metric>
       <Text className="text-foreground-secondary text-sm mb-4">Current hourly rate</Text>
       <AreaChart
         className="h-52 area-chart"
