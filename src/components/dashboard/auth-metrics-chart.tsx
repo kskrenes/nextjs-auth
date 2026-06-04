@@ -11,17 +11,22 @@ const authData = [
   { time: '23:59', Success: 334, Failed: 15 },
 ];
 
+const totalAttempts = authData.reduce((sum, d) => sum + d.Success + d.Failed, 0);
+const totalSuccess = authData.reduce((sum, d) => sum + d.Success, 0);
+const successRate = ((totalSuccess / totalAttempts) * 100).toFixed(1);
+
 const AuthMetricsChart = () => {
+  
   return (
     <Card className="bg-page shadow-none ring-0">
       <Text className="font-medium mb-1 text-foreground-primary">Authentication Activity</Text>
       <Flex className="mb-4">
         <div>
-          <Metric className="font-bold">3,282</Metric>
+          <Metric className="font-bold">{totalAttempts.toLocaleString()}</Metric>
           <Text className="text-foreground-secondary text-sm">Total attempts (24h)</Text>
         </div>
         <BadgeDelta deltaType="increase" className="mt-1 text-sm ring-0! font-medium text-foreground-excellent!">
-          95.3% success
+          {successRate}% success
         </BadgeDelta>
       </Flex>
       <BarChart
