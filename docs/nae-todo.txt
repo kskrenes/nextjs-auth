@@ -123,10 +123,9 @@ session cache
 - [x] explicitly remove session cache records from redis on logout
 
 dashboard content
-- [ ] add a visual widget calculating a health score based on whether the user has MFA enabled, a strong password, and verified email
-- [ ] add charts (like Tremor or Chart.js) showing fake system metrics like "API Requests", "Cache Hit Rate (Redis)", or "Auth Success vs Failures"
-- [ ] add card showing which email domains are allowed to sign up (mock until "restricted domains" feature is implemented)
-- [ ] (maybe) add active session cards from account/security tab
+- [x] add a visual widget calculating a health score based on whether the user has MFA enabled, a strong password, and verified email
+- [x] add charts (like Tremor or Chart.js) showing fake system metrics like "API Requests", "Cache Hit Rate (Redis)", or "Auth Success vs Failures"
+- [x] add card showing which email domains are allowed to sign up (mock until "restricted domains" feature is implemented)
 
 Role-Based Access Control (RBAC)
 - [ ] create roles for Owner, Admin, and Member (existing standard user)
@@ -180,7 +179,7 @@ look & feel
 - [x] allow theme selection
 - [x] fix google sign in button width
 - [x] lay out login and signup pages
-- [ ] lay out dashboard page
+- [x] lay out dashboard page
 - [ ] lay out triggerpasswordreset page
 - [ ] lay out verifyemail page
 - [ ] include password validation states in password component
