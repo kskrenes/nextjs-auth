@@ -1,10 +1,9 @@
 import { BadgeDelta, Card, Flex, Metric, ProgressBar, Text } from "@tremor/react"
 import { CheckCircle2, ShieldAlert, ShieldCheck, XCircle } from "lucide-react"
 
-interface DashboardTabProps {
-  hasMFA: boolean;
-  hasStrongPassword: boolean;
-  hasVerifiedEmail: boolean;
+interface HealthScoreWidgetProps {
+  healthChecks: { name: string, enabled: boolean, weight: number }[];
+  healthScore: number;
 }
 
 const styleMap = {
@@ -34,17 +33,7 @@ const styleMap = {
   }
 }
 
-const HealthScoreWidget = ({ hasMFA, hasStrongPassword, hasVerifiedEmail }: DashboardTabProps) => {
-
-  const healthChecks = [
-    { name: 'Multi-Factor Authentication', enabled: hasMFA, weight: 40 },
-    { name: 'Strong Password', enabled: hasStrongPassword, weight: 30 },
-    { name: 'Verified Email', enabled: hasVerifiedEmail, weight: 30 },
-  ];
-
-  const healthScore = healthChecks.reduce((score, check) => {
-    return score + (check.enabled ? check.weight : 0);
-  }, 0);
+const HealthScoreWidget = ({ healthChecks, healthScore }: HealthScoreWidgetProps) => {
 
   const getHealthStatus = () => {
     if (healthScore >= 90) return { label: 'Excellent', style: 'excellent', icon: ShieldCheck };
