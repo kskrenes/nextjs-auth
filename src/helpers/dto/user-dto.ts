@@ -48,7 +48,7 @@ export interface RawUser {
   socialLinks?: string[];
   avatarId?: string;
   hasCompletedProfile: boolean;
-  hasStrongPassword: boolean;
+  hasStrongPassword?: boolean;
   isVerified: boolean;
   isAdmin: boolean;
   accounts?: { provider: string }[];
@@ -67,7 +67,7 @@ export function sanitizeUser(user: RawUser): UserDTO {
     socialLinks: user.socialLinks,
     avatarId: user.avatarId,
     hasCompletedProfile: user.hasCompletedProfile,
-    hasStrongPassword: user.hasStrongPassword,
+    hasStrongPassword: user.hasStrongPassword ?? false,
     isVerified: user.isVerified,
     isAdmin: user.isAdmin,
     linkedProviders: (user.accounts ?? []).map(
