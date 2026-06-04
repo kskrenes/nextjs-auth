@@ -4,14 +4,13 @@ import { useAuth } from "@/context-providers/auth-context-provider";
 import Link from "next/link"
 import AvatarDisplay from "./avatar-display";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { ChevronDown, LayoutDashboardIcon, LogOut, RotateCcwKey, UserPen } from "lucide-react";
+import { ChevronDown, LayoutDashboardIcon, LogOut, UserPen } from "lucide-react";
 import ThemeSwitcher from "./theme-switcher";
 import { useSelectedLayoutSegments } from "next/navigation";
 
 const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon className="w-5 h-5" /> },
   { name: 'Account', href: '/account', icon: <UserPen className="w-5 h-5" /> },
-  { name: 'Reset Password', href: '/triggerpasswordreset', icon: <RotateCcwKey className="w-5 h-5" /> },
 ];
 
 const Header = () => {

@@ -1,14 +1,13 @@
 "use client";
 
 import { useAuth } from '@/context-providers/auth-context-provider';
-import { LayoutDashboardIcon, LogIn, LogOut, RotateCcwKey, UserPen } from 'lucide-react'
+import { LayoutDashboardIcon, LogIn, LogOut, UserPen } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation';
 
 const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon /> },
   { name: 'Account', href: '/account', icon: <UserPen /> },
-  { name: 'Reset Password', href: '/triggerpasswordreset', icon: <RotateCcwKey /> },
 ];
 
 const Sidebar = () => {
