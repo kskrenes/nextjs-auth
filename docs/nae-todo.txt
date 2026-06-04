@@ -172,7 +172,7 @@ additional authentication methods
 roles and permissions
 - [x] research examples and determine what to implement
 
-look & feel
+look & feel, flow
 - [x] improve style
 - [x] make new (main) layout responsive
 - [x] define themes
@@ -180,6 +180,8 @@ look & feel
 - [x] fix google sign in button width
 - [x] lay out login and signup pages
 - [x] lay out dashboard page
+- [ ] remove "Reset Password" from nav menus
+- [ ] move triggerpasswordreset page out of (menu) group
 - [ ] redesign triggerpasswordreset page
 - [ ] redesign verifyemail page
 - [ ] redesign account page tabs as necessary
