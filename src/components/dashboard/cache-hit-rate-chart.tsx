@@ -12,10 +12,15 @@ const cacheHitRateData = [
 ];
 
 const CacheHitRateChart = () => {
+
+  const avgHitRate = (
+    cacheHitRateData.reduce((sum, d) => sum + d['Hit Rate'], 0) / cacheHitRateData.length
+  ).toFixed(1);
+
   return (
     <Card className="bg-page shadow-none ring-0">
       <Text className="font-medium mb-1 text-foreground-primary">Session Cache Hit Rate (Redis)</Text>
-      <Metric className="font-bold">92.3%</Metric>
+      <Metric className="font-bold">{avgHitRate}%</Metric>
       <Text className="text-foreground-secondary text-sm mb-4">Average cache efficiency</Text>
       <AreaChart
         className="h-52 area-chart"
