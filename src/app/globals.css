@@ -15,6 +15,7 @@
   --panel-active: #444b5a;
   --panel-active-foreground: #eee;
   --panel-excellent: #d1fae5;
+  --panel-excellent-border: #baefba;
   --panel-good: #d1eaf5;
   --panel-fair: #f1ead5;
   --panel-poor: #fef3f3;
@@ -79,6 +80,7 @@
   --panel-active: #f3f4f6;
   --panel-active-foreground: #111827;
   --panel-excellent: #303934;
+  --panel-excellent-border: #305934;
   --panel-good: #313a46;
   --panel-fair: #3a3b30;
   --panel-poor: #3d3640;
@@ -144,6 +146,7 @@
   --color-panel-active: var(--panel-active);
   --color-panel-active-foreground: var(--panel-active-foreground);
   --color-panel-excellent: var(--panel-excellent);
+  --color-panel-excellent-border: var(--panel-excellent-border);
   --color-panel-good: var(--panel-good);
   --color-panel-fair: var(--panel-fair);
   --color-panel-poor: var(--panel-poor);
@@ -206,6 +209,18 @@ body {
     mx-5 
     xs:mx-8 
     mb-8
+}
+
+@utility page-centered {
+  @apply
+    min-h-screen 
+    flex 
+    items-center 
+    justify-center 
+    py-12 
+    px-4 
+    sm:px-6 
+    lg:px-8
 }
 
 @utility button-base {
@@ -326,6 +341,7 @@ body {
     focus:outline-none
     focus-visible:outline-2
     focus-visible:outline-brand
+    bg-panel
 }
 
 @utility input-standard {
