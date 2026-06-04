@@ -147,8 +147,8 @@ look & feel, flow
 - [x] remove "Reset Password" from nav menus
 - [x] move triggerpasswordreset page out of (menu) group
 - [x] redesign triggerpasswordreset page
+- [x] redesign resetpassword page
 - [ ] redesign verifyemail page
-- [ ] redesign resetpassword page
 - [ ] redesign onboarding page
 - [ ] redesign account page tabs as necessary
 - [ ] include password validation states in password component
