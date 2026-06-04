@@ -5,6 +5,7 @@ import { useAuth } from "@/context-providers/auth-context-provider";
 import HealthScoreWidget from '@/components/dashboard/health-score-widget';
 import APIRequestsChart from "@/components/dashboard/api-requests-chart";
 import CacheHitRateChart from "@/components/dashboard/cache-hit-rate-chart";
+import AuthMetricsChart from "@/components/dashboard/auth-metrics-chart";
 
 const DashboardPage = () => {
 
@@ -33,28 +34,7 @@ const DashboardPage = () => {
         <CacheHitRateChart />
 
         {/* Auth Success vs Failures */}
-        {/* <Card>
-          <Text className="text-gray-700 font-medium mb-1">Authentication Activity</Text>
-          <Flex className="mb-4">
-            <div>
-              <Metric className="text-gray-900">3,282</Metric>
-              <Text className="text-gray-500 text-sm">Total attempts (24h)</Text>
-            </div>
-            <BadgeDelta deltaType="increase" className="mt-1">
-              95.3% success
-            </BadgeDelta>
-          </Flex>
-          <BarChart
-            className="h-52"
-            data={authData}
-            index="time"
-            categories={['Success', 'Failed']}
-            colors={['emerald', 'red']}
-            valueFormatter={(value) => value.toLocaleString()}
-            stack={false}
-            showAnimation={true}
-          />
-        </Card> */}
+        <AuthMetricsChart />
 
         {/* Allowed Email Domains */}
         {/* <Card>
