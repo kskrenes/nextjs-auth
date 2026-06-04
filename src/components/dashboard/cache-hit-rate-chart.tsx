@@ -13,9 +13,9 @@ const cacheHitRateData = [
 
 const CacheHitRateChart = () => {
 
-  const avgHitRate = (
-    cacheHitRateData.reduce((sum, d) => sum + d['Hit Rate'], 0) / cacheHitRateData.length
-  ).toFixed(1);
+  const avgHitRate = cacheHitRateData.length > 0
+    ? (cacheHitRateData.reduce((sum, d) => sum + d['Hit Rate'], 0) / cacheHitRateData.length).toFixed(1)
+    : '0.0';
 
   return (
     <Card className="bg-page shadow-none ring-0">
