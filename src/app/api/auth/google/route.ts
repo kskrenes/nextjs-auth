@@ -166,6 +166,7 @@ export async function POST(request: NextRequest) {
           email: normalizedEmail, 
           name,
           hasCompletedProfile: false,
+          hasStrongPassword: true,  // set to true (ony on first google login with no other credentials) to avoid penalizing health score
           accounts: [{ 
             provider: 'google',
             providerId: sub,

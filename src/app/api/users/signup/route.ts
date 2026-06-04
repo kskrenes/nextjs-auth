@@ -7,6 +7,7 @@ import mongoose from "mongoose";
 import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { getErrorResponse, isDuplicateError } from "@/helpers/util/error-utils";
 import { SignUpSchema } from "@/lib/payload-schemas";
+import { getIsStrongPassword } from "@/helpers/util/form-validation-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -49,6 +50,9 @@ export async function POST(request: NextRequest) {
       return getErrorResponse(409, "Email already in use");
     }
 
+    // determine password strength
+    const hasStrongPassword = getIsStrongPassword(password);
+
     // hash password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -61,6 +65,7 @@ export async function POST(request: NextRequest) {
       email, 
       password: hashedPassword,
       hasCompletedProfile: true,
+      hasStrongPassword,
       accounts: [{ 
         provider: 'credentials',
         providerId: userId.toString(),

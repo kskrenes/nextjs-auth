@@ -145,8 +145,8 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
     return (
       <div className="flex flex-col mt-2 gap-4">
         <div className="flex items-center gap-2 mb-3">
-          <ShieldCheck className="w-5 h-5 text-success" />
-          <span className="font-medium text-success">
+          <ShieldCheck className="w-5 h-5 text-excellent" />
+          <span className="font-medium text-excellent">
             Two-Factor Authentication is enabled
           </span>
         </div>
@@ -203,8 +203,8 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
                   >
                     {copiedCodes ? (
                       <>
-                        <Check className="w-4 h-4 text-success" />
-                        <span className="text-success">Copied!</span>
+                        <Check className="w-4 h-4 text-excellent" />
+                        <span className="text-excellent">Copied!</span>
                       </>
                     ) : (
                       <>
@@ -230,7 +230,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
 
         {confirmDisable ? (
           <div className="p-3 rounded-md bg-panel text-foreground-secondary">
-            <p className="text-error mb-3 font-medium">
+            <p className="text-foreground-poor mb-3 font-medium">
               Are you sure you want to disable two-factor authentication? This will make your account less secure.
             </p>
             <div className="flex gap-2">
@@ -366,8 +366,8 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
                 >
                   {copiedCodes ? (
                     <>
-                      <Check className="w-4 h-4 text-success" />
-                      <span className="text-success">Copied!</span>
+                      <Check className="w-4 h-4 text-excellent" />
+                      <span className="text-excellent">Copied!</span>
                     </>
                   ) : (
                     <>

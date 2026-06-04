@@ -11,6 +11,7 @@
   "dependencies": {
     "@headlessui/react": "^2.2.10",
     "@radix-ui/react-dialog": "^1.1.15",
+    "@tremor/react": "^3.18.7",
     "@upstash/redis": "^1.38.0",
     "axios": "^1.13.6",
     "bcryptjs": "^3.0.3",
@@ -36,6 +37,7 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@tailwindcss/forms": "^0.5.11",
     "@tailwindcss/postcss": "^4",
     "@types/google.accounts": "^0.0.18",
     "@types/jsonwebtoken": "^9.0.10",

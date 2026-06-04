@@ -627,6 +627,8 @@ const AccountPage = () => {
                         ))}
                         <div className="mt-2">
                           <Button 
+                            size="small"
+                            variant="extreme"
                             onClick={handleSignOutAllDevices}
                             disabled={isRevokingAll}
                           >

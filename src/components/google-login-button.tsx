@@ -167,6 +167,7 @@ export default function GoogleLoginButton({
   return (
     <div
       ref={containerRef}
+      style={{colorScheme: 'auto'}}
       className='relative w-full max-w-sm mx-auto flex justify-center'
     >
       {/* Target Mount Container */}
