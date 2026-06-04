@@ -127,6 +127,65 @@ dashboard content
 - [x] add charts (like Tremor or Chart.js) showing fake system metrics like "API Requests", "Cache Hit Rate (Redis)", or "Auth Success vs Failures"
 - [x] add card showing which email domains are allowed to sign up (mock until "restricted domains" feature is implemented)
 
+additional authentication methods
+- [x] add social login (google)
+- [x] research multifactor auth (MFA)
+- [ ] research one-time passcodes
+- [ ] research passkeys
+
+roles and permissions
+- [x] research examples and determine what to implement
+
+look & feel, flow
+- [x] improve style
+- [x] make new (main) layout responsive
+- [x] define themes
+- [x] allow theme selection
+- [x] fix google sign in button width
+- [x] lay out login and signup pages
+- [x] lay out dashboard page
+- [x] remove "Reset Password" from nav menus
+- [x] move triggerpasswordreset page out of (menu) group
+- [ ] redesign triggerpasswordreset page
+- [ ] redesign verifyemail page
+- [ ] redesign account page tabs as necessary
+- [ ] include password validation states in password component
+- [ ] refactor to components where applicable
+
+errors & warnings
+- [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
+- [ ] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
+- [ ] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
+- [ ] fix google sign in button layout in settings tab
+
+multiple pages
+- [x] either display or discard toast
+
+feature research
+- [x] research social sign-on
+- [x] research SAML
+
+## Homepage Feature Checklist
+- [x] Email/password authentication
+- [x] Protected routes and pages
+- [x] Session management
+- [x] Email verification
+- [x] Social login (Google)
+- [x] Multifactor authentication
+- [x] Profile management
+- [ ] Passkeys
+- [ ] Roles and permissions - OOS
+- [ ] Restricted domains - OOS
+
+- [ ] DEPLOY
+
+---
+
+OUT OF SCOPE
+
+security
+- [ ] restrict email domains and subaddresses
+
 Role-Based Access Control (RBAC)
 - [ ] create roles for Owner, Admin, and Member (existing standard user)
 
@@ -162,58 +221,3 @@ shared demo environment guardrails
 restricted domains
 - [ ] allow toggling an option to "Restrict registration to specific domains." (signup API rejects any email not ending in specified domains)
 - [ ] use a public list or regex array to block common burner email providers (e.g., Mailinator, Yopmail) during registration
-
-additional authentication methods
-- [x] add social login (google)
-- [x] research multifactor auth (MFA)
-- [ ] research one-time passcodes
-- [ ] research passkeys
-
-roles and permissions
-- [x] research examples and determine what to implement
-
-look & feel, flow
-- [x] improve style
-- [x] make new (main) layout responsive
-- [x] define themes
-- [x] allow theme selection
-- [x] fix google sign in button width
-- [x] lay out login and signup pages
-- [x] lay out dashboard page
-- [ ] remove "Reset Password" from nav menus
-- [ ] move triggerpasswordreset page out of (menu) group
-- [ ] redesign triggerpasswordreset page
-- [ ] redesign verifyemail page
-- [ ] redesign account page tabs as necessary
-- [ ] include password validation states in password component
-- [ ] refactor to components where applicable
-
-errors & warnings
-- [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
-- [ ] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
-- [ ] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
-- [ ] fix google sign in button layout in settings tab
-
-multiple pages
-- [x] either display or discard toast
-
-security
-- [ ] restrict email domains and subaddresses
-
-feature research
-- [x] research social sign-on
-- [x] research SAML
-
-## Homepage Feature Checklist
-- [x] Email/password authentication
-- [x] Protected routes and pages
-- [x] Session management
-- [x] Email verification
-- [x] Social login (Google)
-- [x] Multifactor authentication
-- [ ] Roles and permissions
-- [x] Profile management
-- [ ] Restricted domains
-- [ ] Passkeys
-
-DEPLOY
