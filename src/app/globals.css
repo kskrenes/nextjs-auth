@@ -478,6 +478,11 @@ body {
   & .recharts-tooltip-wrapper .text-tremor-content {
     color: var(--foreground-secondary);
   }
+}
+
+@utility area-chart {
+  @apply
+    custom-chart;
 
   & .recharts-dot {
     fill: var(--brand);
@@ -487,5 +492,42 @@ body {
   & .recharts-tooltip-wrapper span {
     background-color: var(--brand);
     border-color: var(--brand-outline);
+  }
+}
+
+@utility auth-chart {
+  @apply
+    custom-chart;
+
+  & .recharts-tooltip-wrapper div > div:nth-child(2) > div:first-child span {
+    background-color: var(--foreground-excellent);
+    border-color: var(--panel);
+  }
+
+  & .recharts-tooltip-wrapper div > div:nth-child(2) > div:nth-child(2) span {
+    background-color: var(--poor);
+    border-color: var(--panel);
+  }
+
+  & .tremor-Legend-root li p {
+    color: var(--foreground-primary);
+  }
+
+  & .tremor-Legend-root li:first-child svg {
+    fill: var(--foreground-excellent);
+  }
+
+  & .tremor-Legend-root li:nth-child(2) svg {
+    fill: var(--poor);
+  }
+
+  & g.recharts-layer.recharts-bar:nth-child(1 of .recharts-bar) .recharts-bar-rectangle {
+    fill: var(--excellent);
+    opacity: 0.6;
+  }
+
+  & g.recharts-layer.recharts-bar:nth-child(2 of .recharts-bar) .recharts-bar-rectangle {
+    fill: var(--poor);
+    opacity: 0.6;
   }
 }
