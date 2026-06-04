@@ -6,6 +6,7 @@ import HealthScoreWidget from '@/components/dashboard/health-score-widget';
 import APIRequestsChart from "@/components/dashboard/api-requests-chart";
 import CacheHitRateChart from "@/components/dashboard/cache-hit-rate-chart";
 import AuthMetricsChart from "@/components/dashboard/auth-metrics-chart";
+import AllowedDomainsChart from "@/components/dashboard/allowed-domains-chart";
 
 const DashboardPage = () => {
 
@@ -37,39 +38,7 @@ const DashboardPage = () => {
         <AuthMetricsChart />
 
         {/* Allowed Email Domains */}
-        {/* <Card>
-          <div className="flex items-start gap-3 mb-4">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Mail className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <Text className="text-gray-700 font-medium">Allowed Email Domains</Text>
-              <Text className="text-gray-500 text-sm mt-1">
-                Only users with these domains can sign up
-              </Text>
-            </div>
-          </div>
-
-          <List className="mt-4">
-            {allowedDomains.map((domain, index) => (
-              <ListItem key={index} className="py-3">
-                <Flex>
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
-                    <Bold className="text-gray-900 font-mono text-sm">@{domain}</Bold>
-                  </div>
-                  <CheckCircle2 className="w-4 h-4 text-green-600" />
-                </Flex>
-              </ListItem>
-            ))}
-          </List>
-
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <Text className="text-xs text-gray-500">
-              <span className="font-medium">{allowedDomains.length}</span> domains configured
-            </Text>
-          </div>
-        </Card> */}
+        <AllowedDomainsChart />
       </div>
 
       {/* Security Recommendations */}
