@@ -9,6 +9,7 @@
 
 :root {
   --page: #e3eaef;
+  --page-good: #c9dffb;
 
   --panel: #f3faff;
   --panel-highlight: #d1d5db;
@@ -68,6 +69,7 @@
 
 [data-theme="dark"] {
   --page: #252632;
+  --page-good: #313a46;
 
   --panel: #282a36;
   --panel-highlight: #374151;
@@ -129,6 +131,7 @@
   --font-sans: var(--font-roboto-sans), sans-serif;
   --font-mono: var(--font-roboto-mono), monospace;
   --color-page: var(--page);
+  --color-page-good: var(--page-good);
   --color-panel: var(--panel);
   --color-panel-highlight: var(--panel-highlight);
   --color-panel-active: var(--panel-active);
