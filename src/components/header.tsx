@@ -21,7 +21,7 @@ const Header = () => {
   const headerLeft = isMainGroup ? 'md:left-64' : 'md:left-0';
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-20 ${headerLeft}`}>
+    <header className={`fixed top-0 left-0 right-0 z-20 ${headerLeft} bg-page/50 backdrop-blur-xs`}>
       <div className='relative flex w-full mx-auto z-30 px-1 sm:px-3 items-center min-h-19'>
         <div className="flex items-center px-2">
           <ThemeSwitcher />
