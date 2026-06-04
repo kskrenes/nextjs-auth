@@ -56,7 +56,7 @@ const HealthScoreWidget = ({ healthChecks, healthScore }: HealthScoreWidgetProps
     <Card className="bg-panel rounded-lg shadow-none ring-0">
       <div className="flex items-start justify-between mb-4">
         <div>
-          <Text className="text-foregrouond-secondary">Security Health Score</Text>
+          <Text className="text-foreground-secondary">Security Health Score</Text>
           <Metric className="mt-2">{healthScore}/100</Metric>
         </div>
         <div className={healthIconClass}>
