@@ -15,7 +15,9 @@ const AuthMetricsChart = () => {
 
   const totalAttempts = authData.reduce((sum, d) => sum + d.Success + d.Failed, 0);
   const totalSuccess = authData.reduce((sum, d) => sum + d.Success, 0);
-  const successRate = ((totalSuccess / totalAttempts) * 100).toFixed(1);
+  const successRate = totalAttempts > 0 
+    ? ((totalSuccess / totalAttempts) * 100).toFixed(1) 
+    : '0.0';
   
   return (
     <Card className="bg-page shadow-none ring-0">
