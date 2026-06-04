@@ -18,7 +18,7 @@ const APIRequestsChart = () => {
       <Metric className="font-bold">2,456</Metric>
       <Text className="text-foreground-secondary text-sm mb-4">Current hourly rate</Text>
       <AreaChart
-        className="h-52 custom-chart"
+        className="h-52 area-chart"
         data={apiRequestsData}
         index="time"
         categories={['requests']}

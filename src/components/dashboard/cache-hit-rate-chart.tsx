@@ -18,7 +18,7 @@ const CacheHitRateChart = () => {
       <Metric className="font-bold">92.3%</Metric>
       <Text className="text-foreground-secondary text-sm mb-4">Average cache efficiency</Text>
       <AreaChart
-        className="h-52 custom-chart"
+        className="h-52 area-chart"
         data={cacheHitRateData}
         index="time"
         categories={['Hit Rate']}
