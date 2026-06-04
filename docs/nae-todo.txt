@@ -144,8 +144,8 @@ look & feel, flow
 - [x] fix google sign in button width
 - [x] lay out login and signup pages
 - [x] lay out dashboard page
-- [ ] remove "Reset Password" from nav menus
-- [ ] move triggerpasswordreset page out of (menu) group
+- [x] remove "Reset Password" from nav menus
+- [x] move triggerpasswordreset page out of (menu) group
 - [ ] redesign triggerpasswordreset page
 - [ ] redesign verifyemail page
 - [ ] redesign account page tabs as necessary
