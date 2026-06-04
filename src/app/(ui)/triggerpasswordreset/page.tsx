@@ -35,6 +35,7 @@ const TriggerPasswordResetPage = () => {
     if (sending) return;
 
     setSent(false);
+    setError('');
 
     if (email.length === 0) {
       setError('Please enter a valid email address');
