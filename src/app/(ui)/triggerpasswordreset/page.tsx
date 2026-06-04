@@ -47,7 +47,6 @@ const TriggerPasswordResetPage = () => {
       toast.success("Reset password email sent");
       setSent(true);
     } catch {
-      // toast.error("Failed to send reset password email");
       setError('Failed to send reset password email');
     }
   }
@@ -102,7 +101,7 @@ const TriggerPasswordResetPage = () => {
             </Button>
           </form>
 
-          {/* Sign Up Link */}
+          {/* Login Link */}
           <div className="mt-6 text-center">
             <p className="text-sm text-foreground-secondary">
               Return to{' '}
