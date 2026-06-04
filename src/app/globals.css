@@ -20,6 +20,9 @@
   --panel-fair: #f1ead5;
   --panel-poor: #fef3f3;
   --panel-poor-border: #ffcaca;
+  --panel-amber: #fefbea;
+
+  --symbol-amber: #e17100;
 
   --foreground-primary: #353642;
   --foreground-secondary: #4b596d;
@@ -28,6 +31,7 @@
   --foreground-good: #2e6892;
   --foreground-fair: #d6933a;
   --foreground-poor: #9e0812;
+  --foreground-amber: #7b3306;
 
   --excellent: #16a34a;
   --good: #1693aa;
@@ -80,6 +84,9 @@
   --panel-fair: #3a3b30;
   --panel-poor: #3d3640;
   --panel-poor-border: #644a52;
+  --panel-amber: #3d3b2d;
+
+  --symbol-amber: #ceb842;
 
   --foreground-primary: #e5e6f2;
   --foreground-secondary: #9ca3af;
@@ -88,6 +95,7 @@
   --foreground-good: #3f94d4;
   --foreground-fair: #ae9812;
   --foreground-poor: #ef7474;
+  --foreground-amber: #fee8a2;
 
   --excellent: #4ADE80;
   --good: #1663aa;
@@ -141,6 +149,8 @@
   --color-panel-fair: var(--panel-fair);
   --color-panel-poor: var(--panel-poor);
   --color-panel-poor-border: var(--panel-poor-border);
+  --color-panel-amber: var(--panel-amber);
+  --color-symbol-amber: var(--symbol-amber);
   --color-foreground-primary: var(--foreground-primary);
   --color-foreground-secondary: var(--foreground-secondary);
   --color-foreground-muted: var(--foreground-muted);
@@ -148,6 +158,7 @@
   --color-foreground-good: var(--foreground-good);
   --color-foreground-fair: var(--foreground-fair);
   --color-foreground-poor: var(--foreground-poor);
+  --color-foreground-amber: var(--foreground-amber);
   --color-excellent: var(--excellent);
   --color-good: var(--good);
   --color-fair: var(--fair);
