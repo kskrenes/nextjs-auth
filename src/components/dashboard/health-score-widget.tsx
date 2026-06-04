@@ -20,10 +20,10 @@ const styleMap = {
     poor: 'font-medium text-foreground-poor!',
   },
   badge: {
-    excellent: 'text-xs ring-0! font-medium text-foreground-excellent!',
-    good: 'text-xs ring-0! font-medium text-foreground-good!',
-    fair: 'text-xs ring-0! font-medium text-foreground-fair!',
-    poor: 'text-xs ring-0! font-medium text-foreground-poor!',
+    excellent: 'text-xs ring-0 font-medium text-foreground-excellent',
+    good: 'text-xs ring-0 font-medium text-foreground-good',
+    fair: 'text-xs ring-0 font-medium text-foreground-fair',
+    poor: 'text-xs ring-0 font-medium text-foreground-poor',
   },
   progress: {
     excellent: 'mt-3 mb-4 [&>div]:bg-excellent/20 [&>div>div]:bg-excellent',

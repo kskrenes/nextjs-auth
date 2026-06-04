@@ -27,7 +27,10 @@ const AuthMetricsChart = () => {
           <Metric className="font-bold">{totalAttempts.toLocaleString()}</Metric>
           <Text className="text-foreground-secondary text-sm">Total attempts (24h)</Text>
         </div>
-        <BadgeDelta deltaType="increase" className="mt-1 text-sm ring-0! font-medium text-foreground-excellent!">
+        <BadgeDelta 
+          deltaType="increase" 
+          className="mt-1 text-sm ring-0 font-medium text-foreground-excellent"
+        >
           {successRate}% success
         </BadgeDelta>
       </Flex>
