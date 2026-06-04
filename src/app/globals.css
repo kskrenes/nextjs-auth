@@ -530,4 +530,8 @@ body {
     fill: var(--poor);
     opacity: 0.6;
   }
+
+  & .recharts-tooltip-cursor {
+    fill: var(--brand);
+  }
 }
