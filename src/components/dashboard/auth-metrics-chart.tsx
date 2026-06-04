@@ -11,11 +11,11 @@ const authData = [
   { time: '23:59', Success: 334, Failed: 15 },
 ];
 
-const totalAttempts = authData.reduce((sum, d) => sum + d.Success + d.Failed, 0);
-const totalSuccess = authData.reduce((sum, d) => sum + d.Success, 0);
-const successRate = ((totalSuccess / totalAttempts) * 100).toFixed(1);
-
 const AuthMetricsChart = () => {
+
+  const totalAttempts = authData.reduce((sum, d) => sum + d.Success + d.Failed, 0);
+  const totalSuccess = authData.reduce((sum, d) => sum + d.Success, 0);
+  const successRate = ((totalSuccess / totalAttempts) * 100).toFixed(1);
   
   return (
     <Card className="bg-page shadow-none ring-0">
