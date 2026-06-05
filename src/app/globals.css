@@ -161,6 +161,22 @@ body {
   outline: 2px solid var(--brand);
 }
 
+@layer base {
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover, 
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px var(--panel-brand) inset !important;
+    -webkit-text-fill-color: var(--foreground-secondary) !important;
+
+    background-clip: padding-box !important;
+    outline: none !important;
+    border-color: var(--panel-highlight) !important;
+    
+    /* Keeps text smooth and prevents font-family resets in some browsers */
+    transition: background-color 9999s ease-in-out 0s;
+  }
+}
+
 @utility page-container {
   @apply
     pt-24 
