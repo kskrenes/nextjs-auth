@@ -24,6 +24,7 @@ const VerifyEmailPage = () => {
   const { verifyEmail } = useAuth();
 
   // verify email when token is available
+  // set error state if url token is missing
   useEffect(() => {
     if (!token) {
       // can't set state synchronously here

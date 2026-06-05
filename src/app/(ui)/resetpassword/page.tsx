@@ -10,6 +10,7 @@ import { useAuth } from "@/context-providers/auth-context-provider";
 import { getValidPassword } from "@/helpers/util/form-validation-utils";
 import { CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState, type SubmitEvent } from "react";
 
 type ResetState = 'idle' | 'loading' | 'success' | 'error';
@@ -17,31 +18,29 @@ type ErrorType = 'no_token' | 'invalid_token'| 'server_error';
 
 const ResetPasswordPage = () => {
 
+  // get the url token when page loads
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
   const [resetState, setResetState] = useState<ResetState>('idle')
   const [errorType, setErrorType] = useState<ErrorType | null>(null);
   const [validationError, setValidationError] = useState<string>('');
   const [newPassword, setNewPassword] = useState<string>('');
   const [confirmPassword, setConfirmPassword] = useState<string>('');
-  const [token, setToken] = useState<string>("");
 
   const { resetPassword } = useAuth();
 
+  // set error state if url token is missing
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const urlToken = params.get('token');
-
-    if (!urlToken) {
+    if (!token) {
+      // can't set state synchronously here
       (async () => {
         setErrorType('no_token');
         setResetState('error');
       })();
       return;
     }
-
-    (async () => {
-      setToken(urlToken);
-    })();
-  }, []);
+  }, [token]);
 
   const getResetErrorMessage = (): {
     title: string;
