@@ -104,12 +104,11 @@ const TriggerPasswordResetPage = () => {
           {/* Login Link */}
           <div className="mt-6 text-center">
             <p className="text-sm text-foreground-secondary">
-              Return to{' '}
               <Link 
                 href="/login"
                 className="input-link"
               >
-                Sign in
+                Return to Sign in
               </Link>
             </p>
           </div>
