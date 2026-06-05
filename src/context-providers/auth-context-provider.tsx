@@ -37,6 +37,7 @@ export interface AuthContextType {
   enableMFA: (code: string) => Promise<string[]>;
   verifyMFA: (code: string) => Promise<void>;
   disableMFA: (code: string) => Promise<void>;
+  resetPassword: (token: string, password: string) => Promise<void>;
 }
 
 export type AuthLoginResponse =
@@ -220,6 +221,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(res.data.user);
   }
 
+  const resetPassword = async (token: string, password: string): Promise<void> => {
+    const res = await axiosClient.post("/api/users/resetpassword", { token, password });
+    if (res.data.warning) {
+      toast(res.data.warning, {
+        icon: '⚠️',
+        style: {
+          borderRadius: '10px',
+          background: '#333',
+          color: '#fff',
+        },
+      });
+    }
+    setUser(null);
+  }
+
   return (
     <AuthContext.Provider 
       value={{ 
@@ -240,6 +256,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         enableMFA,
         verifyMFA,
         disableMFA,
+        resetPassword,
       }}
     >
       {children}
