@@ -5,6 +5,7 @@ import { useAuth } from "@/context-providers/auth-context-provider";
 import axios from "axios";
 import { CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import ResendTokenEmailForm from "@/components/resend-token-email-form";
 
@@ -13,18 +14,19 @@ type ErrorType = 'no_token' | 'invalid_token'| 'server_error';
 
 const VerifyEmailPage = () => {
 
+  // get the url token when page loads
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
+
   const [verificationState, setVerificationState] = useState<VerificationState>('loading');
   const [errorType, setErrorType] = useState<ErrorType | null>(null);
 
   const { verifyEmail } = useAuth();
 
-  // get the user's url token when page loads
   // verify email when token is available
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-
     if (!token) {
+      // can't set state synchronously here
       (async () => {
         setVerificationState('error');
         setErrorType('no_token');
@@ -42,7 +44,7 @@ const VerifyEmailPage = () => {
         setErrorType(status === 400 ? 'invalid_token' : 'server_error');
       }
     })();
-  }, [verifyEmail]);
+  }, [verifyEmail, token]);
 
   const getVerificationErrorMessage = (): {
     title: string;
