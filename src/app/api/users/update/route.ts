@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     // throw if username is a duplicate
     } catch (dbError: unknown) {
       if (isDuplicateError(dbError)) {
-        return getErrorResponse(409, "Username already exists", dbError);
+        return getErrorResponse(409, "Username already exists");
       }
       throw dbError;
     }
