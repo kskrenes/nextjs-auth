@@ -8,6 +8,7 @@ interface SetPasswordInputsProps {
   confirmPassword: string;
   onPasswordChange: (v: string) => void;
   onConfirmPasswordChange: (v: string) => void;
+  disabled?: boolean;
   idPrefix?: string;
 }
 
@@ -18,6 +19,7 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
   confirmPassword,
   onPasswordChange,
   onConfirmPasswordChange,
+  disabled = false,
   idPrefix = '',
 }) => {
 
@@ -35,6 +37,7 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
         required
         value={password}
         onChange={(e) => onPasswordChange(e.target.value)}
+        disabled={disabled}
       />
       <Input 
         id={confirmId}
@@ -45,6 +48,7 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
         required
         value={confirmPassword}
         onChange={(e) => onConfirmPasswordChange(e.target.value)}
+        disabled={disabled}
       />
     </>
   );

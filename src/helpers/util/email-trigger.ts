@@ -4,12 +4,12 @@ import { getErrorMessage } from "./error-utils";
 export const triggerEmail = async (
   email: string, 
   type: 'VERIFY' | 'RESET', 
-  stateSetter: (loading: boolean) => void
+  stateSetter?: (loading: boolean) => void
 ) => {
   if (!email) return;
 
   try {
-    stateSetter(true);
+    if (stateSetter) stateSetter(true);
     await axios.post(
       "/api/users/sendemail", 
       { email, type }
@@ -22,6 +22,6 @@ export const triggerEmail = async (
     throw new Error(errorMessage);
   }
   finally {
-    stateSetter(false);
+    if (stateSetter) stateSetter(false);
   }
 }

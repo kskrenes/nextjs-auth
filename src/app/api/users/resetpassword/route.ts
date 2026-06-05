@@ -10,6 +10,7 @@ import { getErrorResponse } from "@/helpers/util/error-utils";
 import { ResetPasswordSchema } from "@/lib/payload-schemas";
 import { evictUserSessions } from "@/lib/session-cache";
 import { getIsStrongPassword } from "@/helpers/util/form-validation-utils";
+import { clearAuthCookies } from "@/helpers/util/token-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -82,11 +83,22 @@ export async function POST(request: NextRequest) {
       sessionCleanupFailed = true;
     }
 
+    // clear both access and refresh token cookies
+    let cookieCleanupFailed = false;
+    try {
+      await clearAuthCookies();
+    } catch (cookieError) {
+      console.error("Failed to clear auth cookies after password reset", cookieError);
+      cookieCleanupFailed = true;
+    }
+
     // return success
     return NextResponse.json({
       message: "Password reset successfully",
       success: true,
-      ...(sessionCleanupFailed && { warning: "Password reset successfully, but could not invalidate existing sessions. Please sign out of other devices manually." }),
+      ...((sessionCleanupFailed || cookieCleanupFailed) && { 
+        warning: "Password reset successfully, but some cleanup steps could not be completed automatically.", 
+      }),
     }, { status: 201 });
 
   } 

@@ -9,7 +9,6 @@
 :root {
   --page: #e3eaef;
   --page-good: #c9dffb;
-
   --panel: #f3faff;
   --panel-highlight: #d1d5db;
   --panel-active: #444b5a;
@@ -18,12 +17,11 @@
   --panel-excellent-border: #baefba;
   --panel-good: #d1eaf5;
   --panel-fair: #f1ead5;
-  --panel-poor: #fef3f3;
+  --panel-poor: #fee2e2;
   --panel-poor-border: #ffcaca;
   --panel-amber: #fefbea;
-
+  --panel-brand: #e0e7ff;
   --symbol-amber: #e17100;
-
   --foreground-primary: #353642;
   --foreground-secondary: #4b596d;
   --foreground-muted: #6B7280;
@@ -32,20 +30,17 @@
   --foreground-fair: #d6933a;
   --foreground-poor: #9e0812;
   --foreground-amber: #7b3306;
-
   --excellent: #16a34a;
   --good: #1693aa;
   --fair: #e6a34a;
   --poor: #e70009;
   --poor-highlight: #cf1414;
   --poor-low: #ff8484;
-
   --brand: #6366f1;
   --brand-light: #818cf8;
   --brand-highlight: #4f46e5;
   --brand-low: #c1ccff;
   --brand-outline: #4f46e5;
-
   --button-foreground: #e5e6f2;
   --button-foreground-highlight: #ffffff;
   --button-foreground-low: #9a9dbf;
@@ -53,30 +48,17 @@
   --button-tertiary-background: #ffffff;
   --button-tertiary-border: #d1d5db;
   --button-warning-highlight: #eeeeee;
-
   --tab-foreground: #4b596d;
   --tab-foreground-selected: #6366f1;
-
   --logo: url('/nAuth-logo-light.png');
-
-  /* Add mappings for Tremor Light Theme variables */
-  --tremor-brand-faint: #ecfdf5;    /* emerald 50 */
-  --tremor-brand-muted: #a7f3d0;    /* emerald 200 */
-  --tremor-brand-subtle: #34d399;   /* emerald 400 */
-  --tremor-brand-default: #10b981;  /* emerald 500 */
-  --tremor-brand-emphasis: #047857; /* emerald 700 */
-  --tremor-brand-inverted: #ffffff;
-  
-  --tremor-bg-default: #ffffff;
-  --tremor-border-default: #e5e7eb;
+  --tremor-border-default: #d1d5db;
 }
 
 [data-theme="dark"] {
   --page: #252632;
   --page-good: #313a46;
-
   --panel: #282a36;
-  --panel-highlight: #374151;
+  --panel-highlight: #313441;
   --panel-active: #f3f4f6;
   --panel-active-foreground: #111827;
   --panel-excellent: #303934;
@@ -86,9 +68,8 @@
   --panel-poor: #3d3640;
   --panel-poor-border: #644a52;
   --panel-amber: #3d3b2d;
-
+  --panel-brand: #2e2f4b;
   --symbol-amber: #ceb842;
-
   --foreground-primary: #e5e6f2;
   --foreground-secondary: #9ca3af;
   --foreground-muted: #7B8290;
@@ -97,20 +78,17 @@
   --foreground-fair: #ae9812;
   --foreground-poor: #ef7474;
   --foreground-amber: #fee8a2;
-
   --excellent: #4ADE80;
   --good: #1663aa;
   --fair: #b6a34a;
   --poor: #f73039;
   --poor-highlight: #dc2626;
   --poor-low: #4c2b2d;
-
   --brand: #6366f1;
   --brand-light: #818cf8;
   --brand-highlight: #4f46e5;
   --brand-low: #2b295c;
   --brand-outline: #818cf8;
-
   --button-foreground: #e5e6f2;
   --button-foreground-highlight: #ffffff;
   --button-foreground-low: #4a4d6f;
@@ -118,22 +96,10 @@
   --button-tertiary-background: #282a36;
   --button-tertiary-border: #4a4d5f;
   --button-warning-highlight: #662010;
-
   --tab-foreground: #9ca3af;
   --tab-foreground-selected: #818cf8;
-
   --logo: url('/nAuth-logo.png');
-
-  /* Override mappings for Tremor Dark Theme variables */
-  --tremor-brand-faint: #064e3b;    /* emerald 900 */
-  --tremor-brand-muted: #065f46;    /* emerald 800 */
-  --tremor-brand-subtle: #059669;   /* emerald 600 */
-  --tremor-brand-default: #10b981;  /* emerald 500 */
-  --tremor-brand-emphasis: #34d399; /* emerald 400 */
-  --tremor-brand-inverted: #060f0e;
-  
-  --tremor-bg-default: #0f172a;     /* slate 900 */
-  --tremor-border-default: #334155; /* slate 700 */
+  --tremor-border-default: #313441;
 }
 
 @theme inline {
@@ -152,6 +118,7 @@
   --color-panel-poor: var(--panel-poor);
   --color-panel-poor-border: var(--panel-poor-border);
   --color-panel-amber: var(--panel-amber);
+  --color-panel-brand: var(--panel-brand);
   --color-symbol-amber: var(--symbol-amber);
   --color-foreground-primary: var(--foreground-primary);
   --color-foreground-secondary: var(--foreground-secondary);
@@ -182,15 +149,6 @@
   --color-tab-foreground: var(--tab-foreground);
   --color-tab-foreground-selected: var(--tab-foreground-selected);
   --background-image-logo: var(--logo);
-
-  --color-tremor-brand-faint: var(--tremor-brand-faint);
-  --color-tremor-brand-muted: var(--tremor-brand-muted);
-  --color-tremor-brand-subtle: var(--tremor-brand-subtle);
-  --color-tremor-brand-default: var(--tremor-brand-default);
-  --color-tremor-brand-emphasis: var(--tremor-brand-emphasis);
-  --color-tremor-brand-inverted: var(--tremor-brand-inverted);
-  
-  --color-tremor-bg-default: var(--tremor-bg-default);
   --color-tremor-border-default: var(--tremor-border-default);
 }
 
@@ -342,6 +300,9 @@ body {
     focus-visible:outline-2
     focus-visible:outline-brand
     bg-panel
+    disabled:bg-panel-highlight
+    disabled:cursor-not-allowed
+    disabled:placeholder:text-panel
 }
 
 @utility input-standard {

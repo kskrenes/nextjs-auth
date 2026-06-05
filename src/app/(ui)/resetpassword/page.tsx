@@ -3,199 +3,237 @@
 import Button from "@/components/nae-button";
 import NaeLoader from "@/components/nae-loader";
 import SetPasswordInputs from "@/components/nae-set-password";
+import PanelError from "@/components/panel-error";
+import PanelHeader from "@/components/panel-header";
+import ResendTokenEmailForm from "@/components/resend-token-email-form";
 import { useAuth } from "@/context-providers/auth-context-provider";
-import { getErrorMessage } from "@/helpers/util/error-utils";
 import { getValidPassword } from "@/helpers/util/form-validation-utils";
-import axios from "axios";
-import { LaptopMinimalCheck, ShieldAlert } from "lucide-react";
+import { CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState, type SubmitEvent } from "react";
-import toast from "react-hot-toast";
+
+type ResetState = 'idle' | 'loading' | 'success' | 'error';
+type ErrorType = 'no_token' | 'invalid_token'| 'server_error';
 
 const ResetPasswordPage = () => {
 
-  const [token, setToken] = useState<string>("");
-  const [isReset, setIsReset] = useState<boolean>(false);
-  const [isError, setIsError] = useState<boolean>(false);
-  const [isValidationError, setIsValidationError] = useState<boolean>(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
-  const [isPendingReset, setIsPendingReset] = useState<boolean>(false);
-  const [newPassword, setNewPassword] = useState<string>("");
-  const [confirmPassword, setConfirmPassword] = useState<string>("");
+  // get the url token when page loads
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token");
 
-  const router = useRouter();
+  const [resetState, setResetState] = useState<ResetState>('idle')
+  const [errorType, setErrorType] = useState<ErrorType | null>(null);
+  const [validationError, setValidationError] = useState<string>('');
+  const [newPassword, setNewPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
 
-  const { logout } = useAuth();
+  const { resetPassword } = useAuth();
 
+  // set error state if url token is missing
   useEffect(() => {
-    const urlToken = new URLSearchParams(window.location.search).get("token") ?? "";
-    if (!urlToken) {
-      setErrorMessage("Please follow the link from your email")
-      setIsError(true);
+    if (!token) {
+      // can't set state synchronously here
+      (async () => {
+        setErrorType('no_token');
+        setResetState('error');
+      })();
       return;
     }
-    setToken(urlToken);
-  }, [])
+  }, [token]);
 
-  const handleReset = async (e: SubmitEvent<HTMLFormElement>) => {
+  const getResetErrorMessage = (): {
+    title: string;
+    description: string;
+  } => {
+    switch (errorType) {
+      case "no_token":
+        return {
+          title: "Reset Link Required",
+          description:
+            "Please use the password reset link sent to your email address.",
+        };
+      case "invalid_token":
+        return {
+          title: "Invalid Reset Link",
+          description:
+            "This reset password link is invalid or expired. Please request a new one.",
+        };
+      case "server_error":
+        return {
+          title: "Reset Failed",
+          description:
+            "An unexpected error occurred. Please try again later or request a new password reset link.",
+        };
+      default:
+        return {
+          title: "Reset Failed",
+          description:
+            "Something went wrong. Please try again.",
+        };
+    }
+  };
+
+  const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     // suppress native html form submit behavior
     e.preventDefault();
 
-    setIsError(false);
-    setIsValidationError(false);
-    setErrorMessage("");
+    if (resetState === 'loading') return;
+
+    setValidationError('');
 
     if (!token) {
-      setErrorMessage("Please follow the link from your email");
-      setIsError(true);
+      setErrorType('no_token');
+      setResetState('error');
       return;
     }
 
-    if (isPendingReset) return;
+    // Password validation
+    if (!newPassword || !confirmPassword) {
+      setValidationError("Please enter and confirm a new password");
+      return;
+    }
 
     let validPassword;
     try {
       validPassword = getValidPassword(newPassword, confirmPassword);
     } catch (error: unknown) {
-      setErrorMessage((error as Error).message);
-      setIsValidationError(true);
+      setValidationError((error as Error).message);
       return;
     }
 
+    setResetState('loading');
+
     try {
-      setIsPendingReset(true);
-      const response = await axios.post(
-        "/api/users/resetpassword", 
-        { token, password: validPassword }
-      );
-      setIsReset(true);
-      if (response.data.warning) {
-        toast(response.data.warning, {
-          icon: '⚠️',
-          style: {
-            borderRadius: '10px',
-            background: '#333',
-            color: '#fff',
-          },
-        });
-      } else {
-        setTimeout(logout, 3000);
-      }
+      await resetPassword(token, validPassword);
+      setResetState('success');
     } 
     catch (error: unknown) {
-      const status = axios.isAxiosError(error) ? error.response?.status : undefined;
-      setErrorMessage(getErrorMessage(error, "Unable to reset password"));
-      if (status === 401 || status === 410) {
-        // fatal errors are unretriable
-        setIsError(true);
-      } else {
-        // all other errors display inline and allow retry
-        setIsValidationError(true);
-      }
-    } 
-    finally {
-      setIsPendingReset(false);
-    }
-  }
-
-  const handleResendClick = () => {
-    router.push("/triggerpasswordreset");
-  }
-
-  // clear stale inline errors when either password changes
-  const handlePasswordChange = (value: string) => {
-    setNewPassword(value);
-    if (isValidationError) {
-      setIsValidationError(false);
-      setErrorMessage("");
-    }
-  }
-
-  const handleConfirmPasswordChange = (value: string) => {
-    setConfirmPassword(value);
-    if (isValidationError) {
-      setIsValidationError(false);
-      setErrorMessage("");
+      const status = (error as { response?: { status?: number } }).response?.status;
+      setErrorType(status === 410 ? 'invalid_token' : 'server_error');
+      setResetState('error');
     }
   }
   
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      {isReset ? (
-        <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
-          <LaptopMinimalCheck className="w-10 h-10 text-blue-600" />
-          <h1 className="mb-6 text-3xl font-bold">Your password has been reset.</h1>
-          <p className="text-xs">
-            {'Go to '}
-            <Link 
-              href="/login"
-              className="text-blue-400 hover:text-blue-500 underline transition-colors"
-            >
-              Sign in
-            </Link>{' page.'}
-          </p>
-        </div>
-      ) : isError ? (
-        <div className="flex flex-col items-center justify-center min-h-screen space-y-8">
-          <ShieldAlert className="w-10 h-10 text-red-600" />
-          <h1 className="mb-6 text-3xl font-bold">{errorMessage}</h1>
-          <Button
-            className="mt-4"
-            onClick={handleResendClick}
-          >
-            Resend Email
-          </Button>
-          <p className="text-xs">
-            {'Go to '}
-            <Link 
-              href="/login"
-              className="text-blue-400 hover:text-blue-500 underline transition-colors"
-            >
-              Sign in
-            </Link>{' page.'}
-          </p>
-        </div>
-      ) : (
-        <form 
-          className="flex w-75 flex-col items-center py-2" 
-          onSubmit={handleReset} 
-        >
-          <h1 className="mb-6 text-3xl font-bold">Reset Password</h1>
-          {isValidationError && (
-            <div role="alert" className="flex items-center space-x-2 mb-4 text-sm text-red-500">
-              <ShieldAlert className="w-4 h-4" />
-              <span className="text-center">{errorMessage}</span>
+    <div className="page-centered">
+      <div className="max-w-md w-full">
+        <div className="bg-panel rounded-lg p-8">
+
+          {/* Idle & Loading State */}
+          {(resetState === 'idle' || resetState === 'loading') && (
+            <div>
+              <PanelHeader 
+                title="Reset Password" 
+                description="Submit a password. You'll be logged out of all devices, and you can sign in with your new password."
+              />
+
+              {/* Form */}
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Error Message */}
+                {validationError && <PanelError message={validationError} />}
+
+                {/* Password Fields */}
+                <SetPasswordInputs 
+                  label="New Password"
+                  password={newPassword}
+                  confirmPassword={confirmPassword}
+                  onPasswordChange={(val) => {
+                    setNewPassword(val);
+                    if (validationError) setValidationError('');
+                  }}
+                  onConfirmPasswordChange={(val) => {
+                    setConfirmPassword(val);
+                    if (validationError) setValidationError('');
+                  }}
+                  disabled={resetState === 'loading'}
+                />
+
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  disabled={resetState === 'loading'}
+                  className="w-full gap-2"
+                >
+                  {resetState === 'loading' ? (
+                    <>
+                      <NaeLoader />
+                      Resetting Password...
+                    </>
+                  ) : (
+                    'Reset Password'
+                  )}
+                </Button>
+              </form>
+              <div className="mt-6 text-center">
+                <Link 
+                  href="/login"
+                  className="input-link"
+                >
+                  Return to Sign In
+                </Link>
+              </div>
             </div>
           )}
-          <SetPasswordInputs 
-            label="New Password"
-            password={newPassword}
-            confirmPassword={confirmPassword}
-            onPasswordChange={handlePasswordChange}
-            onConfirmPasswordChange={handleConfirmPasswordChange}
-          />
-          <Button
-            type="submit"
-            className="w-full mt-8"
-            disabled={
-              isPendingReset ||
-              !token ||
-              newPassword.length === 0 || 
-              confirmPassword.length === 0
-            }
-          >
-            {isPendingReset 
-              ? (
-                <>
-                  <NaeLoader />
-                  <span className="sr-only">Resetting password</span>
-                </>
-              )
-              : 'Submit'}
-          </Button>
-        </form>
-      )}
+
+          {/* Success State */}
+          {resetState === 'success' && (
+            <div className="text-center">
+              <div className="mb-6 flex justify-center">
+                <div className="p-4 bg-panel-excellent rounded-full">
+                  <CheckCircle2 className="w-12 h-12 text-foreground-excellent" />
+                </div>
+              </div>
+              <h1 className="text-2xl font-bold mb-2">
+                Password Reset!
+              </h1>
+              <p className="text-sm text-foreground-secondary mb-8">
+                Your password has been successfully
+                reset. You can now sign in to your account.
+              </p>
+              <Button 
+                className="w-full"
+                onClick={() => {window.location.replace('/login')}}
+              >
+                Go to Sign In
+              </Button>
+            </div>
+          )}
+
+          {/* Error State */}
+          {resetState === "error" && (
+            <div>
+              <div className="text-center mb-8">
+                <div className="mb-6 flex justify-center">
+                  <div className="p-4 bg-panel-poor rounded-full">
+                    <XCircle className="w-12 h-12 text-poor" />
+                  </div>
+                </div>
+                <h1 className="text-2xl font-bold mb-2">
+                  {getResetErrorMessage().title}
+                </h1>
+                <p className="text-sm text-foreground-secondary">
+                  {getResetErrorMessage().description}
+                </p>
+              </div>
+
+              {/* Resend Reset Email Form */}
+              <ResendTokenEmailForm emailType="RESET" />
+
+              {/* Back to Sign In Link */}
+              <div className="mt-6 text-center">
+                <Link 
+                  href="/login"
+                  className="input-link"
+                >
+                  Return to Sign In
+                </Link>
+              </div>
+            </div>
+          )}
+          
+        </div>
+      </div>
     </div>
   )
 }
