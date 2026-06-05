@@ -9,7 +9,6 @@
 :root {
   --page: #e3eaef;
   --page-good: #c9dffb;
-
   --panel: #f3faff;
   --panel-highlight: #d1d5db;
   --panel-active: #444b5a;
@@ -22,9 +21,7 @@
   --panel-poor-border: #ffcaca;
   --panel-amber: #fefbea;
   --panel-brand: #e0e7ff;
-
   --symbol-amber: #e17100;
-
   --foreground-primary: #353642;
   --foreground-secondary: #4b596d;
   --foreground-muted: #6B7280;
@@ -33,20 +30,17 @@
   --foreground-fair: #d6933a;
   --foreground-poor: #9e0812;
   --foreground-amber: #7b3306;
-
   --excellent: #16a34a;
   --good: #1693aa;
   --fair: #e6a34a;
   --poor: #e70009;
   --poor-highlight: #cf1414;
   --poor-low: #ff8484;
-
   --brand: #6366f1;
   --brand-light: #818cf8;
   --brand-highlight: #4f46e5;
   --brand-low: #c1ccff;
   --brand-outline: #4f46e5;
-
   --button-foreground: #e5e6f2;
   --button-foreground-highlight: #ffffff;
   --button-foreground-low: #9a9dbf;
@@ -54,20 +48,15 @@
   --button-tertiary-background: #ffffff;
   --button-tertiary-border: #d1d5db;
   --button-warning-highlight: #eeeeee;
-
   --tab-foreground: #4b596d;
   --tab-foreground-selected: #6366f1;
-
   --logo: url('/nAuth-logo-light.png');
-
-  /* Light theme overrides for Tremor variables */
   --tremor-border-default: #d1d5db;
 }
 
 [data-theme="dark"] {
   --page: #252632;
   --page-good: #313a46;
-
   --panel: #282a36;
   --panel-highlight: #313441;
   --panel-active: #f3f4f6;
@@ -80,9 +69,7 @@
   --panel-poor-border: #644a52;
   --panel-amber: #3d3b2d;
   --panel-brand: #2e2f4b;
-
   --symbol-amber: #ceb842;
-
   --foreground-primary: #e5e6f2;
   --foreground-secondary: #9ca3af;
   --foreground-muted: #7B8290;
@@ -91,20 +78,17 @@
   --foreground-fair: #ae9812;
   --foreground-poor: #ef7474;
   --foreground-amber: #fee8a2;
-
   --excellent: #4ADE80;
   --good: #1663aa;
   --fair: #b6a34a;
   --poor: #f73039;
   --poor-highlight: #dc2626;
   --poor-low: #4c2b2d;
-
   --brand: #6366f1;
   --brand-light: #818cf8;
   --brand-highlight: #4f46e5;
   --brand-low: #2b295c;
   --brand-outline: #818cf8;
-
   --button-foreground: #e5e6f2;
   --button-foreground-highlight: #ffffff;
   --button-foreground-low: #4a4d6f;
@@ -112,13 +96,9 @@
   --button-tertiary-background: #282a36;
   --button-tertiary-border: #4a4d5f;
   --button-warning-highlight: #662010;
-
   --tab-foreground: #9ca3af;
   --tab-foreground-selected: #818cf8;
-
   --logo: url('/nAuth-logo.png');
-
-  /* Dark theme overrides for Tremor variables */
   --tremor-border-default: #313441;
 }
 
