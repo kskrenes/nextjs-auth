@@ -23,7 +23,7 @@ const OnboardingPage = () => {
 
   const router = useRouter();
   
-  // If the user identity changed, update the email state immediately
+  // If the user identity changed, update the username state immediately
   if (user?.id !== prevUserId) {
     setPrevUserId(user?.id);
     setUsername(user?.username || "");
@@ -82,11 +82,11 @@ const OnboardingPage = () => {
             {/* Error Message */}
             {error && <PanelError message={error} />}
 
-            {/* Email Field */}
+            {/* Username Field */}
             <Input 
               id="username" 
               label="Username"
-              aria-label="Email"
+              aria-label="Username"
               value={username}
               onChange={(e) => {
                 setUsername(e.target.value);
