@@ -18,9 +18,10 @@
   --panel-excellent-border: #baefba;
   --panel-good: #d1eaf5;
   --panel-fair: #f1ead5;
-  --panel-poor: #fef3f3;
+  --panel-poor: #fee2e2;
   --panel-poor-border: #ffcaca;
   --panel-amber: #fefbea;
+  --panel-brand: #e0e7ff;
 
   --symbol-amber: #e17100;
 
@@ -78,6 +79,7 @@
   --panel-poor: #3d3640;
   --panel-poor-border: #644a52;
   --panel-amber: #3d3b2d;
+  --panel-brand: #2e2f4b;
 
   --symbol-amber: #ceb842;
 
@@ -136,6 +138,7 @@
   --color-panel-poor: var(--panel-poor);
   --color-panel-poor-border: var(--panel-poor-border);
   --color-panel-amber: var(--panel-amber);
+  --color-panel-brand: var(--panel-brand);
   --color-symbol-amber: var(--symbol-amber);
   --color-foreground-primary: var(--foreground-primary);
   --color-foreground-secondary: var(--foreground-secondary);
