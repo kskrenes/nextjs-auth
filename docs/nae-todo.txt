@@ -149,6 +149,7 @@ look & feel, flow
 - [x] redesign triggerpasswordreset page
 - [x] redesign resetpassword page
 - [ ] redesign verifyemail page
+- [ ] update success state on triggerpasswordreset page to match token pages
 - [ ] redesign onboarding page
 - [ ] redesign account page tabs as necessary
 - [ ] include password validation states in password component
