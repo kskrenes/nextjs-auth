@@ -10,6 +10,7 @@ import { getErrorResponse } from "@/helpers/util/error-utils";
 import { ResetPasswordSchema } from "@/lib/payload-schemas";
 import { evictUserSessions } from "@/lib/session-cache";
 import { getIsStrongPassword } from "@/helpers/util/form-validation-utils";
+import { clearAuthCookies } from "@/helpers/util/token-utils";
 
 export async function POST(request: NextRequest) {
   try {
@@ -81,6 +82,9 @@ export async function POST(request: NextRequest) {
       console.error("Failed to delete user sessions after password reset", dbError);
       sessionCleanupFailed = true;
     }
+
+    // clear both access and refresh token cookies
+    await clearAuthCookies();
 
     // return success
     return NextResponse.json({
