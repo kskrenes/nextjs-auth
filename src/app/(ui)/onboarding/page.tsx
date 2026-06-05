@@ -54,7 +54,7 @@ const OnboardingPage = () => {
     try {
       validUsername = getValidUsername(username);
     } catch (error: unknown) {
-      setError((error as Error).message);
+      setError(getErrorMessage(error, "Invalid username"));
       return;
     }
 
