@@ -2,14 +2,11 @@
 
 import NaeLoader from "@/components/nae-loader";
 import { useAuth } from "@/context-providers/auth-context-provider";
-import { triggerEmail } from "@/helpers/util/email-trigger";
 import axios from "axios";
-import { CheckCircle2, Mail, XCircle } from "lucide-react";
+import { CheckCircle2, XCircle } from "lucide-react";
 import Link from "next/link";
-import { SubmitEvent, useEffect, useState } from "react";
-import PanelError from "@/components/panel-error";
-import Input from "@/components/nae-input";
-import Button from "@/components/nae-button";
+import { useEffect, useState } from "react";
+import ResendTokenEmailForm from "@/components/resend-token-email-form";
 
 type VerificationState = 'loading' | 'success' | 'error';
 type ErrorType = 'no_token' | 'invalid_token'| 'server_error';
@@ -18,10 +15,6 @@ const VerifyEmailPage = () => {
 
   const [verificationState, setVerificationState] = useState<VerificationState>('loading');
   const [errorType, setErrorType] = useState<ErrorType | null>(null);
-  const [email, setEmail] = useState('');
-  const [isResending, setIsResending] = useState(false);
-  const [resendSuccess, setResendSuccess] = useState(false);
-  const [resendError, setResendError] = useState('');
 
   const { verifyEmail } = useAuth();
 
@@ -80,36 +73,6 @@ const VerifyEmailPage = () => {
           description:
             "Something went wrong. Please try again.",
         };
-    }
-  };
-
-  const handleResendVerification = async (
-    e: SubmitEvent<HTMLFormElement>,
-  ) => {
-    e.preventDefault();
-    setResendError("");
-    setResendSuccess(false);
-
-    if (!email) {
-      setResendError("Please enter your email address");
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setResendError("Please enter a valid email address");
-      return;
-    }
-
-    setIsResending(true);
-
-    try {
-      await triggerEmail(email, "VERIFY");
-      setResendSuccess(true);
-    } catch {
-      setResendError("There was a problem sending the link");
-    } finally {
-      setIsResending(false);
     }
   };
 
@@ -178,72 +141,7 @@ const VerifyEmailPage = () => {
               </div>
 
               {/* Resend Verification Form */}
-              {!resendSuccess ? (
-                <div className="border-t border-panel-highlight pt-6">
-                  <div className="mb-4 flex items-center gap-2 text-sm text-foreground-secondary">
-                    <Mail className="w-4 h-4" />
-                    <span className="font-medium">
-                      Request a new verification link
-                    </span>
-                  </div>
-
-                  <form
-                    onSubmit={handleResendVerification}
-                    className="space-y-4"
-                  >
-                    {/* Resend Error Message */}
-                    {resendError && <PanelError message={resendError} />}
-
-                    <Input 
-                      id="emailaddress"
-                      label="Email address"
-                      type="email"
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        if (resendError) setResendError("");
-                      }}
-                      placeholder="you@example.com"
-                      disabled={isResending}
-                    />
-                    <Button
-                      type="submit"
-                      disabled={isResending}
-                      className="w-full gap-2"
-                    >
-                      {isResending ? (
-                        <>
-                          <NaeLoader />
-                          Sending...
-                        </>
-                      ) : (
-                        'Send Verification Link'
-                      )}
-                    </Button>
-                  </form>
-                </div>
-              ) : (
-                <div className="border-t border-panel-highlight pt-6">
-                  <div className="bg-panel-excellent border border-panel-excellent-border rounded-md p-4 mb-4">
-                    <div className="flex items-start gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-excellent mt-0.5 shrink-0" />
-                      <div>
-                        <p className="text-sm font-medium text-foreground-excellent mb-1">
-                          Verification Email Sent
-                        </p>
-                        <p className="text-sm text-foreground-excellent">
-                          We&apos;ve sent a new verification link to{" "}
-                          <span className="font-medium">
-                            {email}
-                          </span>
-                          . Please check your inbox and click
-                          the link to verify your email address.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+              <ResendTokenEmailForm emailType="VERIFY" />
 
               {/* Back to Sign In Link */}
               <div className="mt-6 text-center">
