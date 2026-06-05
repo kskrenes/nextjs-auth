@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { ReactNode } from "react";
-import bgImage from '../public/landing-bg.jpg';
+import bgImage from '../public/landing-bg-brand.jpg';
 
 interface BGProps {
   children: ReactNode;
