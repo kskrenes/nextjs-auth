@@ -5,9 +5,9 @@ import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
 import PanelError from "@/components/panel-error";
 import PanelHeader from "@/components/panel-header";
-import PanelSuccess from "@/components/panel-success";
 import { useAuth } from "@/context-providers/auth-context-provider";
 import { triggerEmail } from "@/helpers/util/email-trigger";
+import { CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { useState, type SubmitEvent } from "react";
 import toast from "react-hot-toast";
@@ -58,48 +58,68 @@ const TriggerPasswordResetPage = () => {
 
           {/* Header */}
           <PanelHeader 
-            title="Password Reset" 
-            description="We'll send you an email with instructions to update your password."
+            title="Reset Password" 
+            description="We'll send you an email with a link to update your password."
           />
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Error Message */}
-            {error && <PanelError message={error} />}
-            {/* Success Message */}
-            {sent && <PanelSuccess message="An email has been sent!" />}
+          {!sent ? (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Error Message */}
+              {error && <PanelError message={error} />}
 
-            {/* Email Field */}
-            <Input 
-              id="email" 
-              type="email"
-              label="Email address"
-              aria-label="Email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (error) setError('');
-              }}
-              placeholder="you@example.com"
-              disabled={sending}
-            />
+              {/* Email Field */}
+              <Input 
+                id="email" 
+                type="email"
+                label="Email address"
+                aria-label="Email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (error) setError('');
+                }}
+                placeholder="you@example.com"
+                disabled={sending}
+              />
 
-            {/* Submit Button */}
-            <Button
-              type="submit"
-              disabled={sending}
-              className="w-full gap-2"
-            >
-              {sending ? (
-                <>
-                  <NaeLoader />
-                  Sending email...
-                </>
-              ) : (
-                'Send Email'
-              )}
-            </Button>
-          </form>
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                disabled={sending}
+                className="w-full gap-2"
+              >
+                {sending ? (
+                  <>
+                    <NaeLoader />
+                    Sending email...
+                  </>
+                ) : (
+                  'Send Reset Password Link'
+                )}
+              </Button>
+            </form>
+          ) : (
+            <div className="border-t border-panel-highlight pt-6">
+              <div className="bg-panel-excellent border border-panel-excellent-border rounded-md p-4 mb-4">
+                <div className="flex items-start gap-2">
+                  <CheckCircle2 className="w-5 h-5 text-excellent mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground-excellent mb-1">
+                      Reset Password Email Sent
+                    </p>
+                    <p className="text-sm text-foreground-excellent">
+                      We&apos;ve sent a new reset password link to{" "}
+                      <span className="font-medium">
+                        {email}
+                      </span>
+                      . Please check your inbox and click
+                      the link to reset your password.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Login Link */}
           <div className="mt-6 text-center">
