@@ -109,8 +109,9 @@ const ResetPasswordPage = () => {
       await resetPassword(token, validPassword);
       setResetState('success');
     } 
-    catch {
-      setErrorType('server_error');
+    catch (error: unknown) {
+      const status = (error as { response?: { status?: number } }).response?.status;
+      setErrorType(status === 410 ? 'invalid_token' : 'server_error');
       setResetState('error');
     }
   }
