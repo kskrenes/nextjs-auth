@@ -84,13 +84,21 @@ export async function POST(request: NextRequest) {
     }
 
     // clear both access and refresh token cookies
-    await clearAuthCookies();
+    let cookieCleanupFailed = false;
+    try {
+      await clearAuthCookies();
+    } catch (cookieError) {
+      console.error("Failed to clear auth cookies after password reset", cookieError);
+      cookieCleanupFailed = true;
+    }
 
     // return success
     return NextResponse.json({
       message: "Password reset successfully",
       success: true,
-      ...(sessionCleanupFailed && { warning: "Password reset successfully, but could not invalidate existing sessions. Please sign out of other devices manually." }),
+      ...((sessionCleanupFailed || cookieCleanupFailed) && { 
+        warning: "Password reset successfully, but some cleanup steps could not be completed automatically.", 
+      }),
     }, { status: 201 });
 
   } 
