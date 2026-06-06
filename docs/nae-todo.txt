@@ -158,8 +158,8 @@ look & feel, flow
 
 errors & warnings
 - [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
-- [ ] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
-- [ ] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
+- [x] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
+- [x] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
 - [ ] fix google sign in button layout in settings tab
 
 multiple pages
