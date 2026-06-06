@@ -17,7 +17,7 @@ const Sidebar = () => {
 
   return (
     <aside 
-      className="p-4 w-64 shrink-0 hidden md:block bg-panel" 
+      className="p-4 w-64 fixed top-0 bottom-0 left-0 shrink-0 hidden md:block bg-panel" 
     >
       {/* home link / logo */}
       <Link href="/" className="flex select-none items-center gap-2 m-4">
