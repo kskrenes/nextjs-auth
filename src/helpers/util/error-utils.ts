@@ -16,7 +16,8 @@ export function getErrorMessage(error: unknown, fallback: string): string {
 
 export function getErrorResponse(status: number, fallback: string, error?: unknown): Response {
   const message = status >= 500 ? fallback : getErrorMessage(error, fallback);
-  console.error(error ?? message);
+  // Log full error (with stack trace) for server errors; log message only for client errors
+  console.error(status >= 500 ? (error ?? message) : message);
   return NextResponse.json(
     { error: message }, 
     { status }
