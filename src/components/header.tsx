@@ -21,7 +21,7 @@ const Header = () => {
   const isLanding = segments.length === 0;
   const isMainGroup = segments.includes('(main)');
 
-  const headerBG = isLanding ? 'bg-slate-950/10' : 'bg-page/50';
+  const headerBG = isLanding ? 'bg-black/5' : 'bg-page/50';
   const headerLeft = isMainGroup ? 'md:left-64' : 'md:left-0';
 
   return (
