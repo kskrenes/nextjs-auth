@@ -258,7 +258,7 @@ const AccountPage = () => {
     <div className="page-container">
 
       {/* page title */}
-      <h1 className="text-2xl min-w-39 max-w-90 font-semibold mx-auto md:mx-0 mb-8">My Account</h1>
+      <h1 className="text-2xl min-w-39 max-w-90 font-semibold md:mx-0 mb-8">My Account</h1>
 
       {/* page layout */}
       <div className="flex gap-8 flex-col ll:flex-row">

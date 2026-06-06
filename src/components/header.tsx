@@ -27,6 +27,8 @@ const Header = () => {
   return (
     <header className={`fixed top-0 left-0 right-0 z-20 ${headerLeft} ${headerBG} backdrop-blur-xs`}>
       <div className='relative flex w-full mx-auto z-30 px-1 sm:px-3 items-center min-h-19'>
+
+        {/* Theme Switcher */}
         <div className="flex items-center px-2">
           {!isLanding && <ThemeSwitcher />}
         </div>
