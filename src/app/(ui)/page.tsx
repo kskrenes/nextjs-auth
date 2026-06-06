@@ -37,7 +37,7 @@ export default function Home() {
 
           <Link
             href="/signup"
-            className="px-6 py-3 bg-blue-600 text-lg font-semibold text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="button-primary button-standard"
           >
             Get Started
           </Link>

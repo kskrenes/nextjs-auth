@@ -16,15 +16,19 @@ const navLinks = [
 const Header = () => {
 
   const { user, fetchingUser, loggingIn, logout } = useAuth();
+
   const segments = useSelectedLayoutSegments();
+  const isLanding = segments.length === 0;
   const isMainGroup = segments.includes('(main)');
+
+  const headerBG = isLanding ? 'bg-black/5' : 'bg-page/50';
   const headerLeft = isMainGroup ? 'md:left-64' : 'md:left-0';
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-20 ${headerLeft} bg-page/50 backdrop-blur-xs`}>
+    <header className={`fixed top-0 left-0 right-0 z-20 ${headerLeft} ${headerBG} backdrop-blur-xs`}>
       <div className='relative flex w-full mx-auto z-30 px-1 sm:px-3 items-center min-h-19'>
         <div className="flex items-center px-2">
-          <ThemeSwitcher />
+          {!isLanding && <ThemeSwitcher />}
         </div>
 
         {/* right side actions */}
@@ -87,11 +91,11 @@ const Header = () => {
 
               // unauthenticated view
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-6">
                 {/* sign in button */}
                 <Link 
                   href="/login" 
-                  className="button-ghost button-small"
+                  className="input-link text-base"
                 >
                   Sign In
                 </Link>
