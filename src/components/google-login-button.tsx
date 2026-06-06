@@ -20,6 +20,7 @@ const RESIZE_DEBOUNCE_MS = 150;
 // This persists for the lifetime of the page session, so we can avoid 
 // double instantiation once the GSI script is loaded in the DOM.
 let gsiInitialized = false;
+let gsiCredentialHandler: ((token: string) => void) | null = null;
 
 export default function GoogleLoginButton({
   redirect = false,
@@ -38,7 +39,7 @@ export default function GoogleLoginButton({
   // Refs that stay stable across renders without triggering re-initialization
   const containerWidthRef = useRef<number>(GSI_MAX_WIDTH);
   const initializedRef = useRef<boolean>(false);
-  const callbackRef = useRef<typeof handleBackendAuth | null>(null);
+  // const callbackRef = useRef<typeof handleBackendAuth | null>(null);
 
   const handleBackendAuth = useCallback(async (token: string) => {
     if (onLoginAttempt) onLoginAttempt();
@@ -54,11 +55,15 @@ export default function GoogleLoginButton({
     }
   }, [loginViaGoogle, callback, onLoginAttempt, onLoginError, redirect, router]);
 
-  // Keep callbackRef current on every render so the GSI callback always
-  // calls the latest version without re-running the initialization effect.
+  // Update the components callback on later mounts while skipping initialization
   useEffect(() => {
-    callbackRef.current = handleBackendAuth;
-  });
+    gsiCredentialHandler = handleBackendAuth;
+    return () => {
+      if (gsiCredentialHandler === handleBackendAuth) {
+        gsiCredentialHandler = null;
+      }
+    };
+  }, [handleBackendAuth]);
 
   // Track container width with a debounced ResizeObserver.
   // The debounce prevents excessive renderButton calls during window resizing.
@@ -128,11 +133,11 @@ export default function GoogleLoginButton({
 
       window.google.accounts.id.initialize({
         client_id: clientId,
-        // Use callbackRef so this closure never goes stale, even when
+        // Use gsiCredentialHandler so this closure never goes stale, even when
         // React recreates handleBackendAuth due to dependency changes.
         callback: (response: google.accounts.id.CredentialResponse) => {
           if (response.credential) {
-            callbackRef.current?.(response.credential);
+            gsiCredentialHandler?.(response.credential);
           }
         },
       });
