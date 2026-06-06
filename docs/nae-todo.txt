@@ -151,7 +151,7 @@ look & feel, flow
 - [x] redesign verifyemail page
 - [x] update success state on triggerpasswordreset page to match token pages
 - [x] redesign onboarding page
-- [ ] fix sidebar to top left when scrolling
+- [x] fix sidebar to top left when scrolling
 - [ ] redesign account page tabs as necessary
 - [ ] include password validation states in password component
 - [ ] refactor to components where applicable
