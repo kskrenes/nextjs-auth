@@ -29,7 +29,7 @@ const DashboardPage = () => {
     <div className="page-container">
 
       {/* page title */}
-      <div className="min-w-39 max-w-90 mx-auto md:mx-0 mb-8">
+      <div className="min-w-39 max-w-90 md:mx-0 mb-8">
         <h1 className="text-2xl font-semibold">Security & Operations Dashboard</h1>
         <p className="text-sm text-foreground-secondary mt-1">Monitor your account security and system metrics</p>
       </div>
