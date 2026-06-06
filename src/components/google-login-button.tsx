@@ -17,6 +17,10 @@ const GSI_MIN_WIDTH = 240;
 const GSI_MAX_WIDTH = 400;
 const RESIZE_DEBOUNCE_MS = 150;
 
+// This persists for the lifetime of the page session, so we can avoid 
+// double instantiation once the GSI script is loaded in the DOM.
+let gsiInitialized = false;
+
 export default function GoogleLoginButton({
   redirect = false,
   disabled = false,
@@ -87,7 +91,24 @@ export default function GoogleLoginButton({
   // React Strict Mode's double-invoke of effects does not trigger a second
   // initialize call (which would produce the [GSI_LOGGER] warning).
   useEffect(() => {
-    if (initializedRef.current) return;
+    if (gsiInitialized) {
+      // GSI is already initialized from a previous mount (e.g. user navigated
+      // away and came back). Just re-render the button without re-initializing.
+      initializedRef.current = true;
+
+      const targetDiv = document.getElementById('gsi-target-btn');
+      if (targetDiv && window.google?.accounts) {
+        window.google.accounts.id.renderButton(targetDiv, {
+          type: 'standard',
+          theme: 'outline',
+          size: 'large',
+          text: 'signin_with',
+          logo_alignment: 'center',
+          width: containerWidthRef.current,
+        });
+      }
+      return;
+    }
 
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
     if (!clientId) {
@@ -101,7 +122,8 @@ export default function GoogleLoginButton({
       const targetDiv = document.getElementById('gsi-target-btn');
       if (!targetDiv) return;
 
-      // Mark as initialized before the call so any re-entrant invocation is a no-op
+      // Mark initialized at both module and instance level
+      gsiInitialized = true;
       initializedRef.current = true;
 
       window.google.accounts.id.initialize({
@@ -142,7 +164,7 @@ export default function GoogleLoginButton({
 
     return () => {
       (script as HTMLScriptElement).removeEventListener('load', initAndRender);
-      // Note: initializedRef is NOT reset here — see comment above.
+      // Note: gsiInitialized is NOT reset — initialize() must only ever be called once.
     };
   }, []);
 
