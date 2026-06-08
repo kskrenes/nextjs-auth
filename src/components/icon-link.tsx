@@ -74,7 +74,9 @@ const IconLink = ({ url }: { url: string }) => {
 
   return (
     <div className="flex items-center gap-2">
-      {icon}
+      <div className="w-4">
+        {icon}
+      </div>
       <ExternalLink href={url}>{displayLink}</ExternalLink>
     </div>
   );
