@@ -276,11 +276,13 @@ const AccountPage = () => {
             {/* name/username group */}
             <div className="flex flex-col gap-1 items-center">
               {/* name */}
-              {user && user.name && (<h1 className="text-2xl xs:text-3xl xs:max-w-75 truncate font-semibold">{user.name}</h1>)}
+              {user && user.name && (
+                <h1 className="text-2xl xs:text-3xl xs:max-w-75 truncate font-semibold wrap-break-word line-clamp-1">{user.name}</h1>
+              )}
               {/* username/admin */}
-              <div className="flex items-center gap-2">
-                <p className="text-foreground-secondary text-lg xs:text-xl">{user?.username}</p>
-                {user?.isAdmin && <Badge label="Admin" variant="green" />}
+              <div className="flex justify-center items-center gap-2 w-full">
+                <p className="text-foreground-secondary text-lg xs:text-xl break-all line-clamp-1">{user?.username}</p>
+                {/* {user?.isAdmin && <Badge label="Admin" variant="green" />} */}
               </div>
             </div>
 
@@ -312,10 +314,10 @@ const AccountPage = () => {
         </div>
 
         {/* second column */}
-        <div className="w-full xs:w-90 ll:flex-1 mx-auto md:mx-0">
+        <div className="w-full ll:flex-1 mx-auto md:mx-0">
 
           <TabGroup 
-            className="flex flex-col gap-8 max-w-150"
+            className="flex flex-col gap-8"
             selectedIndex={activeTab} 
             // Programmatic tab changes (e.g. handleEditClick) bypass onChange,
             // so setIsEditing(false) here won't conflict with setIsEditing(true) there.
@@ -341,8 +343,66 @@ const AccountPage = () => {
             </TabList>
             <TabPanels>
               <TabPanel>
-                {isEditing ? (  
-            
+                {!isEditing ? (
+
+                  // profile info
+
+                  <div className="flex flex-col gap-8 min-w-0">
+                    {/* company */}
+                    {user?.company && (
+                      <div className="flex flex-col gap-1">
+                        <label className="text-lg font-semibold">Company</label>
+                        <div className="flex items-center gap-2">
+                          <CompanyIcon />
+                          <span className="w-full wrap-break-word text-foreground-secondary line-clamp-1">{user?.company}</span>
+                        </div>
+                      </div>
+                    )}
+                    {/* email */}
+                    {user?.email && (
+                      <div className="flex flex-col gap-1">
+                        <label className="text-lg font-semibold">Email</label>
+                        <div className="flex items-center gap-2">
+                          {user.isVerified ? (
+                            // verified email link
+                            <IconLink url={`mailto:${user.email}`} />
+                          ) : (
+                            // unverified email with badge
+                            <>
+                              <div className="w-4">
+                                <EmailIcon />
+                              </div>
+                              <div className="flex relative">
+                                <span className="w-full break-all text-foreground-secondary line-clamp-1 pr-22">{user.email}</span>
+                                <Badge label="Unverified" variant="red" className="absolute right-0" />
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {/* website */}
+                    {user?.website && getNormalizedUrl(user.website) && (
+                      <div className="flex flex-col gap-1">
+                        <label className="text-lg font-semibold">Website</label>
+                        <IconLink url={getNormalizedUrl(user.website)} />
+                      </div>
+                    )}
+                    {/* social accounts */}
+                    {user?.socialLinks?.some((element) => element && element.trim() !== "") && (
+                      <div className="flex flex-col gap-1">
+                        <label className="text-lg font-semibold">Social Accounts</label>
+                        {user?.socialLinks?.map((rawLink, index) => {
+                          const link = getNormalizedUrl(rawLink);
+                          return link !== '' && (
+                            <IconLink key={index} url={link} />
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+
                   // edit profile form
 
                   <form 
@@ -431,62 +491,6 @@ const AccountPage = () => {
                       </Button>
                     </div>
                   </form>
-                ) : (
-
-                  // profile info
-
-                  <div className="flex flex-col gap-8">
-                    {/* company */}
-                    {user?.company && (
-                      <div className="flex flex-col gap-1">
-                        <label className="text-lg font-semibold">Company</label>
-                        <div className="flex items-center gap-2">
-                          <CompanyIcon />
-                          <span className="text-foreground-secondary">{user?.company}</span>
-                        </div>
-                      </div>
-                    )}
-                    {/* email */}
-                    {user?.email && (
-                      <div className="flex flex-col gap-1">
-                        <label className="text-lg font-semibold">Email</label>
-                        <div className="flex items-center gap-2">
-                          {user.isVerified ? (
-                            // verified email link
-                            <IconLink url={`mailto:${user.email}`} />
-                          ) : (
-                            // unverified email with badge
-                            <>
-                              <EmailIcon />
-                              <span className="flex gap-2 text-foreground-secondary">
-                                {user.email}
-                                <Badge label="Unverified" variant="red" />
-                              </span>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                    {/* website */}
-                    {user?.website && getNormalizedUrl(user.website) && (
-                      <div className="flex flex-col gap-1">
-                        <label className="text-lg font-semibold">Website</label>
-                        <IconLink url={getNormalizedUrl(user.website)} />
-                      </div>
-                    )}
-                    {/* social accounts */}
-                    {user?.socialLinks?.some((element) => element && element.trim() !== "") && (
-                      <div className="flex flex-col gap-1">
-                        <label className="text-lg font-semibold">Social Accounts</label>
-                        {user?.socialLinks?.map((rawLink, index) => {
-                          const link = getNormalizedUrl(rawLink);
-                          return link !== '' && (
-                            <IconLink key={index} url={link} />
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
                 )}
               </TabPanel>
               <TabPanel>
