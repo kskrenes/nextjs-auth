@@ -52,8 +52,8 @@ const Header = () => {
                     <div className="flex items-center p-2 gap-3">
                       <AvatarDisplay publicId={user?.avatarId} size={36} />
                       <div className="hidden sm:inline text-left">
-                        {user?.name && <p className="font-medium text-foreground-primary">{user?.name}</p>}
-                        <p className="text-sm">{user?.username}</p>
+                        {user?.name && <p className="font-medium text-foreground-primary max-w-60 wrap-break-word line-clamp-1">{user?.name}</p>}
+                        <p className="text-sm max-w-60 break-all line-clamp-1">{user?.username}</p>
                       </div>
                       <ChevronDown className="w-4 h-4 hidden sm:inline" />
                     </div>
