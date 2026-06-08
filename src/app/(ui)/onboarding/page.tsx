@@ -15,7 +15,7 @@ import toast from "react-hot-toast";
 
 const OnboardingPage = () => {
   
-  const { user, fetchingUser, updatingUser, updateUser } = useAuth();
+  const { user, fetchingUser, updatingUser, updateUser, logout } = useAuth();
 
   const [error, setError] = useState<string>("");
   const [username, setUsername] = useState<string>("");
@@ -30,10 +30,17 @@ const OnboardingPage = () => {
   }
 
   useEffect(() => {
-    if (user?.hasCompletedProfile) {
+    if (fetchingUser) return;
+
+    if (!user) {
+      logout();
+      return;
+    }
+
+    if (user.hasCompletedProfile) {
       router.replace('/dashboard');
     }
-  }, [user?.hasCompletedProfile, router]);
+  }, [user, user?.hasCompletedProfile, router, fetchingUser, logout]);
 
   if (fetchingUser) return <FullScreenLoader />;
 
