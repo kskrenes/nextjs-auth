@@ -78,9 +78,9 @@ const HealthScoreWidget = ({ healthChecks, healthScore }: HealthScoreWidgetProps
         className={progressBarClass}
       />
 
-      <div className="space-y-2 mt-4">
+      <div className="mt-4">
         {healthChecks.map((check, index) => (
-          <div key={index} className="flex items-center justify-between py-2 border-t border-panel-highlight">
+          <div key={index} className="flex items-center justify-between py-3 border-t border-panel-highlight">
             <div className="flex items-center gap-2">
               {check.enabled ? (
                 <CheckCircle2 className="w-4 h-4 text-excellent" />
