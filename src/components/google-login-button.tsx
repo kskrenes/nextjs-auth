@@ -10,6 +10,9 @@ interface GoogleLoginButtonProps {
   callback?: (res: AuthLoginResponse) => void;
   onLoginAttempt?: () => void;
   onLoginError?: () => void;
+  type?: 'standard' | 'icon';
+  size?: 'medium' | 'large';
+  text?: 'signin' | 'signin_with';
 }
 
 const GSI_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
@@ -28,6 +31,9 @@ export default function GoogleLoginButton({
   callback,
   onLoginAttempt,
   onLoginError,
+  type = 'standard',
+  size = 'large',
+  text = 'signin_with',
 }: GoogleLoginButtonProps) {
 
   const { loggingIn, loginViaGoogle } = useAuth();
@@ -50,7 +56,7 @@ export default function GoogleLoginButton({
         router.replace("/dashboard");
       }
     } catch {
-      console.error('Error logging in via Google');
+      // console.error('Error logging in via Google');
       if (onLoginError) onLoginError();
     }
   }, [loginViaGoogle, callback, onLoginAttempt, onLoginError, redirect, router]);
@@ -107,7 +113,7 @@ export default function GoogleLoginButton({
           type: 'standard',
           theme: 'outline',
           size: 'large',
-          text: 'signin_with',
+          text: 'signin',
           logo_alignment: 'center',
           width: containerWidthRef.current,
         });
@@ -145,8 +151,8 @@ export default function GoogleLoginButton({
       window.google.accounts.id.renderButton(targetDiv, {
         type: 'standard',
         theme: 'outline',
-        size: 'large',
-        text: 'signin_with',
+        size: 'medium',
+        text: 'signin',
         logo_alignment: 'center',
         width: containerWidthRef.current,
       });
@@ -182,14 +188,14 @@ export default function GoogleLoginButton({
     if (!targetDiv) return;
 
     window.google.accounts.id.renderButton(targetDiv, {
-      type: 'standard',
+      type,
       theme: 'outline',
-      size: 'large',
-      text: 'signin_with',
+      size,
+      text,
       logo_alignment: 'center',
       width: containerWidth,
     });
-  }, [containerWidth]);
+  }, [containerWidth, type, size, text]);
 
   return (
     <div
