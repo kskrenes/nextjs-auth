@@ -72,9 +72,9 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
               {expandedSession.deviceInfo.os}
               {isCurrentSession && <span className="ml-3"><Badge label="Current Session" variant="green" /></span>}
             </p>
-            <p className="text-foreground-secondary">{expandedSession.deviceInfo.browser}</p>
-            <p className="text-foreground-secondary font-mono">{expandedSession.ipAddress}</p>
-            <p className="text-foreground-secondary">
+            <p className="text-foreground-secondary text-sm">{expandedSession.deviceInfo.browser}</p>
+            <p className="text-foreground-secondary text-sm font-mono">{expandedSession.ipAddress}</p>
+            <p className="text-foreground-muted text-sm">
               Active {formatRelativeTime(new Date(expandedSession.lastActive))}
             </p>
           </div>
@@ -83,7 +83,7 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
               <Button 
                 size="small" 
                 variant="warning"
-                className="ml-auto text-sm sm:text-base" 
+                className="ml-auto text-sm" 
                 onClick={deleteSession}
               >
                 Sign Out

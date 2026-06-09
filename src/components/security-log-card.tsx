@@ -37,7 +37,7 @@ const SecurityLogCard = ({ securityLog }: SecurityLogCardProps) => {
           {securityEventConfig[expandedSecurityLog.action].label}
         </h3>
 
-        <div className="flex items-center text-foreground-secondary flex-wrap">
+        <div className="flex items-center text-foreground-secondary flex-wrap text-sm">
           <div className="flex items-center gap-2">
             <DeviceIcon type={expandedSecurityLog.deviceInfo.deviceType} sizeVariant="small" />
             <span>{expandedSecurityLog.deviceInfo.os}</span>
@@ -48,7 +48,7 @@ const SecurityLogCard = ({ securityLog }: SecurityLogCardProps) => {
           <span className="font-mono">{expandedSecurityLog.ipAddress}</span>
         </div>
 
-        <p className="text-foreground-secondary">
+        <p className="text-foreground-muted text-sm">
           {formatRelativeTime(new Date(expandedSecurityLog.createdAt))}
         </p>
       </div>
