@@ -20,6 +20,7 @@ const OnboardingPage = () => {
   const [error, setError] = useState<string>("");
   const [username, setUsername] = useState<string>("");
   const [prevUserId, setPrevUserId] = useState<string | undefined>(undefined);
+  const [awaitingRedirect, setAwaitingRedirect] = useState<boolean>(false);
 
   const router = useRouter();
   
@@ -48,7 +49,7 @@ const OnboardingPage = () => {
     // suppress native html form submit behavior
     e.preventDefault();
 
-    if (updatingUser) return;
+    if (updatingUser || awaitingRedirect) return;
     
     setError('');
 
@@ -66,10 +67,12 @@ const OnboardingPage = () => {
     }
 
     try {
+      setAwaitingRedirect(true);
       await updateUser({ username: validUsername });
       toast.success("Your username has been updated!")
       router.replace("/dashboard");
     } catch (error) {
+      setAwaitingRedirect(false);
       setError(getErrorMessage(error, "An error occurred. Please try again."));
     }
   }
@@ -100,16 +103,16 @@ const OnboardingPage = () => {
                 if (error) setError('');
               }}
               placeholder="myUsername99"
-              disabled={updatingUser}
+              disabled={awaitingRedirect}
             />
 
             {/* Submit Button */}
             <Button
               type="submit"
-              disabled={updatingUser}
+              disabled={awaitingRedirect}
               className="w-full gap-2"
             >
-              {updatingUser ? (
+              {awaitingRedirect ? (
                 <>
                   <NaeLoader />
                   Setting Username...
