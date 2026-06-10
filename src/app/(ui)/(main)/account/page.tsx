@@ -169,6 +169,10 @@ const AccountPage = () => {
     toast.success("Google account added successfully!");
   }
 
+  const handleGoogleLinkError = (message: string) => {
+    toast.error(message);
+  }
+
   // TODO: implement passkeys
   // const resetPasswordFormState = () => {
   //   setPassword("");
@@ -642,7 +646,12 @@ const AccountPage = () => {
                             ) : (
                               <div className="w-14 flex gap-2 items-center">
                                 <Plus className="w-4 h-4" />
-                                <GoogleLoginButton callback={handleGoogleLinkSuccess} type="icon" size="medium" />
+                                <GoogleLoginButton 
+                                  type="icon" 
+                                  size="medium" 
+                                  callback={handleGoogleLinkSuccess} 
+                                  onLoginError={handleGoogleLinkError}
+                                />
                               </div>
                             )}
                           </div>
