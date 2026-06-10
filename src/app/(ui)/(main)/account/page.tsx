@@ -26,6 +26,7 @@ import MFABackupCodesModal from "@/components/mfa-backup-codes-modal";
 import MFADisableModal from "@/components/mfa-disable-modal";
 import PasswordLinkModal from "@/components/password-link-modal";
 import PasskeyDeleteConfirmModal from "@/components/passkey-delete-confirm-modal";
+import GoogleUnlinkConfirmModal from "@/components/google-unlink-confirm-modal";
 
 // TODO: implement passkeys
 // interface Passkey {
@@ -41,6 +42,7 @@ const AccountPage = () => {
   const [showDisableModal, setShowDisableModal] = useState(false);
   const [showPasswordLinkModal, setShowPasswordLinkModal] = useState(false);
   const [showPasskeyDeleteConfirmModal, setShowPasskeyDeleteConfirmModal] = useState(false);
+  const [showGoogleUnlinkConfirmModal, setShowGoogleUnlinkConfirmModal] = useState(false);
   const [regenCodes, setRegenCodes] = useState<string[] | null>(null);
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
   const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
@@ -320,7 +322,7 @@ const AccountPage = () => {
                 Edit Profile
               </Button>
               {/* verify email button - conditional */}
-              {user && !user?.isVerified && (
+              {user && !user?.isVerified && !user.linkedProviders.includes('google') && (
                 <Button 
                   className="flex-1 px-0" 
                   variant="secondary"
@@ -385,7 +387,7 @@ const AccountPage = () => {
                       <div className="flex flex-col gap-1">
                         <label className="text-lg font-semibold">Email</label>
                         <div className="flex items-center gap-2">
-                          {user.isVerified ? (
+                          {(user.isVerified || user.linkedProviders.includes('google')) ? (
                             // verified email link
                             <IconLink url={`mailto:${user.email}`} />
                           ) : (
@@ -630,7 +632,7 @@ const AccountPage = () => {
                             </div>
                             {(user && user.linkedProviders?.includes('google')) ? (
                               <Button
-                                onClick={notYetImplemented}
+                                onClick={() => setShowGoogleUnlinkConfirmModal(true)}
                                 size="small"
                                 variant="tertiary"
                                 className="text-sm gap-2"
@@ -787,6 +789,12 @@ const AccountPage = () => {
           // deletePasskey();
           setShowPasskeyDeleteConfirmModal(false);
         }}
+      />
+      <GoogleUnlinkConfirmModal
+        open={showGoogleUnlinkConfirmModal}
+        onOpenChange={setShowGoogleUnlinkConfirmModal}
+        onCancel={() => setShowGoogleUnlinkConfirmModal(false)}
+        onSuccess={() => setShowGoogleUnlinkConfirmModal(false)}
       />
     </div>
   )

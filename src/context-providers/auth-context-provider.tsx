@@ -27,6 +27,7 @@ export interface AuthContextType {
   updatingUser: boolean;
   verifyingEmail: boolean; 
   linkingAccount: boolean;
+  unlinkingGoogle: boolean;
   verifyingMFA: boolean;
   login: (email: string, password: string) => Promise<AuthLoginResponse>;
   loginViaGoogle: (token: string) => Promise<AuthLoginResponse>
@@ -34,6 +35,7 @@ export interface AuthContextType {
   updateUser: (user: EditableProfileFields) => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;
   linkCredentials: (password: string) => Promise<void>;
+  unlinkGoogle: () => Promise<void>;
   enableMFA: (code: string) => Promise<string[]>;
   verifyMFA: (code: string) => Promise<void>;
   disableMFA: (code: string) => Promise<void>;
@@ -67,6 +69,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [updatingUser, setUpdatingUser] = useState<boolean>(false);
   const [verifyingEmail, setVerifyingEmail] = useState<boolean>(false);
   const [linkingAccount, setLinkingAccount] = useState<boolean>(false);
+  const [unlinkingGoogle, setUnlinkingGoogle] = useState<boolean>(false);
   const [verifyingMFA, setVerifyingMFA] = useState<boolean>(false);
 
   const router = useRouter();
@@ -193,10 +196,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const linkCredentials = async (password: string) => {
     setLinkingAccount(true);
     try {
-      const res = await axiosClient.post("/api/users/linkcredentials", { password });
+      const res = await axiosClient.post("/api/users/account-provider/link-credentials", { password });
       setUser(res.data.user);
     } finally {
       setLinkingAccount(false);
+    }
+  }
+
+  const unlinkGoogle = async () => {
+    setUnlinkingGoogle(true);
+    try {
+      const res = await axiosClient.post("/api/users/account-provider/unlink-google");
+      setUser(res.data.user);
+    } finally {
+      setUnlinkingGoogle(false);
     }
   }
 
@@ -246,6 +259,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         updatingUser,
         verifyingEmail, 
         linkingAccount,
+        unlinkingGoogle,
         verifyingMFA,
         login, 
         loginViaGoogle, 
@@ -253,6 +267,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         updateUser, 
         verifyEmail, 
         linkCredentials, 
+        unlinkGoogle,
         enableMFA,
         verifyMFA,
         disableMFA,

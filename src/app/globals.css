@@ -505,7 +505,7 @@ body {
 
   & .recharts-tooltip-cursor {
     stroke: var(--brand-light);
-    stroke-opacity: 0.7;
+    stroke-opacity: 0.5;
   }
 }
 

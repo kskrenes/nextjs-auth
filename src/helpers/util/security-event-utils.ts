@@ -1,4 +1,4 @@
-import { Key, KeyRound, Link2, LogIn, Mail, ShieldCheck, ShieldOff, User } from "lucide-react";
+import { Key, KeyRound, Link2, Link2Off, LogIn, Mail, ShieldCheck, ShieldOff, User } from "lucide-react";
 
 export const securityEventConfig = {
   login: {
@@ -36,6 +36,12 @@ export const securityEventConfig = {
     label: 'Google Account Linked',
     color: 'text-pink-600',
     bg: 'bg-pink-100',
+  },
+  google_account_unlinked: {
+    icon: Link2Off,
+    label: 'Google Account Unlinked',
+    color: 'text-rose-600',
+    bg: 'bg-rose-100',
   },
   mfa_enabled: {
     icon: ShieldCheck,

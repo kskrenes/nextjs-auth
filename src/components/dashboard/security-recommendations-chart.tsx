@@ -7,6 +7,7 @@ interface SecurityRecommendationsChartProps {
 }
 
 const SecurityRecommendationsChart = ({ user }: SecurityRecommendationsChartProps) => {
+  const hasGoogleProvider = user.linkedProviders.includes('google');
   return (
     <Card className="bg-panel-amber rounded-lg shadow-none ring-0">
       <div className="flex items-start gap-3">
@@ -18,11 +19,11 @@ const SecurityRecommendationsChart = ({ user }: SecurityRecommendationsChartProp
               <span className="text-symbol-amber">•</span>
               <span>Enable Multi-Factor Authentication to add an extra layer of security to your account</span>
             </li>}
-            {!user.hasStrongPassword && <li className="flex items-start gap-2">
+            {!user.hasStrongPassword && !hasGoogleProvider && <li className="flex items-start gap-2">
               <span className="text-symbol-amber">•</span>
               <span>Update to a stronger password with at least 12 characters, including uppercase, lowercase, numbers, and symbols</span>
             </li>}
-            {!user.isVerified && <li className="flex items-start gap-2">
+            {!user.isVerified && !hasGoogleProvider && <li className="flex items-start gap-2">
               <span className="text-symbol-amber">•</span>
               <span>Verify your email address to enable password recovery and important security notifications</span>
             </li>}
