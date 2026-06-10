@@ -181,8 +181,8 @@ export async function POST(request: NextRequest) {
         // throw if database rejects duplicate with 11000
         } catch (dbError: unknown) {
           if (isDuplicateError(dbError)) {
-            // most likely the account exists but has not linked their google account
-            return getErrorResponse(409, "User already exists", dbError);
+            // most likely the user account exists but their google account is not linked
+            return getErrorResponse(409, "User already exists");
           }
           throw dbError;
         }
