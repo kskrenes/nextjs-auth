@@ -55,7 +55,7 @@ export default function GoogleLoginButton({
         router.replace("/dashboard");
       }
     } catch {
-      // console.error('Error logging in via Google');
+      console.error('Error logging in via Google');
       if (onLoginError) onLoginError();
     }
   }, [loginViaGoogle, callback, onLoginAttempt, onLoginError, redirect, router]);
