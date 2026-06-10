@@ -45,7 +45,6 @@ export default function GoogleLoginButton({
   // Refs that stay stable across renders without triggering re-initialization
   const containerWidthRef = useRef<number>(GSI_MAX_WIDTH);
   const initializedRef = useRef<boolean>(false);
-  // const callbackRef = useRef<typeof handleBackendAuth | null>(null);
 
   const handleBackendAuth = useCallback(async (token: string) => {
     if (onLoginAttempt) onLoginAttempt();
@@ -110,10 +109,10 @@ export default function GoogleLoginButton({
       const targetDiv = document.getElementById('gsi-target-btn');
       if (targetDiv && window.google?.accounts) {
         window.google.accounts.id.renderButton(targetDiv, {
-          type: 'standard',
+          type,
           theme: 'outline',
-          size: 'large',
-          text: 'signin',
+          size,
+          text,
           logo_alignment: 'center',
           width: containerWidthRef.current,
         });
@@ -149,10 +148,10 @@ export default function GoogleLoginButton({
       });
 
       window.google.accounts.id.renderButton(targetDiv, {
-        type: 'standard',
+        type,
         theme: 'outline',
-        size: 'medium',
-        text: 'signin',
+        size,
+        text,
         logo_alignment: 'center',
         width: containerWidthRef.current,
       });
@@ -177,7 +176,7 @@ export default function GoogleLoginButton({
       (script as HTMLScriptElement).removeEventListener('load', initAndRender);
       // Note: gsiInitialized is NOT reset — initialize() must only ever be called once.
     };
-  }, []);
+  }, [type, size, text]);
 
   // Re-render the button whenever the debounced container width changes.
   // initialize is NOT called again here; only the visual button is updated.
