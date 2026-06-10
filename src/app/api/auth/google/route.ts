@@ -195,7 +195,9 @@ export async function POST(request: NextRequest) {
           // import the avatar from Google
           if (picture && typeof picture === 'string') {
             try {
-              newUser.avatarId = await getAvatarId(picture);  
+              const avatarId = await getAvatarId(picture);
+              storedUser.avatarId = avatarId;
+              await storedUser.save();
             } catch (avatarError) {
               console.error("Failed to import Google avatar", avatarError);
             }
