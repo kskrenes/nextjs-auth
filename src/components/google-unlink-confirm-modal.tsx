@@ -59,9 +59,10 @@ const GoogleUnlinkConfirmModal = ({ open, onOpenChange, onCancel, onSuccess }:Mo
       toast.success("Google account unlinked successfully");
       onSuccess();
     } 
-    catch (error: unknown) {
-      console.error(getErrorMessage(error, "Unable to unlink Google account"));
-      setError("There was a problem unlinking your Google account");
+    catch (unlinkError: unknown) {
+      const errorMessage = getErrorMessage(unlinkError, "There was a problem unlinking your Google account");
+      console.error(errorMessage);
+      setError(errorMessage);
     }
   }
 
