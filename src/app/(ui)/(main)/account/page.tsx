@@ -1,7 +1,7 @@
 "use client";
 
 import { triggerEmail } from "@/helpers/util/email-trigger";
-import { ChevronDown, ChevronUp, Fingerprint, KeyRound, Lock, Pencil, Plus, ShieldAlert, ShieldUser, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Fingerprint, KeyRound, Lock, Pencil, Plus, ShieldAlert, ShieldUser } from "lucide-react";
 import { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
@@ -25,7 +25,8 @@ import MFAManagement from "@/components/mfa-management";
 import MFABackupCodesModal from "@/components/mfa-backup-codes-modal";
 import MFADisableModal from "@/components/mfa-disable-modal";
 import PasswordLinkModal from "@/components/password-link-modal";
-import { formatRelativeTime } from "@/helpers/util/time-utils";
+import PasskeyManagement from "@/components/passkey-management";
+import PasskeyDeleteConfirmModal from "@/components/passkey-delete-confirm-modal";
 
 interface Passkey {
   id: string;
@@ -39,6 +40,7 @@ const AccountPage = () => {
   const [showRegenModal, setShowRegenModal] = useState(false);
   const [showDisableModal, setShowDisableModal] = useState(false);
   const [showPasswordLinkModal, setShowPasswordLinkModal] = useState(false);
+  const [showPasskeyDeleteConfirmModal, setShowPasskeyDeleteConfirmModal] = useState(false);
   const [regenCodes, setRegenCodes] = useState<string[] | null>(null);
   const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
   const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
@@ -64,6 +66,7 @@ const AccountPage = () => {
     socialLinks: ["", "", "", ""],
   });
 
+  const [deletePasskeyId, setDeletePasskeyId] = useState<string | null>(null);
   const [passkeys, setPasskeys] = useState<Passkey[]>([
     {
       id: '1',
@@ -243,6 +246,24 @@ const AccountPage = () => {
     setShowPasswordLinkModal(false);
     toast.success("Password added successfully");
   }
+
+  const addPasskey = () => {
+    const newKey: Passkey = {
+      id: Date.now().toString(),
+      nickname: `Passkey ${passkeys.length + 1}`,
+      createdAt: new Date(),
+      lastUsed: null,
+    };
+    setPasskeys([...passkeys, newKey]);
+    setPasskeysExpanded(true);
+  };
+
+  const deletePasskey = () => {
+    if (deletePasskeyId) {
+      setPasskeys(passkeys.filter((pk) => pk.id !== deletePasskeyId));
+      setDeletePasskeyId(null);
+    }
+  };
 
   const notYetImplemented = () => {
     toast.error("Feature scheduled for future development")
@@ -546,10 +567,10 @@ const AccountPage = () => {
                                   {(user && user.linkedProviders?.includes('credentials')) 
                                     ? (
                                       <span 
-                                        className="flex hover:text-foreground-primary transition-colors cursor-pointer"
+                                        className="flex gap-2 hover:text-foreground-primary transition-colors cursor-pointer"
                                         onClick={() => setPasskeysExpanded(!passkeysExpanded)}
                                       >
-                                        <span>{'2'} passkey{'s'} configured</span>
+                                        <span>{passkeys.length} passkey{passkeys.length > 1 ? 's' : ''} configured</span>
                                         {passkeysExpanded ? <ChevronUp className="w-3 h-3 mt-0.5" /> : <ChevronDown className="w-3 h-3 mt-0.5" />}
                                       </span>
                                     ) : 'Passwordless sign-in with biometrics or security keys.'
@@ -559,7 +580,7 @@ const AccountPage = () => {
                               <Button 
                                 size="small"
                                 variant="tertiary"
-                                onClick={notYetImplemented}
+                                onClick={addPasskey}
                                 disabled={false}
                                 className="text-sm gap-2"
                               >
@@ -572,57 +593,14 @@ const AccountPage = () => {
                         
                         {/* Passkey list */}
                         {passkeysExpanded && passkeys.length > 0 && (
-                          <div className="-mt-2 ml-17 mr-5 xs:mr-26 mb-4 space-y-2">
-                            {passkeys.map((pk) => (
-                              <div key={pk.id} className="bg-panel-highlight rounded-lg p-3">
-                                {false ? (//editingPasskeyId === pk.id ? (
-                                  <div className="flex items-center gap-2">
-                                    <input
-                                      autoFocus
-                                      type="text"
-                                      value="Nickname"//{editingNickname}
-                                      // onChange={(e) => setEditingNickname(e.target.value)}
-                                      className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    />
-                                    <button 
-                                      // onClick={saveEditPasskey} 
-                                      className="text-xs text-blue-600 font-medium hover:text-blue-700 px-2 py-1"
-                                    >
-                                      Save
-                                    </button>
-                                    <button 
-                                      // onClick={() => setEditingPasskeyId(null)} 
-                                      className="text-xs text-gray-500 hover:text-gray-700 px-1 py-1"
-                                    >
-                                      Cancel
-                                    </button>
-                                  </div>
-                                ) : (
-                                  <div className="flex items-start justify-between">
-                                    <div>
-                                      <p className="text-xs font-medium">{pk.nickname}</p>
-                                      <p className="text-xs text-foreground-secondary mt-0.5">Added {pk.createdAt.toLocaleDateString()}</p>
-                                      <p className="text-xs text-foreground-muted">Last used: {formatRelativeTime(pk.lastUsed)}</p>
-                                    </div>
-                                    <div className="flex items-center gap-1 ml-2">
-                                      <button 
-                                        // onClick={() => startEditPasskey(pk)} 
-                                        className="p-1 text-foreground-secondary hover:text-foreground-primary rounded transition-colors cursor-pointer"
-                                      >
-                                        <Pencil className="w-3.5 h-3.5" />
-                                      </button>
-                                      <button 
-                                        // onClick={() => setDeletePasskeyId(pk.id)} 
-                                        className="p-1 text-foreground-secondary hover:text-foreground-poor rounded transition-colors cursor-pointer"
-                                      >
-                                        <Trash2 className="w-3.5 h-3.5" />
-                                      </button>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
+                          <PasskeyManagement 
+                            passkeys={passkeys} 
+                            onUpdate={(keys) => setPasskeys(keys)} 
+                            onDelete={(id) => {
+                              setDeletePasskeyId(id);
+                              setShowPasskeyDeleteConfirmModal(true);
+                            }}
+                          />
                         )}
                       </div>
 
@@ -667,83 +645,6 @@ const AccountPage = () => {
 
                     </div>
                   </div>
-
-                  {/* reset password */}
-                  {/* {user && user.linkedProviders?.includes('credentials') && (
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2">
-                        <label className="text-lg font-semibold">Reset Password</label>
-                      </div>
-                      <p className="text-foreground-secondary max-w-md">
-                        We&apos;ll send you an email with instructions to update your password.
-                      </p>
-                      <div className="mt-2">
-                        <Button 
-                          size="small"
-                          onClick={handleResetPasswordClick}
-                          disabled={isSendingResetEmail}
-                        >
-                          Send Reset Email
-                        </Button>
-                      </div>
-                    </div>
-                  )} */}
-                  
-
-                  {/* add linked account - password */}
-                  {/* {user && !user.linkedProviders?.includes('credentials') && (
-                    <div className="flex flex-col gap-1 max-w-md">
-                      <div className="flex items-center gap-2">
-                        <label className="text-lg font-semibold">Create Password</label>
-                      </div>
-                      <p className="text-foreground-secondary max-w-md">
-                        Set a password to enable traditional email and password login alongside Google SSO.
-                      </p>
-                      <div className="flex flex-col gap-4 max-w-sm">
-                        {isPasswordValidationError && (
-                          <div role="alert" className="flex items-center space-x-2 mt-4 text-sm text-red-500">
-                            <ShieldAlert className="w-4 h-4" />
-                            <span className="text-center">{passwordErrorMessage}</span>
-                          </div>
-                        )}
-                        <SetPasswordInputs
-                          label="Password"
-                          password={password}
-                          confirmPassword={confirmPassword}
-                          onPasswordChange={handlePasswordChange}
-                          onConfirmPasswordChange={handleConfirmPasswordChange}
-                        />
-                        <div className="mt-0.5">
-                          <Button 
-                            size="small"
-                            onClick={handleAddPassword}
-                            disabled={
-                              linkingAccount ||
-                              password.length === 0 || 
-                              confirmPassword.length === 0
-                            }
-                          >
-                            Add Password
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )} */}
-
-                  {/* add linked account - google */}
-                  {/* {user && !user.linkedProviders?.includes('google') && (
-                    <div className="flex flex-col gap-1 max-w-md">
-                      <div className="flex items-center gap-2">
-                        <label className="text-lg font-semibold">Link Google Account</label>
-                      </div>
-                      <p className="text-foreground-secondary">
-                        Connect your Google account to sign in securely with one click. You can still use your current username and password.
-                      </p>
-                      <div className="mt-2 max-w-46">
-                        <GoogleLoginButton callback={handleGoogleLinkSuccess} />
-                      </div>
-                    </div>
-                  )} */}
 
                   {/* enable Multi-Factor Authentication */}
                   {user && (
@@ -870,6 +771,18 @@ const AccountPage = () => {
         onOpenChange={setShowPasswordLinkModal}
         onCancel={() => setShowPasswordLinkModal(false)}
         onSuccess={handlePasswordLinkSuccess}
+      />
+      <PasskeyDeleteConfirmModal 
+        open={showPasskeyDeleteConfirmModal}
+        onOpenChange={setShowPasskeyDeleteConfirmModal}
+        onCancel={() => {
+          setDeletePasskeyId(null);
+          setShowPasskeyDeleteConfirmModal(false);
+        }}
+        onConfirm={() => {
+          deletePasskey();
+          setShowPasskeyDeleteConfirmModal(false);
+        }}
       />
     </div>
   )
