@@ -92,7 +92,15 @@ export async function POST(request: NextRequest) {
     const { sub, email, picture } = payload;
     const name = typeof payload.name === "string" ? payload.name : "";
 
-    // find existing user
+    // check if the current user has an authorized session
+    let sessionUserId: string | undefined;
+    try {
+      ({ id: sessionUserId } = await getIdsFromAccessToken(request));
+    } catch {
+      // ignore errors and fall through
+    }
+
+    // find any existing user that matches the Google provider id
     let storedUser = await User.findOne({
       accounts: {
         $elemMatch: {
@@ -101,6 +109,11 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    // throw immediately if user is authenticated and Google account doesn't match the user
+    if (sessionUserId && storedUser && storedUser._id.toString() !== sessionUserId) {
+      return getErrorResponse(401, "This Google account is already in use");
+    }
 
     if (storedUser) {
       // check if user has MFA enabled
@@ -114,15 +127,6 @@ export async function POST(request: NextRequest) {
 
     // if no match, it's a new google sign in
     if (!storedUser) {
-
-      // check if the user has an authorized session
-      let sessionUserId: string | undefined;
-      try {
-        ({ id: sessionUserId } = await getIdsFromAccessToken(request));
-      } catch {
-        // ignore errors and fall through to new user flow
-      }
-
       // if authed, attempt to link google account
       if (sessionUserId) {
         // if ids and emails match, update user
