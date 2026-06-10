@@ -150,7 +150,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     setLoggingOut(true);
     try {
       await axiosClient.post("/api/auth/logout");
@@ -162,7 +162,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       setLoggingOut(false);
     }
-  };
+  }, []);
 
   const updateUser = async (userData: EditableProfileFields) => {
     setUpdatingUser(true);
