@@ -1,7 +1,13 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { ACCESS_TOKEN_COOKIE_NAME, AuthTokenError, SESSION_HINT_COOKIE_NAME, validateSessionExists, verifyAccessToken } from "./helpers/util/token-utils";
+import { 
+  ACCESS_TOKEN_COOKIE_NAME, 
+  AuthTokenError, 
+  SESSION_HINT_COOKIE_NAME, 
+  validateSessionExists, 
+  verifyAccessToken 
+} from "./helpers/util/token-utils";
 import { JwtPayload } from "jsonwebtoken";
 import { getCachedSession, setCachedSession } from "./lib/session-cache";
 
@@ -16,7 +22,7 @@ function requireAuth(path: string) {
   // protect all API routes that require authorized users
   const isProtectedApi = 
     path.startsWith('/api/sign-cloudinary-params') ||
-    path.startsWith('/api/users/linkcredentials') ||
+    path.startsWith('/api/users/account-provider') ||
     path.startsWith('/api/users/update') ||
     path.startsWith('/api/users/security-logs') ||
     path.startsWith('/api/users/mfa') ||
