@@ -10,7 +10,7 @@
   --page: #e3eaef;
   --page-good: #c9dffb;
   --panel: #f3faff;
-  --panel-highlight: #d1d5db;
+  --panel-highlight: #e6edff;
   --panel-active: #444b5a;
   --panel-active-foreground: #eee;
   --panel-excellent: #d1fae5;
@@ -45,13 +45,14 @@
   --button-foreground-highlight: #ffffff;
   --button-foreground-low: #9a9dbf;
   --button-secondary-foreground: #6366f1;
-  --button-tertiary-background: #ffffff;
   --button-tertiary-border: #d1d5db;
   --button-warning-highlight: #eeeeee;
   --tab-foreground: #4b596d;
   --tab-foreground-selected: #6366f1;
   --logo: url('/nAuth-logo-light.png');
   --tremor-border-default: #d1d5db;
+  --tremor-border: #e6edff;
+  --tremor-lat: #f3faff;
 }
 
 [data-theme="dark"] {
@@ -93,13 +94,14 @@
   --button-foreground-highlight: #ffffff;
   --button-foreground-low: #4a4d6f;
   --button-secondary-foreground: #e5e6f2;
-  --button-tertiary-background: #282a36;
   --button-tertiary-border: #4a4d5f;
   --button-warning-highlight: #662010;
   --tab-foreground: #9ca3af;
   --tab-foreground-selected: #818cf8;
   --logo: url('/nAuth-logo.png');
   --tremor-border-default: #313441;
+  --tremor-border: #313441;
+  --tremor-lat: #313441;
 }
 
 @theme inline {
@@ -143,13 +145,14 @@
   --color-button-foreground-highlight: var(--button-foreground-highlight);
   --color-button-foreground-low: var(--button-foreground-low);
   --color-button-secondary-foreground: var(--button-secondary-foreground);
-  --color-button-tertiary-background: var(--button-tertiary-background);
   --color-button-tertiary-border: var(--button-tertiary-border);
   --color-button-warning-highlight: var(--button-warning-highlight);
   --color-tab-foreground: var(--tab-foreground);
   --color-tab-foreground-selected: var(--tab-foreground-selected);
   --background-image-logo: var(--logo);
   --color-tremor-border-default: var(--tremor-border-default);
+  --color-tremor-border: var(--tremor-border);
+  --color-tremor-lat: var(--tremor-lat);
 }
 
 body {
@@ -242,7 +245,7 @@ body {
     text-foreground-primary 
     hover:text-button-foreground-highlight 
     disabled:text-button-tertiary-border
-    bg-button-tertiary-background
+    bg-transparent
     hover:bg-brand-highlight 
     disabled:bg-panel
     border
@@ -347,7 +350,7 @@ body {
     transition-colors
 }
 
-@utility input-poor {
+@utility input-error {
   @apply
     input-base
     border-poor 
@@ -439,7 +442,8 @@ body {
 @utility tab-list {
   @apply
     flex 
-    gap-10 
+    gap-8
+    md:gap-10 
     px-5 
     rounded-md 
     bg-panel
@@ -450,7 +454,8 @@ body {
     text-tab-foreground
     hover:text-foreground-primary
     data-selected:text-tab-foreground-selected
-    text-lg 
+    text-base
+    md:text-lg 
     font-semibold 
     cursor-pointer
     data-selected:cursor-default
@@ -464,7 +469,7 @@ body {
   }
 
   & .stroke-1 {
-    stroke: var(--panel-highlight);
+    stroke: var(--tremor-lat);
   }
 
   & linearGradient {
@@ -496,6 +501,11 @@ body {
   & .recharts-tooltip-wrapper span {
     background-color: var(--brand);
     border-color: var(--brand-outline);
+  }
+
+  & .recharts-tooltip-cursor {
+    stroke: var(--brand-light);
+    stroke-opacity: 0.7;
   }
 }
 

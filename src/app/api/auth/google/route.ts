@@ -174,6 +174,19 @@ export async function POST(request: NextRequest) {
           isVerified: email_verified,
         });
 
+        // store user in the database
+        try {
+          storedUser = await newUser.save();
+
+        // throw if database rejects duplicate with 11000
+        } catch (dbError: unknown) {
+          if (isDuplicateError(dbError)) {
+            // most likely the user account exists but their google account is not linked
+            return getErrorResponse(409, "User already exists");
+          }
+          throw dbError;
+        }
+
         // ensure cloudinary url configuration before attempting to import avatar
         const cloudinaryUrl = process.env.CLOUDINARY_URL;
         if (!cloudinaryUrl) {
@@ -182,23 +195,13 @@ export async function POST(request: NextRequest) {
           // import the avatar from Google
           if (picture && typeof picture === 'string') {
             try {
-              newUser.avatarId = await getAvatarId(picture);  
+              const avatarId = await getAvatarId(picture);
+              storedUser.avatarId = avatarId;
+              await storedUser.save();
             } catch (avatarError) {
               console.error("Failed to import Google avatar", avatarError);
             }
           }
-        }
-
-        // store user in the database
-        try {
-          storedUser = await newUser.save();
-
-        // throw if database rejects duplicate with 11000
-        } catch (dbError: unknown) {
-          if (isDuplicateError(dbError)) {
-            return getErrorResponse(409, "User already exists", dbError);
-          }
-          throw dbError;
         }
       }
     }

@@ -29,11 +29,11 @@ export const DeviceIcon = ({
   const Icon = ICON_MAP[type];
   
   const variantIconStyles = sizeVariant === 'large' 
-    ? "text-brand-light w-6 h-6" 
+    ? "text-foreground-secondary w-6 h-6" 
     : "w-4 h-4";
 
   const variantContainerStyles = sizeVariant === 'large' 
-    ? "p-3 bg-brand-light/15 rounded-lg h-fit" 
+    ? "p-3 bg-panel-brand rounded-lg h-fit" 
     : "";
 
   return (

@@ -21,7 +21,7 @@ export interface ModalProps {
   onSuccess: (codes: string[] ) => void;
 }
 
-const MFABackupCodesModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProps) => {
+const MFABackupCodesModal = ({ open, onOpenChange, onCancel, onSuccess }: ModalProps) => {
 
   const [code, setCode] = useState<string>('');
   const [validating, setValidating] = useState<boolean>(false);

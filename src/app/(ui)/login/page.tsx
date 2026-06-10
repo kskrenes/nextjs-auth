@@ -58,10 +58,12 @@ const LoginPage = () => {
   };
 
   const handleGoogleLoginAttempt = useCallback(() => {
+    setError('');
     setAwaitingRedirect(true);
   }, []);
 
   const handleGoogleLoginError = useCallback(() => {
+    setError('Unable to sign in with Google. If you have a password, sign in that way and link your Google account in settings.');
     setAwaitingRedirect(false);
   }, []);
 

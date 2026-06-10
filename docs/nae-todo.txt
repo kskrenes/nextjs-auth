@@ -46,14 +46,8 @@ sendemail api and resetpassword api
 - [x] console error
 - [x] update authed user after email is verified
 
-profile
-- [x] add success state after send verify email
-- [x] add error state after send verify email
-- [x] add user fields: name, company, website, social link x4, avatar
-- [x] implement edit of non-image fields
-- [x] implement avatar edit
-- [x] layout and styling
-- [x] implement signed uploads to cloudinary
+multiple pages
+- [x] either display or discard toast
 
 sso
 - [x] remove account linking logic from public routes
@@ -61,7 +55,7 @@ sso
 - [x] add tabs to account page for profile and settings
 - [x] expose linkedProviders on the sanitized user object
 - [x] add reset password to settings view
-- [x] add create password and link google account to settings view
+- [x] add create password and link Google account to settings view
 - [x] add /api/users/linkcredentials: requires valid session, gates linking on session.id === existingUser._id.toString()
 - [x] support Google account linking via /api/auth/google for authenticated users
 - [x] display validation error states for create password
@@ -72,7 +66,7 @@ session hardening
 - [x] create session table on MongoDB cloud
 - [x] create session mongoose model and types
 - [x] add session token utilities/helpers
-- [x] add session entry logic to login route and google auth route
+- [x] add session entry logic to login route and Google auth route
 - [x] add session delete and cookie clearing logic to logout route
 - [x] create /api/auth/refresh route
 - [x] create /api/auth/sessions route with GET and DELETE (or POST /revoke)
@@ -127,21 +121,26 @@ dashboard content
 - [x] add charts (like Tremor or Chart.js) showing fake system metrics like "API Requests", "Cache Hit Rate (Redis)", or "Auth Success vs Failures"
 - [x] add card showing which email domains are allowed to sign up (mock until "restricted domains" feature is implemented)
 
-additional authentication methods
-- [x] add social login (google)
-- [x] research multifactor auth (MFA)
-- [ ] research one-time passcodes
-- [ ] research passkeys
+profile
+- [x] add success state after send verify email
+- [x] add error state after send verify email
+- [x] add user fields: name, company, website, social link x4, avatar
+- [x] implement edit of non-image fields
+- [x] implement avatar edit
+- [x] layout and styling
+- [x] implement signed uploads to cloudinary
+- [ ] implement Google account unlink
 
-roles and permissions
-- [x] research examples and determine what to implement
+additional authentication methods
+- [x] add social login (Google)
+- [ ] add passkeys
 
 look & feel, flow
 - [x] improve style
 - [x] make new (main) layout responsive
 - [x] define themes
 - [x] allow theme selection
-- [x] fix google sign in button width
+- [x] fix Google sign-in button width
 - [x] lay out login and signup pages
 - [x] lay out dashboard page
 - [x] remove "Reset Password" from nav menus
@@ -152,7 +151,7 @@ look & feel, flow
 - [x] update success state on triggerpasswordreset page to match token pages
 - [x] redesign onboarding page
 - [x] fix sidebar to top left when scrolling
-- [ ] redesign account page tabs as necessary
+- [x] redesign account page tabs as necessary
 - [ ] include password validation states in password component
 - [ ] refactor to components where applicable
 
@@ -160,14 +159,16 @@ errors & warnings
 - [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
 - [x] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
 - [x] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
-- [ ] fix google sign in button layout in settings tab
-
-multiple pages
-- [x] either display or discard toast
+- [x] fix Google sign-in button layout in settings tab
+- [ ] throw error when linking a Google account that exists as a different user, currently switches to that user
 
 feature research
 - [x] research social sign-on
 - [x] research SAML
+- [x] research multifactor auth (MFA)
+- [x] research roles and permissions examples and determine what to implement
+- [ ] research one-time passcodes
+- [ ] research passkeys
 
 ## Homepage Feature Checklist
 - [x] Email/password authentication

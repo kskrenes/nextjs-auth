@@ -10,6 +10,9 @@ interface GoogleLoginButtonProps {
   callback?: (res: AuthLoginResponse) => void;
   onLoginAttempt?: () => void;
   onLoginError?: () => void;
+  type?: 'standard' | 'icon';
+  size?: 'medium' | 'large';
+  text?: 'signin' | 'signin_with';
 }
 
 const GSI_SCRIPT_SRC = 'https://accounts.google.com/gsi/client';
@@ -28,6 +31,9 @@ export default function GoogleLoginButton({
   callback,
   onLoginAttempt,
   onLoginError,
+  type = 'standard',
+  size = 'large',
+  text = 'signin_with',
 }: GoogleLoginButtonProps) {
 
   const { loggingIn, loginViaGoogle } = useAuth();
@@ -39,7 +45,6 @@ export default function GoogleLoginButton({
   // Refs that stay stable across renders without triggering re-initialization
   const containerWidthRef = useRef<number>(GSI_MAX_WIDTH);
   const initializedRef = useRef<boolean>(false);
-  // const callbackRef = useRef<typeof handleBackendAuth | null>(null);
 
   const handleBackendAuth = useCallback(async (token: string) => {
     if (onLoginAttempt) onLoginAttempt();
@@ -104,10 +109,10 @@ export default function GoogleLoginButton({
       const targetDiv = document.getElementById('gsi-target-btn');
       if (targetDiv && window.google?.accounts) {
         window.google.accounts.id.renderButton(targetDiv, {
-          type: 'standard',
+          type,
           theme: 'outline',
-          size: 'large',
-          text: 'signin_with',
+          size,
+          text,
           logo_alignment: 'center',
           width: containerWidthRef.current,
         });
@@ -143,10 +148,10 @@ export default function GoogleLoginButton({
       });
 
       window.google.accounts.id.renderButton(targetDiv, {
-        type: 'standard',
+        type,
         theme: 'outline',
-        size: 'large',
-        text: 'signin_with',
+        size,
+        text,
         logo_alignment: 'center',
         width: containerWidthRef.current,
       });
@@ -171,7 +176,7 @@ export default function GoogleLoginButton({
       (script as HTMLScriptElement).removeEventListener('load', initAndRender);
       // Note: gsiInitialized is NOT reset — initialize() must only ever be called once.
     };
-  }, []);
+  }, [type, size, text]);
 
   // Re-render the button whenever the debounced container width changes.
   // initialize is NOT called again here; only the visual button is updated.
@@ -182,14 +187,17 @@ export default function GoogleLoginButton({
     if (!targetDiv) return;
 
     window.google.accounts.id.renderButton(targetDiv, {
-      type: 'standard',
+      type,
       theme: 'outline',
-      size: 'large',
-      text: 'signin_with',
+      size,
+      text,
       logo_alignment: 'center',
       width: containerWidth,
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerWidth]);
+  // type/size/text changes are handled by the initialization 
+  // effect; this effect only responds to resize.
 
   return (
     <div
