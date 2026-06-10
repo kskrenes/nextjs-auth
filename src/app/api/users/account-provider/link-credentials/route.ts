@@ -53,7 +53,10 @@ export async function POST(request: NextRequest) {
           hasStrongPassword,
         },
       },
-      { returnDocument: 'after' }
+      { 
+        returnDocument: 'after',
+        runValidators: true,
+      }
     );
 
     if (!updatedUser) {
