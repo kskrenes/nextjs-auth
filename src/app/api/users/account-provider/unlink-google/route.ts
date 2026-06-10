@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
     // if no user was found, throw error
     if (!updatedUser) {
-      getErrorResponse(404, "Cannot unlink Google account if not linked or no other sign in method is configured");
+      return getErrorResponse(404, "Cannot unlink Google account if not linked or no other sign in method is configured");
     }
 
     // create sanitized user for the response
