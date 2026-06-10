@@ -76,12 +76,16 @@ const PasskeyManagement = ({ passkeys, onUpdate, onDelete }: PasskeyManagementPr
               </div>
               <div className="flex items-center gap-1 ml-2">
                 <button 
+                  type="button"
+                  aria-label={`Edit passkey ${pk.nickname}`}
                   onClick={() => startEditPasskey(pk)} 
                   className="p-1 text-foreground-secondary hover:text-foreground-primary rounded transition-colors cursor-pointer"
                 >
                   <Pencil className="w-3.5 h-3.5" />
                 </button>
                 <button 
+                  type="button"
+                  aria-label={`Delete passkey ${pk.nickname}`}
                   onClick={() => onDelete(pk.id)} 
                   className="p-1 text-foreground-secondary hover:text-foreground-poor rounded transition-colors cursor-pointer"
                 >
