@@ -196,6 +196,8 @@ export default function GoogleLoginButton({
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [containerWidth]);
+  // type/size/text changesare handled by the initialization 
+  // effect; this effect only responds to resize.
 
   return (
     <div
