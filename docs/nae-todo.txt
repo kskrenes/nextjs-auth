@@ -131,6 +131,21 @@ profile
 - [x] implement signed uploads to cloudinary
 - [ ] implement Google account unlink
 
+errors & warnings
+- [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
+- [x] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
+- [x] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
+- [x] fix Google sign-in button layout in settings tab
+- [ ] throw error when linking a Google account that exists as a different user, currently switches to that user
+
+feature research
+- [x] research social sign-on
+- [x] research SAML
+- [x] research multifactor auth (MFA)
+- [x] research roles and permissions examples and determine what to implement
+- [ ] research one-time passcodes
+- [ ] research passkeys
+
 additional authentication methods
 - [x] add social login (Google)
 - [ ] add passkeys
@@ -155,21 +170,6 @@ look & feel, flow
 - [ ] include password validation states in password component
 - [ ] refactor to components where applicable
 
-errors & warnings
-- [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
-- [x] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
-- [x] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
-- [x] fix Google sign-in button layout in settings tab
-- [ ] throw error when linking a Google account that exists as a different user, currently switches to that user
-
-feature research
-- [x] research social sign-on
-- [x] research SAML
-- [x] research multifactor auth (MFA)
-- [x] research roles and permissions examples and determine what to implement
-- [ ] research one-time passcodes
-- [ ] research passkeys
-
 ## Homepage Feature Checklist
 - [x] Email/password authentication
 - [x] Protected routes and pages
@@ -179,8 +179,6 @@ feature research
 - [x] Multifactor authentication
 - [x] Profile management
 - [ ] Passkeys
-- [ ] Roles and permissions - OOS
-- [ ] Restricted domains - OOS
 
 - [ ] DEPLOY
 
@@ -226,3 +224,7 @@ shared demo environment guardrails
 restricted domains
 - [ ] allow toggling an option to "Restrict registration to specific domains." (signup API rejects any email not ending in specified domains)
 - [ ] use a public list or regex array to block common burner email providers (e.g., Mailinator, Yopmail) during registration
+
+## Homepage Feature Checklist
+- [ ] Roles and permissions - OOS
+- [ ] Restricted domains - OOS
