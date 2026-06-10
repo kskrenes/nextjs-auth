@@ -1,7 +1,7 @@
 "use client";
 
 import { triggerEmail } from "@/helpers/util/email-trigger";
-import { ChevronDown, ChevronUp, Fingerprint, KeyRound, Lock, Pencil, Plus, ShieldAlert, ShieldUser } from "lucide-react";
+import { Fingerprint, KeyRound, Lock, Pencil, Plus, ShieldAlert, ShieldUser } from "lucide-react";
 import { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
@@ -25,15 +25,15 @@ import MFAManagement from "@/components/mfa-management";
 import MFABackupCodesModal from "@/components/mfa-backup-codes-modal";
 import MFADisableModal from "@/components/mfa-disable-modal";
 import PasswordLinkModal from "@/components/password-link-modal";
-import PasskeyManagement from "@/components/passkey-management";
 import PasskeyDeleteConfirmModal from "@/components/passkey-delete-confirm-modal";
 
-interface Passkey {
-  id: string;
-  nickname: string;
-  createdAt: Date;
-  lastUsed: Date | null;
-}
+// TODO: implement passkeys
+// interface Passkey {
+//   id: string;
+//   nickname: string;
+//   createdAt: Date;
+//   lastUsed: Date | null;
+// }
 
 const AccountPage = () => {
 
@@ -66,15 +66,16 @@ const AccountPage = () => {
     socialLinks: ["", "", "", ""],
   });
 
-  const [deletePasskeyId, setDeletePasskeyId] = useState<string | null>(null);
-  const [passkeys, setPasskeys] = useState<Passkey[]>([
-    {
-      id: '1',
-      nickname: 'MacBook Touch ID',
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-      lastUsed: new Date(Date.now() - 1000 * 60 * 45),
-    },
-  ]);
+  // TODO: implement passkeys
+  // const [deletePasskeyId, setDeletePasskeyId] = useState<string | null>(null);
+  // const [passkeys, setPasskeys] = useState<Passkey[]>([
+  //   {
+  //     id: '1',
+  //     nickname: 'MacBook Touch ID',
+  //     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
+  //     lastUsed: new Date(Date.now() - 1000 * 60 * 45),
+  //   },
+  // ]);
 
   const { 
     user, 
@@ -143,7 +144,6 @@ const AccountPage = () => {
   const handleEditClick = () => {
     if (!user || isEditing) return;
 
-    // resetPasswordFormState();
     setEditedFields({
       name: user.name || "",
       company: user.company || "",
@@ -167,17 +167,20 @@ const AccountPage = () => {
     toast.success("Google account added successfully!");
   }
 
+  // TODO: implement passkeys
   // const resetPasswordFormState = () => {
   //   setPassword("");
   //   setConfirmPassword("");
   //   clearPasswordValidationState();
   // };
 
+  // TODO: implement passkeys
   // const handlePasswordChange = (value: string) => {
   //   setPassword(value);
   //   clearPasswordValidationState();
   // }
 
+  // TODO: implement passkeys
   // const handleConfirmPasswordChange = (value: string) => {
   //   setConfirmPassword(value);
   //   clearPasswordValidationState();
@@ -247,23 +250,25 @@ const AccountPage = () => {
     toast.success("Password added successfully");
   }
 
-  const addPasskey = () => {
-    const newKey: Passkey = {
-      id: Date.now().toString(),
-      nickname: `Passkey ${passkeys.length + 1}`,
-      createdAt: new Date(),
-      lastUsed: null,
-    };
-    setPasskeys([...passkeys, newKey]);
-    setPasskeysExpanded(true);
-  };
+  // TODO: implement passkeys
+  // const addPasskey = () => {
+    //   const newKey: Passkey = {
+  //     id: Date.now().toString(),
+  //     nickname: `Passkey ${passkeys.length + 1}`,
+  //     createdAt: new Date(),
+  //     lastUsed: null,
+  //   };
+  //   setPasskeys([...passkeys, newKey]);
+  //   setPasskeysExpanded(true);
+  // };
 
-  const deletePasskey = () => {
-    if (deletePasskeyId) {
-      setPasskeys(passkeys.filter((pk) => pk.id !== deletePasskeyId));
-      setDeletePasskeyId(null);
-    }
-  };
+  // TODO: implement passkeys
+  // const deletePasskey = () => {
+  //   if (deletePasskeyId) {
+  //     setPasskeys(passkeys.filter((pk) => pk.id !== deletePasskeyId));
+  //     setDeletePasskeyId(null);
+  //   }
+  // };
 
   const notYetImplemented = () => {
     toast.error("Feature scheduled for future development")
@@ -299,7 +304,6 @@ const AccountPage = () => {
               {/* username/admin */}
               <div className="flex justify-center items-center max-w-55 xs:max-w-80 gap-2 w-full">
                 <p className="text-foreground-secondary text-lg xs:text-xl break-all line-clamp-1">{user?.username}</p>
-                {/* {user?.isAdmin && <Badge label="Admin" variant="green" />} */}
               </div>
             </div>
 
@@ -341,7 +345,6 @@ const AccountPage = () => {
             onChange={(index) => {
               setActiveTab(index);
               setIsEditing(false);
-              // resetPasswordFormState();
               if (index === 2) {
                 fetchSecurityTabData();
               }
@@ -564,14 +567,14 @@ const AccountPage = () => {
                               <div className="flex-1">
                                 <p className="text-sm font-medium">Passkeys</p>
                                 <p className="text-xs text-foreground-secondary mt-0.5">
-                                  {(user && user.linkedProviders?.includes('credentials')) 
+                                  {false//(user && user.linkedProviders?.includes('credentials')) 
                                     ? (
                                       <span 
                                         className="flex gap-2 hover:text-foreground-primary transition-colors cursor-pointer"
                                         onClick={() => setPasskeysExpanded(!passkeysExpanded)}
                                       >
-                                        <span>{passkeys.length} passkey{passkeys.length > 1 ? 's' : ''} configured</span>
-                                        {passkeysExpanded ? <ChevronUp className="w-3 h-3 mt-0.5" /> : <ChevronDown className="w-3 h-3 mt-0.5" />}
+                                        {/* <span>{passkeys.length} passkey{passkeys.length > 1 ? 's' : ''} configured</span>
+                                        {passkeysExpanded ? <ChevronUp className="w-3 h-3 mt-0.5" /> : <ChevronDown className="w-3 h-3 mt-0.5" />} */}
                                       </span>
                                     ) : 'Passwordless sign-in with biometrics or security keys.'
                                   }
@@ -580,7 +583,7 @@ const AccountPage = () => {
                               <Button 
                                 size="small"
                                 variant="tertiary"
-                                onClick={addPasskey}
+                                onClick={notYetImplemented}
                                 disabled={false}
                                 className="text-sm gap-2"
                               >
@@ -592,7 +595,7 @@ const AccountPage = () => {
                         </div>
                         
                         {/* Passkey list */}
-                        {passkeysExpanded && passkeys.length > 0 && (
+                        {/* {passkeysExpanded && passkeys.length > 0 && (
                           <PasskeyManagement 
                             passkeys={passkeys} 
                             onUpdate={(keys) => setPasskeys(keys)} 
@@ -601,7 +604,7 @@ const AccountPage = () => {
                               setShowPasskeyDeleteConfirmModal(true);
                             }}
                           />
-                        )}
+                        )} */}
                       </div>
 
                       {/* Google */}
@@ -776,11 +779,11 @@ const AccountPage = () => {
         open={showPasskeyDeleteConfirmModal}
         onOpenChange={setShowPasskeyDeleteConfirmModal}
         onCancel={() => {
-          setDeletePasskeyId(null);
+          // setDeletePasskeyId(null);
           setShowPasskeyDeleteConfirmModal(false);
         }}
         onConfirm={() => {
-          deletePasskey();
+          // deletePasskey();
           setShowPasskeyDeleteConfirmModal(false);
         }}
       />
