@@ -138,7 +138,7 @@ errors & warnings
 - [x] fix Google sign-in button layout in settings tab
 - [x] first sign in with Google/onboard -> add password -> unlink Google -> sign out: can't sign in with password
 - [ ] throw error when linking a Google account that exists as a different user, currently switches to that user
-- [ ] add awaitingRedirect state to onboarding page
+- [x] add awaitingRedirect state to onboarding page
 
 feature research
 - [x] research social sign-on
