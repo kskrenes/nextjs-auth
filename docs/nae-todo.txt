@@ -140,7 +140,7 @@ look & feel, flow
 - [x] make new (main) layout responsive
 - [x] define themes
 - [x] allow theme selection
-- [x] fix Google sign in button width
+- [x] fix Google sign-in button width
 - [x] lay out login and signup pages
 - [x] lay out dashboard page
 - [x] remove "Reset Password" from nav menus
@@ -159,7 +159,7 @@ errors & warnings
 - [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
 - [x] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
 - [x] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
-- [x] fix Google sign in button layout in settings tab
+- [x] fix Google sign-in button layout in settings tab
 - [ ] throw error when linking a Google account that exists as a different user, currently switches to that user
 
 feature research
