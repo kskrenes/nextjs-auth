@@ -129,7 +129,7 @@ profile
 - [x] implement avatar edit
 - [x] layout and styling
 - [x] implement signed uploads to cloudinary
-- [ ] implement Google account unlink
+- [x] implement Google account unlink
 
 errors & warnings
 - [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
