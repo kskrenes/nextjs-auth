@@ -28,6 +28,7 @@ const OnboardingPage = () => {
   if (user?.id !== prevUserId) {
     setPrevUserId(user?.id);
     setUsername(user?.username || "");
+    setAwaitingRedirect(false);
   }
 
   useEffect(() => {
