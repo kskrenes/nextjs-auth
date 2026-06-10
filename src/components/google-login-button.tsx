@@ -194,7 +194,8 @@ export default function GoogleLoginButton({
       logo_alignment: 'center',
       width: containerWidth,
     });
-  }, [containerWidth, type, size, text]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [containerWidth]);
 
   return (
     <div
