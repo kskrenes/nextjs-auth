@@ -55,7 +55,7 @@ sso
 - [x] add tabs to account page for profile and settings
 - [x] expose linkedProviders on the sanitized user object
 - [x] add reset password to settings view
-- [x] add create password and link google account to settings view
+- [x] add create password and link Google account to settings view
 - [x] add /api/users/linkcredentials: requires valid session, gates linking on session.id === existingUser._id.toString()
 - [x] support Google account linking via /api/auth/google for authenticated users
 - [x] display validation error states for create password
@@ -66,7 +66,7 @@ session hardening
 - [x] create session table on MongoDB cloud
 - [x] create session mongoose model and types
 - [x] add session token utilities/helpers
-- [x] add session entry logic to login route and google auth route
+- [x] add session entry logic to login route and Google auth route
 - [x] add session delete and cookie clearing logic to logout route
 - [x] create /api/auth/refresh route
 - [x] create /api/auth/sessions route with GET and DELETE (or POST /revoke)
@@ -129,10 +129,10 @@ profile
 - [x] implement avatar edit
 - [x] layout and styling
 - [x] implement signed uploads to cloudinary
-- [ ] implement google account unlink
+- [ ] implement Google account unlink
 
 additional authentication methods
-- [x] add social login (google)
+- [x] add social login (Google)
 - [ ] add passkeys
 
 look & feel, flow
@@ -140,7 +140,7 @@ look & feel, flow
 - [x] make new (main) layout responsive
 - [x] define themes
 - [x] allow theme selection
-- [x] fix google sign in button width
+- [x] fix Google sign in button width
 - [x] lay out login and signup pages
 - [x] lay out dashboard page
 - [x] remove "Reset Password" from nav menus
@@ -159,8 +159,8 @@ errors & warnings
 - [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
 - [x] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
 - [x] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
-- [x] fix google sign in button layout in settings tab
-- [ ] throw error when linking a google account that exists as a different user, currently switches to that user
+- [x] fix Google sign in button layout in settings tab
+- [ ] throw error when linking a Google account that exists as a different user, currently switches to that user
 
 feature research
 - [x] research social sign-on
