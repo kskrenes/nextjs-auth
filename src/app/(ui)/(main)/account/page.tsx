@@ -320,7 +320,7 @@ const AccountPage = () => {
                 Edit Profile
               </Button>
               {/* verify email button - conditional */}
-              {user && !user?.isVerified && (
+              {user && !user?.isVerified && !user.linkedProviders.includes('google') && (
                 <Button 
                   className="flex-1 px-0" 
                   variant="secondary"
@@ -385,7 +385,7 @@ const AccountPage = () => {
                       <div className="flex flex-col gap-1">
                         <label className="text-lg font-semibold">Email</label>
                         <div className="flex items-center gap-2">
-                          {user.isVerified ? (
+                          {(user.isVerified || user.linkedProviders.includes('google')) ? (
                             // verified email link
                             <IconLink url={`mailto:${user.email}`} />
                           ) : (

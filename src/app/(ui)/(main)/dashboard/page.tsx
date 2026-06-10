@@ -15,10 +15,11 @@ const DashboardPage = () => {
 
   if (fetchingUser || !user) return <FullScreenLoader />;
 
+  const hasGoogleProvider = user.linkedProviders.includes('google');
   const healthChecks = [
     { name: 'Multi-Factor Authentication', enabled: user.mfaEnabled, weight: 40 },
-    { name: 'Strong Password', enabled: user.hasStrongPassword, weight: 30 },
-    { name: 'Verified Email', enabled: user.isVerified, weight: 30 },
+    { name: 'Strong Password', enabled: user.hasStrongPassword || hasGoogleProvider, weight: 30 },
+    { name: 'Verified Email', enabled: user.isVerified || hasGoogleProvider, weight: 30 },
   ];
 
   const healthScore = healthChecks.reduce((score, check) => {
