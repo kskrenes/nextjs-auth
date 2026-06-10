@@ -1,6 +1,8 @@
 'use client';
 
 import { AuthLoginResponse, useAuth } from '@/context-providers/auth-context-provider';
+import { getErrorMessage } from '@/helpers/util/error-utils';
+import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
@@ -9,7 +11,7 @@ interface GoogleLoginButtonProps {
   disabled?: boolean;
   callback?: (res: AuthLoginResponse) => void;
   onLoginAttempt?: () => void;
-  onLoginError?: () => void;
+  onLoginError?: (message: string) => void;
   type?: 'standard' | 'icon';
   size?: 'medium' | 'large';
   text?: 'signin' | 'signin_with';
@@ -54,9 +56,13 @@ export default function GoogleLoginButton({
       if (redirect && !res.data.mfaRequired) {
         router.replace("/dashboard");
       }
-    } catch {
-      console.error('Error logging in via Google');
-      if (onLoginError) onLoginError();
+    } catch (error: unknown) {
+      let message = 'Error logging in via Google';
+      if (axios.isAxiosError(error) && error.response?.status !== 500) {
+        message = getErrorMessage(error, message);
+      }
+      console.error(message);
+      if (onLoginError) onLoginError(message);
     }
   }, [loginViaGoogle, callback, onLoginAttempt, onLoginError, redirect, router]);
 
