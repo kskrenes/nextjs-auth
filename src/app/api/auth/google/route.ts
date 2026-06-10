@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
       return getErrorResponse(401, "Invalid token payload");
     }
 
-    const { sub, email, picture, email_verified } = payload;
+    const { sub, email, picture } = payload;
     const name = typeof payload.name === "string" ? payload.name : "";
 
     // find existing user
@@ -103,12 +103,6 @@ export async function POST(request: NextRequest) {
     });
 
     if (storedUser) {
-      // upgrade isVerified if Google now says the email is verified
-      if (!storedUser.isVerified && email_verified) {
-        storedUser.isVerified = true;
-        await storedUser.save();
-      }
-
       // check if user has MFA enabled
       if (storedUser.mfaEnabled === true) {
         const mfaChallenge = await initiateMfaChallenge(storedUser);
@@ -166,12 +160,10 @@ export async function POST(request: NextRequest) {
           email: normalizedEmail, 
           name,
           hasCompletedProfile: false,
-          hasStrongPassword: true,  // set to true (ony on first google login with no other credentials) to avoid penalizing health score
           accounts: [{ 
             provider: 'google',
             providerId: sub,
           }],
-          isVerified: email_verified,
         });
 
         // store user in the database
