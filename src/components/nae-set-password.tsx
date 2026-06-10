@@ -10,6 +10,7 @@ interface SetPasswordInputsProps {
   onConfirmPasswordChange: (v: string) => void;
   disabled?: boolean;
   idPrefix?: string;
+  onEnter?: () => void;
 }
 
 // Use React.FC (Function Component) or the arrow function syntax with the InputProps type.
@@ -19,6 +20,7 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
   confirmPassword,
   onPasswordChange,
   onConfirmPasswordChange,
+  onEnter = undefined,
   disabled = false,
   idPrefix = '',
 }) => {
@@ -37,6 +39,7 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
         required
         value={password}
         onChange={(e) => onPasswordChange(e.target.value)}
+        onEnter={() => {if (onEnter) onEnter()}}
         disabled={disabled}
       />
       <Input 
@@ -48,6 +51,7 @@ const SetPasswordInputs: React.FC<SetPasswordInputsProps> = ({
         required
         value={confirmPassword}
         onChange={(e) => onConfirmPasswordChange(e.target.value)}
+        onEnter={() => {if (onEnter) onEnter()}}
         disabled={disabled}
       />
     </>

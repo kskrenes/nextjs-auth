@@ -101,6 +101,7 @@ const PasswordLinkModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProp
             label="Password"
             password={password}
             confirmPassword={confirmPassword}
+            onEnter={handleSubmit}
             onPasswordChange={(val) => {
               setPassword(val);
               if (error) setError('');

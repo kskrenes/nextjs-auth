@@ -136,9 +136,9 @@ errors & warnings
 - [x] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
 - [x] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
 - [x] fix Google sign-in button layout in settings tab
-- [ ] first sign in with Google/onboard -> add password -> unlink Google -> sign out: can't sign in with password
+- [x] first sign in with Google/onboard -> add password -> unlink Google -> sign out: can't sign in with password
 - [ ] throw error when linking a Google account that exists as a different user, currently switches to that user
-- [ ] add awaitingRedirect state to onboarding page
+- [x] add awaitingRedirect state to onboarding page
 
 feature research
 - [x] research social sign-on
