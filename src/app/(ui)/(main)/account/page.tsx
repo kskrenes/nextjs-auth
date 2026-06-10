@@ -567,7 +567,8 @@ const AccountPage = () => {
                               <div className="flex-1">
                                 <p className="text-sm font-medium">Passkeys</p>
                                 <p className="text-xs text-foreground-secondary mt-0.5">
-                                  {false//(user && user.linkedProviders?.includes('credentials')) 
+                                  {/* TODO: enable when passkey backend is ready */}
+                                  {false
                                     ? (
                                       <span 
                                         className="flex gap-2 hover:text-foreground-primary transition-colors cursor-pointer"
