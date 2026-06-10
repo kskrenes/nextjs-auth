@@ -34,8 +34,9 @@ const PasswordLinkModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProp
   const { linkCredentials } = useAuth();
 
   const handleOpenChange = (isOpen: boolean) => {
+    if (submitting) return;
     if (!isOpen) clear();
-    if (!submitting) onOpenChange(isOpen);
+    onOpenChange(isOpen);
   }
 
   const clear = () => {
