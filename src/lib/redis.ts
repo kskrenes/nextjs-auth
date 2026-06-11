@@ -15,4 +15,6 @@ export const redisKeys = {
   userSessions: (userId: string) => `user-sessions:${userId}`,
   mfaToken: (token: string) => `mfa-pending:${token}`,
   mfaSetup: (userId: string) => `mfa-setup:${userId}`,
+  passkeyRegistration: (token: string) => `passkey-reg:${token}`,
+  passkeyAuthentication: (token: string) => `passkey-auth:${token}`,
 };
