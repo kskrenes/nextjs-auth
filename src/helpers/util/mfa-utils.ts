@@ -5,54 +5,13 @@ import { redis, redisKeys } from "@/lib/redis";
 import { getRandomToken, getToken, storeCookie } from "./token-utils";
 import { NextRequest, NextResponse } from "next/server";
 import { RawUser } from "../dto/user-dto";
+import { CLAIM_SCRIPT, CLAIM_TTL_SECONDS, UNCLAIM_SCRIPT } from "./redis-util";
 
 const TOTP_LENGTH = 6;
 const BACKUP_LENGTH = 8;
 
 const MFA_PENDING_COOKIE_NAME =  "naemfa" as const;
 const MFA_PENDING_TTL_SECONDS = 5 * 60; // 5 minutes
-const CLAIM_TTL_SECONDS = 30; // Short window for validation + session creation; protects against indefinite locks.
-
-/**
- * Atomically transitions a pending MFA token from "pending" → "claimed".
- * Only one concurrent caller can succeed; subsequent callers receive null.
- * Stores the remaining TTL in the claimed record so it can be restored on failure.
- *
- * Returns userId if the claim succeeded, or null if the token is missing,
- * expired, or already claimed by another request.
- */
-const CLAIM_SCRIPT = `
-local key   = KEYS[1]
-local claimTTL = tonumber(ARGV[1])
-local val = redis.call('GET', key)
-if not val then return nil end
-local ok, data = pcall(cjson.decode, val)
-if not ok or data.claimed then return nil end
-local ttl = redis.call('TTL', key)
-if ttl < 0 then return nil end
-data.claimed     = true
-data.remainingTTL = ttl
-redis.call('SET', key, cjson.encode(data), 'EX', claimTTL)
-return val
-`;
-
-/**
- * Atomically reverts a claimed token back to "pending", restoring the
- * original TTL so the user can retry without restarting the login flow.
- * No-ops gracefully if the token no longer exists (e.g. claim window expired).
- */
-const UNCLAIM_SCRIPT = `
-local key = KEYS[1]
-local val = redis.call('GET', key)
-if not val then return nil end
-local ok, data = pcall(cjson.decode, val)
-if not ok or not data.claimed then return nil end
-local remainingTTL = data.remainingTTL or 60
-data.claimed      = nil
-data.remainingTTL = nil
-redis.call('SET', key, cjson.encode(data), 'EX', remainingTTL)
-return 1
-`;
 
 export const createMfaPendingToken = async (userId: string): Promise<string> => {
   // generate random token
