@@ -7,7 +7,7 @@ const challengeTypeConfig = {
   'REGISTRATION': {
     redisKey: redisKeys.passkeyRegistration,
     cookieName: 'naepassreg',
-    cookiePath: '/api/auth/passkey',
+    cookiePath: '/api/passkeys',
     ttlSeconds: 5 * 60, // 5 minutes
     missingMessage: "Missing passkey registration token",
   },
