@@ -14,11 +14,8 @@ export async function GET(request: NextRequest) {
     const { userId } = auth;
 
     // fetch all passkeys associated with the authenticated user, sorted by creation date (newest first)
-    const passkeys = await Passkey.find({ userId }).sort({ createdAt: -1 }).select('nickname createdAt lastUsed');
-    const sanitizedPasskeys = passkeys.map(({ _id, ...rest }) => ({
-      ...rest,
-      id: _id.toString(),
-    }));
+    const passkeys = await Passkey.find({ userId }).sort({ createdAt: -1 }).select('nickname createdAt lastUsed').lean();
+    const sanitizedPasskeys = passkeys.map(({ _id: id, ...rest }) => ({ id, ...rest }));
 
     // return success response with passkeys
     return NextResponse.json({
