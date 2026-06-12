@@ -70,7 +70,6 @@ const AccountPage = () => {
   });
   const [deletePasskeyId, setDeletePasskeyId] = useState<string | null>(null);
   const [passkeys, setPasskeys] = useState<Passkey[]>([]);
-  const [passkeyError, setPasskeyError] = useState<string | null>(null);
 
   const { 
     user, 
@@ -175,18 +174,26 @@ const AccountPage = () => {
     toast.error(message);
   }
 
+  const handlePasskeyError = (err?: unknown) => {
+    console.error('Failed to add passkey', err ? err : usePasskeysError);
+    toast.error(usePasskeysError);
+  }
+
+  const handlePasskeySuccess = async (success: boolean) => {
+    if (success) await fetchSettingsTabData();
+    else handlePasskeyError();
+    if (passkeys.length === 0) setPasskeysExpanded(false);
+  }
+
   const fetchSettingsTabData = async () => {
     if (usePasskeysLoading) return;
-
-    setPasskeyError(null);
 
     try {
       const fetchedPasskeys = await fetchPasskeys();
       setPasskeys(fetchedPasskeys);
     }
-    catch (error) {
-      console.error("Failed to load passkey data", error);
-      setPasskeyError(usePasskeysError);
+    catch (err) {
+      handlePasskeyError(err);
     }
   }
 
@@ -254,21 +261,8 @@ const AccountPage = () => {
     toast.success("Password added successfully");
   }
 
-  const handlePasskeyError = (err?: unknown) => {
-    console.error('Failed to add passkey', err ? err : usePasskeysError);
-    setPasskeyError(usePasskeysError);
-  }
-
-  const handlePasskeySuccess = async (success: boolean) => {
-    if (success) await fetchSettingsTabData();
-    else handlePasskeyError();
-    if (passkeys.length === 0) setPasskeysExpanded(false);
-  }
-
   const handleAddPasskey = async () => {
     if (usePasskeysLoading) return;
-
-    setPasskeyError(null);
 
     try {
       const registered = await registerPasskey();
@@ -281,8 +275,6 @@ const AccountPage = () => {
 
   const handleDeletePasskey = async () => {
     if (usePasskeysLoading || !deletePasskeyId) return;
-
-    setPasskeyError(null);
 
     try {
       const deleted = await deletePasskey(deletePasskeyId);
@@ -298,8 +290,6 @@ const AccountPage = () => {
 
   const handleUpdatePasskey = async (id: string, nickname: string) => {
     if (usePasskeysLoading) return;
-
-    setPasskeyError(null);
 
     try {
       const updated = await updatePasskey(id, nickname);
