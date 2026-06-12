@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
       id: _id.toString(),
     }));
 
-    // return success response with security logs
+    // return success response with passkeys
     return NextResponse.json({
       message: "Passkeys retrieved",
       success: true,
