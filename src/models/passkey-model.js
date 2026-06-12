@@ -16,7 +16,7 @@ const passkeySchema = new mongoose.Schema({
   },
   // base64url-encoded public key
   publicKey: {
-    type: String,
+    type: Buffer,
     required: [true, "Please provide a public key"],
   },
   // signature counter for clone detection
@@ -27,6 +27,7 @@ const passkeySchema = new mongoose.Schema({
   transports: {
     type: [String],
     enum: ['ble', 'cable', 'hybrid', 'internal', 'nfc', 'smart-card', 'usb'],
+    default: [],
   },
   // user-editable display name, default to device/platform info
   nickname: {
