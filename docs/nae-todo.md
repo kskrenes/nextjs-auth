@@ -76,12 +76,6 @@ session hardening
 - [x] debug: security tab calls do not retry, fail on 401
 - [x] add worker to delete expired sessions from the DB
 
-debug
-- [x] sign out all does not revoke remote session
-- [x] onboarding isn't calling api, form seems to be posting
-- [x] sign in leaves user on /login, cannot nav to protected pages
-- [x] sign in becomes active for some time between loading/disabled state and navigating to /dashboard
-
 session management lifecycle
 - [x] conceptual research
 - [x] token expiration (logout/timeout)
@@ -116,11 +110,6 @@ session cache
 - [x] research what to do with redis session records on logout (currently persisting until ttl expires)
 - [x] explicitly remove session cache records from redis on logout
 
-dashboard content
-- [x] add a visual widget calculating a health score based on whether the user has MFA enabled, a strong password, and verified email
-- [x] add charts (like Tremor or Chart.js) showing fake system metrics like "API Requests", "Cache Hit Rate (Redis)", or "Auth Success vs Failures"
-- [x] add card showing which email domains are allowed to sign up (mock until "restricted domains" feature is implemented)
-
 profile
 - [x] add success state after send verify email
 - [x] add error state after send verify email
@@ -131,7 +120,11 @@ profile
 - [x] implement signed uploads to cloudinary
 - [x] implement Google account unlink
 
-errors & warnings
+defects & errors
+- [x] sign out all does not revoke remote session
+- [x] onboarding isn't calling api, form seems to be posting
+- [x] sign in leaves user on /login, cannot nav to protected pages
+- [x] sign in becomes active for some time between loading/disabled state and navigating to /dashboard
 - [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
 - [x] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
 - [x] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
@@ -152,6 +145,12 @@ additional authentication methods
 - [x] add social login (Google)
 - [ ] add passkeys
 
+dashboard content
+- [x] add a visual widget calculating a health score based on whether the user has MFA enabled, a strong password, and verified email
+- [x] add charts (like Tremor or Chart.js) showing fake system metrics like "API Requests", "Cache Hit Rate (Redis)", or "Auth Success vs Failures"
+- [x] add card showing which email domains are allowed to sign up (mock until "restricted domains" feature is implemented)
+- [ ] update security health score and recommendations as needed to include passkeys
+
 look & feel, flow
 - [x] improve style
 - [x] make new (main) layout responsive
@@ -169,8 +168,24 @@ look & feel, flow
 - [x] redesign onboarding page
 - [x] fix sidebar to top left when scrolling
 - [x] redesign account page tabs as necessary
+- [ ] potentially style button spinners in white or brighter brand color
 - [ ] include password validation states in password component
 - [ ] refactor to components where applicable
+
+staging & polishing
+- [ ] ensure consistent file naming (use "-" rather than camelcase)
+- [ ] audit entire app for accessibility (a11y)
+  - [ ] verify all images have descriptive alt tags and interactive elements use proper ARIA labels
+  - [ ] ensure text-to-background contrast ratios meet WCAG AA standards
+  - [ ] ensure users can navigate the entire application using only the Tab and Enter keys
+  - [ ] any additional accessibility considerations
+- [ ] test all component states in both themes (hover, active, focus, disabled, etc)
+- [ ] add friendly layouts for all potential "no data" states
+- [ ] build helpful, branded 404 and 500 error pages with clear "Go Home" actions
+- [ ] ensure clear confirmation toast messaging after any pending action
+- [ ] handle exceptionally long text everywhere dynamic text could display
+- [ ] strip console logging and debugging from code as necessary
+- [ ] implement SEO metadata/populate all page titles, meta descriptions, and Open Graph (OG) tags for social sharing
 
 ### Homepage Feature Checklist
 - [x] Email/password authentication
