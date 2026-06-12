@@ -4,14 +4,14 @@ import { redis, redisKeys } from "@/lib/redis";
 import { CLAIM_SCRIPT, CLAIM_TTL_SECONDS } from "./redis-util";
 
 const challengeTypeConfig = {
-  'REGISTRATION': {
+  REGISTRATION: {
     redisKey: redisKeys.passkeyRegistration,
     cookieName: 'naepassreg',
     cookiePath: '/api/passkeys',
     ttlSeconds: 5 * 60, // 5 minutes
     missingMessage: "Missing passkey registration token",
   },
-  'AUTHENTICATION': {
+  AUTHENTICATION: {
     redisKey: redisKeys.passkeyAuthentication,
     cookieName: 'naepassauth',
     cookiePath: '/api/auth/passkey',
@@ -55,7 +55,7 @@ export const storePasskeyChallenge = async (challenge: string, type: ChallengeTy
   return token;
 }
 
-// atomic Lua script to claim and retrieve challenge (prevents replay)
+// claim and retrieve challenge using atomic Lua script (prevents replay)
 export const claimChallenge = async (token: string, type: ChallengeType): Promise<string | null> => {
   const key = challengeTypeConfig[type].redisKey(token);
   
@@ -64,10 +64,11 @@ export const claimChallenge = async (token: string, type: ChallengeType): Promis
   if (!result) return null;
 
   const data = (typeof result === "string" ? JSON.parse(result) : result) as PasskeyTokenData;
+  return data.challenge;
 
-  return (data && typeof data === 'object' && 'userId' in data) 
-    ? (data as RegTokenData).userId 
-    : null;
+  // return (data && typeof data === 'object' && 'userId' in data) 
+  //   ? (data as RegTokenData).userId 
+  //   : null;
 }
 
 // cleanup after successful verification
