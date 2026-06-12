@@ -16,9 +16,9 @@ export async function POST(request: NextRequest) {
     await connect();
     
     // parse json, ensure it's an object, and validate all properties
-    const validation = await validateRequestBody(request, PasskeyAuthenticationVerificationSchema, 401);
+    const validation = await validateRequestBody(request, PasskeyAuthenticationVerificationSchema);
     if (!validation.success) return validation.errorResponse;
-    const { authenticationResponse } = validation.data;
+    const { assertionResponse } = validation.data;
 
     // ensure necessary environment variables are configured
     const origin = process.env.APP_ORIGIN;
@@ -27,15 +27,15 @@ export async function POST(request: NextRequest) {
 
     // read the challenge token from the cookie
     const authToken = getPasskeyChallengeToken(request, 'AUTHENTICATION');
-    if (!authToken) return getErrorResponse(401, 'Unable to read passkey authentication challenge token');
+    if (!authToken) return getErrorResponse(400, 'Unable to read passkey authentication challenge token');
 
     // atomically claim the token from Redis
     const challenge = await claimChallenge(authToken, 'AUTHENTICATION');
-    if (!challenge) return getErrorResponse(401, 'Unable to retrieve passkey authentication challenge');
+    if (!challenge) return getErrorResponse(400, 'Unable to retrieve passkey authentication challenge');
 
     // fetch the passkey document (require only userId, credentialId, publicKey, counter fields)
     const passkey = await Passkey
-      .findOne({ credentialId: authenticationResponse.id })
+      .findOne({ credentialId: assertionResponse.id })
       .select('userId credentialId publicKey counter');
     if (!passkey) return getErrorResponse(404, 'Unable to retrieve passkey document');
     const { userId, credentialId, publicKey, counter } = passkey;
@@ -53,13 +53,13 @@ export async function POST(request: NextRequest) {
 
     // verify the authentication challenge
     const verification = await verifyAuthenticationResponse({
-      response: authenticationResponse, 
+      response: assertionResponse, 
       expectedChallenge: challenge, 
       expectedOrigin: origin, 
       expectedRPID: rpID, 
       credential,
     });
-    if (!verification.verified) return getErrorResponse(401, 'Unable to verify passkey authentication challenge');
+    if (!verification.verified) return getErrorResponse(400, 'Unable to verify passkey authentication challenge');
 
     // extract passkey data from verification
     const { authenticationInfo } = verification;
