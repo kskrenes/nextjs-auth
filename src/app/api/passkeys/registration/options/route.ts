@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
     const rpID = process.env.APP_HOSTNAME;
     if (!rpName || !rpID) return getErrorResponse(500, "Server configuration error");
 
-    // fetch the authorized user
-    const user = await User.findById(userId);
+    // fetch the authorized user (require only username, name fields)
+    const user = await User.findById(userId).select('username name');
     if (!user) return getErrorResponse(404, 'No user found matching the authenticated ID');
 
     // fetch all passkeys for the user, sorted by creation date (newest first)
