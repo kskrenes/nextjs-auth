@@ -23,10 +23,10 @@ const passkeySchema = new mongoose.Schema({
   counter: {
     type: Number,
   },
-  // supported transports (usb, ble, nfc, internal)
+  // supported transports (ble, cable, hybrid, internal, nfc, smart-card, usb)
   transports: {
     type: [String],
-    enum: ['usb', 'ble', 'nfc', 'internal'],
+    enum: ['ble', 'cable', 'hybrid', 'internal', 'nfc', 'smart-card', 'usb'],
   },
   // user-editable display name, default to device/platform info
   nickname: {
@@ -53,7 +53,7 @@ const passkeySchema = new mongoose.Schema({
 });
 
 // Add compound index on (userId, credentialId) for efficient lookups
-userSchema.index({ userId: 1, credentialId: 1 });
+passkeySchema.index({ userId: 1, credentialId: 1 });
 
 const Passkey = mongoose.models.passkeys || mongoose.model("passkeys", passkeySchema);
 
