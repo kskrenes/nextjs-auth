@@ -30,11 +30,11 @@ export async function POST(request: NextRequest) {
 
     // read the challenge token from the cookie
     const regToken = getPasskeyChallengeToken(request, 'REGISTRATION');
-    if (!regToken) return getErrorResponse(401, 'Unable to read passkey challenge token');
+    if (!regToken) return getErrorResponse(401, 'Unable to read passkey registration challenge token');
 
     // atomically claim the token from Redis
     const challenge = await claimChallenge(regToken, 'REGISTRATION');
-    if (!challenge) return getErrorResponse(401, 'Unable to retrieve passkey challenge');
+    if (!challenge) return getErrorResponse(401, 'Unable to retrieve passkey registration challenge');
 
     // verify the registration challenge
     const verification = await verifyRegistrationResponse({
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
     // persist the passkey to the DB
     const storedPasskey = await passkey.save();
 
-    // record security event for successful login
+    // record security event for passkey registration
     try {
       await recordSecurityEvent(
         userId, 
@@ -83,12 +83,12 @@ export async function POST(request: NextRequest) {
 
     // return success response
     return NextResponse.json({
-      message: "Registered new passkey successfully",
+      message: "Passkey successfully registered",
       success: true,
       storedPasskey,
     });
   }
   catch (routeError: unknown) {
-    return getErrorResponse(500, "Unable to generate passkey credential creation options", routeError);
+    return getErrorResponse(500, "Unable to verify passkey registration response", routeError);
   }
 }
