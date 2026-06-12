@@ -6,7 +6,8 @@ import axios from 'axios';
 export interface Passkey {
   id: string;
   nickname: string;
-  createdAt: string;
+  createdAt: Date;
+  lastUsed: Date;
 }
 
 export function usePasskeys() {
@@ -58,7 +59,7 @@ export function usePasskeys() {
       const attestationResponse = await startRegistration(options);
 
       // Send response to server for verification
-      const verifyRes = await axiosClient.post('/api/passkeys/registration/verify', attestationResponse);
+      const verifyRes = await axiosClient.post('/api/passkeys/registration/verify', { attestationResponse });
       if (!verifyRes.data.success) throw new Error('Failed to verify passkey registration');
       setLoading(false);
       return true;
@@ -72,7 +73,7 @@ export function usePasskeys() {
     setLoading(true);
     setError(null);
     try {
-      const res = await axiosClient.patch(`/api/users/passkeys/${id}`, nickname);
+      const res = await axiosClient.patch(`/api/users/passkeys/${id}`, { nickname });
       if (!res.data.success) throw new Error('Failed to update passkey');
       setLoading(false);
       return true;
@@ -109,7 +110,7 @@ export function usePasskeys() {
       const assertionResponse = await startAuthentication(options);
 
       // Send response to server for verification
-      const verifyRes = await axios.post('/api/auth/passkey/verify', assertionResponse);
+      const verifyRes = await axios.post('/api/auth/passkey/verify', { assertionResponse });
       if (!verifyRes.data.success) throw new Error('Failed to verify passkey authentication');
       setLoading(false);
       return true;
