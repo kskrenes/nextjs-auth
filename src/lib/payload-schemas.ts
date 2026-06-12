@@ -176,3 +176,11 @@ export const PasskeyRegistrationVerificationSchema = z.object({
 export const PasskeyAuthenticationVerificationSchema = z.object({
   authenticationResponse: AuthenticationResponseJSONSchema
 });
+
+export const PasskeyParamsSchema = z.object({
+  passkeyId: requiredString("Invalid passkey ID")
+});
+
+export const UpdatePasskeySchema = z.object({
+  nickname: requiredString("Invalid passkey nickname")
+});
