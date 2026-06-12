@@ -138,6 +138,7 @@ const AuthenticatorAttestationResponseSchema = z.object({
   transports: z.array(AuthenticatorTransportFutureSchema).optional(),
   publicKeyAlgorithm: z.number().optional(),
   publicKey: z.string().optional(),
+  authenticatorData: z.string().optional(),
 });
 
 // passkey authentication-specific response
@@ -170,11 +171,11 @@ export const AuthenticationResponseJSONSchema: z.ZodType<AuthenticationResponseJ
 });
 
 export const PasskeyRegistrationVerificationSchema = z.object({
-  registrationResponse: RegistrationResponseJSONSchema
+  attestationResponse: RegistrationResponseJSONSchema
 });
 
 export const PasskeyAuthenticationVerificationSchema = z.object({
-  authenticationResponse: AuthenticationResponseJSONSchema
+  assertionResponse: AuthenticationResponseJSONSchema
 });
 
 export const PasskeyParamsSchema = z.object({
