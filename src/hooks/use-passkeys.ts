@@ -1,7 +1,6 @@
 import { useState, useCallback } from 'react';
-import { startRegistration, startAuthentication, WebAuthnError } from '@simplewebauthn/browser';
+import { startRegistration, WebAuthnError } from '@simplewebauthn/browser';
 import { axiosClient } from '@/lib/axios-client';
-import axios from 'axios';
 
 export interface Passkey {
   id: string;
@@ -56,7 +55,7 @@ export function usePasskeys() {
       if (!success) throw new Error('Failed to generate registration options');
 
       // Execute WebAuthn creation ceremony
-      const attestationResponse = await startRegistration(options);
+      const attestationResponse = await startRegistration({ optionsJSON: options });
 
       // Send response to server for verification
       const verifyRes = await axiosClient.post('/api/passkeys/registration/verify', { attestationResponse });
@@ -97,29 +96,6 @@ export function usePasskeys() {
     }
   }, []);
 
-  const authenticateWithPasskey = useCallback(async (): Promise<boolean> => {
-    setLoading(true);
-    setError(null);
-    try {
-      // Get options from server
-      const optionsRes = await axios.post('/api/auth/passkey/options');
-      const { success, options } = optionsRes.data;
-      if (!success) throw new Error('Failed to generate authentication options');
-
-      // Execute WebAuthn request ceremony
-      const assertionResponse = await startAuthentication(options);
-
-      // Send response to server for verification
-      const verifyRes = await axios.post('/api/auth/passkey/verify', { assertionResponse });
-      if (!verifyRes.data.success) throw new Error('Failed to verify passkey authentication');
-      setLoading(false);
-      return true;
-    } catch (err) {
-      handleError(err);
-      return false;
-    }
-  }, []);
-
   return {
     loading,
     error,
@@ -127,6 +103,5 @@ export function usePasskeys() {
     registerPasskey,
     updatePasskey,
     deletePasskey,
-    authenticateWithPasskey,
   };
 }
