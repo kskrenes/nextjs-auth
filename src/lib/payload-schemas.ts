@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { RegistrationResponseJSON } from '@simplewebauthn/browser';
 
 const EMAIL_TYPES = ["VERIFY", "RESET"] as const;
 
@@ -117,4 +118,37 @@ export const UpdateUserSchema = z.object({
 
 export const VerifyEmailSchema = z.object({ 
   token: requiredString("Invalid token, please follow the link from your email")
+});
+
+// Define the exact WebAuthn transport string literals
+const AuthenticatorTransportFutureSchema = z.union([
+  z.literal('ble'),
+  z.literal('cable'),
+  z.literal('hybrid'),
+  z.literal('internal'),
+  z.literal('nfc'),
+  z.literal('smart-card'),
+  z.literal('usb'),
+]);
+
+const AuthenticatorResponseSchema = z.object({
+  clientDataJSON: z.string(),
+  attestationObject: z.string(),
+  transports: z.array(AuthenticatorTransportFutureSchema).optional(),
+  publicKeyAlgorithm: z.number().optional(),
+  publicKey: z.string().optional(),
+});
+
+// Explicitly type the Zod schema so it always aligns with SimpleWebAuthn
+export const RegistrationResponseJSONSchema: z.ZodType<RegistrationResponseJSON> = z.object({
+  id: z.string(),
+  rawId: z.string(),
+  type: z.literal('public-key'),
+  response: AuthenticatorResponseSchema,
+  clientExtensionResults: z.record(z.string(), z.any()), 
+  authenticatorAttachment: z.union([z.literal('platform'), z.literal('cross-platform')]).optional(),
+});
+
+export const PasskeyRegistrationVerificationSchema = z.object({
+  registrationResponse: RegistrationResponseJSONSchema
 });
