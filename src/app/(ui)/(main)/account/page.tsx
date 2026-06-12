@@ -1,7 +1,7 @@
 "use client";
 
 import { triggerEmail } from "@/helpers/util/email-trigger";
-import { Fingerprint, KeyRound, Lock, Pencil, Plus, ShieldAlert, ShieldUser } from "lucide-react";
+import { ChevronDown, ChevronUp, Fingerprint, KeyRound, Lock, Pencil, Plus, ShieldAlert, ShieldUser } from "lucide-react";
 import { useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
@@ -27,14 +27,15 @@ import MFADisableModal from "@/components/mfa-disable-modal";
 import PasswordLinkModal from "@/components/password-link-modal";
 import PasskeyDeleteConfirmModal from "@/components/passkey-delete-confirm-modal";
 import GoogleUnlinkConfirmModal from "@/components/google-unlink-confirm-modal";
+import PasskeyManagement from "@/components/passkey-management";
+import { usePasskeys } from "@/hooks/use-passkeys";
 
-// TODO: implement passkeys
-// interface Passkey {
-//   id: string;
-//   nickname: string;
-//   createdAt: Date;
-//   lastUsed: Date | null;
-// }
+interface Passkey {
+  id: string;
+  nickname: string;
+  createdAt: Date;
+  lastUsed: Date | null;
+}
 
 const AccountPage = () => {
 
@@ -67,17 +68,9 @@ const AccountPage = () => {
     website: "",
     socialLinks: ["", "", "", ""],
   });
-
-  // TODO: implement passkeys
-  // const [deletePasskeyId, setDeletePasskeyId] = useState<string | null>(null);
-  // const [passkeys, setPasskeys] = useState<Passkey[]>([
-  //   {
-  //     id: '1',
-  //     nickname: 'MacBook Touch ID',
-  //     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
-  //     lastUsed: new Date(Date.now() - 1000 * 60 * 45),
-  //   },
-  // ]);
+  const [deletePasskeyId, setDeletePasskeyId] = useState<string | null>(null);
+  const [passkeys, setPasskeys] = useState<Passkey[]>([]);
+  const [passkeyError, setPasskeyError] = useState<string | null>(null);
 
   const { 
     user, 
@@ -86,6 +79,15 @@ const AccountPage = () => {
     updateUser, 
     logout
   } = useAuth();
+
+  const { 
+    fetchPasskeys, 
+    registerPasskey,
+    deletePasskey,
+    updatePasskey,
+    error: usePasskeysError, 
+    loading: usePasskeysLoading 
+  } = usePasskeys();
 
   if (fetchingUser) return <FullScreenLoader />;
 
@@ -173,24 +175,20 @@ const AccountPage = () => {
     toast.error(message);
   }
 
-  // TODO: implement passkeys
-  // const resetPasswordFormState = () => {
-  //   setPassword("");
-  //   setConfirmPassword("");
-  //   clearPasswordValidationState();
-  // };
+  const fetchSettingsTabData = async () => {
+    if (usePasskeysLoading) return;
 
-  // TODO: implement passkeys
-  // const handlePasswordChange = (value: string) => {
-  //   setPassword(value);
-  //   clearPasswordValidationState();
-  // }
+    setPasskeyError(null);
 
-  // TODO: implement passkeys
-  // const handleConfirmPasswordChange = (value: string) => {
-  //   setConfirmPassword(value);
-  //   clearPasswordValidationState();
-  // }
+    try {
+      const fetchedPasskeys = await fetchPasskeys();
+      setPasskeys(fetchedPasskeys);
+    }
+    catch (error) {
+      console.error("Failed to load passkey data", error);
+      setPasskeyError(usePasskeysError);
+    }
+  }
 
   const fetchSecurityTabData = async () => {
     if (isLoadingSecurityData) return;
@@ -256,29 +254,61 @@ const AccountPage = () => {
     toast.success("Password added successfully");
   }
 
-  // TODO: implement passkeys
-  // const addPasskey = () => {
-    //   const newKey: Passkey = {
-  //     id: Date.now().toString(),
-  //     nickname: `Passkey ${passkeys.length + 1}`,
-  //     createdAt: new Date(),
-  //     lastUsed: null,
-  //   };
-  //   setPasskeys([...passkeys, newKey]);
-  //   setPasskeysExpanded(true);
-  // };
-
-  // TODO: implement passkeys
-  // const deletePasskey = () => {
-  //   if (deletePasskeyId) {
-  //     setPasskeys(passkeys.filter((pk) => pk.id !== deletePasskeyId));
-  //     setDeletePasskeyId(null);
-  //   }
-  // };
-
-  const notYetImplemented = () => {
-    toast.error("Feature scheduled for future development")
+  const handlePasskeyError = (err?: unknown) => {
+    console.error('Failed to add passkey', err ? err : usePasskeysError);
+    setPasskeyError(usePasskeysError);
   }
+
+  const handlePasskeySuccess = async (success: boolean) => {
+    if (success) await fetchSettingsTabData();
+    else handlePasskeyError();
+    if (passkeys.length === 0) setPasskeysExpanded(false);
+  }
+
+  const handleAddPasskey = async () => {
+    if (usePasskeysLoading) return;
+
+    setPasskeyError(null);
+
+    try {
+      const registered = await registerPasskey();
+      await handlePasskeySuccess(registered);
+    }
+    catch (err) { 
+      handlePasskeyError(err); 
+    }
+  };
+
+  const handleDeletePasskey = async () => {
+    if (usePasskeysLoading || !deletePasskeyId) return;
+
+    setPasskeyError(null);
+
+    try {
+      const deleted = await deletePasskey(deletePasskeyId);
+      await handlePasskeySuccess(deleted);
+    }
+    catch (err) { 
+      handlePasskeyError(err); 
+    }
+    finally {
+      setDeletePasskeyId(null);
+    }
+  };
+
+  const handleUpdatePasskey = async (id: string, nickname: string) => {
+    if (usePasskeysLoading) return;
+
+    setPasskeyError(null);
+
+    try {
+      const updated = await updatePasskey(id, nickname);
+      handlePasskeySuccess(updated);
+    }
+    catch (err) { 
+      handlePasskeyError(err); 
+    }
+  };
 
   return (
     <div className="page-container">
@@ -351,8 +381,9 @@ const AccountPage = () => {
             onChange={(index) => {
               setActiveTab(index);
               setIsEditing(false);
-              if (index === 2) {
-                fetchSecurityTabData();
+              switch (index) {
+                case 1: fetchSettingsTabData(); break;
+                case 2: fetchSecurityTabData();
               }
             }}
           >
@@ -573,45 +604,51 @@ const AccountPage = () => {
                               <div className="flex-1">
                                 <p className="text-sm font-medium">Passkeys</p>
                                 <p className="text-xs text-foreground-secondary mt-0.5">
-                                  {/* TODO: enable when passkey backend is ready */}
-                                  {false
+                                  {passkeys.length !== 0
                                     ? (
                                       <span 
                                         className="flex gap-2 hover:text-foreground-primary transition-colors cursor-pointer"
                                         onClick={() => setPasskeysExpanded(!passkeysExpanded)}
                                       >
-                                        {/* <span>{passkeys.length} passkey{passkeys.length > 1 ? 's' : ''} configured</span>
-                                        {passkeysExpanded ? <ChevronUp className="w-3 h-3 mt-0.5" /> : <ChevronDown className="w-3 h-3 mt-0.5" />} */}
+                                        <span>{passkeys.length} passkey{passkeys.length > 1 ? 's' : ''} configured</span>
+                                        {passkeysExpanded ? <ChevronUp className="w-3 h-3 mt-0.5" /> : <ChevronDown className="w-3 h-3 mt-0.5" />}
                                       </span>
                                     ) : 'Passwordless sign-in with biometrics or security keys.'
                                   }
                                 </p>
                               </div>
-                              <Button 
-                                size="small"
-                                variant="tertiary"
-                                onClick={notYetImplemented}
-                                disabled={false}
-                                className="text-sm gap-2"
-                              >
-                                <Plus className="w-3 h-3" />
-                                Add
-                              </Button>
+                              {usePasskeysLoading ? (
+                                <>
+                                  <NaeLoader />
+                                  <span className="sr-only">Loading Passkeys</span>
+                                </>
+                              ) : (
+                                <Button 
+                                  size="small"
+                                  variant="tertiary"
+                                  onClick={handleAddPasskey}
+                                  disabled={false}
+                                  className="text-sm gap-2"
+                                >
+                                  <Plus className="w-3 h-3" />
+                                  Add
+                                </Button>
+                              )}
                             </div>
                           </div>
                         </div>
                         
                         {/* Passkey list */}
-                        {/* {passkeysExpanded && passkeys.length > 0 && (
+                        {passkeysExpanded && passkeys.length > 0 && (
                           <PasskeyManagement 
                             passkeys={passkeys} 
-                            onUpdate={(keys) => setPasskeys(keys)} 
+                            onUpdate={handleUpdatePasskey} 
                             onDelete={(id) => {
                               setDeletePasskeyId(id);
                               setShowPasskeyDeleteConfirmModal(true);
                             }}
                           />
-                        )} */}
+                        )}
                       </div>
 
                       {/* Google */}
@@ -791,11 +828,11 @@ const AccountPage = () => {
         open={showPasskeyDeleteConfirmModal}
         onOpenChange={setShowPasskeyDeleteConfirmModal}
         onCancel={() => {
-          // setDeletePasskeyId(null);
+          setDeletePasskeyId(null);
           setShowPasskeyDeleteConfirmModal(false);
         }}
         onConfirm={() => {
-          // deletePasskey();
+          handleDeletePasskey();
           setShowPasskeyDeleteConfirmModal(false);
         }}
       />
