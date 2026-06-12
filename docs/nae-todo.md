@@ -1,4 +1,4 @@
-NAE TODO
+# NAE TODO
 
 triggerpasswordreset page
 - [x] success state
@@ -172,7 +172,7 @@ look & feel, flow
 - [ ] include password validation states in password component
 - [ ] refactor to components where applicable
 
-## Homepage Feature Checklist
+### Homepage Feature Checklist
 - [x] Email/password authentication
 - [x] Protected routes and pages
 - [x] Session management
@@ -186,7 +186,7 @@ look & feel, flow
 
 ---
 
-OUT OF SCOPE
+## OUT OF SCOPE
 
 security
 - [ ] restrict email domains and subaddresses
@@ -227,6 +227,6 @@ restricted domains
 - [ ] allow toggling an option to "Restrict registration to specific domains." (signup API rejects any email not ending in specified domains)
 - [ ] use a public list or regex array to block common burner email providers (e.g., Mailinator, Yopmail) during registration
 
-## Homepage Feature Checklist (Out of Scope)
+### Homepage Feature Checklist (Out of Scope)
 - [ ] Roles and permissions - OOS
 - [ ] Restricted domains - OOS
