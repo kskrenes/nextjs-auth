@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
     // map passkeys to the appropriate format for SimpleWebAuthn
     const excludeCredentials = passkeys.map(passkey => ({
-      id: passkey.credentialID,
+      id: passkey.credentialId,
       type: 'public-key' as const,
       transports: passkey.transports,
     }));
