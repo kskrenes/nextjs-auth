@@ -19,9 +19,9 @@ export async function POST(request: NextRequest) {
     const { userId } = auth;
 
     // parse json, ensure it's an object, and validate all properties
-    const validation = await validateRequestBody(request, PasskeyRegistrationVerificationSchema, 401);
+    const validation = await validateRequestBody(request, PasskeyRegistrationVerificationSchema);
     if (!validation.success) return validation.errorResponse;
-    const { registrationResponse } = validation.data;
+    const { attestationResponse } = validation.data;
 
     // ensure necessary environment variables are configured
     const origin = process.env.APP_ORIGIN;
@@ -30,20 +30,20 @@ export async function POST(request: NextRequest) {
 
     // read the challenge token from the cookie
     const regToken = getPasskeyChallengeToken(request, 'REGISTRATION');
-    if (!regToken) return getErrorResponse(401, 'Unable to read passkey registration challenge token');
+    if (!regToken) return getErrorResponse(400, 'Unable to read passkey registration challenge token');
 
     // atomically claim the token from Redis
     const challenge = await claimChallenge(regToken, 'REGISTRATION');
-    if (!challenge) return getErrorResponse(401, 'Unable to retrieve passkey registration challenge');
+    if (!challenge) return getErrorResponse(400, 'Unable to retrieve passkey registration challenge');
 
     // verify the registration challenge
     const verification = await verifyRegistrationResponse({
-      response: registrationResponse,
+      response: attestationResponse,
       expectedChallenge: challenge,
       expectedOrigin: origin,
       expectedRPID: rpID,
     });
-    if (!verification.verified) return getErrorResponse(401, 'Unable to verify passkey registration challenge');
+    if (!verification.verified) return getErrorResponse(400, 'Unable to verify passkey registration challenge');
 
     // extract passkey data from verification
     const { registrationInfo } = verification;
