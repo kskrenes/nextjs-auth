@@ -47,13 +47,13 @@ export async function PATCH(
     
     // return success response
     return NextResponse.json({
-      message: "Passkey deleted successfully",
+      message: "Passkey updated successfully",
       success: true,
       passkey: sanitizedPasskey,
     });
   }
   catch (routeError: unknown) {
-    return getErrorResponse(500, "Unable to delete passkey", routeError);
+    return getErrorResponse(500, "Unable to update passkey", routeError);
   }
 }
 
