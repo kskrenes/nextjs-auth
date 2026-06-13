@@ -11,7 +11,7 @@ const PasskeyDTOSchema = z.object({
   id: objectIdSchema, 
   nickname: z.string(),
   createdAt: z.coerce.date(),
-  lastUsed: z.coerce.date(),
+  lastUsed: z.coerce.date().nullable().optional(),
 });
 
 // infer a typescript type from the zod schema
