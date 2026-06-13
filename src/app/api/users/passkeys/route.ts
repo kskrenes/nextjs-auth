@@ -1,4 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { sanitizePasskeys } from "@/helpers/dto/passkey-dto";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import Passkey from "@/models/passkey-model";
@@ -15,7 +16,9 @@ export async function GET(request: NextRequest) {
 
     // fetch all passkeys associated with the authenticated user, sorted by creation date (newest first)
     const passkeys = await Passkey.find({ userId }).sort({ createdAt: -1 }).select('nickname createdAt lastUsed').lean();
-    const sanitizedPasskeys = passkeys.map(({ _id: id, ...rest }) => ({ id, ...rest }));
+
+    // sanitize passkeys for the UI
+    const sanitizedPasskeys = sanitizePasskeys(passkeys);
 
     // return success response with passkeys
     return NextResponse.json({

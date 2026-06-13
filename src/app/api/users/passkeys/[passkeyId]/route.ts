@@ -1,4 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { sanitizePasskey } from "@/helpers/dto/passkey-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
@@ -40,12 +41,15 @@ export async function PATCH(
       }
     ).select('nickname createdAt lastUsed');
     if (!passkey) return getErrorResponse(404, 'Unable to find passkey');
+
+    // sanitize passkey for the UI
+    const sanitizedPasskey = sanitizePasskey(passkey);
     
     // return success response
     return NextResponse.json({
       message: "Passkey deleted successfully",
       success: true,
-      passkey
+      passkey: sanitizedPasskey,
     });
   }
   catch (routeError: unknown) {

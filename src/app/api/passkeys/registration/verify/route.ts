@@ -1,4 +1,5 @@
 import { connect } from "@/dbconfig/dbconfig";
+import { sanitizePasskey } from "@/helpers/dto/passkey-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
@@ -69,6 +70,10 @@ export async function POST(request: NextRequest) {
 
     // persist the passkey to the DB
     const storedPasskey = await passkey.save();
+    if (!storedPasskey) return getErrorResponse(400, 'Unable to create passkey');
+
+    // sanitize the passkey for the UI
+    const sanitizedPasskey = sanitizePasskey(storedPasskey);
 
     // record security event for passkey registration
     try {
@@ -85,7 +90,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       message: "Passkey successfully registered",
       success: true,
-      storedPasskey,
+      passkey: sanitizedPasskey,
     });
   }
   catch (routeError: unknown) {
