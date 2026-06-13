@@ -36,9 +36,9 @@ export async function POST(request: NextRequest) {
     // fetch the passkey document (require only userId, credentialId, publicKey, counter fields)
     const passkey = await Passkey
       .findOne({ credentialId: assertionResponse.id })
-      .select('userId credentialId publicKey counter');
+      .select('userId credentialId publicKey counter transports');
     if (!passkey) return getErrorResponse(404, 'Unable to retrieve passkey document');
-    const { userId, credentialId, publicKey, counter } = passkey;
+    const { userId, credentialId, publicKey, counter, transports } = passkey;
 
     // fetch the associated user document
     const user = await User.findById(userId);
@@ -47,8 +47,13 @@ export async function POST(request: NextRequest) {
     // map passkey to the appropriate credential format for SimpleWebAuthn
     const credential = {
       id: credentialId,
-      publicKey,
+      publicKey: new Uint8Array(
+        publicKey.buffer, 
+        publicKey.byteOffset, 
+        publicKey.byteLength
+      ),
       counter,
+      transports: transports || [],
     };
 
     // verify the authentication challenge
