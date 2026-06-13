@@ -22,7 +22,7 @@ interface RawPasskey {
   _id: ObjectId;
   nickname: string;
   createdAt: Date;
-  lastUsed: Date;
+  lastUsed?: Date;
 }
 
 function toPasskeyDTOInput(passkey: RawPasskey) {
@@ -30,7 +30,7 @@ function toPasskeyDTOInput(passkey: RawPasskey) {
     id: passkey._id,
     nickname: passkey.nickname,
     createdAt: new Date(passkey.createdAt),
-    lastUsed: new Date(passkey.lastUsed),
+    lastUsed: passkey.lastUsed ? new Date(passkey.lastUsed) : null,
   };
 }
 
