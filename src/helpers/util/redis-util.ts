@@ -9,10 +9,17 @@
 export const CLAIM_SCRIPT = `
 local key   = KEYS[1]
 local claimTTL = tonumber(ARGV[1])
+local expectedUserId = ARGV[2]
 local val = redis.call('GET', key)
 if not val then return nil end
 local ok, data = pcall(cjson.decode, val)
 if not ok or data.claimed then return nil end
+if expectedUserId and expectedUserId ~= '' then
+  if data.userId ~= expectedUserId then
+    redis.call('DEL', key)
+    return nil
+  end
+end
 local ttl = redis.call('TTL', key)
 if ttl < 0 then return nil end
 data.claimed     = true
