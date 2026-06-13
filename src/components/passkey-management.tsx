@@ -22,6 +22,7 @@ const PasskeyManagement = ({ passkeys, onUpdate, onDelete }: PasskeyManagementPr
 
   const [editingPasskeyId, setEditingPasskeyId] = useState<string | null>(null);
   const [editingNickname, setEditingNickname] = useState('');
+  const [submitting, setSubmitting] = useState<boolean>(false);
   
   const startEditPasskey = (pk: Passkey) => {
     setEditingPasskeyId(pk.id);
@@ -30,8 +31,10 @@ const PasskeyManagement = ({ passkeys, onUpdate, onDelete }: PasskeyManagementPr
 
   const saveEditPasskey = async () => {
     if (!editingPasskeyId) return;
+    setSubmitting(true);
     const ok = await onUpdate(editingPasskeyId, editingNickname);
     if (ok) setEditingPasskeyId(null);
+    setSubmitting(false);
   };
 
   const getLastUsed = (date: Date | null): string => {
@@ -55,6 +58,7 @@ const PasskeyManagement = ({ passkeys, onUpdate, onDelete }: PasskeyManagementPr
                 value={editingNickname}
                 onChange={(e) => setEditingNickname(e.target.value)}
                 onKeyDown={handleNicknameKeydown}
+                disabled={submitting}
                 className="input-standard flex-1 text-sm mr-1"
               />
               <Button 
