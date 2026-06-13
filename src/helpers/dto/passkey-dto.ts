@@ -19,7 +19,7 @@ export type PasskeyDTO = z.infer<typeof PasskeyDTOSchema>;
 
 // define a minimal interface for the raw passkey
 interface RawPasskey {
-  _id: ObjectId;
+  _id: ObjectId | string;
   nickname: string;
   createdAt: Date;
   lastUsed?: Date;
@@ -27,7 +27,7 @@ interface RawPasskey {
 
 function toPasskeyDTOInput(passkey: RawPasskey) {
   return {
-    id: passkey._id,
+    id: typeof passkey._id === 'string' ? passkey._id : passkey._id.toString(),
     nickname: passkey.nickname,
     createdAt: new Date(passkey.createdAt),
     lastUsed: passkey.lastUsed ? new Date(passkey.lastUsed) : null,
