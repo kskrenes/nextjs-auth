@@ -169,11 +169,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // verify server-side
       const verifyRes = await axiosClient.post('/api/auth/passkey/verify', { assertionResponse });
       const { success: verifySuccess, user } = verifyRes.data;
-      if (!verifySuccess) throw new Error('Failed to verify passkey authentication');
-      if (user) {
-        setUser(user);
-      }
-      return verifyRes;
+      if (!verifySuccess || !user) throw new Error('Failed to verify passkey authentication');
+      setUser(user);
+
+      // return the expected AuthLoginResponse shape
+      return {
+        data: {
+          user,
+          mfaRequired: false,
+        }
+      };
     } finally {
       setLoggingIn(false);
     }
