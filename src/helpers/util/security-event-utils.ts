@@ -1,4 +1,4 @@
-import { Key, KeyRound, Link2, Link2Off, LogIn, Mail, ShieldCheck, ShieldOff, User } from "lucide-react";
+import { Fingerprint, Key, KeyRound, Link2, Link2Off, LogIn, Mail, ShieldCheck, ShieldOff, Trash2, User } from "lucide-react";
 
 export const securityEventConfig = {
   login: {
@@ -66,6 +66,24 @@ export const securityEventConfig = {
     label: 'MFA Backup Used',
     color: 'text-amber-600',
     bg: 'bg-amber-100',
+  },
+  passkey_registered: {
+    icon: Fingerprint,
+    label: 'Passkey Registered',
+    color: 'text-violet-600',
+    bg: 'bg-violet-100',
+  },
+  passkey_deleted: {
+    icon: Trash2,
+    label: 'Passkey Removed',
+    color: 'text-red-600',
+    bg: 'bg-red-100',
+  },
+  passkey_login: {
+    icon: Fingerprint,
+    label: 'Signed In with Passkey',
+    color: 'text-blue-600',
+    bg: 'bg-blue-100',
   },
 } as const;
 

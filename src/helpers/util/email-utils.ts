@@ -173,7 +173,7 @@ export const sendEmail = async ({
     const smtpUser = process.env.MAILER_USER;
     const smtpPass = process.env.MAILER_PASS;
     const mailFrom = process.env.MAILER_FROM;
-    const domain = process.env.DOMAIN;
+    const domain = process.env.APP_ORIGIN;
     if (
       !smtpHost ||
       !Number.isInteger(smtpPort) ||
@@ -186,7 +186,7 @@ export const sendEmail = async ({
     ) {
       // throw if smtp env variables are not configured
       throw new Error(
-        "Missing or invalid mail configuration (SMTP_HOST, SMTP_PORT, MAILER_USER, MAILER_PASS, MAILER_FROM, DOMAIN)"
+        "Missing or invalid mail configuration (SMTP_HOST, SMTP_PORT, MAILER_USER, MAILER_PASS, MAILER_FROM, APP_ORIGIN)"
       );
     }
 

@@ -7,6 +7,7 @@ import Input from "@/components/nae-input";
 import NaeLoader from "@/components/nae-loader";
 import PanelError from "@/components/panel-error";
 import PanelHeader from "@/components/panel-header";
+import PasskeyLoginButton from "@/components/passkey-login-button";
 import { AuthLoginResponse, useAuth } from "@/context-providers/auth-context-provider";
 import axios from "axios";
 import Link from "next/link";
@@ -15,7 +16,7 @@ import { useCallback, useEffect, useState, type SubmitEvent } from "react";
 
 const LoginPage = () => {
 
-  const { user, login, fetchingUser, loggingIn } = useAuth();
+  const { user, login, loginViaPasskey, fetchingUser, loggingIn } = useAuth();
   const router = useRouter();
   
   const [email, setEmail] = useState('');
@@ -77,6 +78,25 @@ const LoginPage = () => {
   const handleMfaChallengeCancel = () => {
     setAwaitingRedirect(false);
     setMfaPending(false);
+  }
+
+  const handleSignInWithPasskey = async () => {
+    if (awaitingRedirect || loggingIn) return;
+
+    setError('');
+    setAwaitingRedirect(true);
+
+    try {
+      const res = await loginViaPasskey();
+      if (res.data && 'user' in res.data && res.data.user) {
+        router.push(res.data.user.hasCompletedProfile ? '/dashboard' : '/onboarding');
+      }
+    } 
+    catch (err) {
+      console.error(err)
+      setError('Could not sign in using passkey');
+      setAwaitingRedirect(false);
+    }
   }
 
   return (
@@ -166,6 +186,12 @@ const LoginPage = () => {
                 onLoginError={handleGoogleLoginError}
                 callback={handleGoogleCallback}
                 disabled={awaitingRedirect} 
+              />
+
+              {/* Passkey Sign In */}
+              <PasskeyLoginButton 
+                loading={awaitingRedirect} 
+                onClick={handleSignInWithPasskey} 
               />
 
               {/* Sign Up Link */}

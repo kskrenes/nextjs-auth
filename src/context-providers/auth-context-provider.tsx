@@ -6,6 +6,7 @@ import { axiosClient, setupAuthInterceptor } from '@/lib/axios-client';
 import { useRouter } from 'next/navigation';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
+import { startAuthentication } from '@simplewebauthn/browser';
 
 // Public pages — onSignOut should NOT redirect away from these
 const PUBLIC_PATHS = new Set(['/', '/login', '/signup', '/verifyemail', '/resetpassword', '/triggerpasswordreset']);
@@ -30,7 +31,8 @@ export interface AuthContextType {
   unlinkingGoogle: boolean;
   verifyingMFA: boolean;
   login: (email: string, password: string) => Promise<AuthLoginResponse>;
-  loginViaGoogle: (token: string) => Promise<AuthLoginResponse>
+  loginViaGoogle: (token: string) => Promise<AuthLoginResponse>;
+  loginViaPasskey: () => Promise<AuthLoginResponse>;
   logout: () => Promise<void>;
   updateUser: (user: EditableProfileFields) => Promise<void>;
   verifyEmail: (token: string) => Promise<void>;
@@ -153,6 +155,35 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const loginViaPasskey = async (): Promise<AuthLoginResponse> => {
+    setLoggingIn(true);
+    try {
+      // fetch auth options
+      const optionsRes = await axiosClient.post('/api/auth/passkey/options');
+      const { success: optionsSuccess, options } = optionsRes.data;
+      if (!optionsSuccess) throw new Error('Failed to generate authentication options');
+
+      // trigger the browser's WebAuthn UI
+      const assertionResponse = await startAuthentication({ optionsJSON: options });
+
+      // verify server-side
+      const verifyRes = await axiosClient.post('/api/auth/passkey/verify', { assertionResponse });
+      const { success: verifySuccess, user } = verifyRes.data;
+      if (!verifySuccess || !user) throw new Error('Failed to verify passkey authentication');
+      setUser(user);
+
+      // return the expected AuthLoginResponse shape
+      return {
+        data: {
+          user,
+          mfaRequired: false,
+        }
+      };
+    } finally {
+      setLoggingIn(false);
+    }
+  }
+
   const logout = useCallback(async () => {
     setLoggingOut(true);
     try {
@@ -263,6 +294,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         verifyingMFA,
         login, 
         loginViaGoogle, 
+        loginViaPasskey,
         logout, 
         updateUser, 
         verifyEmail, 

@@ -2,19 +2,13 @@
 
 import { formatRelativeTime } from "@/helpers/util/time-utils";
 import { Pencil, Trash2 } from "lucide-react";
-import { useState } from "react";
+import { KeyboardEvent, useState } from "react";
 import Button from "./nae-button";
-
-interface Passkey {
-  id: string;
-  nickname: string;
-  createdAt: Date;
-  lastUsed: Date | null;
-}
+import { PasskeyDTO } from "@/helpers/dto/passkey-dto";
 
 interface PasskeyManagementProps {
-  passkeys: Passkey[];
-  onUpdate: (passkeys: Passkey[]) => void;
+  passkeys: PasskeyDTO[];
+  onUpdate: (id: string, nickname: string) => Promise<boolean>;
   onDelete: (id: string) => void;
 }
 
@@ -22,20 +16,28 @@ const PasskeyManagement = ({ passkeys, onUpdate, onDelete }: PasskeyManagementPr
 
   const [editingPasskeyId, setEditingPasskeyId] = useState<string | null>(null);
   const [editingNickname, setEditingNickname] = useState('');
+  const [submitting, setSubmitting] = useState<boolean>(false);
   
-  const startEditPasskey = (pk: Passkey) => {
+  const startEditPasskey = (pk: PasskeyDTO) => {
     setEditingPasskeyId(pk.id);
     setEditingNickname(pk.nickname);
   };
 
-  const saveEditPasskey = () => {
-    onUpdate(passkeys.map((pk) => pk.id === editingPasskeyId ? { ...pk, nickname: editingNickname } : pk));
-    setEditingPasskeyId(null);
+  const saveEditPasskey = async () => {
+    if (!editingPasskeyId) return;
+    setSubmitting(true);
+    const ok = await onUpdate(editingPasskeyId, editingNickname);
+    if (ok) setEditingPasskeyId(null);
+    setSubmitting(false);
   };
 
   const getLastUsed = (date: Date | null): string => {
     if (!date) return 'Unused';
-    return formatRelativeTime(date);
+    return formatRelativeTime(new Date(date));
+  }
+
+  const handleNicknameKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') saveEditPasskey();
   }
 
   return (
@@ -49,6 +51,8 @@ const PasskeyManagement = ({ passkeys, onUpdate, onDelete }: PasskeyManagementPr
                 type="text"
                 value={editingNickname}
                 onChange={(e) => setEditingNickname(e.target.value)}
+                onKeyDown={handleNicknameKeydown}
+                disabled={submitting}
                 className="input-standard flex-1 text-sm mr-1"
               />
               <Button 
@@ -71,7 +75,7 @@ const PasskeyManagement = ({ passkeys, onUpdate, onDelete }: PasskeyManagementPr
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-xs font-medium">{pk.nickname}</p>
-                <p className="text-xs text-foreground-secondary mt-0.5">Added {pk.createdAt.toLocaleDateString()}</p>
+                <p className="text-xs text-foreground-secondary mt-0.5">Added {new Date(pk.createdAt).toLocaleDateString()}</p>
                 <p className="text-xs text-foreground-muted">Last used: {getLastUsed(pk.lastUsed)}</p>
               </div>
               <div className="flex items-center gap-1 ml-2">

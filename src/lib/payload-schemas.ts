@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { AuthenticationResponseJSON, RegistrationResponseJSON } from '@simplewebauthn/browser';
 
 const EMAIL_TYPES = ["VERIFY", "RESET"] as const;
 
@@ -117,4 +118,70 @@ export const UpdateUserSchema = z.object({
 
 export const VerifyEmailSchema = z.object({ 
   token: requiredString("Invalid token, please follow the link from your email")
+});
+
+// Define the exact WebAuthn transport string literals
+const AuthenticatorTransportFutureSchema = z.union([
+  z.literal('ble'),
+  z.literal('cable'),
+  z.literal('hybrid'),
+  z.literal('internal'),
+  z.literal('nfc'),
+  z.literal('smart-card'),
+  z.literal('usb'),
+]);
+
+// passkey registration-specific response
+const AuthenticatorAttestationResponseSchema = z.object({
+  clientDataJSON: z.string(),
+  attestationObject: z.string(),
+  transports: z.array(AuthenticatorTransportFutureSchema).optional(),
+  publicKeyAlgorithm: z.number().optional(),
+  publicKey: z.string().optional(),
+  authenticatorData: z.string().optional(),
+});
+
+// passkey authentication-specific response
+const AuthenticatorAssertionResponseSchema = z.object({
+  clientDataJSON: z.string(),
+  authenticatorData: z.string(),
+  signature: z.string(),
+  userHandle: z.string().optional(),
+  attestationObject: z.string().optional(), // Added optionally to match potential hybrid shapes
+});
+
+// Define the Registration schema to strictly map to RegistrationResponseJSON
+export const RegistrationResponseJSONSchema: z.ZodType<RegistrationResponseJSON> = z.object({
+  id: z.string(),
+  rawId: z.string(),
+  type: z.literal('public-key'),
+  response: AuthenticatorAttestationResponseSchema,
+  clientExtensionResults: z.record(z.string(), z.any()), 
+  authenticatorAttachment: z.union([z.literal('platform'), z.literal('cross-platform')]).optional(),
+});
+
+// Define the Authentication schema to strictly map to AuthenticationResponseJSON
+export const AuthenticationResponseJSONSchema: z.ZodType<AuthenticationResponseJSON> = z.object({
+  id: z.string(),
+  rawId: z.string(),
+  type: z.literal('public-key'),
+  response: AuthenticatorAssertionResponseSchema,
+  clientExtensionResults: z.record(z.string(), z.any()),
+  authenticatorAttachment: z.union([z.literal('platform'), z.literal('cross-platform')]).optional(),
+});
+
+export const PasskeyRegistrationVerificationSchema = z.object({
+  attestationResponse: RegistrationResponseJSONSchema
+});
+
+export const PasskeyAuthenticationVerificationSchema = z.object({
+  assertionResponse: AuthenticationResponseJSONSchema
+});
+
+export const PasskeyParamsSchema = z.object({
+  passkeyId: requiredString("Invalid passkey ID")
+});
+
+export const UpdatePasskeySchema = z.object({
+  nickname: requiredString("Invalid passkey nickname")
 });
