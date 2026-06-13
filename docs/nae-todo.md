@@ -187,6 +187,10 @@ staging & polishing
 - [ ] strip console logging and debugging from code as necessary
 - [ ] implement SEO metadata/populate all page titles, meta descriptions, and Open Graph (OG) tags for social sharing
 
+
+
+## Milestones
+
 ### Homepage Feature Checklist
 - [x] Email/password authentication
 - [x] Protected routes and pages
@@ -199,7 +203,7 @@ staging & polishing
 
 - [ ] DEPLOY
 
----
+
 
 ## OUT OF SCOPE
 
