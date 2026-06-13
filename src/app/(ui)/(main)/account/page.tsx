@@ -600,17 +600,20 @@ const AccountPage = () => {
                               <div className="flex-1">
                                 <p className="text-sm font-medium">Passkeys</p>
                                 <p className="text-xs text-foreground-secondary mt-0.5">
-                                  {passkeys.length !== 0
-                                    ? (
-                                      <span 
-                                        className="flex gap-2 hover:text-foreground-primary transition-colors cursor-pointer"
-                                        onClick={() => setPasskeysExpanded(!passkeysExpanded)}
-                                      >
-                                        <span>{passkeys.length} passkey{passkeys.length > 1 ? 's' : ''} configured</span>
-                                        {passkeysExpanded ? <ChevronUp className="w-3 h-3 mt-0.5" /> : <ChevronDown className="w-3 h-3 mt-0.5" />}
+                                  {passkeys.length !== 0 ? (
+                                    <button
+                                      type="button"
+                                      className="flex gap-2 hover:text-foreground-primary transition-colors cursor-pointer"
+                                      onClick={() => setPasskeysExpanded(!passkeysExpanded)}
+                                      aria-expanded={passkeysExpanded}
+                                      aria-controls="passkey-list"
+                                    >
+                                      <span className="text-left">
+                                        {passkeys.length} passkey{passkeys.length > 1 ? 's' : ''} configured
                                       </span>
-                                    ) : 'Passwordless sign-in with biometrics or security keys.'
-                                  }
+                                      {passkeysExpanded ? <ChevronUp className="w-3 h-3 mt-0.5" /> : <ChevronDown className="w-3 h-3 mt-0.5" />}
+                                    </button>
+                                  ) : 'Passwordless sign-in with biometrics or security keys.'}
                                 </p>
                               </div>
                               {usePasskeysLoading ? (
