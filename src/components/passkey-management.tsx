@@ -14,7 +14,7 @@ interface Passkey {
 
 interface PasskeyManagementProps {
   passkeys: Passkey[];
-  onUpdate: (id: string, nickname: string) => void;
+  onUpdate: (id: string, nickname: string) => Promise<boolean>;
   onDelete: (id: string) => void;
 }
 
@@ -28,10 +28,10 @@ const PasskeyManagement = ({ passkeys, onUpdate, onDelete }: PasskeyManagementPr
     setEditingNickname(pk.nickname);
   };
 
-  const saveEditPasskey = () => {
+  const saveEditPasskey = async () => {
     if (!editingPasskeyId) return;
-    onUpdate(editingPasskeyId, editingNickname);
-    setEditingPasskeyId(null);
+    const ok = await onUpdate(editingPasskeyId, editingNickname);
+    if (ok) setEditingPasskeyId(null);
   };
 
   const getLastUsed = (date: Date | null): string => {

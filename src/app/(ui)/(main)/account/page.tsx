@@ -288,15 +288,17 @@ const AccountPage = () => {
     }
   };
 
-  const handleUpdatePasskey = async (id: string, nickname: string) => {
-    if (usePasskeysLoading) return;
+  const handleUpdatePasskey = async (id: string, nickname: string): Promise<boolean> => {
+    if (usePasskeysLoading) return false;
 
     try {
       const updated = await updatePasskey(id, nickname);
-      handlePasskeySuccess(updated);
+      await handlePasskeySuccess(updated);
+      return true;
     }
     catch (err) { 
-      handlePasskeyError(err); 
+      handlePasskeyError(err);
+      return false;
     }
   };
 
