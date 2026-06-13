@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     if (!regToken) return getErrorResponse(400, 'Unable to read passkey registration challenge token');
 
     // atomically claim the token from Redis
-    const challenge = await claimChallenge(regToken, 'REGISTRATION');
+    const challenge = await claimChallenge(regToken, 'REGISTRATION', userId);
     if (!challenge) return getErrorResponse(400, 'Unable to retrieve passkey registration challenge');
 
     // verify the registration challenge
