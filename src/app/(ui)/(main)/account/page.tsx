@@ -29,13 +29,7 @@ import PasskeyDeleteConfirmModal from "@/components/passkey-delete-confirm-modal
 import GoogleUnlinkConfirmModal from "@/components/google-unlink-confirm-modal";
 import PasskeyManagement from "@/components/passkey-management";
 import { usePasskeys } from "@/hooks/use-passkeys";
-
-interface Passkey {
-  id: string;
-  nickname: string;
-  createdAt: Date;
-  lastUsed: Date | null;
-}
+import { PasskeyDTO } from "@/helpers/dto/passkey-dto";
 
 const AccountPage = () => {
 
@@ -69,7 +63,7 @@ const AccountPage = () => {
     socialLinks: ["", "", "", ""],
   });
   const [deletePasskeyId, setDeletePasskeyId] = useState<string | null>(null);
-  const [passkeys, setPasskeys] = useState<Passkey[]>([]);
+  const [passkeys, setPasskeys] = useState<PasskeyDTO[]>([]);
 
   const { 
     user, 

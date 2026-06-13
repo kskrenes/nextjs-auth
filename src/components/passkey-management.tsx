@@ -4,16 +4,10 @@ import { formatRelativeTime } from "@/helpers/util/time-utils";
 import { Pencil, Trash2 } from "lucide-react";
 import { KeyboardEvent, useState } from "react";
 import Button from "./nae-button";
-
-interface Passkey {
-  id: string;
-  nickname: string;
-  createdAt: Date;
-  lastUsed: Date | null;
-}
+import { PasskeyDTO } from "@/helpers/dto/passkey-dto";
 
 interface PasskeyManagementProps {
-  passkeys: Passkey[];
+  passkeys: PasskeyDTO[];
   onUpdate: (id: string, nickname: string) => Promise<boolean>;
   onDelete: (id: string) => void;
 }
@@ -24,7 +18,7 @@ const PasskeyManagement = ({ passkeys, onUpdate, onDelete }: PasskeyManagementPr
   const [editingNickname, setEditingNickname] = useState('');
   const [submitting, setSubmitting] = useState<boolean>(false);
   
-  const startEditPasskey = (pk: Passkey) => {
+  const startEditPasskey = (pk: PasskeyDTO) => {
     setEditingPasskeyId(pk.id);
     setEditingNickname(pk.nickname);
   };
