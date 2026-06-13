@@ -143,7 +143,7 @@ feature research
 
 additional authentication methods
 - [x] add social login (Google)
-- [ ] add passkeys
+- [x] add passkeys
 
 dashboard content
 - [x] add a visual widget calculating a health score based on whether the user has MFA enabled, a strong password, and verified email
@@ -199,7 +199,7 @@ staging & polishing
 - [x] Social login (Google)
 - [x] Multifactor authentication
 - [x] Profile management
-- [ ] Passkeys
+- [x] Passkeys
 
 - [ ] DEPLOY
 
