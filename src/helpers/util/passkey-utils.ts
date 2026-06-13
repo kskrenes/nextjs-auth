@@ -56,19 +56,15 @@ export const storePasskeyChallenge = async (challenge: string, type: ChallengeTy
 }
 
 // claim and retrieve challenge using atomic Lua script (prevents replay)
-export const claimChallenge = async (token: string, type: ChallengeType): Promise<string | null> => {
+export const claimChallenge = async (token: string, type: ChallengeType, expectedUserId?: string): Promise<string | null> => {
   const key = challengeTypeConfig[type].redisKey(token);
   
   // eval returns the original JSON string on success, null otherwise
-  const result = await redis.eval(CLAIM_SCRIPT, [key], [CLAIM_TTL_SECONDS]);
+  const result = await redis.eval(CLAIM_SCRIPT, [key], [CLAIM_TTL_SECONDS, expectedUserId ?? '']);
   if (!result) return null;
 
   const data = (typeof result === "string" ? JSON.parse(result) : result) as PasskeyTokenData;
   return data.challenge;
-
-  // return (data && typeof data === 'object' && 'userId' in data) 
-  //   ? (data as RegTokenData).userId 
-  //   : null;
 }
 
 // cleanup after successful verification
