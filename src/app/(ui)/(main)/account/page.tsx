@@ -175,8 +175,12 @@ const AccountPage = () => {
   }
 
   const handlePasskeyError = (err?: unknown) => {
-    console.error('Failed to add passkey', err ? err : usePasskeysError);
-    toast.error(usePasskeysError);
+    const message =
+    err instanceof Error
+      ? err.message
+      : (usePasskeysError ?? 'Failed to manage passkey');
+    console.error('Passkey operation failed', err ?? usePasskeysError);
+    toast.error(message);
   }
 
   const handlePasskeySuccess = async (success: boolean) => {
