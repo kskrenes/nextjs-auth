@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     const passkey = new Passkey({
       credentialId: credential.id,
       userId,
-      publicKey: credential.publicKey,
+      publicKey: Buffer.from(credential.publicKey),
       counter: credential.counter,
       transports: credential.transports,
       nickname: defaultNickname,
