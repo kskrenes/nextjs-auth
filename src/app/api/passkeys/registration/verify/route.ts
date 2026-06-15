@@ -1,7 +1,7 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizePasskey } from "@/helpers/dto/passkey-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
-import { sanitizeUser } from "@/helpers/dto/user-dto";
+import { RawUser, sanitizeUser } from "@/helpers/dto/user-dto";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { claimChallenge, getPasskeyChallengeToken } from "@/helpers/util/passkey-utils";
@@ -10,6 +10,7 @@ import { PasskeyRegistrationVerificationSchema } from "@/lib/payload-schemas";
 import Passkey from "@/models/passkey-model";
 import User from "@/models/user-model";
 import { verifyRegistrationResponse } from "@simplewebauthn/server";
+import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -56,6 +57,7 @@ export async function POST(request: NextRequest) {
     const isSynced = credentialDeviceType === 'multiDevice';
     const deviceName = isSynced ? 'Cloud Passkey' : 'Hardware Security Key';
     const defaultNickname = `${deviceName} (${new Date().toLocaleDateString()})`;
+    
 
     // create the new passkey object
     const passkey = new Passkey({
@@ -70,24 +72,32 @@ export async function POST(request: NextRequest) {
       backedUp: registrationInfo.credentialBackedUp,
     });
 
-    // persist the passkey to the DB
-    const storedPasskey = await passkey.save();
-    if (!storedPasskey) return getErrorResponse(400, 'Unable to create passkey');
+    // use mongoose session.withTransaction to perform one atomic operation across separate collections
+    const session = await mongoose.startSession();
+    let storedPasskey: Awaited<ReturnType<typeof passkey.save>> | null = null;
+    let user: RawUser | null = null;
 
-    // sanitize the passkey for the UI
-    const sanitizedPasskey = sanitizePasskey(storedPasskey);
+    try {
+      await session.withTransaction(async () => {
+        // persist the passkey
+        storedPasskey = await passkey.save({ session });
+        if (!storedPasskey) throw new Error("Unable to create passkey");
 
-    // update the user's hasPasskey flag
-    const user = await User.findByIdAndUpdate(
-      userId,
-      { hasPasskey: true },
-      {
-        returnDocument: 'after',
-        runValidators: true,
-      }
-    );
-    if (!user) console.error("Unable to update User document after registering passkey");
-    const sanitizedUser = sanitizeUser(user);
+        // atomically set hasPasskey: true on the user
+        user = await User.findByIdAndUpdate(
+          userId,
+          { hasPasskey: true },
+          { returnDocument: "after", runValidators: true, session }
+        ) as RawUser | null;
+        if (!user) throw new Error("Unable to update User document after registering passkey");
+      });
+    } finally {
+      await session.endSession();
+    }
+
+    // sanitize the passkey and user for the UI
+    const sanitizedPasskey = sanitizePasskey(storedPasskey!);
+    const sanitizedUser = sanitizeUser(user!);
 
     // record security event for passkey registration
     try {
