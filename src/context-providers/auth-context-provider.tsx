@@ -299,7 +299,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       setUser(verifyRes.data.user);
       return true;
-    } catch {
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Passkey registration failed'));
       return false;
     } finally {
       setUpdatingUser(false);
@@ -313,7 +314,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (!res.data.success) throw new Error('Failed to delete passkey');
       setUser(res.data.user);
       return true;
-    } catch {
+    } catch (err) {
+      toast.error(getErrorMessage(err, 'Passkey registration failed'));
       return false;
     } finally {
       setUpdatingUser(false);
