@@ -43,6 +43,7 @@ export interface AuthContextType {
   disableMFA: (code: string) => Promise<void>;
   resetPassword: (token: string, password: string) => Promise<void>;
   registerPasskey: () => Promise<boolean>;
+  deletePasskey: (id: string) => Promise<boolean>;
 }
 
 export type AuthLoginResponse =
@@ -295,8 +296,22 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Send response to server for verification
       const verifyRes = await axiosClient.post('/api/passkeys/registration/verify', { attestationResponse });
       if (!verifyRes.data.success) throw new Error('Failed to verify passkey registration');
-      
+
       setUser(verifyRes.data.user);
+      return true;
+    } catch {
+      return false;
+    } finally {
+      setUpdatingUser(false);
+    }
+  }
+
+  const deletePasskey = async (id: string): Promise<boolean> => {
+    try {
+      setUpdatingUser(true);
+      const res = await axiosClient.delete(`/api/users/passkeys/${id}`);
+      if (!res.data.success) throw new Error('Failed to delete passkey');
+      setUser(res.data.user);
       return true;
     } catch {
       return false;
@@ -330,6 +345,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         disableMFA,
         resetPassword,
         registerPasskey,
+        deletePasskey,
       }}
     >
       {children}

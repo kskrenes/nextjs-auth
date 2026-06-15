@@ -59,25 +59,10 @@ export function usePasskeys() {
     }
   }, []);
 
-  const deletePasskey = useCallback(async (id: string): Promise<boolean> => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await axiosClient.delete(`/api/users/passkeys/${id}`);
-      if (!res.data.success) throw new Error('Failed to delete passkey');
-      setLoading(false);
-      return true;
-    } catch (err) {
-      handleError(err);
-      return false;
-    }
-  }, []);
-
   return {
     loading,
     error,
     fetchPasskeys,
     updatePasskey,
-    deletePasskey,
   };
 }
