@@ -70,13 +70,13 @@ const AccountPage = () => {
     fetchingUser, 
     updatingUser, 
     updateUser, 
+    registerPasskey, 
+    deletePasskey,
     logout
   } = useAuth();
 
   const { 
-    fetchPasskeys, 
-    registerPasskey,
-    deletePasskey,
+    fetchPasskeys,
     updatePasskey,
     error: usePasskeysError, 
     loading: usePasskeysLoading 
@@ -260,7 +260,7 @@ const AccountPage = () => {
   }
 
   const handleAddPasskey = async () => {
-    if (usePasskeysLoading) return;
+    if (usePasskeysLoading || updatingUser) return;
 
     try {
       const registered = await registerPasskey();
@@ -272,7 +272,7 @@ const AccountPage = () => {
   };
 
   const handleDeletePasskey = async () => {
-    if (usePasskeysLoading || !deletePasskeyId) return;
+    if (usePasskeysLoading || updatingUser || !deletePasskeyId) return;
 
     try {
       const deleted = await deletePasskey(deletePasskeyId);
@@ -610,7 +610,7 @@ const AccountPage = () => {
                                   ) : 'Passwordless sign-in with biometrics or security keys.'}
                                 </p>
                               </div>
-                              {usePasskeysLoading ? (
+                              {usePasskeysLoading || updatingUser ? (
                                 <>
                                   <NaeLoader />
                                   <span className="sr-only">Loading Passkeys</span>
@@ -620,7 +620,7 @@ const AccountPage = () => {
                                   size="small"
                                   variant="tertiary"
                                   onClick={handleAddPasskey}
-                                  disabled={false}
+                                  disabled={updatingUser}
                                   className="text-sm gap-2"
                                 >
                                   <Plus className="w-3 h-3" />

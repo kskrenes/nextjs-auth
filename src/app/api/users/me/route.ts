@@ -14,13 +14,9 @@ export async function GET(request: NextRequest) {
     if (auth instanceof Response) return auth;  // return error response
     const { userId } = auth;
 
-    const user = await User.findById(userId)
-      .select("-password");
-
-    // throw if user not found
-    if (!user) {
-      return getErrorResponse(404, "User not found");
-    }
+    // fetch the user
+    const user = await User.findById(userId).select("-password");
+    if (!user) return getErrorResponse(404, "User not found");
 
     // create sanitized user for response
     const sanitizedUser = sanitizeUser(user);

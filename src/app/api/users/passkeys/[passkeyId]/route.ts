@@ -1,11 +1,14 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizePasskey } from "@/helpers/dto/passkey-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
+import { RawUser, sanitizeUser } from "@/helpers/dto/user-dto";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { validatePayload, validateRequestBody } from "@/helpers/util/request-utils";
 import { PasskeyParamsSchema, UpdatePasskeySchema } from "@/lib/payload-schemas";
 import Passkey from "@/models/passkey-model";
+import User from "@/models/user-model";
+import mongoose from "mongoose";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function PATCH(
@@ -75,9 +78,32 @@ export async function DELETE(
     if (!validation.success) return validation.errorResponse;
     const { passkeyId } = validation.data;
 
-    // delete passkey
-    const passkey = await Passkey.findOneAndDelete({ _id: passkeyId, userId });
-    if (!passkey) return getErrorResponse(404, 'No passkey found');
+    // use mongoose session.withTransaction to perform one atomic operation across separate collections
+    const session = await mongoose.startSession();
+    let user: RawUser | null = null;
+
+    try {
+      await session.withTransaction(async () => {
+        // delete the passkey
+        await Passkey.deleteOne({ _id: passkeyId, userId }, { session });
+
+        // determine whether the user still has any passkeys configured
+        const stillHasPasskey = await Passkey.exists({ userId }).session(session);
+
+        // update the user's hasPasskey flag
+        user = await User.findByIdAndUpdate(
+          userId,
+          { hasPasskey: !!stillHasPasskey },
+          { returnDocument: "after", runValidators: true, session }
+        );
+        if (!user) throw new Error("Unable to update User document after deleting passkey");
+      });
+    } finally {
+      await session.endSession();
+    }
+
+    // sanitize the user document for the UI
+    const sanitizedUser = sanitizeUser(user!);
 
     // record security event for successful passkey delete
     try {
@@ -94,6 +120,7 @@ export async function DELETE(
     return NextResponse.json({
       message: "Passkey deleted successfully",
       success: true,
+      user: sanitizedUser,
     });
   }
   catch (routeError: unknown) {
