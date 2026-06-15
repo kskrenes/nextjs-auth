@@ -6,7 +6,7 @@ import { axiosClient, setupAuthInterceptor } from '@/lib/axios-client';
 import { useRouter } from 'next/navigation';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
-import { startAuthentication } from '@simplewebauthn/browser';
+import { startAuthentication, startRegistration } from '@simplewebauthn/browser';
 
 // Public pages — onSignOut should NOT redirect away from these
 const PUBLIC_PATHS = new Set(['/', '/login', '/signup', '/verifyemail', '/resetpassword', '/triggerpasswordreset']);
@@ -42,6 +42,7 @@ export interface AuthContextType {
   verifyMFA: (code: string) => Promise<void>;
   disableMFA: (code: string) => Promise<void>;
   resetPassword: (token: string, password: string) => Promise<void>;
+  registerPasskey: () => Promise<boolean>;
 }
 
 export type AuthLoginResponse =
@@ -280,6 +281,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null);
   }
 
+  const registerPasskey = async (): Promise<boolean> => {
+    try {
+      setUpdatingUser(true);
+      // Get options from server
+      const optionsRes = await axiosClient.post('/api/passkeys/registration/options');
+      const { success, options } = optionsRes.data;
+      if (!success) throw new Error('Failed to generate registration options');
+
+      // Execute WebAuthn creation ceremony
+      const attestationResponse = await startRegistration({ optionsJSON: options });
+
+      // Send response to server for verification
+      const verifyRes = await axiosClient.post('/api/passkeys/registration/verify', { attestationResponse });
+      if (!verifyRes.data.success) throw new Error('Failed to verify passkey registration');
+      
+      setUser(verifyRes.data.user);
+      return true;
+    } catch {
+      return false;
+    } finally {
+      setUpdatingUser(false);
+    }
+  }
+
   return (
     <AuthContext.Provider 
       value={{ 
@@ -304,6 +329,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         verifyMFA,
         disableMFA,
         resetPassword,
+        registerPasskey,
       }}
     >
       {children}

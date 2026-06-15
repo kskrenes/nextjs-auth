@@ -70,12 +70,12 @@ const AccountPage = () => {
     fetchingUser, 
     updatingUser, 
     updateUser, 
+    registerPasskey,
     logout
   } = useAuth();
 
   const { 
     fetchPasskeys, 
-    registerPasskey,
     deletePasskey,
     updatePasskey,
     error: usePasskeysError, 
