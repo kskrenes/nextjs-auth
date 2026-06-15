@@ -19,6 +19,10 @@ const SecurityRecommendationsChart = ({ user }: SecurityRecommendationsChartProp
               <span className="text-symbol-amber">•</span>
               <span>Enable Multi-Factor Authentication to add an extra layer of security to your account</span>
             </li>}
+            {!user.hasPasskey && <li className="flex items-start gap-2">
+              <span className="text-symbol-amber">•</span>
+              <span>Add a passkey to enable passwordless sign-in with biometrics or a security key — passkeys are phishing-resistant and can&apos;t be stolen in a data breach</span>
+            </li>}
             {!user.hasStrongPassword && !hasGoogleProvider && <li className="flex items-start gap-2">
               <span className="text-symbol-amber">•</span>
               <span>Update to a stronger password with at least 12 characters, including uppercase, lowercase, numbers, and symbols</span>
