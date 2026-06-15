@@ -1,12 +1,14 @@
 import { connect } from "@/dbconfig/dbconfig";
 import { sanitizePasskey } from "@/helpers/dto/passkey-dto";
 import { recordSecurityEvent } from "@/helpers/dto/security-log-dto";
+import { sanitizeUser } from "@/helpers/dto/user-dto";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { claimChallenge, getPasskeyChallengeToken } from "@/helpers/util/passkey-utils";
 import { validateRequestBody } from "@/helpers/util/request-utils";
 import { PasskeyRegistrationVerificationSchema } from "@/lib/payload-schemas";
 import Passkey from "@/models/passkey-model";
+import User from "@/models/user-model";
 import { verifyRegistrationResponse } from "@simplewebauthn/server";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -75,6 +77,18 @@ export async function POST(request: NextRequest) {
     // sanitize the passkey for the UI
     const sanitizedPasskey = sanitizePasskey(storedPasskey);
 
+    // update the user's hasPasskey flag
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { hasPasskey: true },
+      {
+        returnDocument: 'after',
+        runValidators: true,
+      }
+    );
+    if (!user) console.error("Unable to update User document when registering passkey");
+    const sanitizedUser = sanitizeUser(user);
+
     // record security event for passkey registration
     try {
       await recordSecurityEvent(
@@ -91,6 +105,7 @@ export async function POST(request: NextRequest) {
       message: "Passkey successfully registered",
       success: true,
       passkey: sanitizedPasskey,
+      user: sanitizedUser,
     });
   }
   catch (routeError: unknown) {
