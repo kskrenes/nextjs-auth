@@ -4,7 +4,6 @@ import User from "@/models/user-model";
 import { NextResponse, type NextRequest } from "next/server";
 import { getErrorResponse } from "@/helpers/util/error-utils";
 import { authorizeRequest } from "@/helpers/util/auth-utils";
-import Passkey from "@/models/passkey-model";
 
 export async function GET(request: NextRequest) {
   try {
@@ -18,10 +17,6 @@ export async function GET(request: NextRequest) {
     // fetch the user
     const user = await User.findById(userId).select("-password");
     if (!user) return getErrorResponse(404, "User not found");
-
-    // get passkey count
-    const passkeyCount = await Passkey.countDocuments({ userId });
-    user.hasPasskey = passkeyCount > 0;
 
     // create sanitized user for response
     const sanitizedUser = sanitizeUser(user);
