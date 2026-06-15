@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import { WebAuthnError } from '@simplewebauthn/browser';
 import { axiosClient } from '@/lib/axios-client';
 
 export interface Passkey {
@@ -14,18 +13,10 @@ export function usePasskeys() {
   const [error, setError] = useState<string | null>(null);
 
   const handleError = (err: unknown) => {
-    if (err instanceof WebAuthnError) {
-      if (err.name === 'NotAllowedError') {
-        setError('The operation was cancelled or timed out. Please try again.');
-      } else if (err.name === 'InvalidStateError') {
-        setError('This authenticator is already registered for this account.');
-      } else {
-        setError(`WebAuthn error: ${err.message}`);
-      }
-    } else if (err instanceof Error) {
+    if (err instanceof Error) {
       setError(err.message);
     } else {
-      setError('An unexpected error occurred during the passkey operation.');
+      setError('An unexpected error occurred.');
     }
     setLoading(false);
   };
