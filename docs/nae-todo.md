@@ -168,7 +168,7 @@ look & feel, flow
 - [x] redesign onboarding page
 - [x] fix sidebar to top left when scrolling
 - [x] redesign account page tabs as necessary
-- [ ] potentially style button spinners in white or brighter brand color
+- [x] potentially style button spinners in white or brighter brand color
 - [ ] include password validation states in password component
 - [ ] refactor to components where applicable
 
