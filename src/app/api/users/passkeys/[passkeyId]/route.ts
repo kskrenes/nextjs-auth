@@ -82,7 +82,7 @@ export async function DELETE(
     if (!passkey) return getErrorResponse(404, 'No passkey found');
 
     // determine whether the user has any registered passkeys
-    const hasPasskey = Passkey.exists({ userId })
+    const hasPasskey = await Passkey.exists({ userId })
 
     // update the user's hasPasskey flag
     const user = await User.findByIdAndUpdate(
