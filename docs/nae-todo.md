@@ -149,7 +149,7 @@ dashboard content
 - [x] add a visual widget calculating a health score based on whether the user has MFA enabled, a strong password, and verified email
 - [x] add charts (like Tremor or Chart.js) showing fake system metrics like "API Requests", "Cache Hit Rate (Redis)", or "Auth Success vs Failures"
 - [x] add card showing which email domains are allowed to sign up (mock until "restricted domains" feature is implemented)
-- [ ] update security health score and recommendations as needed to include passkeys
+- [x] update security health score and recommendations as needed to include passkeys
 
 look & feel, flow
 - [x] improve style
