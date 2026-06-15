@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
         runValidators: true,
       }
     );
-    if (!user) console.error("Unable to update User document when registering passkey");
+    if (!user) console.error("Unable to update User document after registering passkey");
     const sanitizedUser = sanitizeUser(user);
 
     // record security event for passkey registration
