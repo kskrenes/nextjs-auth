@@ -47,6 +47,9 @@
   --button-secondary-foreground: #6366f1;
   --button-tertiary-border: #d1d5db;
   --button-warning-highlight: #eeeeee;
+  --button-white-disabled: #f4faff;
+  --button-white-border-disabled: #f2f8fd;
+  --button-white-foreground-disabled: #eaf0f5;
   --tab-foreground: #4b596d;
   --tab-foreground-selected: #6366f1;
   --logo: url('/nAuth-logo-light.png');
@@ -96,6 +99,9 @@
   --button-secondary-foreground: #e5e6f2;
   --button-tertiary-border: #4a4d5f;
   --button-warning-highlight: #662010;
+  --button-white-disabled: #333540;
+  --button-white-border-disabled: #31333e;
+  --button-white-foreground-disabled: #292b36;
   --tab-foreground: #9ca3af;
   --tab-foreground-selected: #818cf8;
   --logo: url('/nAuth-logo.png');
@@ -147,6 +153,9 @@
   --color-button-secondary-foreground: var(--button-secondary-foreground);
   --color-button-tertiary-border: var(--button-tertiary-border);
   --color-button-warning-highlight: var(--button-warning-highlight);
+  --color-button-white-disabled: var(--button-white-disabled);
+  --color-button-white-border-disabled: var(--button-white-border-disabled);
+  --color-button-white-foreground-disabled: var(--button-white-foreground-disabled);
   --color-tab-foreground: var(--tab-foreground);
   --color-tab-foreground-selected: var(--tab-foreground-selected);
   --background-image-logo: var(--logo);
@@ -299,14 +308,14 @@ body {
     font-medium 
     text-gray-700 
     hover:text-black 
-    disabled:text-panel
+    disabled:text-button-white-foreground-disabled
     bg-white 
     hover:bg-indigo-50 
-    disabled:bg-panel-highlight
+    disabled:bg-button-white-disabled
     rounded-sm
     border
-    border-gray-300
-    disabled:border-panel-highlight
+    border-[#dadce0]
+    disabled:border-button-white-border-disabled
 }
 
 @utility button-standard {

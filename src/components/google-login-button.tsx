@@ -216,7 +216,7 @@ export default function GoogleLoginButton({
 
       {/* Loading & Disabled Overlay mask */}
       {(loggingIn || disabled) && (
-        <div className='absolute top-0 left-0 w-full h-full bg-page/80 cursor-not-allowed'></div>
+        <div className='absolute top-0 left-0 w-full h-full bg-panel/95 cursor-not-allowed'></div>
       )}
     </div>
   );

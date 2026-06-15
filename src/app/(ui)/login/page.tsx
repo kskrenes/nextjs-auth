@@ -159,14 +159,8 @@ const LoginPage = () => {
                   disabled={awaitingRedirect}
                   className="w-full gap-2"
                 >
-                  {awaitingRedirect ? (
-                    <>
-                      <NaeLoader />
-                      Signing in...
-                    </>
-                  ) : (
-                    'Sign in'
-                  )}
+                  {awaitingRedirect && <NaeLoader />}
+                  {awaitingRedirect ? 'Signing in...' : 'Sign in'}
                 </Button>
               </form>
 
