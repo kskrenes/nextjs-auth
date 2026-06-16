@@ -1,13 +1,12 @@
 "use client";
 
 import { triggerEmail } from "@/helpers/util/email-trigger";
-import { ChevronDown, ChevronUp, Fingerprint, KeyRound, Lock, Pencil, Plus, ShieldAlert } from "lucide-react";
+import { ChevronDown, ChevronUp, Fingerprint, KeyRound, Lock, Plus, ShieldAlert } from "lucide-react";
 import { useState } from "react";
 import Button from "@/components/nae-button";
 import toast from "react-hot-toast";
 import { useAuth } from "@/context-providers/auth-context-provider";
 import { getErrorMessage } from "@/helpers/util/error-utils";
-import AvatarUpload from "@/components/avatar-upload";
 import FullScreenLoader from "@/components/full-screen-loader";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import GoogleLoginButton from "@/components/google-login-button";
@@ -27,6 +26,7 @@ import PasskeyManagement from "@/components/passkey-management";
 import { usePasskeys } from "@/hooks/use-passkeys";
 import { PasskeyDTO } from "@/helpers/dto/passkey-dto";
 import ProfileTab from "@/components/account/profile-tab";
+import ProfilePanel from "@/components/account/profile-panel";
 
 const AccountPage = () => {
 
@@ -36,7 +36,6 @@ const AccountPage = () => {
   const [showPasskeyDeleteConfirmModal, setShowPasskeyDeleteConfirmModal] = useState(false);
   const [showGoogleUnlinkConfirmModal, setShowGoogleUnlinkConfirmModal] = useState(false);
   const [regenCodes, setRegenCodes] = useState<string[] | null>(null);
-  const [isSendingVerifyEmail, setIsSendingVerifyEmail] = useState(false);
   const [isSendingResetEmail, setIsSendingResetEmail] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
@@ -69,37 +68,24 @@ const AccountPage = () => {
 
   if (fetchingUser) return <FullScreenLoader />;
 
-  const handleVerifyEmailClick = async () => {
-    if (isSendingVerifyEmail || !user) return;
-
-    try {
-      await triggerEmail(user.email, "VERIFY", setIsSendingVerifyEmail);
-      toast.success("Verification email sent");
-    } catch {
-      toast.error("Failed to send verification email");
-    }
-  }
-
-  const handleResetPasswordClick = async () => {
-    if (isSendingResetEmail || !user) return;
-
-    try {
-      await triggerEmail(user.email, "RESET", setIsSendingResetEmail);
-      toast.success("A Reset password link has been sent to your email.");
-    } catch {
-      toast.error("Failed to send reset password email");
-    }
-  }
-
   const handleEditClick = () => {
     if (!user || isEditing) return;
-
     setActiveTab(0);
     setIsEditing(true);
   }
 
   const handleProfileEditComplete = () => {
     setIsEditing(false);
+  }
+
+  const handleResetPasswordClick = async () => {
+    if (isSendingResetEmail || !user) return;
+    try {
+      await triggerEmail(user.email, "RESET", setIsSendingResetEmail);
+      toast.success("A Reset password link has been sent to your email.");
+    } catch {
+      toast.error("Failed to send reset password email");
+    }
   }
 
   const handleGoogleLinkSuccess = () => {
@@ -255,51 +241,10 @@ const AccountPage = () => {
         <div className="ll:w-90">
 
           {/* profile card */}
-          <div 
-            className="flex flex-col w-full px-6 py-12 gap-8 rounded-md bg-panel mb-6 justify-center min-w-0" 
-          >
-            {/* avatar */}
-            <AvatarUpload />
-
-            {/* name/username group */}
-            <div className="flex min-w-0 flex-col gap-1 items-center">
-              {/* name */}
-              {user && user.name && (
-                <div className="flex justify-center items-center max-w-55 xs:max-w-80 gap-2 w-full">
-                  <h1 className="text-2xl xs:text-3xl truncate font-semibold wrap-break-word line-clamp-1">{user.name}</h1>
-                </div>
-              )}
-              {/* username/admin */}
-              <div className="flex justify-center items-center max-w-55 xs:max-w-80 gap-2 w-full">
-                <p className="text-foreground-secondary text-lg xs:text-xl break-all line-clamp-1">{user?.username}</p>
-              </div>
-            </div>
-
-            {/* button group */}
-            <div className="flex gap-4 justify-center mx-auto w-full max-w-80">
-              
-              {/* edit button - always visible */}
-              <Button 
-                className="flex-1 gap-2 px-0"
-                onClick={handleEditClick}
-                disabled={!user || isEditing}
-              >
-                <Pencil className="w-5 h-5" />
-                Edit Profile
-              </Button>
-              {/* verify email button - conditional */}
-              {user && !user?.isVerified && !user.linkedProviders.includes('google') && (
-                <Button 
-                  className="flex-1 px-0" 
-                  variant="secondary"
-                  onClick={handleVerifyEmailClick}
-                  disabled={isSendingVerifyEmail}
-                >
-                  Verify Email
-                </Button>
-              )}
-            </div>
-          </div>
+          <ProfilePanel 
+            editing={isEditing} 
+            onEditClick={handleEditClick} 
+          />
         </div>
 
         {/* second column */}
