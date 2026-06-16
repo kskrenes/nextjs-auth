@@ -215,7 +215,7 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
             <Button 
               type="submit"
               size="small" 
-              className="flex-1 text-sm"
+              className="flex-1"
               disabled={pending}
             >
               Save
@@ -223,7 +223,7 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
             <Button 
               size="small" 
               variant="secondary" 
-              className="flex-1 text-sm"
+              className="flex-1"
               disabled={pending}
               onClick={onEditComplete}
             >

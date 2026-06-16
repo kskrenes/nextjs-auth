@@ -191,7 +191,6 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
               <Button
                 onClick={() => setShowRegenModal(true)}
                 size="small"
-                className="text-sm"
               >
                 Regenerate
               </Button>
@@ -226,7 +225,6 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
                 variant="extreme"
                 onClick={handleDisableConfirm}
                 disabled={loading}
-                className="text-sm"
               >
                 Yes, Disable MFA
               </Button>
@@ -235,7 +233,6 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
                 variant="tertiary"
                 disabled={loading}
                 onClick={handleDisableCancel}
-                className="text-sm"
               >
                 Cancel
               </Button>
@@ -248,7 +245,6 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
               variant="warning"
               disabled={loading}
               onClick={handleDisableRequest}
-              className="text-sm gap-2"
             >
               <Unlock className="w-3.5 h-3.5" />
               Disable Two-Factor Authentication
@@ -286,7 +282,6 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
               size="small"
               onClick={handleEnable}
               disabled={loading}
-              className="gap-2 text-sm"
             >
               <ShieldCheck className="w-4 h-4" />
               Enable Two-Factor Authentication

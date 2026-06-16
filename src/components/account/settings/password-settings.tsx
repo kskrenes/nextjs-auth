@@ -65,7 +65,6 @@ const PasswordSettings = () => {
               : () => setShowPasswordLinkModal(true)
             }
             disabled={sendingEmail}
-            className="text-sm gap-2"
           >
             {!hasPassword && <Plus className="w-3 h-3" />}
             {!hasPassword ? 'Add' : 'Change'}

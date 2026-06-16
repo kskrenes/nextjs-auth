@@ -61,7 +61,6 @@ const GoogleSettings = () => {
               onClick={() => setShowUnlinkConfirmModal(true)}
               size="small"
               variant="tertiary"
-              className="text-sm gap-2"
             >
               Unlink
             </Button>

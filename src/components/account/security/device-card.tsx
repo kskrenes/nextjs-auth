@@ -83,7 +83,7 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
               <Button 
                 size="small" 
                 variant="warning"
-                className="ml-auto text-sm" 
+                className="ml-auto" 
                 onClick={deleteSession}
               >
                 Sign Out

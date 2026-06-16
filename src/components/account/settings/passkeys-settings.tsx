@@ -157,7 +157,6 @@ const PasskeysSettings = () => {
                 variant="tertiary"
                 onClick={handleAddPasskey}
                 disabled={updatingUser}
-                className="text-sm gap-2"
               >
                 <Plus className="w-3 h-3" />
                 Add

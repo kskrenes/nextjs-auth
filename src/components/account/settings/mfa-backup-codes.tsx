@@ -36,7 +36,6 @@ const MFABackupCodes = ({ codes, loading, onContinue }: MFABackupCodesProps) => 
           <Button 
             size="small" 
             variant="tertiary" 
-            className="text-sm"
             onClick={copyBackupCodes}
           >
             {copiedCodes ? (
@@ -60,7 +59,6 @@ const MFABackupCodes = ({ codes, loading, onContinue }: MFABackupCodesProps) => 
           size="small"
           disabled={loading}
           onClick={onContinue}
-          className="text-sm"
         >
           I&apos;ve Saved These Codes
         </Button>

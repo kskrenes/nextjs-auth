@@ -113,7 +113,6 @@ const SecurityTab = () => {
                   variant="extreme"
                   onClick={handleSignOutAllDevices}
                   disabled={isRevokingAll}
-                  className="text-sm"
                 >
                   Sign Out All Devices
                 </Button>

@@ -338,7 +338,7 @@ body {
   @apply 
     px-2.5 
     py-1.5 
-    text-base
+    text-sm
 }
 
 @utility input-base {

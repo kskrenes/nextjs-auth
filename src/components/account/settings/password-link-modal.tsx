@@ -126,7 +126,6 @@ const PasswordLinkModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProp
               size="small"
               onClick={handleSubmit}
               disabled={submitting}
-              className='gap-2'
             >
               {submitting && <NaeLoader />}
               {submitting ? 'Adding Password...' : 'Add Password'}
