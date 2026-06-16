@@ -3,6 +3,7 @@
 import { useAuth } from "@/context-providers/auth-context-provider";
 import { Lock } from "lucide-react";
 import MFAManagement from "./mfa-management";
+import SettingsIcon from "./settings-icon";
 
 const MFASettings = () => {
 
@@ -16,9 +17,7 @@ const MFASettings = () => {
         <div className="flex items-start gap-3 mb-4">
 
           {/* Icon */}
-          <div className="mt-0.5 p-2 bg-panel-brand rounded-lg">
-            <Lock className="w-4 h-4 text-foreground-secondary" />
-          </div>
+          <SettingsIcon icon={Lock} />
 
           {/* Title & Description */}
           <div>

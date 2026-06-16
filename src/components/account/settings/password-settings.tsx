@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import PasswordLinkModal from "./password-link-modal";
 import Button from "@/components/nae-button";
 import { KeyRound, Plus } from "lucide-react";
+import SettingsIcon from "./settings-icon";
 
 const PasswordSettings = () => {
 
@@ -38,9 +39,7 @@ const PasswordSettings = () => {
     <div className="p-5 flex items-start gap-4">
 
       {/* Icon */}
-      <div className="mt-0.5 p-2 bg-panel-brand rounded-lg">
-        <KeyRound className="w-4 h-4 text-foreground-secondary" />
-      </div>
+      <SettingsIcon icon={KeyRound} />
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-4">
