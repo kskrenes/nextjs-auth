@@ -169,7 +169,7 @@ look & feel, flow
 - [x] fix sidebar to top left when scrolling
 - [x] redesign account page tabs as necessary
 - [x] potentially style button spinners in white or brighter brand color
-- [ ] include password validation states in password component
+- [x] include password validation states in password component
 - [ ] refactor to components where applicable
 
 staging & polishing
