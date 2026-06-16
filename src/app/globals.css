@@ -478,8 +478,6 @@ body {
     gap-8
     md:gap-10 
     px-5 
-    rounded-md 
-    bg-panel
 }
 
 @utility tab-list-item {
@@ -494,6 +492,32 @@ body {
     data-selected:cursor-default
     data-selected:shadow-[inset_0_-2px_0_0_var(--color-tab-foreground-selected)]
     py-3
+}
+
+@utility panel {
+  @apply
+    rounded-lg
+    bg-panel
+}
+
+@utility panel-interior {
+  @apply
+    rounded-lg
+    bg-panel-highlight
+}
+
+@utility page-title-container {
+  @apply
+    min-w-39 
+    max-w-90 
+    md:mx-0 
+    mb-8
+}
+
+@utility page-title {
+  @apply
+    text-2xl 
+    font-semibold
 }
 
 @utility custom-chart {
