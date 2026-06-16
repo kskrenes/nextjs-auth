@@ -5,7 +5,7 @@ import { ShieldAlert } from "lucide-react";
 import DeviceCard from "./device-card";
 import Button from "@/components/nae-button";
 import SecurityLogCard from "./security-log-card";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { SessionDTO } from "@/helpers/dto/session-dto";
 import { SecurityLogDTO } from "@/helpers/dto/security-log-dto";
 import { axiosClient } from "@/lib/axios-client";
@@ -23,10 +23,13 @@ const SecurityTab = () => {
   const [securityDataErrorMessage, setSecurityDataErrorMessage] = useState('');
   const [isRevokingAll, setIsRevokingAll] = useState(false);
 
+  const isFetchingRef = useRef(false);
+
   const { logout } = useAuth();
 
   const fetchTabData = useCallback(async () => {
-    if (isLoadingSecurityData) return;
+    if (isFetchingRef.current) return;
+    isFetchingRef.current = true;
 
     setIsLoadingSecurityData(true);
     setIsSecurityDataError(false);
@@ -46,9 +49,8 @@ const SecurityTab = () => {
       setSecurityDataErrorMessage(getErrorMessage(error, "Failed to load security data"));
     }
     finally {
-      setIsLoadingSecurityData(false);
+      isFetchingRef.current = false;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {fetchTabData()}, [fetchTabData])
