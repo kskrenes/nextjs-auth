@@ -170,10 +170,10 @@ look & feel, flow
 - [x] redesign account page tabs as necessary
 - [x] potentially style button spinners in white or brighter brand color
 - [x] include password validation states in password component
-- [ ] refactor to components where applicable
+- [x] refactor to components where applicable
 
 staging & polishing
-- [ ] ensure consistent file naming (use "-" rather than camelcase)
+- [x] ensure consistent file naming (use "-" rather than camelcase)
 - [ ] audit entire app for accessibility (a11y)
   - [ ] verify all images have descriptive alt tags and interactive elements use proper ARIA labels
   - [ ] ensure text-to-background contrast ratios meet WCAG AA standards
