@@ -85,7 +85,8 @@ export async function DELETE(
     try {
       await session.withTransaction(async () => {
         // delete the passkey
-        await Passkey.deleteOne({ _id: passkeyId, userId }, { session });
+        const deletedPasskey = await Passkey.deleteOne({ _id: passkeyId, userId }, { session });
+        if (!deletedPasskey) throw new Error("Passkey does not exist or was already deleted");
 
         // atomically decrement the user's passkey count
         user = await User.findByIdAndUpdate(
