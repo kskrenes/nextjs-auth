@@ -4,13 +4,14 @@ import { useEffect, useRef, useState, type SubmitEvent } from "react";
 import Button from "@/components/nae-button";
 import QRCode from 'react-qr-code';
 import Input from "@/components/nae-input";
-import { Check, Copy, ShieldCheck, Unlock } from "lucide-react";
+import { ShieldCheck, Unlock } from "lucide-react";
 import { axiosClient } from "@/lib/axios-client";
 import toast from "react-hot-toast";
 import NaeLoader from "@/components/nae-loader";
 import { useAuth } from "@/context-providers/auth-context-provider";
 import MFABackupCodesModal from "./mfa-backup-codes-modal";
 import MFADisableModal from "./mfa-disable-modal";
+import MFABackupCodes from "./mfa-backup-codes";
 
 const INIT_ERROR = "Failed to initialize Multi-Factor Authentication";
 const VERIFY_ERROR = "Could not verify authentication code";
@@ -30,7 +31,6 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
   const [regenCodes, setRegenCodes] = useState<string[] | null>(null);
   const [codeCount, setCodeCount] = useState<number | null>(null);
-  const [copiedCodes, setCopiedCodes] = useState<boolean>(false);
   const [confirmDisable, setConfirmDisable] = useState<boolean>(false);
   const [showBackupCodes, setShowBackupCodes] = useState<boolean>(false);
   const [showRegenModal, setShowRegenModal] = useState(false);
@@ -125,13 +125,6 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
     setVerificationCode('');
   }
 
-  const copyBackupCodes = () => {
-    if (!backupCodes) return;
-    navigator.clipboard.writeText(backupCodes.join('\n'));
-    setCopiedCodes(true);
-    setTimeout(() => setCopiedCodes(false), 2000);
-  }
-
   const handleDisableRequest = () => {
     setConfirmDisable(true);
   }
@@ -212,48 +205,11 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
               <p className="text-sm text-foreground-secondary mb-3">
                 Save these codes in a safe place. They won&apos;t be shown again.
               </p>
-              <div className="panel flex flex-col p-4 gap-4">
-                <div className="grid grid-cols-2 gap-2 font-mono">
-                  {backupCodes?.map((code, index) => (
-                    <p key={`backupcode${index}`}>{code}</p>
-                  ))}
-                </div>
-
-                {/* Copy Button */}
-                <div className="mt-1">
-                  <Button 
-                    size="small" 
-                    variant="tertiary" 
-                    className="gap-2 text-sm"
-                    onClick={copyBackupCodes}
-                    disabled={loading}
-                  >
-                    {copiedCodes ? (
-                      <>
-                        <Check className="w-4 h-4 text-excellent" />
-                        <span className="text-excellent">Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4" />
-                        <span>Copy Codes</span>
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-
-              {/* Show Backup Codes Button */}
-              <div className="mt-4">
-                <Button 
-                  size="small"
-                  disabled={loading}
-                  onClick={() => setShowBackupCodes(false)}
-                  className="text-sm"
-                >
-                  I&apos;ve Saved These Codes
-                </Button>
-              </div>
+              <MFABackupCodes 
+                codes={backupCodes} 
+                loading={loading} 
+                onContinue={() => setShowBackupCodes(false)} 
+              />
             </div>
           )}
         </div>
@@ -431,51 +387,15 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
           <div className="panel-interior flex flex-col gap-5 p-4">
             <div className="flex flex-col gap-3">
               <p>Step 3 of 3 - Save Backup Codes</p>
-              <p className="text-foreground-secondary text-sm">Store these codes somewhere safe. Each can only be used once to access your account if you lose your authenticator.</p>
-
-              {/* Backup Codes Panel/Grid */}
-              <div className="panel flex flex-col p-4 gap-4">
-                <div className="grid grid-cols-2 gap-2 font-mono">
-                  {backupCodes?.map((code, index) => (
-                    <p key={`backupcode${index}`}>{code}</p>
-                  ))}
-                </div>
-
-                {/* Copy Button */}
-                <div className="mt-1">
-                  <Button 
-                    size="small" 
-                    variant="tertiary" 
-                    className="gap-2 text-sm"
-                    onClick={copyBackupCodes}
-                  >
-                    {copiedCodes ? (
-                      <>
-                        <Check className="w-4 h-4 text-excellent" />
-                        <span className="text-excellent">Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4" />
-                        <span>Copy Codes</span>
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
+              <p className="text-foreground-secondary text-sm">
+                Store these codes somewhere safe. Each can only be used once to access your account if you lose your authenticator.
+              </p>
+              <MFABackupCodes 
+                codes={backupCodes} 
+                loading={loading} 
+                onContinue={advance} 
+              />
             </div>
-          </div>
-
-          {/* Continue Button */}
-          <div>
-            <Button 
-              size="small"
-              disabled={loading}
-              onClick={advance}
-              className="text-sm"
-            >
-              I&apos;ve Saved These Codes
-            </Button>
           </div>
         </div>
       )}

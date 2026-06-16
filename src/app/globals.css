@@ -217,6 +217,7 @@ body {
     cursor-pointer
     disabled:cursor-not-allowed
     leading-tight
+    gap-2
 }
 
 @utility button-primary {
