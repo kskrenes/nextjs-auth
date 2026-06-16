@@ -15,8 +15,6 @@ const DashboardPage = () => {
 
   if (fetchingUser || !user) return <FullScreenLoader />;
 
-  console.log(user)
-
   const hasGoogleProvider = user.linkedProviders.includes('google');
   const healthChecks = [
     { name: 'Multi-Factor Authentication', enabled: user.mfaEnabled, weight: 30 },
