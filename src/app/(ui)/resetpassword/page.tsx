@@ -153,7 +153,7 @@ const ResetPasswordPage = () => {
                 <Button
                   type="submit"
                   disabled={resetState === 'loading'}
-                  className="w-full gap-2"
+                  className="w-full"
                 >
                   {resetState === 'loading' ? (
                     <>

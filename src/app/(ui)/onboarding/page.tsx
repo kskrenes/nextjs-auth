@@ -111,7 +111,7 @@ const OnboardingPage = () => {
             <Button
               type="submit"
               disabled={awaitingRedirect}
-              className="w-full gap-2"
+              className="w-full"
             >
               {awaitingRedirect ? (
                 <>

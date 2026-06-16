@@ -94,7 +94,6 @@ const GoogleUnlinkConfirmModal = ({ open, onOpenChange, onCancel, onSuccess }:Mo
               onClick={handleSubmit}
               disabled={unlinkingGoogle}
               variant="extreme"
-              className='gap-2'
             >
               {unlinkingGoogle && <NaeLoader />}
               {unlinkingGoogle ? 'Unlinking...' : 'Unlink'}

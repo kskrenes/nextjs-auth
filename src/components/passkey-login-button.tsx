@@ -27,7 +27,7 @@ const PasskeyLoginButton = ({ loading, onClick }: PasskeyLoginButtonProps) => {
     <button
       type="button"
       disabled={loading}
-      className="w-full gap-2 mt-5 button-white button-mid"
+      className="w-full mt-5 button-white button-mid"
       onClick={onClick}
     >
       <Fingerprint className="w-5 h-5" />

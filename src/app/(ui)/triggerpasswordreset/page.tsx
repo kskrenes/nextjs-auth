@@ -86,7 +86,7 @@ const TriggerPasswordResetPage = () => {
               <Button
                 type="submit"
                 disabled={sending}
-                className="w-full gap-2"
+                className="w-full"
               >
                 {sending ? (
                   <>

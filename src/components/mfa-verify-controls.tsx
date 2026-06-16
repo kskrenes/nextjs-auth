@@ -22,7 +22,6 @@ const MFAVerifyControls = ({ onCancel, onVerify, loading, disabled, danger = fal
       <Button
         onClick={onVerify}
         disabled={loading || disabled}
-        className="gap-2"
         variant={danger ? 'extreme' : 'primary'}
       >
         {loading && <NaeLoader />}

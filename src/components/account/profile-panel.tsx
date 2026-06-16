@@ -65,7 +65,7 @@ const ProfilePanel = ({ editing, onEditClick }: ProfilePanelProps) => {
             
             {/* edit button - always visible */}
             <Button 
-              className="flex-1 gap-2 px-0"
+              className="flex-1 px-0"
               onClick={onEditClick}
               disabled={editing}
             >
