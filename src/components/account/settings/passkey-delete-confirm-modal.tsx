@@ -5,8 +5,8 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from './dialog';
-import Button from './nae-button';
+} from '@/components/dialog';
+import Button from '@/components/nae-button';
 
 export interface ModalProps {
   open: boolean;

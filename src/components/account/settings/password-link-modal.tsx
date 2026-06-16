@@ -8,14 +8,14 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from './dialog';
+} from '@/components/dialog';
 import { useAuth } from '@/context-providers/auth-context-provider';
 import { getValidPassword } from '@/helpers/util/form-validation-utils';
 import { getErrorMessage } from '@/helpers/util/error-utils';
-import Button from './nae-button';
-import NaeLoader from './nae-loader';
-import PanelError from './panel-error';
-import SetPasswordInputs from './nae-set-password';
+import PanelError from '@/components/panel-error';
+import SetPasswordInputs from '@/components/nae-set-password';
+import Button from '@/components/nae-button';
+import NaeLoader from '@/components/nae-loader';
 
 export interface ModalProps {
   open: boolean;

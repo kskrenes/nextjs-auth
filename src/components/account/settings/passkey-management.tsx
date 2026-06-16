@@ -3,7 +3,7 @@
 import { formatRelativeTime } from "@/helpers/util/time-utils";
 import { Pencil, Trash2 } from "lucide-react";
 import { KeyboardEvent, useState } from "react";
-import Button from "./nae-button";
+import Button from "@/components/nae-button";
 import { PasskeyDTO } from "@/helpers/dto/passkey-dto";
 
 interface PasskeyManagementProps {
@@ -31,7 +31,7 @@ const PasskeyManagement = ({ passkeys, onUpdate, onDelete }: PasskeyManagementPr
     setSubmitting(false);
   };
 
-  const getLastUsed = (date: Date | null): string => {
+  const getLastUsed = (date: Date | null | undefined): string => {
     if (!date) return 'Unused';
     return formatRelativeTime(new Date(date));
   }

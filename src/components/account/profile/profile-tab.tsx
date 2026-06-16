@@ -3,20 +3,20 @@
 import { useAuth } from "@/context-providers/auth-context-provider";
 import { SubmitEvent, useEffect, useState } from "react";
 import Badge from "@/components/badge";
-import { CompanyIcon, EmailIcon, LinkIcon } from "../profile-icons";
-import IconLink from "../icon-link";
+import { CompanyIcon, EmailIcon, LinkIcon } from "../../profile-icons";
+import IconLink from "../../icon-link";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "@/helpers/util/error-utils";
 import { ShieldUser } from "lucide-react";
-import Button from "../nae-button";
-import Input from "../nae-input";
+import Button from "../../nae-button";
+import Input from "../../nae-input";
 
 interface ProfileTabProps {
   editing: boolean;
-  onComplete: () => void;
+  onEditComplete: () => void;
 }
 
-const ProfileTab = ({ editing, onComplete }: ProfileTabProps) => {
+const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
 
   const [pending, setPending] = useState(false);
   const [name, setName] = useState('');
@@ -62,7 +62,7 @@ const ProfileTab = ({ editing, onComplete }: ProfileTabProps) => {
       setPending(true);
       await updateUser(updatedUser);
       toast.success("Profile updated");
-      onComplete();
+      onEditComplete();
     } catch (error) {
       toast.error(getErrorMessage(error, "Failed to update profile"));
     } finally {
@@ -225,7 +225,7 @@ const ProfileTab = ({ editing, onComplete }: ProfileTabProps) => {
               variant="secondary" 
               className="flex-1 text-sm"
               disabled={pending}
-              onClick={onComplete}
+              onClick={onEditComplete}
             >
               Cancel
             </Button>
