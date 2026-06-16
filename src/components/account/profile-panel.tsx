@@ -33,7 +33,7 @@ const ProfilePanel = ({ editing, onEditClick }: ProfilePanelProps) => {
 
   return (
     <div 
-      className="rounded-md bg-panel flex w-full px-6 py-12 gap-8 mb-6 min-w-0 flex-col" 
+      className="panel flex w-full px-6 py-12 gap-8 mb-6 min-w-0 flex-col" 
     >
       {!user ? (
         <div className="flex justify-center items-center h-95">

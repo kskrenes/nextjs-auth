@@ -155,7 +155,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
         </div>
 
         {/* Backup Codes Section */}
-        <div className="bg-panel-highlight rounded-md p-4">
+        <div className="panel-interior p-4">
           <div className="flex justify-between">
             <div className="flex">
               <div className="flex flex-col">
@@ -195,7 +195,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
               <p className="text-sm text-foreground-secondary mb-3">
                 Save these codes in a safe place. They won&apos;t be shown again.
               </p>
-              <div className="p-4 rounded-md bg-panel flex flex-col gap-4">
+              <div className="panel flex flex-col p-4 gap-4">
                 <div className="grid grid-cols-2 gap-2 font-mono">
                   {backupCodes?.map((code, index) => (
                     <p key={`backupcode${index}`}>{code}</p>
@@ -301,7 +301,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
       )}
       {step === 2 && (
         <div className="flex flex-col mt-2 gap-5">
-          <div className="flex flex-col gap-5 bg-panel-highlight rounded-md p-4">
+          <div className="panel-interior flex flex-col gap-5 p-4">
             <div className="flex flex-col gap-2">
               <p>Step 1 of 3 - Scan QR Code</p>
               <p className="text-sm text-foreground-secondary">Open your authenticator app and scan the code below.</p>
@@ -315,7 +315,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
             </div>
             <div className="flex flex-col gap-2">
               <p className="text-xs text-foreground-secondary">Or enter this code manually:</p>
-              <div className="p-3 w-fit rounded-md bg-panel text-foreground-secondary">
+              <div className="panel p-3 w-fit text-foreground-secondary">
                 {secret}
               </div>
             </div>
@@ -333,7 +333,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
       )}
       {step === 3 && (
         <form className="flex flex-col mt-2 gap-5" onSubmit={handleVerify}>
-          <div className="flex flex-col gap-5 bg-panel-highlight rounded-md p-4">
+          <div className="panel-interior flex flex-col gap-5 p-4">
             <div className="flex flex-col gap-3">
               <p>Step 2 of 3 - Verify Code</p>
               <p className="text-sm text-foreground-secondary">Enter the 6-digit code shown in your authenticator app.</p>
@@ -374,11 +374,11 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
       )}
       {step === 4 && (
         <div className="flex flex-col mt-2 gap-5">
-          <div className="flex flex-col gap-5 bg-panel-highlight rounded-md p-4">
+          <div className="panel-interior flex flex-col gap-5 p-4">
             <div className="flex flex-col gap-3">
               <p>Step 3 of 3 - Save Backup Codes</p>
               <p className="text-foreground-secondary text-sm">Store these codes somewhere safe. Each can only be used once to access your account if you lose your authenticator.</p>
-              <div className="p-4 rounded-md bg-panel flex flex-col gap-4">
+              <div className="panel flex flex-col p-4 gap-4">
                 <div className="grid grid-cols-2 gap-2 font-mono">
                   {backupCodes?.map((code, index) => (
                     <p key={`backupcode${index}`}>{code}</p>

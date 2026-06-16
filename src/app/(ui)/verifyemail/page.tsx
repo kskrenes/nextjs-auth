@@ -82,7 +82,7 @@ const VerifyEmailPage = () => {
   return (
     <div className="page-centered">
       <div className="max-w-md w-full">
-        <div className="bg-panel rounded-lg p-8">
+        <div className="panel p-8">
 
           {/* Loading State */}
           {verificationState === 'loading' && (

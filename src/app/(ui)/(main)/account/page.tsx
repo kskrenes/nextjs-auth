@@ -232,7 +232,7 @@ const AccountPage = () => {
     <div className="page-container">
 
       {/* page title */}
-      <h1 className="text-2xl min-w-39 max-w-90 font-semibold md:mx-0 mb-8">My Account</h1>
+      <h1 className="page-title-container page-title">Account Management</h1>
 
       {/* page layout */}
       <div className="flex gap-8 flex-col ll:flex-row">
@@ -264,7 +264,7 @@ const AccountPage = () => {
               }
             }}
           >
-            <TabList className="tab-list">
+            <TabList className="tab-list panel">
               <Tab className="tab-list-item">
                 Profile
               </Tab>
@@ -290,7 +290,7 @@ const AccountPage = () => {
                 <div className="flex flex-col gap-10">
                   <div className="flex flex-col gap-2">
                     <label className="text-lg font-semibold">Sign In Methods</label>
-                    <div className="bg-panel rounded-md divide-y divide-panel-highlight">
+                    <div className="panel divide-y divide-panel-highlight">
 
                       {/* Password */}
                       <div className="p-5 flex items-start gap-4">
@@ -437,10 +437,10 @@ const AccountPage = () => {
                   {user && (
                     <div className="flex flex-col gap-2">
                       <label className="text-lg font-semibold">Two-Factor Authentication</label>
-                      <div className="bg-panel rounded-md p-5">
+                      <div className="panel p-5">
                         {!user.mfaEnabled && (
                           <div className="flex items-start gap-3 mb-4">
-                            <div className="p-2 bg-panel-brand rounded-lg mt-0.5">
+                            <div className="mt-0.5 p-2 bg-panel-brand rounded-lg">
                               <Lock className="w-4 h-4 text-foreground-secondary" />
                             </div>
                             <div>
