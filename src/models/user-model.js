@@ -71,9 +71,9 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  hasPasskey: {
-    type: Boolean,
-    default: false,
+  passkeyCount: {
+    type: Number,
+    default: 0,
   },
   isVerified: {
     type: Boolean,

@@ -83,10 +83,13 @@ export async function POST(request: NextRequest) {
         storedPasskey = await passkey.save({ session });
         if (!storedPasskey) throw new Error("Unable to create passkey");
 
-        // atomically set hasPasskey: true on the user
+        // count the number of passkeys configured for the user
+        const passkeyCount = await Passkey.countDocuments({ userId }).session(session);
+
+        // atomically set user's passkeyCount
         user = await User.findByIdAndUpdate(
           userId,
-          { hasPasskey: true },
+          { passkeyCount },
           { returnDocument: "after", runValidators: true, session }
         ) as RawUser | null;
         if (!user) throw new Error("Unable to update User document after registering passkey");
