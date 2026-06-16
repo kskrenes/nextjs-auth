@@ -101,13 +101,15 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
     setCodeCount(codes.length);
   }
 
-  const postStep = async (action: () => Promise<void>, errorMessage: string) => {
+  const postStep = async (action: () => Promise<void>, errorMessage: string): Promise<boolean> => {
     try {
       setLoading(true);
       await action();
       advance();
+      return true;
     } catch (error) {
       handleError(errorMessage, error);
+      return false;
     } finally {
       setLoading(false);
     }
@@ -121,8 +123,8 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
     // suppress native html form submit behavior
     e.preventDefault(); 
 
-    await postStep(submitEnableMfa, VERIFY_ERROR);
-    setVerificationCode('');
+    const ok = await postStep(submitEnableMfa, VERIFY_ERROR);
+    if (ok) setVerificationCode('');
   }
 
   const handleDisableRequest = () => {
