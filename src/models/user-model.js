@@ -73,6 +73,11 @@ const userSchema = new mongoose.Schema({
   },
   passkeyCount: {
     type: Number,
+    min: [0, "passkeyCount cannot be negative"],
+    validate: {
+      validator: Number.isInteger,
+      message: "passkeyCount must be an integer",
+    },
     default: 0,
   },
   isVerified: {
