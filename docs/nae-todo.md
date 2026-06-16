@@ -171,7 +171,7 @@ look & feel, flow
 - [x] potentially style button spinners in white or brighter brand color
 - [x] include password validation states in password component
 - [x] refactor to components where applicable
-- [ ] add text-sm to small button size
+- [x] add text-sm to small button size
 
 staging & polishing
 - [x] ensure consistent file naming (use "-" rather than camelcase)
