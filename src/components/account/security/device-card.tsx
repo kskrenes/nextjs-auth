@@ -8,7 +8,7 @@ import Button from "@/components/nae-button";
 import NaeLoader from "@/components/nae-loader";
 import toast from "react-hot-toast";
 import { DeviceIcon } from "./device-icons";
-import { useTimeTick } from "@/hooks/useTimeTick";
+import { useTimeTick } from "@/hooks/use-time-tick";
 import { formatRelativeTime } from "@/helpers/util/time-utils";
 import { parseUserAgent } from "@/helpers/util/request-utils";
 
