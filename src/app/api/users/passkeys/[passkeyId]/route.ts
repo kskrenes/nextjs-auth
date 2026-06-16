@@ -87,13 +87,10 @@ export async function DELETE(
         // delete the passkey
         await Passkey.deleteOne({ _id: passkeyId, userId }, { session });
 
-        // count the number of passkeys configured for the user
-        const passkeyCount = await Passkey.countDocuments({ userId }).session(session);
-
-        // update the user's passkey count
+        // atomically decrement the user's passkey count
         user = await User.findByIdAndUpdate(
           userId,
-          { passkeyCount },
+          { $inc: { passkeyCount: -1 } },
           { returnDocument: "after", runValidators: true, session }
         );
         if (!user) throw new Error("Unable to update User document after deleting passkey");
