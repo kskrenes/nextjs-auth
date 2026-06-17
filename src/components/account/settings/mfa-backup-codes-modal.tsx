@@ -7,32 +7,36 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from './dialog';
-import MFAVerifyControls from './mfa-verify-controls';
-import MFAVerifyForm from './mfa-verify-form';
+} from '@/components/dialog';
+import MFAVerifyControls from '@/components/mfa-verify-controls';
+import MFAVerifyForm from '@/components/mfa-verify-form';
+import { axiosClient } from '@/lib/axios-client';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { useAuth } from '@/context-providers/auth-context-provider';
 
 export interface ModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onCancel: () => void;
-  onSuccess: () => void;
+  onSuccess: (codes: string[] ) => void;
 }
 
-const MFADisableModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProps) => {
+const MFABackupCodesModal = ({ open, onOpenChange, onCancel, onSuccess }: ModalProps) => {
 
   const [code, setCode] = useState<string>('');
   const [validating, setValidating] = useState<boolean>(false);
   const [disabled, setDisabled] = useState<boolean>(true);
   const [invalid, setInvalid] = useState<boolean>(false);
 
-  const { disableMFA } = useAuth();
-
   const handleOpenChange = (isOpen: boolean) => {
-    if (!isOpen) setDisabled(true);
-    if (!validating) onOpenChange(isOpen);
+    if (!isOpen) {
+      setDisabled(true);
+      setInvalid(false);
+      setCode('');
+    }
+    if (!validating) {
+      onOpenChange(isOpen);
+    }
   }
 
   const handleFormChange = (val: string, disabled: boolean) => {
@@ -42,17 +46,17 @@ const MFADisableModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProps)
   }
 
   const handleVerify = async () => {
-    if (validating) return;
+    if (validating || disabled || !code) return;
 
     try {
       setValidating(true);
-      await disableMFA(code);
-      onSuccess();
+      const res = await axiosClient.post('/api/users/mfa/backup-codes', { code });
+      onSuccess(res.data.backupCodes);
     } catch (error) {
       if (axios.isAxiosError(error) && [400, 401].includes(error.response?.status ?? 0)) {
         setInvalid(true);
       } else {
-        toast.error("There was an error validating the verification code");
+        toast.error("There was an error validating the code");
       }
     } finally {
       setValidating(false);
@@ -68,9 +72,9 @@ const MFADisableModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProps)
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Disable Two-Factor Authentication</DialogTitle>
+          <DialogTitle>Regenerate Backup Codes</DialogTitle>
           <DialogDescription>
-            Verify your identity before disabling two-factor authentication. This will make your account less secure.
+            Verify your identity before generating new backup codes. Your existing codes will be invalidated.
           </DialogDescription>
         </DialogHeader>
 
@@ -87,7 +91,6 @@ const MFADisableModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProps)
             onVerify={handleVerify}
             loading={validating} 
             disabled={disabled} 
-            danger={true}
           />
         </DialogFooter>
       </DialogContent>
@@ -95,4 +98,4 @@ const MFADisableModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProps)
   )
 }
 
-export default MFADisableModal
+export default MFABackupCodesModal

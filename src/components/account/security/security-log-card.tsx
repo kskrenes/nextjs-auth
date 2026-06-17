@@ -1,6 +1,6 @@
 import { parseUserAgent } from "@/helpers/util/request-utils";
 import { SecurityLogDTO } from "@/helpers/dto/security-log-dto"
-import { useTimeTick } from "@/hooks/useTimeTick";
+import { useTimeTick } from "@/hooks/use-time-tick";
 import { useMemo } from "react";
 import { DeviceIcon } from "./device-icons";
 import { formatRelativeTime } from "@/helpers/util/time-utils";

@@ -1,5 +1,17 @@
 import ExternalLink from "./external-link";
-import { BlueSkyIcon, EmailIcon, FacebookIcon, InstagramIcon, LinkedInIcon, LinkIcon, MastodonIcon, RedditIcon, TwitchIcon, TwitterIcon, YouTubeIcon } from "./profile-icons";
+import { 
+  BlueSkyIcon, 
+  EmailIcon, 
+  FacebookIcon, 
+  InstagramIcon, 
+  LinkedInIcon, 
+  LinkIcon, 
+  MastodonIcon, 
+  RedditIcon, 
+  TwitchIcon, 
+  TwitterIcon, 
+  YouTubeIcon 
+} from "./profile-icons";
 
 const ICON_MAP = {
   x: TwitterIcon,

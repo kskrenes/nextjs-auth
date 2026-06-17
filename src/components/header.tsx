@@ -61,7 +61,7 @@ const Header = () => {
 
                   {/* dropdown */}
                   <MenuItems 
-                    className="absolute top-17 right-5 w-60 rounded-md bg-panel focus:outline-none"
+                    className="absolute top-17 right-5 panel w-60 focus:outline-none"
                   >
                     {/* nav links */}
                     {navLinks.map((link) => (

@@ -53,7 +53,7 @@ const HealthScoreWidget = ({ healthChecks, healthScore }: HealthScoreWidgetProps
   const progressBarClass = styleMap.progress[stylename];
 
   return (
-    <Card className="bg-panel rounded-lg shadow-none ring-0">
+    <Card className="panel shadow-none ring-0">
       <div className="flex items-start justify-between mb-4">
         <div>
           <Text className="text-foreground-secondary">Security Health Score</Text>

@@ -108,7 +108,7 @@ const ResendTokenEmailForm = ({ emailType }: ResendTokenEmailFormProps) => {
             <Button
               type="submit"
               disabled={resending}
-              className="w-full gap-2"
+              className="w-full"
             >
               {resending ? (
                 <>

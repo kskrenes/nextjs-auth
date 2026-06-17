@@ -81,7 +81,7 @@ const OnboardingPage = () => {
   return (
     <div className="page-centered">
       <div className="max-w-md w-full">
-        <div className="bg-panel rounded-lg p-8">
+        <div className="panel p-8">
 
           {/* Header */}
           <PanelHeader 
@@ -111,7 +111,7 @@ const OnboardingPage = () => {
             <Button
               type="submit"
               disabled={awaitingRedirect}
-              className="w-full gap-2"
+              className="w-full"
             >
               {awaitingRedirect ? (
                 <>

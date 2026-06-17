@@ -3,12 +3,12 @@
 import { SessionDTO } from "@/helpers/dto/session-dto";
 import { useMemo, useState } from "react";
 import axios from "axios";
-import Badge from "./badge";
-import Button from "./nae-button";
-import NaeLoader from "./nae-loader";
+import Badge from "@/components/badge";
+import Button from "@/components/nae-button";
+import NaeLoader from "@/components/nae-loader";
 import toast from "react-hot-toast";
 import { DeviceIcon } from "./device-icons";
-import { useTimeTick } from "@/hooks/useTimeTick";
+import { useTimeTick } from "@/hooks/use-time-tick";
 import { formatRelativeTime } from "@/helpers/util/time-utils";
 import { parseUserAgent } from "@/helpers/util/request-utils";
 
@@ -83,7 +83,7 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
               <Button 
                 size="small" 
                 variant="warning"
-                className="ml-auto text-sm" 
+                className="ml-auto" 
                 onClick={deleteSession}
               >
                 Sign Out

@@ -1,26 +1,26 @@
 "use client";
 
 import { useEffect, useRef, useState, type SubmitEvent } from "react";
-import Button from "./nae-button";
+import Button from "@/components/nae-button";
 import QRCode from 'react-qr-code';
-import Input from "./nae-input";
-import { Check, Copy, ShieldCheck, Unlock } from "lucide-react";
+import Input from "@/components/nae-input";
+import { ShieldCheck, Unlock } from "lucide-react";
 import { axiosClient } from "@/lib/axios-client";
 import toast from "react-hot-toast";
-import NaeLoader from "./nae-loader";
+import NaeLoader from "@/components/nae-loader";
 import { useAuth } from "@/context-providers/auth-context-provider";
+import MFABackupCodesModal from "./mfa-backup-codes-modal";
+import MFADisableModal from "./mfa-disable-modal";
+import MFABackupCodes from "./mfa-backup-codes";
 
 const INIT_ERROR = "Failed to initialize Multi-Factor Authentication";
 const VERIFY_ERROR = "Could not verify authentication code";
 
 interface MFAManagementProps {
   mfaEnabled: boolean;
-  onRegenBackupCodesClick: () => void;
-  onDisableConfirmClick: () => void;
-  regenCodes?: string[] | null;
 }
 
-const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmClick, regenCodes = null }: MFAManagementProps) => {
+const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
 
   // initialize step dynamically: start at 5 if already enabled, otherwise 1
   const [step, setStep] = useState<number>(mfaEnabled ? 5 : 1);
@@ -29,10 +29,12 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
   const [uri, setUri] = useState<string>('');
   const [verificationCode, setVerificationCode] = useState<string>('');
   const [backupCodes, setBackupCodes] = useState<string[] | null>(null);
+  const [regenCodes, setRegenCodes] = useState<string[] | null>(null);
   const [codeCount, setCodeCount] = useState<number | null>(null);
-  const [copiedCodes, setCopiedCodes] = useState<boolean>(false);
   const [confirmDisable, setConfirmDisable] = useState<boolean>(false);
   const [showBackupCodes, setShowBackupCodes] = useState<boolean>(false);
+  const [showRegenModal, setShowRegenModal] = useState(false);
+  const [showDisableMFAModal, setShowDisableMFAModal] = useState(false);
 
   const { enableMFA } = useAuth();
 
@@ -87,7 +89,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
   }
 
   const initializeMfaSetup = async () => {
-    const res = await axiosClient.post('/api/users/mfa/setup');;
+    const res = await axiosClient.post('/api/users/mfa/setup');
     setSecret(res.data.totpSecret);
     setUri(res.data.totpUri);
   }
@@ -99,13 +101,15 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
     setCodeCount(codes.length);
   }
 
-  const postStep = async (action: () => Promise<void>, errorMessage: string) => {
+  const postStep = async (action: () => Promise<void>, errorMessage: string): Promise<boolean> => {
     try {
       setLoading(true);
       await action();
       advance();
+      return true;
     } catch (error) {
       handleError(errorMessage, error);
+      return false;
     } finally {
       setLoading(false);
     }
@@ -119,15 +123,8 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
     // suppress native html form submit behavior
     e.preventDefault(); 
 
-    await postStep(submitEnableMfa, VERIFY_ERROR);
-    setVerificationCode('');
-  }
-
-  const copyBackupCodes = () => {
-    if (!backupCodes) return;
-    navigator.clipboard.writeText(backupCodes.join('\n'));
-    setCopiedCodes(true);
-    setTimeout(() => setCopiedCodes(false), 2000);
+    const ok = await postStep(submitEnableMfa, VERIFY_ERROR);
+    if (ok) setVerificationCode('');
   }
 
   const handleDisableRequest = () => {
@@ -139,14 +136,28 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
   }
 
   const handleDisableConfirm = async () => {
-    onDisableConfirmClick();
+    setShowDisableMFAModal(true);
     setShowBackupCodes(false);
     setConfirmDisable(false);
   }
 
+  const handleRegenCodesSuccess = (codes: string[]) => {
+    setShowRegenModal(false);
+    setRegenCodes(codes);
+    toast.success("New backup codes generated successfully");
+  }
+
+  const handleDisableMFASuccess = () => {
+    setShowDisableMFAModal(false);
+    toast.success("Multi-factor authentication disabled successfully");
+  }
+
+  // Step 5: MFA Is Enabled
   if (step === 5) {
     return (
       <div className="flex flex-col mt-2 gap-6">
+
+        {/* Enabled Message */}
         <div className="flex items-center gap-2">
           <ShieldCheck className="w-5 h-5 text-excellent" />
           <span className="font-medium text-excellent">
@@ -155,7 +166,7 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
         </div>
 
         {/* Backup Codes Section */}
-        <div className="bg-panel-highlight rounded-md p-4">
+        <div className="panel-interior p-4">
           <div className="flex justify-between">
             <div className="flex">
               <div className="flex flex-col">
@@ -177,11 +188,11 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
               </div>
             </div>
 
+            {/* Regen Codes Button */}
             <div>
               <Button
-                onClick={onRegenBackupCodesClick}
+                onClick={() => setShowRegenModal(true)}
                 size="small"
-                className="text-sm"
               >
                 Regenerate
               </Button>
@@ -195,48 +206,16 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
               <p className="text-sm text-foreground-secondary mb-3">
                 Save these codes in a safe place. They won&apos;t be shown again.
               </p>
-              <div className="p-4 rounded-md bg-panel flex flex-col gap-4">
-                <div className="grid grid-cols-2 gap-2 font-mono">
-                  {backupCodes?.map((code, index) => (
-                    <p key={`backupcode${index}`}>{code}</p>
-                  ))}
-                </div>
-                <div className="mt-1">
-                  <Button 
-                    size="small" 
-                    variant="tertiary" 
-                    className="gap-2 text-sm"
-                    onClick={copyBackupCodes}
-                    disabled={loading}
-                  >
-                    {copiedCodes ? (
-                      <>
-                        <Check className="w-4 h-4 text-excellent" />
-                        <span className="text-excellent">Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4" />
-                        <span>Copy Codes</span>
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
-              <div className="mt-4">
-                <Button 
-                  size="small"
-                  disabled={loading}
-                  onClick={() => setShowBackupCodes(false)}
-                  className="text-sm"
-                >
-                  I&apos;ve Saved These Codes
-                </Button>
-              </div>
+              <MFABackupCodes 
+                codes={backupCodes} 
+                loading={loading} 
+                onContinue={() => setShowBackupCodes(false)} 
+              />
             </div>
           )}
         </div>
 
+        {/* Disable MFA Confirmation */}
         {confirmDisable ? (
           <div>
             <p className="text-foreground-poor mb-3 font-medium">
@@ -248,7 +227,6 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
                 variant="extreme"
                 onClick={handleDisableConfirm}
                 disabled={loading}
-                className="text-sm"
               >
                 Yes, Disable MFA
               </Button>
@@ -257,7 +235,6 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
                 variant="tertiary"
                 disabled={loading}
                 onClick={handleDisableCancel}
-                className="text-sm"
               >
                 Cancel
               </Button>
@@ -270,19 +247,36 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
               variant="warning"
               disabled={loading}
               onClick={handleDisableRequest}
-              className="text-sm gap-2"
             >
               <Unlock className="w-3.5 h-3.5" />
               Disable Two-Factor Authentication
             </Button>
           </div>
         )}
+
+        {/* Renerate Codes Dialog */}
+        <MFABackupCodesModal 
+          open={showRegenModal}
+          onOpenChange={setShowRegenModal}
+          onCancel={() => setShowRegenModal(false)}
+          onSuccess={handleRegenCodesSuccess}
+        />
+
+        {/* Disable MFA Dialog */}
+        <MFADisableModal
+          open={showDisableMFAModal}
+          onOpenChange={setShowDisableMFAModal}
+          onCancel={() => setShowDisableMFAModal(false)}
+          onSuccess={handleDisableMFASuccess}
+        />
       </div>
     );
   }
 
   return (
     <div>
+
+      {/* Step 1: Kickoff Enable MFA Flow */}
       {step === 1 && (
         <div className="flex gap-3 items-center">
           <div>
@@ -290,7 +284,6 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
               size="small"
               onClick={handleEnable}
               disabled={loading}
-              className="gap-2 text-sm"
             >
               <ShieldCheck className="w-4 h-4" />
               Enable Two-Factor Authentication
@@ -299,12 +292,16 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
           {loading && <NaeLoader />}
         </div>
       )}
+
+      {/* Step 2: Scan QR Code */}
       {step === 2 && (
         <div className="flex flex-col mt-2 gap-5">
-          <div className="flex flex-col gap-5 bg-panel-highlight rounded-md p-4">
+          <div className="panel-interior flex flex-col gap-5 p-4">
             <div className="flex flex-col gap-2">
               <p>Step 1 of 3 - Scan QR Code</p>
               <p className="text-sm text-foreground-secondary">Open your authenticator app and scan the code below.</p>
+
+              {/* QR Code */}
               <div className="p-3 w-fit rounded-md bg-[#f3faff] mt-2">
                 <QRCode 
                   value={uri}
@@ -312,14 +309,19 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
                   style={{ height: "auto", maxWidth: 150, width: 150 }}
                 />
               </div>
+
             </div>
             <div className="flex flex-col gap-2">
+
+              {/* Manual Entry Code */}
               <p className="text-xs text-foreground-secondary">Or enter this code manually:</p>
-              <div className="p-3 w-fit rounded-md bg-panel text-foreground-secondary">
+              <div className="panel p-3 w-fit text-foreground-secondary">
                 {secret}
               </div>
             </div>
           </div>
+
+          {/* Continue Button */}
           <div>
             <Button 
               size="small"
@@ -331,9 +333,11 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
           </div>
         </div>
       )}
+
+      {/* Step 3: Verification */}
       {step === 3 && (
         <form className="flex flex-col mt-2 gap-5" onSubmit={handleVerify}>
-          <div className="flex flex-col gap-5 bg-panel-highlight rounded-md p-4">
+          <div className="panel-interior flex flex-col gap-5 p-4">
             <div className="flex flex-col gap-3">
               <p>Step 2 of 3 - Verify Code</p>
               <p className="text-sm text-foreground-secondary">Enter the 6-digit code shown in your authenticator app.</p>
@@ -353,6 +357,8 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
               </div>
             </div>
           </div>
+
+          {/* Verify & Continue Button */}
           <div>
             <Button 
               size="small"
@@ -367,55 +373,26 @@ const MFAManagement = ({ mfaEnabled, onRegenBackupCodesClick, onDisableConfirmCl
               ) : (
                 'Verify'
               )}
-              
             </Button>
           </div>
         </form>
       )}
+
+      {/* Step 4: Save Backup Codes */}
       {step === 4 && (
         <div className="flex flex-col mt-2 gap-5">
-          <div className="flex flex-col gap-5 bg-panel-highlight rounded-md p-4">
+          <div className="panel-interior flex flex-col gap-5 p-4">
             <div className="flex flex-col gap-3">
               <p>Step 3 of 3 - Save Backup Codes</p>
-              <p className="text-foreground-secondary text-sm">Store these codes somewhere safe. Each can only be used once to access your account if you lose your authenticator.</p>
-              <div className="p-4 rounded-md bg-panel flex flex-col gap-4">
-                <div className="grid grid-cols-2 gap-2 font-mono">
-                  {backupCodes?.map((code, index) => (
-                    <p key={`backupcode${index}`}>{code}</p>
-                  ))}
-                </div>
-                <div className="mt-1">
-                  <Button 
-                    size="small" 
-                    variant="tertiary" 
-                    className="gap-2 text-sm"
-                    onClick={copyBackupCodes}
-                  >
-                    {copiedCodes ? (
-                      <>
-                        <Check className="w-4 h-4 text-excellent" />
-                        <span className="text-excellent">Copied!</span>
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4" />
-                        <span>Copy Codes</span>
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </div>
+              <p className="text-foreground-secondary text-sm">
+                Store these codes somewhere safe. Each can only be used once to access your account if you lose your authenticator.
+              </p>
+              <MFABackupCodes 
+                codes={backupCodes} 
+                loading={loading} 
+                onContinue={advance} 
+              />
             </div>
-          </div>
-          <div>
-            <Button 
-              size="small"
-              disabled={loading}
-              onClick={advance}
-              className="text-sm"
-            >
-              I&apos;ve Saved These Codes
-            </Button>
           </div>
         </div>
       )}

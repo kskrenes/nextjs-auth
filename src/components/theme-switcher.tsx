@@ -42,7 +42,7 @@ const ThemeSwitcher = () => {
 
       {/* dropdown */}
       <MenuItems 
-        className="absolute top-14 left-5 w-40 rounded-md bg-panel focus:outline-none"
+        className="absolute top-14 left-5 panel w-40 focus:outline-none"
       >
         {/* nav links */}
         {themeItems.map((item) => (

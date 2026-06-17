@@ -8,12 +8,12 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from './dialog';
+} from '@/components/dialog';
 import { useAuth } from '@/context-providers/auth-context-provider';
 import { getErrorMessage } from '@/helpers/util/error-utils';
-import Button from './nae-button';
-import NaeLoader from './nae-loader';
-import PanelError from './panel-error';
+import Button from '@/components/nae-button';
+import NaeLoader from '@/components/nae-loader';
+import PanelError from '@/components/panel-error';
 import toast from 'react-hot-toast';
 
 export interface ModalProps {
@@ -94,7 +94,6 @@ const GoogleUnlinkConfirmModal = ({ open, onOpenChange, onCancel, onSuccess }:Mo
               onClick={handleSubmit}
               disabled={unlinkingGoogle}
               variant="extreme"
-              className='gap-2'
             >
               {unlinkingGoogle && <NaeLoader />}
               {unlinkingGoogle ? 'Unlinking...' : 'Unlink'}

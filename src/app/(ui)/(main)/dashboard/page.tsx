@@ -18,7 +18,7 @@ const DashboardPage = () => {
   const hasGoogleProvider = user.linkedProviders.includes('google');
   const healthChecks = [
     { name: 'Multi-Factor Authentication', enabled: user.mfaEnabled, weight: 30 },
-    { name: 'Passkey Authentication', enabled: user.hasPasskey, weight: 25 },
+    { name: 'Passkey Authentication', enabled: user.passkeyCount > 0, weight: 25 },
     { name: 'Strong Password', enabled: user.hasStrongPassword || hasGoogleProvider, weight: 25 },
     { name: 'Verified Email', enabled: user.isVerified || hasGoogleProvider, weight: 20 },
   ];
@@ -31,8 +31,8 @@ const DashboardPage = () => {
     <div className="page-container">
 
       {/* page title */}
-      <div className="min-w-39 max-w-90 md:mx-0 mb-8">
-        <h1 className="text-2xl font-semibold">Security & Operations Dashboard</h1>
+      <div className="page-title-container">
+        <h1 className="page-title">Security & Operations Dashboard</h1>
         <p className="text-sm text-foreground-secondary mt-1">Monitor your account security and system metrics</p>
       </div>
 

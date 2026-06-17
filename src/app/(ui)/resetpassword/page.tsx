@@ -118,7 +118,7 @@ const ResetPasswordPage = () => {
   return (
     <div className="page-centered">
       <div className="max-w-md w-full">
-        <div className="bg-panel rounded-lg p-8">
+        <div className="panel p-8">
 
           {/* Idle & Loading State */}
           {(resetState === 'idle' || resetState === 'loading') && (
@@ -153,7 +153,7 @@ const ResetPasswordPage = () => {
                 <Button
                   type="submit"
                   disabled={resetState === 'loading'}
-                  className="w-full gap-2"
+                  className="w-full"
                 >
                   {resetState === 'loading' ? (
                     <>
