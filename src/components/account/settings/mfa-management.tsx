@@ -367,7 +367,7 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
                 disabled={loading}
                 className="button-loader"
               >
-                <NaeLoader />
+                <NaeLoader className="w-5 h-5" />
                 Verifying...
               </Button>
             ) : (
