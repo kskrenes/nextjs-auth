@@ -10,7 +10,6 @@ import { SessionDTO } from "@/helpers/dto/session-dto";
 import { SecurityLogDTO } from "@/helpers/dto/security-log-dto";
 import { axiosClient } from "@/lib/axios-client";
 import { getErrorMessage } from "@/helpers/util/error-utils";
-import { useAuth } from "@/context-providers/auth-context-provider";
 import SignOutAllDevicesConfirmModal from "./sign-out-all-devices-confirm-modal";
 
 const SecurityTab = () => {
@@ -24,8 +23,6 @@ const SecurityTab = () => {
   const [showSignOutAllConfirmation, setShowSignOutAllConfirmation] = useState(false);
 
   const isFetchingRef = useRef(false);
-
-  const { logout } = useAuth();
 
   const fetchTabData = useCallback(async () => {
     if (isFetchingRef.current) return;
