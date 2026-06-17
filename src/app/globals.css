@@ -162,6 +162,11 @@
   --color-tremor-border-default: var(--tremor-border-default);
   --color-tremor-border: var(--tremor-border);
   --color-tremor-lat: var(--tremor-lat);
+  --color-landing: var(--color-white);
+  --color-landing-highlight: var(--color-indigo-300);
+  --color-landing-hover: var(--color-indigo-200);
+  --color-landing-body: var(--color-slate-300);
+  --color-landing-muted: var(--color-slate-400);
 }
 
 body {
