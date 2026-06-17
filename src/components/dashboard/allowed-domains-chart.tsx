@@ -25,7 +25,7 @@ const AllowedDomainsChart = () => {
 
       <List className="mt-4">
         {allowedDomains.map((domain, index) => (
-          <ListItem key={index} className="py-3 border-panel-highlight">
+          <ListItem key={index} className="py-3 border-tremor-lat">
             <Flex>
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-foreground-excellent rounded-full" />
@@ -37,7 +37,7 @@ const AllowedDomainsChart = () => {
         ))}
       </List>
 
-      <div className="mt-4 pt-4 border-t border-panel-highlight">
+      <div className="mt-5 pt-3 border-t border-tremor-lat">
         <Text className="text-xs text-foreground-secondary">
           <span className="font-medium">{allowedDomains.length}</span> domains configured
         </Text>
