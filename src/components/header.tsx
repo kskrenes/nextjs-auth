@@ -53,7 +53,7 @@ const Header = () => {
                     className={`nav-item p-0 focus:outline-none ${menuHover}`}
                   >
                     <div className="flex items-center p-2 gap-3">
-                      <AvatarDisplay publicId={user?.avatarId} size={36} />
+                      <AvatarDisplay publicId={user?.avatarId} size="sm" />
                       <div className="hidden sm:inline text-left">
                         {user?.name && (
                           <p className={`font-medium max-w-60 wrap-break-word line-clamp-1 ${nameColor}`}>
