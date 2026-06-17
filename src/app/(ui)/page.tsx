@@ -22,7 +22,7 @@ export default function Home() {
   return (
     <div className="flex min-h-screen font-sans">
       <BackgroundContainer>
-        <div className="w-full lg:max-w-[58%] xl:max-w-[52%]">
+        <div className="w-full sm:max-w-[80%] lg:max-w-[58%] xl:max-w-[52%]">
 
           {/* Eyebrow */}
           <p className="text-xs font-semibold uppercase tracking-widest text-landing-highlight mb-4">
@@ -31,8 +31,7 @@ export default function Home() {
 
           {/* Title */}
           <h1
-            className="text-landing mb-6 leading-tight"
-            style={{ fontSize: "clamp(1.75rem, 4vw, 3rem)", fontWeight: 700 }}
+            className="text-landing mb-6 leading-tight text-[clamp(1.75rem,4vw,3rem)] font-bold"
           >
             Authentication built with{" "}
             <span className="text-landing-highlight">Next.js</span> and{" "}
@@ -41,8 +40,7 @@ export default function Home() {
 
           {/* Body — desktop: intro + list; mobile: single paragraph */}
           <div 
-            className="text-landing-body font-medium mb-10" 
-            style={{ fontSize: "clamp(0.95rem, 1.5vw, 1.1rem)", lineHeight: 1.7 }}
+            className="text-landing-body font-medium mb-10 text-[clamp(0.95rem, 1.5vw, 1.1rem)] leading-[1.7]" 
           >
 
             {/* Desktop: intro line + feature list */}
@@ -53,9 +51,7 @@ export default function Home() {
               <ul className="space-y-2.5">
                 {features.map((f) => (
                   <li key={f} className="flex items-center gap-3">
-                    <span 
-                      className="shrink-0 w-5 h-5 rounded-full bg-indigo-500/30 border border-indigo-400/50 flex items-center justify-center"
-                    >
+                    <span className="list-bullet">
                       <Check className="w-3 h-3 text-landing-highlight" strokeWidth={2.5} />
                     </span>
                     <span>{f}</span>
@@ -74,20 +70,9 @@ export default function Home() {
 
           {/* CTA */}
           <button
+            type="button"
             onClick={() => router.push('/signup')}
-            className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-lg font-semibold text-landing transition-all duration-150 active:scale-95 cursor-pointer"
-            style={{
-              background: "linear-gradient(135deg, #4f46e5 0%, #6d28d9 100%)",
-              boxShadow: "0 0 24px rgba(99,102,241,0.45)",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                "0 0 36px rgba(99,102,241,0.65)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                "0 0 24px rgba(99,102,241,0.45)";
-            }}
+            className="button-cta"
           >
             Get Started
             <ArrowRight className="w-4 h-4" />
@@ -97,6 +82,7 @@ export default function Home() {
           <p className="mt-5 text-sm text-landing-muted">
             Already have an account?{" "}
             <button
+              type="button"
               onClick={() => router.push('/login')}
               className="text-landing-highlight hover:text-landing-hover font-medium transition-colors underline underline-offset-2 cursor-pointer"
             >

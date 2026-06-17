@@ -11,6 +11,7 @@
   --page-good: #c9dffb;
   --panel: #f3faff;
   --panel-highlight: #e6edff;
+  --panel-border: #d6ddef;
   --panel-active: #444b5a;
   --panel-active-foreground: #eee;
   --panel-excellent: #d1fae5;
@@ -39,11 +40,11 @@
   --brand: #6366f1;
   --brand-light: #818cf8;
   --brand-highlight: #4f46e5;
-  --brand-low: #c1ccff;
+  --brand-low: #d9e4ff;
   --brand-outline: #4f46e5;
   --button-foreground: #e5e6f2;
   --button-foreground-highlight: #ffffff;
-  --button-foreground-low: #9a9dbf;
+  --button-foreground-low: #babddf;
   --button-secondary-foreground: #6366f1;
   --button-tertiary-border: #d1d5db;
   --button-warning-highlight: #eeeeee;
@@ -63,6 +64,7 @@
   --page-good: #313a46;
   --panel: #282a36;
   --panel-highlight: #313441;
+  --panel-border: #313441;
   --panel-active: #f3f4f6;
   --panel-active-foreground: #111827;
   --panel-excellent: #303934;
@@ -90,7 +92,7 @@
   --poor-low: #4c2b2d;
   --brand: #6366f1;
   --brand-light: #818cf8;
-  --brand-highlight: #4f46e5;
+  --brand-highlight: #7580ec;
   --brand-low: #2b295c;
   --brand-outline: #818cf8;
   --button-foreground: #e5e6f2;
@@ -117,6 +119,7 @@
   --color-page-good: var(--page-good);
   --color-panel: var(--panel);
   --color-panel-highlight: var(--panel-highlight);
+  --color-panel-border: var(--panel-border);
   --color-panel-active: var(--panel-active);
   --color-panel-active-foreground: var(--panel-active-foreground);
   --color-panel-excellent: var(--panel-excellent);
@@ -212,6 +215,30 @@ body {
     lg:px-8
 }
 
+@utility button-cta {
+  @apply
+    inline-flex 
+    items-center 
+    gap-2.5 
+    px-7 
+    py-3.5 
+    rounded-lg 
+    font-semibold 
+    text-landing 
+    transition-all 
+    duration-150 
+    active:scale-95 
+    cursor-pointer 
+    bg-[linear-gradient(135deg,#4f46e5_0%,#6d28d9_100%)] 
+    shadow-[0_0_24px_rgba(99,102,241,0.45)]
+    hover:shadow-[0_0_36px_rgba(99,102,241,0.65)]
+}
+
+@utility button-loader {
+  @apply
+    disabled:text-foreground-primary
+}
+
 @utility button-base {
   @apply
     flex 
@@ -235,6 +262,7 @@ body {
     bg-brand 
     hover:bg-brand-highlight 
     disabled:bg-brand-low
+    focus:outline-offset-1
 }
 
 @utility button-secondary {
@@ -251,6 +279,7 @@ body {
     border-brand
     hover:border-brand-highlight
     disabled:border-brand-low
+    focus:outline-offset-1
 }
 
 @utility button-tertiary {
@@ -264,7 +293,7 @@ body {
     hover:bg-brand-highlight 
     disabled:bg-panel
     border
-    border-button-tertiary-border
+    border-panel-border
     hover:border-brand-highlight
     disabled:border-button-tertiary-border
 }
@@ -364,7 +393,7 @@ body {
 @utility input-standard {
   @apply
     input-base
-    border-panel-highlight 
+    border-panel-border 
     focus:border-brand-light
 }
 
@@ -524,6 +553,20 @@ body {
   @apply
     text-2xl 
     font-semibold
+}
+
+@utility list-bullet {
+  @apply
+    shrink-0 
+    w-5 
+    h-5 
+    rounded-full 
+    bg-indigo-500/30 
+    border 
+    border-indigo-400/50 
+    flex 
+    items-center 
+    justify-center
 }
 
 @utility custom-chart {

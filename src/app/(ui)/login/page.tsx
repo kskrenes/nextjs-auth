@@ -157,7 +157,7 @@ const LoginPage = () => {
                 <Button
                   type="submit"
                   disabled={awaitingRedirect}
-                  className="w-full"
+                  className="w-full button-loader"
                 >
                   {awaitingRedirect && <NaeLoader />}
                   {awaitingRedirect ? 'Signing in...' : 'Sign in'}

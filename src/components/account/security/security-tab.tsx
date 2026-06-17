@@ -10,8 +10,7 @@ import { SessionDTO } from "@/helpers/dto/session-dto";
 import { SecurityLogDTO } from "@/helpers/dto/security-log-dto";
 import { axiosClient } from "@/lib/axios-client";
 import { getErrorMessage } from "@/helpers/util/error-utils";
-import toast from "react-hot-toast";
-import { useAuth } from "@/context-providers/auth-context-provider";
+import SignOutAllDevicesConfirmModal from "./sign-out-all-devices-confirm-modal";
 
 const SecurityTab = () => {
 
@@ -21,11 +20,9 @@ const SecurityTab = () => {
   const [isLoadingSecurityData, setIsLoadingSecurityData] = useState(false);
   const [isSecurityDataError, setIsSecurityDataError] = useState(false);
   const [securityDataErrorMessage, setSecurityDataErrorMessage] = useState('');
-  const [isRevokingAll, setIsRevokingAll] = useState(false);
+  const [showSignOutAllConfirmation, setShowSignOutAllConfirmation] = useState(false);
 
   const isFetchingRef = useRef(false);
-
-  const { logout } = useAuth();
 
   const fetchTabData = useCallback(async () => {
     if (isFetchingRef.current) return;
@@ -55,23 +52,8 @@ const SecurityTab = () => {
 
   useEffect(() => {fetchTabData()}, [fetchTabData])
 
-  const handleSignOutAllDevices = async () => {
-    if (isRevokingAll) return;
-
-    if (window.confirm("Are you sure you want to sign out all devices? You will be signed out from your current session.")) {
-      setIsRevokingAll(true);
-      try {
-        const response = await axiosClient.post("/api/auth/logout-all");
-        const count = response.data.deletedCount;
-        toast.success(`Signed out of ${count} device${count > 1 ? 's' : ''}`);
-        await logout();
-      } catch (error) {
-        console.error("Failed to sign out of all devices:", error);
-        toast.error("Failed to sign out of all devices");
-      } finally {
-        setIsRevokingAll(false);
-      }
-    }
+  const handleSignOutAllSuccess = async () => {
+    window.location.replace('/login');
   }
 
   return (
@@ -113,8 +95,8 @@ const SecurityTab = () => {
                 <Button 
                   size="small"
                   variant="extreme"
-                  onClick={handleSignOutAllDevices}
-                  disabled={isRevokingAll}
+                  onClick={() => {setShowSignOutAllConfirmation(true)}}
+                  disabled={showSignOutAllConfirmation}
                 >
                   Sign Out All Devices
                 </Button>
@@ -143,6 +125,12 @@ const SecurityTab = () => {
           </div>
         </div>
       )}
+      <SignOutAllDevicesConfirmModal 
+        open={showSignOutAllConfirmation}
+        onOpenChange={setShowSignOutAllConfirmation}
+        onCancel={() => setShowSignOutAllConfirmation(false)}
+        onSuccess={handleSignOutAllSuccess}
+      />
     </>
   )
 }

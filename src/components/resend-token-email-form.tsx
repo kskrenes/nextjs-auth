@@ -108,16 +108,10 @@ const ResendTokenEmailForm = ({ emailType }: ResendTokenEmailFormProps) => {
             <Button
               type="submit"
               disabled={resending}
-              className="w-full"
+              className="w-full button-loader"
             >
-              {resending ? (
-                <>
-                  <NaeLoader />
-                  Sending...
-                </>
-              ) : (
-                `Send ${getText().capitalized} Link`
-              )}
+              {resending && <NaeLoader />}
+              {resending ? 'Sending...' : `Send ${getText().capitalized} Link`}
             </Button>
           </form>
         </div>

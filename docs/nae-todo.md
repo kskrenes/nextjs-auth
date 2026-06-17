@@ -201,19 +201,19 @@ look & feel, flow
 staging & polishing
 
 - [x] ensure consistent file naming (use "-" rather than camelcase)
-- [ ] audit entire app for accessibility (a11y)
-  - [ ] verify all images have descriptive alt tags and interactive elements use proper ARIA labels
-  - [ ] ensure text-to-background contrast ratios meet WCAG AA standards
-  - [ ] ensure users can navigate the entire application using only the Tab and Enter keys
-  - [ ] any additional accessibility considerations
-- [ ] test all component states in both themes (hover, active, focus, disabled, etc)
+- [x] audit entire app for accessibility (a11y)
+  - [x] verify all images have descriptive alt tags and interactive elements use proper ARIA labels
+  - [x] ensure text-to-background contrast ratios meet WCAG AA standards
+  - [x] ensure users can navigate the entire application using only the Tab and Enter keys
+  - [x] any additional accessibility considerations
+- [x] test all component states in both themes (hover, active, focus, disabled, etc.)
 - [ ] add friendly layouts for all potential "no data" states
 - [ ] build helpful, branded 404 and 500 error pages with clear "Go Home" actions
 - [ ] ensure clear confirmation toast messaging after any pending action
 - [ ] handle exceptionally long text everywhere dynamic text could display
 - [ ] strip console logging and debugging from code as necessary
 - [ ] implement SEO metadata/populate all page titles, meta descriptions, and Open Graph (OG) tags for social sharing
-- [ ] organize GitHub repo - complete readme, etc
+- [ ] organize GitHub repo - complete readme, etc.
 
 ## Milestones
 

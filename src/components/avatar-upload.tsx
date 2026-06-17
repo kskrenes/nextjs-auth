@@ -38,7 +38,7 @@ export default function AvatarUpload() {
       </CldUploadWidget>
 
       {/* Display the uploaded avatar */}
-      {user?.avatarId && <AvatarDisplay publicId={user.avatarId} size={208} />}
+      {user?.avatarId && <AvatarDisplay publicId={user.avatarId} size="lg" />}
     </div>
   );
 }

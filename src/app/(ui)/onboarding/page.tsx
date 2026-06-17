@@ -111,16 +111,10 @@ const OnboardingPage = () => {
             <Button
               type="submit"
               disabled={awaitingRedirect}
-              className="w-full"
+              className="w-full button-loader"
             >
-              {awaitingRedirect ? (
-                <>
-                  <NaeLoader />
-                  Setting Username...
-                </>
-              ) : (
-                'Submit Username'
-              )}
+              {awaitingRedirect && <NaeLoader />}
+              {awaitingRedirect ? 'Setting Username...': 'Submit Username'}
             </Button>
           </form>
         </div>

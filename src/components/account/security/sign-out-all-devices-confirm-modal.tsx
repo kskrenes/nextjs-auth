@@ -9,12 +9,11 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/dialog';
-import { useAuth } from '@/context-providers/auth-context-provider';
-import { getErrorMessage } from '@/helpers/util/error-utils';
 import Button from '@/components/nae-button';
 import NaeLoader from '@/components/nae-loader';
 import PanelError from '@/components/panel-error';
 import toast from 'react-hot-toast';
+import { axiosClient } from '@/lib/axios-client';
 
 export interface ModalProps {
   open: boolean;
@@ -23,46 +22,35 @@ export interface ModalProps {
   onSuccess: () => void;
 }
 
-const GoogleUnlinkConfirmModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProps) => {
+const SignOutAllDevicesConfirmModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProps) => {
 
   const [error, setError] = useState('');
-
-  const { user, unlinkGoogle, unlinkingGoogle } = useAuth();
+  const [pending, setPending] = useState(false);
 
   const clear = () => {
     setError('');
   }
 
   const handleOpenChange = (isOpen: boolean) => {
-    if (unlinkingGoogle) return;
+    if (pending) return;
     if (!isOpen) clear();
     onOpenChange(isOpen);
   }
 
   const handleSubmit = async () => {
-    if (!user || unlinkingGoogle) return;
-
-    setError('');
-
-    if (!user.linkedProviders.includes('google')) {
-      setError('No Google account was found to unlink');
-      return;
-    }
-
-    if (user.linkedProviders.length === 1) {
-      setError('You must configure another sign in method before removing your Google account');
-      return;
-    }
-    
+    if (pending) return;
+    setPending(true);
     try {
-      await unlinkGoogle();
-      toast.success("Google account unlinked successfully");
+      const response = await axiosClient.post("/api/auth/logout-all");
+      const count = response.data.deletedCount;
+      toast.success(`Signed out of ${count} device${count !== 1 ? 's' : ''}`);
+      clear();
       onSuccess();
-    } 
-    catch (unlinkError: unknown) {
-      const errorMessage = getErrorMessage(unlinkError, "There was a problem unlinking your Google account");
-      console.error(errorMessage);
-      setError(errorMessage);
+    } catch (error) {
+      console.error("Failed to sign out of all devices:", error);
+      setError("Failed to sign out of all devices");
+    } finally {
+      setPending(false);
     }
   }
 
@@ -75,9 +63,9 @@ const GoogleUnlinkConfirmModal = ({ open, onOpenChange, onCancel, onSuccess }:Mo
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Unlink Google Account</DialogTitle>
+          <DialogTitle>Sign Out All Devices</DialogTitle>
           <DialogDescription>
-            You won&apos;t be able to sign in with Google after unlinking. Make sure you have another sign-in method.
+            Are you sure you want to sign out all devices? You will be signed out from your current session.
           </DialogDescription>
         </DialogHeader>
         {error && <PanelError message={error} />}
@@ -85,19 +73,19 @@ const GoogleUnlinkConfirmModal = ({ open, onOpenChange, onCancel, onSuccess }:Mo
           <>
             <Button
               onClick={handleCancel}
-              disabled={unlinkingGoogle}
+              disabled={pending}
               variant="secondary"
             >
               Cancel
             </Button>
             <Button 
               onClick={handleSubmit}
-              disabled={unlinkingGoogle}
+              disabled={pending}
               variant="extreme"
               className="button-loader"
             >
-              {unlinkingGoogle && <NaeLoader />}
-              {unlinkingGoogle ? 'Unlinking...' : 'Unlink'}
+              {pending && <NaeLoader />}
+              {pending ? 'Signing Out...' : 'Sign Out'}
             </Button>
           </>
         </DialogFooter>
@@ -106,4 +94,4 @@ const GoogleUnlinkConfirmModal = ({ open, onOpenChange, onCancel, onSuccess }:Mo
   )
 }
 
-export default GoogleUnlinkConfirmModal
+export default SignOutAllDevicesConfirmModal

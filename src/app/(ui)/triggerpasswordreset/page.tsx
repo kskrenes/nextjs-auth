@@ -86,16 +86,10 @@ const TriggerPasswordResetPage = () => {
               <Button
                 type="submit"
                 disabled={sending}
-                className="w-full"
+                className="w-full button-loader"
               >
-                {sending ? (
-                  <>
-                    <NaeLoader />
-                    Sending email...
-                  </>
-                ) : (
-                  'Send Reset Password Link'
-                )}
+                {sending && <NaeLoader />}
+                {sending ? 'Sending email...' : 'Send Reset Password Link'}
               </Button>
             </form>
           ) : (
