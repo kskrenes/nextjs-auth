@@ -126,6 +126,7 @@ const PasswordLinkModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProp
               size="small"
               onClick={handleSubmit}
               disabled={submitting}
+              className='button-loader'
             >
               {submitting && <NaeLoader />}
               {submitting ? 'Adding Password...' : 'Add Password'}

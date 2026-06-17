@@ -19,14 +19,26 @@ const MFAVerifyControls = ({ onCancel, onVerify, loading, disabled, danger = fal
       >
         Cancel
       </Button>
-      <Button
-        onClick={onVerify}
-        disabled={loading || disabled}
-        variant={danger ? 'extreme' : 'primary'}
-      >
-        {loading && <NaeLoader />}
-        {loading ? 'Verifying...' : 'Verify'}
-      </Button>
+      {loading ? (
+        <Button
+          onClick={onVerify}
+          disabled={loading}
+          variant={danger ? 'extreme' : 'primary'}
+          className="button-loader"
+        >
+          <NaeLoader />
+          Verifying...
+        </Button>
+      ) : (
+        <Button
+          onClick={onVerify}
+          disabled={disabled}
+          variant={danger ? 'extreme' : 'primary'}
+        >
+          Verify
+        </Button>
+      )}
+      
     </>
   )
 }

@@ -360,20 +360,25 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
 
           {/* Verify & Continue Button */}
           <div>
-            <Button 
-              size="small"
-              type="submit"
-              disabled={loading || verificationCode.length < 6}
-            >
-              {loading ? (
-                <>
-                  <NaeLoader />
-                  Verifying...
-                </>
-              ) : (
-                'Verify'
-              )}
-            </Button>
+            {loading ? (
+              <Button 
+                size="small"
+                type="submit"
+                disabled={loading}
+                className="button-loader"
+              >
+                <NaeLoader />
+                Verifying...
+              </Button>
+            ) : (
+              <Button 
+                size="small"
+                type="submit"
+                disabled={verificationCode.length < 6}
+              >
+                Verify
+              </Button>
+            )}
           </div>
         </form>
       )}

@@ -153,16 +153,10 @@ const ResetPasswordPage = () => {
                 <Button
                   type="submit"
                   disabled={resetState === 'loading'}
-                  className="w-full"
+                  className="w-full button-loader"
                 >
-                  {resetState === 'loading' ? (
-                    <>
-                      <NaeLoader />
-                      Resetting Password...
-                    </>
-                  ) : (
-                    'Reset Password'
-                  )}
+                  {resetState === 'loading' && <NaeLoader />}
+                  {resetState === 'loading' ? 'Resetting Password...' : 'Reset Password'}
                 </Button>
               </form>
               <div className="mt-6 text-center">

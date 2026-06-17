@@ -145,18 +145,11 @@ const SignupPage = () => {
             {/* Submit Button */}
             <Button
               type="submit"
-              className="w-full"
+              className="w-full button-loader"
               disabled={isLoading}
             >
-              {isLoading 
-                ? (
-                 <>
-                  <NaeLoader />
-                  Creating account...
-                </>
-              ) : (
-                'Create account'
-              )}
+              {isLoading && <NaeLoader />}
+              {isLoading ? 'Creating account...' : 'Create account'}
             </Button>
           </form>
 
