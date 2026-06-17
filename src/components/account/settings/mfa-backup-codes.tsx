@@ -3,6 +3,7 @@
 import Button from "@/components/nae-button";
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 interface MFABackupCodesProps {
   codes: string[] | null;
@@ -14,11 +15,16 @@ const MFABackupCodes = ({ codes, loading, onContinue }: MFABackupCodesProps) => 
 
   const [copiedCodes, setCopiedCodes] = useState<boolean>(false);
 
-  const copyBackupCodes = () => {
+  const copyBackupCodes = async () => {
     if (!codes) return;
-    navigator.clipboard.writeText(codes.join('\n'));
-    setCopiedCodes(true);
-    setTimeout(() => setCopiedCodes(false), 2000);
+    try {
+      await navigator.clipboard.writeText(codes.join("\n"));
+      setCopiedCodes(true);
+      setTimeout(() => setCopiedCodes(false), 2000);
+    } catch {
+      // Keep UI in non-copied state and surface an error toast
+      toast.error("Unable to copy backup codes to the clipboard");
+    }
   }
 
   return (
