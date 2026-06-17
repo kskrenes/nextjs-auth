@@ -157,7 +157,7 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
                 id="name" 
                 type="text"
                 placeholder="Your full name"
-                aria-label="Name"
+                aria-label="Your full name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
@@ -170,7 +170,7 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
                 id="company" 
                 type="text"
                 placeholder="Where you work"
-                aria-label="Company"
+                aria-label="Where you work"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
                 className="w-full"
@@ -184,7 +184,7 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
                 id="website" 
                 type="text"
                 placeholder="https://yoursite.com"
-                aria-label="Website"
+                aria-label="Website URL"
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
               />
