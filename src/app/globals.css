@@ -178,6 +178,10 @@ body {
   outline: 2px solid var(--brand);
 }
 
+/* .button-primary:focus-visible {
+  outline-offset: 1px;
+} */
+
 @layer base {
   input:-webkit-autofill,
   input:-webkit-autofill:hover, 
@@ -253,6 +257,7 @@ body {
     bg-brand 
     hover:bg-brand-highlight 
     disabled:bg-brand-low
+    focus:outline-offset-1
 }
 
 @utility button-secondary {
@@ -269,6 +274,7 @@ body {
     border-brand
     hover:border-brand-highlight
     disabled:border-brand-low
+    focus:outline-offset-1
 }
 
 @utility button-tertiary {
