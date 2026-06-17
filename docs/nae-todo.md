@@ -1,13 +1,16 @@
 # NAE TODO
 
 triggerpasswordreset page
+
 - [x] success state
 - [x] add email validation
 
 login page
+
 - [x] error state
 
 signup page
+
 - [x] add confirm password
 - [x] add password instructions & validation
 - [x] add username instructions & validation
@@ -18,38 +21,48 @@ signup page
 - [x] show success (toast?)
 
 resetpassword page
+
 - [x] show better error messaging
 
 triggerEmail
+
 - [x] move toast messaging out of helper
 
 verifyemail page
+
 - [x] add resend error state
 
 sendemail
+
 - [x] improve email message
 - [x] improve email style
 
 home page
+
 - [x] layout page
 
 favicon
+
 - [x] implement
 
 header
+
 - [x] create
 - [x] update when authentication state changes
 - [x] add user nav with avatar and dropdown options
 - [x] add site nav dropdown with: dashboard, profile, triggerpasswordreset
 
 sendemail api and resetpassword api
+
 - [x] console error
 - [x] update authed user after email is verified
 
 multiple pages
+
 - [x] either display or discard toast
 
 sso
+
 - [x] remove account linking logic from public routes
 - [x] change profile page to account page
 - [x] add tabs to account page for profile and settings
@@ -63,6 +76,7 @@ sso
 - [x] move password validation logic into a helper
 
 session hardening
+
 - [x] create session table on MongoDB cloud
 - [x] create session mongoose model and types
 - [x] add session token utilities/helpers
@@ -77,12 +91,14 @@ session hardening
 - [x] add worker to delete expired sessions from the DB
 
 session management lifecycle
+
 - [x] conceptual research
 - [x] token expiration (logout/timeout)
 - [x] active device monitoring
 - [x] session revocation
 
 refactor
+
 - [x] display.tsx: follow device-icons convention for social icons
 - [x] display.tsx: create icon-link component and move helper logic there
 - [x] themes.ts: rename to avatar-utils.ts
@@ -101,16 +117,19 @@ refactor
 - [x] refactor api routes to use getErrorResponse helper
 
 multi-factor authentication
+
 - [x] use monospace font for codes
 - [x] implement ability to regen backup codes
 - [x] refactor to use mfa-verify-form and mfa-verify-controls for any verification
 
 session cache
+
 - [x] migrate to redis distributed cache
 - [x] research what to do with redis session records on logout (currently persisting until ttl expires)
 - [x] explicitly remove session cache records from redis on logout
 
 profile
+
 - [x] add success state after send verify email
 - [x] add error state after send verify email
 - [x] add user fields: name, company, website, social link x4, avatar
@@ -121,6 +140,7 @@ profile
 - [x] implement Google account unlink
 
 defects & errors
+
 - [x] sign out all does not revoke remote session
 - [x] onboarding isn't calling api, form seems to be posting
 - [x] sign in leaves user on /login, cannot nav to protected pages
@@ -134,6 +154,7 @@ defects & errors
 - [x] add awaitingRedirect state to onboarding page
 
 feature research
+
 - [x] research social sign-on
 - [x] research SAML
 - [x] research multifactor auth (MFA)
@@ -142,16 +163,19 @@ feature research
 - [x] research passkeys
 
 additional authentication methods
+
 - [x] add social login (Google)
 - [x] add passkeys
 
 dashboard content
+
 - [x] add a visual widget calculating a health score based on whether the user has MFA enabled, a strong password, and verified email
 - [x] add charts (like Tremor or Chart.js) showing fake system metrics like "API Requests", "Cache Hit Rate (Redis)", or "Auth Success vs Failures"
 - [x] add card showing which email domains are allowed to sign up (mock until "restricted domains" feature is implemented)
 - [x] update security health score and recommendations as needed to include passkeys
 
 look & feel, flow
+
 - [x] improve style
 - [x] make new (main) layout responsive
 - [x] define themes
@@ -175,6 +199,7 @@ look & feel, flow
 - [x] finalize the landing page and account for responsive behavior
 
 staging & polishing
+
 - [x] ensure consistent file naming (use "-" rather than camelcase)
 - [ ] audit entire app for accessibility (a11y)
   - [ ] verify all images have descriptive alt tags and interactive elements use proper ARIA labels
@@ -193,6 +218,7 @@ staging & polishing
 ## Milestones
 
 ### Homepage Feature Checklist
+
 - [x] Email/password authentication
 - [x] Protected routes and pages
 - [x] Session management
@@ -204,17 +230,18 @@ staging & polishing
 
 - [ ] DEPLOY
 
-
-
 ## OUT OF SCOPE
 
 security
+
 - [ ] restrict email domains and subaddresses
 
 Role-Based Access Control (RBAC)
+
 - [ ] create roles for Owner, Admin, and Member (existing standard user)
 
 Admin-specific features (leverage dashboard page as appropriate)
+
 - [ ] view all users
 - [ ] trigger password resets
 - [ ] temporarily ban/freeze Member accounts
@@ -223,30 +250,36 @@ Admin-specific features (leverage dashboard page as appropriate)
 - [ ] force-evict specific sessions of standard Members
 
 Owner-specific features (leverage dashboard page as appropriate)
+
 - [ ] turn off registration globally or toggle "Maintenance Mode" via Redis cache flags
 - [ ] cannot be banned, deleted, or impersonated by standard Admins
 - [ ] promote a Member to an Admin, or strip an Admin of their privileges
 - [ ] toggle domain restriction for registration with a whitelist for email domains
 
 optional role-based API rate limits
+
 - [ ] enforce API rate limiting for Members
 - [ ] place Admin on a higher API rate-limit bucket than standard Members
 - [ ] bypass API rate limiting completely for Owner
 
 role-switcher impersonation widget
+
 - [ ] add a widget visible in the demo environment allowing users to change their role on the fly
 - [ ] update the user's role in the database and/or alter their active JWT/session token payload when role is switched
 - [ ] update UI instantly via auth context/react context
 
 shared demo environment guardrails
+
 - [ ] (maybe) bake roles directly into Dual-Token Session / Redis Cache
 - [ ] (maybe) run a Database Seed Reset cron job every hour
 - [ ] (maybe) intercept write operations on critical demo tables and return a fake success response (keep base data immutable)
 
 restricted domains
+
 - [ ] allow toggling an option to "Restrict registration to specific domains." (signup API rejects any email not ending in specified domains)
 - [ ] use a public list or regex array to block common burner email providers (e.g., Mailinator, Yopmail) during registration
 
 ### Homepage Feature Checklist (Out of Scope)
+
 - [ ] Roles and permissions - OOS
 - [ ] Restricted domains - OOS
