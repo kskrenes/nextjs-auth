@@ -43,7 +43,7 @@ const SignOutAllDevicesConfirmModal = ({ open, onOpenChange, onCancel, onSuccess
     try {
       const response = await axiosClient.post("/api/auth/logout-all");
       const count = response.data.deletedCount;
-      toast.success(`Signed out of ${count} device${count > 1 ? 's' : ''}`);
+      toast.success(`Signed out of ${count} device${count !== 1 ? 's' : ''}`);
       clear();
       onSuccess();
     } catch (error) {
