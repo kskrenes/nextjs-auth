@@ -45,21 +45,24 @@ const PasskeysSettings = () => {
     toast.error(message);
   }
   
-  const getPasskeys = async () => {
-    if (usePasskeysLoading) return;
+  const getPasskeys = async (): Promise<PasskeyDTO[]> => {
+    if (usePasskeysLoading) return passkeys;
     try {
       const fetchedPasskeys = await fetchPasskeys();
       setPasskeys(fetchedPasskeys);
+      return fetchedPasskeys;
     }
     catch (err) {
       handlePasskeyError(err);
+      return [];
     }
   }
 
   const handlePasskeySuccess = async (success: boolean) => {
-    if (success) await getPasskeys();
-    else handlePasskeyError();
-    if (passkeys.length === 0) setPasskeysExpanded(false);
+    if (success) {
+      const refreshed = await getPasskeys();
+      if (refreshed.length === 0) setPasskeysExpanded(false);
+    } else handlePasskeyError();
   }
 
   const handleAddPasskey = async () => {
