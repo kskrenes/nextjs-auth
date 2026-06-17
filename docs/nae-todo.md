@@ -172,6 +172,7 @@ look & feel, flow
 - [x] include password validation states in password component
 - [x] refactor to components where applicable
 - [x] add text-sm to small button size
+- [ ] update the landing page if necessary and account for responsive behavior
 
 staging & polishing
 - [x] ensure consistent file naming (use "-" rather than camelcase)
