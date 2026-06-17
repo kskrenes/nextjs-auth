@@ -49,6 +49,7 @@ const PasskeyManagement = ({ passkeys, onUpdate, onDelete }: PasskeyManagementPr
               <input
                 autoFocus
                 type="text"
+                placeholder="Personal Passkey"
                 value={editingNickname}
                 onChange={(e) => setEditingNickname(e.target.value)}
                 onKeyDown={handleNicknameKeydown}
