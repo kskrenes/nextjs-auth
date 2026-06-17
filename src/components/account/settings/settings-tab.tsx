@@ -21,7 +21,7 @@ const SettingsTab = () => {
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-2">
-        <label className="text-lg font-semibold">Sign In Methods</label>
+        <h2 className="text-lg font-semibold">Sign In Methods</h2>
 
         {/* Sign In Methods Panel */}
         <div className="panel divide-y divide-panel-highlight">
@@ -32,7 +32,7 @@ const SettingsTab = () => {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label className="text-lg font-semibold">Two-Factor Authentication</label>
+        <h2 className="text-lg font-semibold">Two-Factor Authentication</h2>
 
         {/* Multi-Factor Authentication Panel */}
         <div className="panel p-5">

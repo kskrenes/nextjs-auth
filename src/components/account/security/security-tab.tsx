@@ -96,8 +96,8 @@ const SecurityTab = () => {
           {sessionsList && sessionsList.length > 0 && (
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1 mb-1">
-                <label className="text-lg font-semibold">My Devices</label>
-                <p className="text-foreground-secondary max-w-md">
+                <h2 className="text-lg font-semibold">My Devices</h2>
+                <p className="text-foreground-secondary max-w-md text-sm">
                   Manage your active sessions across all devices.
                 </p>
               </div>
@@ -123,8 +123,8 @@ const SecurityTab = () => {
           )}
           <div className="flex flex-col gap-3">
             <div className="flex flex-col gap-1 mb-1">
-              <label className="text-lg font-semibold">Recent Activity</label>
-              <p className="text-foreground-secondary max-w-md">
+              <h2 className="text-lg font-semibold">Recent Activity</h2>
+              <p className="text-foreground-secondary max-w-md text-sm">
                 A log of recent activities on your account.
               </p>
             </div>
