@@ -206,7 +206,7 @@ staging & polishing
   - [x] ensure text-to-background contrast ratios meet WCAG AA standards
   - [x] ensure users can navigate the entire application using only the Tab and Enter keys
   - [x] any additional accessibility considerations
-- [ ] test all component states in both themes (hover, active, focus, disabled, etc)
+- [x] test all component states in both themes (hover, active, focus, disabled, etc)
 - [ ] add friendly layouts for all potential "no data" states
 - [ ] build helpful, branded 404 and 500 error pages with clear "Go Home" actions
 - [ ] ensure clear confirmation toast messaging after any pending action
