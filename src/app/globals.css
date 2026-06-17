@@ -11,6 +11,7 @@
   --page-good: #c9dffb;
   --panel: #f3faff;
   --panel-highlight: #e6edff;
+  --panel-border: #d6ddef;
   --panel-active: #444b5a;
   --panel-active-foreground: #eee;
   --panel-excellent: #d1fae5;
@@ -43,7 +44,7 @@
   --brand-outline: #4f46e5;
   --button-foreground: #e5e6f2;
   --button-foreground-highlight: #ffffff;
-  --button-foreground-low: #9a9dbf;
+  --button-foreground-low: #babddf;
   --button-secondary-foreground: #6366f1;
   --button-tertiary-border: #d1d5db;
   --button-warning-highlight: #eeeeee;
@@ -63,6 +64,7 @@
   --page-good: #313a46;
   --panel: #282a36;
   --panel-highlight: #313441;
+  --panel-border: #313441;
   --panel-active: #f3f4f6;
   --panel-active-foreground: #111827;
   --panel-excellent: #303934;
@@ -117,6 +119,7 @@
   --color-page-good: var(--page-good);
   --color-panel: var(--panel);
   --color-panel-highlight: var(--panel-highlight);
+  --color-panel-border: var(--panel-border);
   --color-panel-active: var(--panel-active);
   --color-panel-active-foreground: var(--panel-active-foreground);
   --color-panel-excellent: var(--panel-excellent);
@@ -289,7 +292,7 @@ body {
     hover:bg-brand-highlight 
     disabled:bg-panel
     border
-    border-button-tertiary-border
+    border-panel-border
     hover:border-brand-highlight
     disabled:border-button-tertiary-border
 }
@@ -389,7 +392,7 @@ body {
 @utility input-standard {
   @apply
     input-base
-    border-panel-highlight 
+    border-panel-border 
     focus:border-brand-light
 }
 
