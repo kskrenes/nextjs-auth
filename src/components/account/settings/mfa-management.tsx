@@ -89,7 +89,7 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
   }
 
   const initializeMfaSetup = async () => {
-    const res = await axiosClient.post('/api/users/mfa/setup');;
+    const res = await axiosClient.post('/api/users/mfa/setup');
     setSecret(res.data.totpSecret);
     setUri(res.data.totpUri);
   }
