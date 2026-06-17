@@ -56,8 +56,7 @@ const SecurityTab = () => {
   useEffect(() => {fetchTabData()}, [fetchTabData])
 
   const handleSignOutAllSuccess = async () => {
-    await logout();
-    setShowSignOutAllConfirmation(false);
+    window.location.replace('/login');
   }
 
   return (
