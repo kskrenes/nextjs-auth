@@ -23,6 +23,9 @@ const Header = () => {
 
   const headerBG = isLanding ? 'bg-black/5' : 'bg-page/50';
   const headerLeft = isMainGroup ? 'md:left-64' : 'md:left-0';
+  const menuHover = isLanding ? 'hover:bg-indigo-900/40' : 'hover:bg-panel-highlight';
+  const nameColor = isLanding ? 'text-[#e5e6f2]' : 'text-foreground-primary';
+  const usernameColor = isLanding ? 'text-[#9ca3af]' : 'text-foreground-secondary';
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-20 ${headerLeft} ${headerBG} backdrop-blur-xs`}>
@@ -47,13 +50,19 @@ const Header = () => {
                 <Menu>
                   <MenuButton 
                     aria-label="Open user menu"
-                    className="nav-item p-0 focus:outline-none"
+                    className={`nav-item p-0 focus:outline-none ${menuHover}`}
                   >
                     <div className="flex items-center p-2 gap-3">
                       <AvatarDisplay publicId={user?.avatarId} size={36} />
                       <div className="hidden sm:inline text-left">
-                        {user?.name && <p className="font-medium text-foreground-primary max-w-60 wrap-break-word line-clamp-1">{user?.name}</p>}
-                        <p className="text-sm max-w-60 break-all line-clamp-1">{user?.username}</p>
+                        {user?.name && (
+                          <p className={`font-medium max-w-60 wrap-break-word line-clamp-1 ${nameColor}`}>
+                            {user?.name}
+                          </p>
+                        )}
+                        <p className={`text-sm max-w-60 break-all line-clamp-1 ${usernameColor}`}>
+                          {user?.username}
+                        </p>
                       </div>
                       <ChevronDown className="w-4 h-4 hidden sm:inline" />
                     </div>
