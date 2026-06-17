@@ -1,46 +1,108 @@
+"use client";
+
 import BackgroundContainer from "@/components/background-container";
-import Link from "next/link";
+import { ArrowRight, Check } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+const features = [
+  "Email/password authentication",
+  "Google OAuth authentication",
+  "Multifactor authentication",
+  "Passkeys",
+  "Protected routes and pages",
+  "Session management",
+  "Email verification",
+  "Profile management",
+];
 
 export default function Home() {
+
+  const router = useRouter();
+
   return (
     <div className="flex min-h-screen font-sans">
       <BackgroundContainer>
-        <div className="flex min-h-screen w-full max-w-5xl flex-col items-center sm:justify-between py-28 sm:py-64 md:py-58 lg:py-48 px-8 sm:px-16 sm:items-start">
-          <h1 className="font-bold text-white text-4xl/tight md:text-5xl/tight lg:text-6xl/tight text-center sm:text-left">
-            Authentication built with Next.js and React Context
+        <div className="w-full lg:max-w-[58%] xl:max-w-[52%]">
+
+          {/* Eyebrow */}
+          <p className="text-xs font-semibold uppercase tracking-widest text-landing-highlight mb-4">
+            Open-source reference implementation
+          </p>
+
+          {/* Title */}
+          <h1
+            className="text-landing mb-6 leading-tight"
+            style={{ fontSize: "clamp(1.75rem, 4vw, 3rem)", fontWeight: 700 }}
+          >
+            Authentication built with{" "}
+            <span className="text-landing-highlight">Next.js</span> and{" "}
+            <span className="text-landing-highlight">React Context</span>
           </h1>
 
-          {/* Show only for smaller screens */}
-          <p className="sm:hidden text-lg sm:text-xl my-12 text-center">
-            A secure JSON Web Token authentication example, including OAuth, multifactor authentication, protected routes, session management, account verification, profile management, roles and permissions, and more.
-          </p>
-          
+          {/* Body — desktop: intro + list; mobile: single paragraph */}
+          <div 
+            className="text-landing-body font-medium mb-10" 
+            style={{ fontSize: "clamp(0.95rem, 1.5vw, 1.1rem)", lineHeight: 1.7 }}
+          >
 
-          {/* Show only for larger screens */}
-          <div className="hidden sm:block space-y-6 text-gray-300 text-left text-base md:text-lg lg:text-xl">
-            <p>
-              A secure JSON Web Token authentication example, including:
+            {/* Desktop: intro line + feature list */}
+            <div className="hidden sm:block">
+              <p className="mb-5">
+                A secure JSON Web Token authentication example, including:
+              </p>
+              <ul className="space-y-2.5">
+                {features.map((f) => (
+                  <li key={f} className="flex items-center gap-3">
+                    <span 
+                      className="shrink-0 w-5 h-5 rounded-full bg-indigo-500/30 border border-indigo-400/50 flex items-center justify-center"
+                    >
+                      <Check className="w-3 h-3 text-landing-highlight" strokeWidth={2.5} />
+                    </span>
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Mobile: condensed prose */}
+            <p className="sm:hidden">
+              A secure JSON Web Token authentication example, including OAuth,
+              multifactor authentication, passkeys, protected routes, session
+              management, account verification, profile management, and more.
             </p>
-            <ul className="list-disc list-inside columns-2 gap-5 md:gap-10 lg:gap-20 font-semibold leading-relaxed">
-              <li>Email/password authentication</li>
-              <li>Protected routes and pages</li>
-              <li>Session management</li>
-              <li>Email verification</li>
-              <li>Google OAuth authentication</li>
-              <li>Multifactor authentication</li>
-              <li>Roles and permissions</li>
-              <li>Profile management</li>
-              <li>Restricted domains</li>
-              <li>Passkeys</li>
-            </ul>
           </div>
 
-          <Link
-            href="/signup"
-            className="button-primary button-standard"
+          {/* CTA */}
+          <button
+            onClick={() => router.push('/signup')}
+            className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-lg font-semibold text-landing transition-all duration-150 active:scale-95 cursor-pointer"
+            style={{
+              background: "linear-gradient(135deg, #4f46e5 0%, #6d28d9 100%)",
+              boxShadow: "0 0 24px rgba(99,102,241,0.45)",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                "0 0 36px rgba(99,102,241,0.65)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.boxShadow =
+                "0 0 24px rgba(99,102,241,0.45)";
+            }}
           >
             Get Started
-          </Link>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+
+          {/* Sign-in nudge */}
+          <p className="mt-5 text-sm text-landing-muted">
+            Already have an account?{" "}
+            <button
+              onClick={() => router.push('/login')}
+              className="text-landing-highlight hover:text-landing-hover font-medium transition-colors underline underline-offset-2 cursor-pointer"
+            >
+              Sign in
+            </button>
+          </p>
         </div>
       </BackgroundContainer>
     </div>
