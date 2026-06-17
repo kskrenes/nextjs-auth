@@ -202,9 +202,9 @@ staging & polishing
 
 - [x] ensure consistent file naming (use "-" rather than camelcase)
 - [ ] audit entire app for accessibility (a11y)
-  - [ ] verify all images have descriptive alt tags and interactive elements use proper ARIA labels
-  - [ ] ensure text-to-background contrast ratios meet WCAG AA standards
-  - [ ] ensure users can navigate the entire application using only the Tab and Enter keys
+  - [x] verify all images have descriptive alt tags and interactive elements use proper ARIA labels
+  - [x] ensure text-to-background contrast ratios meet WCAG AA standards
+  - [x] ensure users can navigate the entire application using only the Tab and Enter keys
   - [ ] any additional accessibility considerations
 - [ ] test all component states in both themes (hover, active, focus, disabled, etc)
 - [ ] add friendly layouts for all potential "no data" states
