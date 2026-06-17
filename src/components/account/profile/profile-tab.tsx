@@ -155,8 +155,8 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
               <ShieldUser className="w-5 h-5 text-brand-light -m-0.5" />
               <Input 
                 id="name" 
-                placeholder="Name"
                 type="text"
+                placeholder="Your full name"
                 aria-label="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -168,8 +168,8 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
               <CompanyIcon />
               <Input 
                 id="company" 
-                placeholder="Company"
                 type="text"
+                placeholder="Where you work"
                 aria-label="Company"
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
@@ -182,8 +182,8 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
               <LinkIcon />
               <Input 
                 id="website" 
-                placeholder="Website URL"
                 type="text"
+                placeholder="https://yoursite.com"
                 aria-label="Website"
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
@@ -199,9 +199,9 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
                 <LinkIcon />
                 <Input 
                   id={`socialLink${index}`} 
-                  placeholder={`Social URL ${index + 1}`}
                   type="text"
-                  aria-label={`Social URL ${index + 1}`}
+                  placeholder={`Social profile URL ${index + 1}`}
+                  aria-label={`Social profile URL ${index + 1}`}
                   value={link}
                   onChange={(e) => handleSocialEdit(e.target.value, index)}
                 />
