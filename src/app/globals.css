@@ -231,6 +231,7 @@ body {
     cursor-pointer 
     bg-[linear-gradient(135deg,#4f46e5_0%,#6d28d9_100%)] 
     shadow-[0_0_24px_rgba(99,102,241,0.45)]
+    hover:shadow-[0_0_36px_rgba(99,102,241,0.65)]
 }
 
 @utility button-loader {

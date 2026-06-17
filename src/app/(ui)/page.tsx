@@ -73,14 +73,6 @@ export default function Home() {
             type="button"
             onClick={() => router.push('/signup')}
             className="button-cta"
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                "0 0 36px rgba(99,102,241,0.65)";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.boxShadow =
-                "0 0 24px rgba(99,102,241,0.45)";
-            }}
           >
             Get Started
             <ArrowRight className="w-4 h-4" />
