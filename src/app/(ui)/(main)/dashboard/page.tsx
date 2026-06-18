@@ -8,22 +8,22 @@ import CacheHitRateChart from "@/components/dashboard/cache-hit-rate-chart";
 import AuthMetricsChart from "@/components/dashboard/auth-metrics-chart";
 import AllowedDomainsChart from "@/components/dashboard/allowed-domains-chart";
 import SecurityRecommendationsChart from "@/components/dashboard/security-recommendations-chart";
+import PanelError from "@/components/panel-error";
 
 const DashboardPage = () => {
 
   const { user, fetchingUser } = useAuth();
 
-  if (fetchingUser || !user) return <FullScreenLoader />;
+  if (fetchingUser) return <FullScreenLoader />;
 
-  const hasGoogleProvider = user.linkedProviders.includes('google');
-  const healthChecks = [
-    { name: 'Multi-Factor Authentication', enabled: user.mfaEnabled, weight: 30 },
-    { name: 'Passkey Authentication', enabled: user.passkeyCount > 0, weight: 25 },
-    { name: 'Strong Password', enabled: user.hasStrongPassword || hasGoogleProvider, weight: 25 },
+  const hasGoogleProvider = user ? user.linkedProviders.includes('google') : false;
+  const healthChecks = user ? [
+    { name: 'Multi-Factor Authentication', enabled: user.mfaEnabled, weight: 30 }, 
+    { name: 'Passkey Authentication', enabled: user.passkeyCount > 0, weight: 25 }, 
+    { name: 'Strong Password', enabled: user.hasStrongPassword || hasGoogleProvider, weight: 25 }, 
     { name: 'Verified Email', enabled: user.isVerified || hasGoogleProvider, weight: 20 },
-  ];
-
-  const healthScore = healthChecks.reduce((score, check) => {
+  ] : undefined;
+  const healthScore = healthChecks?.reduce((score, check) => {
     return score + (check.enabled ? check.weight : 0);
   }, 0);
 
@@ -36,27 +36,35 @@ const DashboardPage = () => {
         <p className="text-sm text-foreground-secondary mt-1">Monitor your account security and system metrics</p>
       </div>
 
-      {/* Security Health Score */}
-      <HealthScoreWidget healthChecks={healthChecks} healthScore={healthScore} />
+      {user ? (
+        <>
+          {/* Security Health Score */}
+          <HealthScoreWidget healthChecks={healthChecks} healthScore={healthScore} />
 
-      {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-6">
-        {/* API Requests */}
-        <APIRequestsChart />
+          {/* Charts Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-6">
+            {/* API Requests */}
+            <APIRequestsChart />
 
-        {/* Cache Hit Rate */}
-        <CacheHitRateChart />
+            {/* Cache Hit Rate */}
+            <CacheHitRateChart />
 
-        {/* Auth Success vs Failures */}
-        <AuthMetricsChart />
+            {/* Auth Success vs Failures */}
+            <AuthMetricsChart />
 
-        {/* Allowed Email Domains */}
-        <AllowedDomainsChart />
-      </div>
+            {/* Allowed Email Domains */}
+            <AllowedDomainsChart />
+          </div>
 
-      {/* Security Recommendations */}
-      {healthScore < 100 && (
-        <SecurityRecommendationsChart user={user} />
+          {/* Security Recommendations */}
+          {healthScore && healthScore < 100 && (
+            <SecurityRecommendationsChart user={user} />
+          )}
+        </>
+      ) : (
+        <PanelError
+          message="Sorry, there was a problem loading data for the dashboard. Please try signing in again."
+         />
       )}
     </div>
   );

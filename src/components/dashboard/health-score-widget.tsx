@@ -1,9 +1,9 @@
 import { BadgeDelta, Card, Flex, Metric, ProgressBar, Text } from "@tremor/react"
-import { CheckCircle2, ShieldAlert, ShieldCheck, XCircle } from "lucide-react"
+import { CheckCircle2, CircleAlert, ShieldAlert, ShieldCheck, XCircle } from "lucide-react"
 
 interface HealthScoreWidgetProps {
-  healthChecks: { name: string, enabled: boolean, weight: number }[];
-  healthScore: number;
+  healthChecks: { name: string, enabled: boolean, weight: number }[] | undefined;
+  healthScore: number | undefined;
 }
 
 const styleMap = {
@@ -36,10 +36,12 @@ const styleMap = {
 const HealthScoreWidget = ({ healthChecks, healthScore }: HealthScoreWidgetProps) => {
 
   const getHealthStatus = () => {
+    const defaultStatus = { label: 'Poor', style: 'poor', icon: ShieldAlert };
+    if (!healthScore) return defaultStatus;
     if (healthScore >= 90) return { label: 'Excellent', style: 'excellent', icon: ShieldCheck };
     if (healthScore >= 70) return { label: 'Good', style: 'good', icon: ShieldCheck };
     if (healthScore >= 50) return { label: 'Fair', style: 'fair', icon: ShieldAlert };
-    return { label: 'Poor', style: 'poor', icon: ShieldAlert };
+    return defaultStatus;
   };
 
   const healthStatus = getHealthStatus();
@@ -57,42 +59,55 @@ const HealthScoreWidget = ({ healthChecks, healthScore }: HealthScoreWidgetProps
       <div className="flex items-start justify-between mb-4">
         <div>
           <Text className="text-foreground-secondary">Security Health Score</Text>
-          <Metric className="mt-2">{healthScore}/100</Metric>
+          {healthChecks && healthScore && <Metric className="mt-2">{healthScore}/100</Metric>}
         </div>
-        <div className={healthIconClass}>
-          <HealthIcon />
-        </div>
-      </div>
-
-      <Flex className="mb-4">
-        <Text className={textClass}>{healthStatus.label}</Text>
-        <BadgeDelta 
-          deltaType={healthScore >= 70 ? 'increase' : 'decrease'} 
-          className={badgeDeltaClass}>
-          {healthScore}%
-        </BadgeDelta>
-      </Flex>
-
-      <ProgressBar
-        value={healthScore}
-        className={progressBarClass}
-      />
-
-      <div className="mt-4">
-        {healthChecks.map((check, index) => (
-          <div key={index} className="flex items-center justify-between py-3 border-t border-panel-highlight">
-            <div className="flex items-center gap-2">
-              {check.enabled ? (
-                <CheckCircle2 className="w-4 h-4 text-excellent" />
-              ) : (
-                <XCircle className="w-4 h-4 text-poor" />
-              )}
-              <Text className="text-sm text-foreground-secondary">{check.name}</Text>
-            </div>
-            <Text className="text-xs text-foreground-muted">+{check.weight} pts</Text>
+        {healthChecks && healthScore && (
+          <div className={healthIconClass}>
+            <HealthIcon />
           </div>
-        ))}
+        )}
       </div>
+
+      {healthChecks && healthScore ? (
+        <>
+          <Flex className="mb-4">
+            <Text className={textClass}>{healthStatus.label}</Text>
+            <BadgeDelta 
+              deltaType={healthScore >= 70 ? 'increase' : 'decrease'} 
+              className={badgeDeltaClass}>
+              {healthScore}%
+            </BadgeDelta>
+          </Flex>
+
+          <ProgressBar
+            value={healthScore}
+            className={progressBarClass}
+          />
+        </>
+      ) : (
+        <div className="flex text-foreground-poor gap-2 text-sm items-center">
+          <CircleAlert className="w-5 h-5" />
+          Unable to calculate health score
+        </div>
+      )}
+
+      {healthChecks && (
+        <div className="mt-4">
+          {healthChecks.map((check, index) => (
+            <div key={index} className="flex items-center justify-between py-3 border-t border-panel-highlight">
+              <div className="flex items-center gap-2">
+                {check.enabled ? (
+                  <CheckCircle2 className="w-4 h-4 text-excellent" />
+                ) : (
+                  <XCircle className="w-4 h-4 text-poor" />
+                )}
+                <Text className="text-sm text-foreground-secondary">{check.name}</Text>
+              </div>
+              <Text className="text-xs text-foreground-muted">+{check.weight} pts</Text>
+            </div>
+          ))}
+        </div>
+      )}
     </Card>
   )
 }
