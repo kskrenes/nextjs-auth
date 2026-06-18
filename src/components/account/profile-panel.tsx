@@ -18,6 +18,8 @@ const ProfilePanel = ({ editing, onEditClick }: ProfilePanelProps) => {
 
   const [sendingEmail, setSendingEmail] = useState(false);
 
+  const { user } = useAuth();
+
   const handleVerifyClick = async () => {
     if (sendingEmail || !user) return;
 
@@ -28,8 +30,6 @@ const ProfilePanel = ({ editing, onEditClick }: ProfilePanelProps) => {
       toast.error("Failed to send verification email");
     }
   }
-
-  const { user } = useAuth();
 
   return (
     <div 
