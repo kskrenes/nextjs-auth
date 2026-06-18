@@ -207,7 +207,8 @@ staging & polishing
   - [x] ensure users can navigate the entire application using only the Tab and Enter keys
   - [x] any additional accessibility considerations
 - [x] test all component states in both themes (hover, active, focus, disabled, etc.)
-- [ ] add friendly layouts for all potential "no data" states
+- [x] add friendly layouts for all potential "no data" states
+- [ ] add logo presence on signed-out pages
 - [ ] build helpful, branded 404 and 500 error pages with clear "Go Home" actions
 - [ ] ensure clear confirmation toast messaging after any pending action
 - [ ] handle exceptionally long text everywhere dynamic text could display
