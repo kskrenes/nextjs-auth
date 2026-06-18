@@ -37,7 +37,7 @@ const HealthScoreWidget = ({ healthChecks, healthScore }: HealthScoreWidgetProps
 
   const getHealthStatus = () => {
     const defaultStatus = { label: 'Poor', style: 'poor', icon: ShieldAlert };
-    if (!healthScore) return defaultStatus;
+    if (healthScore === undefined) return defaultStatus;
     if (healthScore >= 90) return { label: 'Excellent', style: 'excellent', icon: ShieldCheck };
     if (healthScore >= 70) return { label: 'Good', style: 'good', icon: ShieldCheck };
     if (healthScore >= 50) return { label: 'Fair', style: 'fair', icon: ShieldAlert };
@@ -59,16 +59,16 @@ const HealthScoreWidget = ({ healthChecks, healthScore }: HealthScoreWidgetProps
       <div className="flex items-start justify-between mb-4">
         <div>
           <Text className="text-foreground-secondary">Security Health Score</Text>
-          {healthChecks && healthScore && <Metric className="mt-2">{healthScore}/100</Metric>}
+          {healthChecks && healthScore !== undefined && <Metric className="mt-2">{healthScore}/100</Metric>}
         </div>
-        {healthChecks && healthScore && (
+        {healthChecks && healthScore !== undefined && (
           <div className={healthIconClass}>
             <HealthIcon />
           </div>
         )}
       </div>
 
-      {healthChecks && healthScore ? (
+      {healthChecks && healthScore !== undefined ? (
         <>
           <Flex className="mb-4">
             <Text className={textClass}>{healthStatus.label}</Text>
