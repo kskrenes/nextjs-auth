@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/helpers/util/classname-util";
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDown, Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -11,7 +12,11 @@ const themeItems = [
   { name: "system", label: "System", icon: <Monitor className="w-5 h-5" /> },
 ];
 
-const ThemeSwitcher = () => {
+interface ThemeSwitcherProps {
+  isMainGroup: boolean;
+}
+
+const ThemeSwitcher = ({ isMainGroup }: ThemeSwitcherProps) => {
 
   const [isMounted, setIsMounted] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -28,6 +33,8 @@ const ThemeSwitcher = () => {
 
   if (!isMounted) return null;
 
+  const leftStyle = isMainGroup ? 'left-5' : 'left-34';
+
   return (
     <Menu>
       <MenuButton 
@@ -42,7 +49,7 @@ const ThemeSwitcher = () => {
 
       {/* dropdown */}
       <MenuItems 
-        className="absolute top-14 left-5 panel w-40 focus:outline-none"
+        className={cn('absolute top-14 panel w-40 focus:outline-none', leftStyle)}
       >
         {/* nav links */}
         {themeItems.map((item) => (

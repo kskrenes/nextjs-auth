@@ -162,6 +162,7 @@
   --color-tab-foreground: var(--tab-foreground);
   --color-tab-foreground-selected: var(--tab-foreground-selected);
   --background-image-logo: var(--logo);
+  --background-image-white-logo: url('/nAuth-logo.png');
   --color-tremor-border-default: var(--tremor-border-default);
   --color-tremor-border: var(--tremor-border);
   --color-tremor-lat: var(--tremor-lat);
