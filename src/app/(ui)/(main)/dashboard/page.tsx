@@ -64,7 +64,7 @@ const DashboardPage = () => {
       ) : (
         <PanelError
           message="Sorry, there was a problem loading data for the dashboard. Please try signing in again."
-         />
+        />
       )}
     </div>
   );
