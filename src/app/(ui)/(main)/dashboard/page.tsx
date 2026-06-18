@@ -57,7 +57,7 @@ const DashboardPage = () => {
           </div>
 
           {/* Security Recommendations */}
-          {healthScore && healthScore < 100 && (
+          {healthScore !== undefined && healthScore < 100 && (
             <SecurityRecommendationsChart user={user} />
           )}
         </>
