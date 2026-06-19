@@ -26,8 +26,10 @@ function requireAuth(path: string) {
     path.startsWith('/api/users/update') ||
     path.startsWith('/api/users/security-logs') ||
     path.startsWith('/api/users/mfa') ||
+    path.startsWith('/api/users/passkeys') ||
     path.startsWith('/api/auth/logout-all') ||
-    path.startsWith('/api/auth/sessions');
+    path.startsWith('/api/auth/sessions') ||
+    path.startsWith('/api/passkeys');
 
   return isProtectedPage || isProtectedApi;
 }
@@ -97,6 +99,7 @@ export async function proxy(request: NextRequest) {
       // refresh token is still valid. Let the page load — the client-side interceptor
       // will call /api/auth/refresh and retry /api/users/me transparently.
       if (!hasSessionHint) {
+        console.log('redirecting to /login: no session hint');
         return NextResponse.redirect(new URL('/login', request.nextUrl));
       }
 
@@ -113,7 +116,7 @@ export async function proxy(request: NextRequest) {
           { status: 401, headers: { 'content-type': 'application/json' } }
         );
       }
-      if (!hasSessionHint) return NextResponse.redirect(new URL("/login", request.nextUrl));
+      if (!hasSessionHint) {console.log('redirecting to /login: invalid session');return NextResponse.redirect(new URL("/login", request.nextUrl));}
       return NextResponse.next();
     }
 
@@ -128,6 +131,7 @@ export async function proxy(request: NextRequest) {
           { status: 401, headers: { 'content-type': 'application/json' } }
         );
       }
+      console.log('redirecting to /login: handle revoked session');
       return NextResponse.redirect(new URL('/login', request.nextUrl));
     }
 
@@ -163,6 +167,7 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.nextUrl));
   }
 
+  console.log('Continuing to path:', path);
   return NextResponse.next();
 }
 
