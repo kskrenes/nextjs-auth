@@ -8,8 +8,8 @@ import { createContext, ReactNode, useCallback, useContext, useEffect, useRef, u
 import toast from 'react-hot-toast';
 import { startAuthentication, startRegistration } from '@simplewebauthn/browser';
 
-// Public pages — onSignOut should NOT redirect away from these
-const PUBLIC_PATHS = new Set(['/', '/login', '/signup', '/verifyemail', '/resetpassword', '/triggerpasswordreset']);
+// onSignOut should redirect only if the path is a known protected route
+const PROTECTED_PATHS = new Set(['/dashboard', '/account', '/onboarding']);
 
 type EditableProfileFields = {
   username?: string;
@@ -87,7 +87,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Only redirect to /login if the user is on a protected page.
     // This prevents a jarring redirect when the session expires while the user
     // is already on /login or another public page.
-    if (!PUBLIC_PATHS.has(window.location.pathname)) {
+    if (PROTECTED_PATHS.has(window.location.pathname)) {
       router.replace('/login');
     }
   });
@@ -97,7 +97,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     onSignOut.current = () => {
       setUser(null);
       setFetchingUser(false);
-      if (!PUBLIC_PATHS.has(window.location.pathname)) {
+      if (PROTECTED_PATHS.has(window.location.pathname)) {
         router.replace('/login');
       }
     };
