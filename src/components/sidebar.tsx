@@ -4,6 +4,7 @@ import { useAuth } from '@/context-providers/auth-context-provider';
 import { LayoutDashboardIcon, LogIn, LogOut, UserPen } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation';
+import LogoLink from './logo-link';
 
 const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon /> },
@@ -20,12 +21,7 @@ const Sidebar = () => {
       className="p-4 w-64 fixed top-0 bottom-0 left-0 shrink-0 hidden md:block bg-panel" 
     >
       {/* home link / logo */}
-      <Link href="/" className="flex select-none items-center gap-2 m-4">
-        <div className="w-7.25 h-7.25 bg-logo bg-contain bg-no-repeat" />
-        <span className="hidden sm:block text-lg font-bold">
-          nAuth
-        </span>
-      </Link>
+      <LogoLink />
 
       {/* main nav */}
       <nav className="mt-24">

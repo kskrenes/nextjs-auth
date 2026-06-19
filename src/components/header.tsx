@@ -7,6 +7,8 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { ChevronDown, LayoutDashboardIcon, LogOut, UserPen } from "lucide-react";
 import ThemeSwitcher from "./theme-switcher";
 import { useSelectedLayoutSegments } from "next/navigation";
+import { cn } from "@/helpers/util/classname-util";
+import LogoLink from "./logo-link";
 
 const navLinks = [
   { name: 'Dashboard', href: '/dashboard', icon: <LayoutDashboardIcon className="w-5 h-5" /> },
@@ -26,14 +28,19 @@ const Header = () => {
   const menuHover = isLanding ? 'hover:bg-indigo-900/40' : 'hover:bg-panel-highlight';
   const nameColor = isLanding ? 'text-[#e5e6f2]' : 'text-foreground-primary';
   const usernameColor = isLanding ? 'text-[#9ca3af]' : 'text-foreground-secondary';
+  // const logo = isLanding ? 'bg-white-logo' : 'bg-logo';
+  // const logoText = isLanding ? 'text-landing' : '';
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-20 ${headerLeft} ${headerBG} backdrop-blur-xs`}>
+    <header className={cn('fixed top-0 left-0 right-0 z-20 backdrop-blur-xs', headerLeft, headerBG)}>
       <div className='relative flex w-full mx-auto z-30 px-1 sm:px-3 items-center min-h-19'>
+
+        {/* home link / logo */}
+        {!isMainGroup && <LogoLink overrideTheme={isLanding} />}
 
         {/* Theme Switcher */}
         <div className="flex items-center px-2">
-          {!isLanding && <ThemeSwitcher />}
+          {!isLanding && <ThemeSwitcher isMainGroup={isMainGroup} />}
         </div>
 
         {/* right side actions */}
@@ -50,17 +57,17 @@ const Header = () => {
                 <Menu>
                   <MenuButton 
                     aria-label="Open user menu"
-                    className={`nav-item p-0 focus:outline-none ${menuHover}`}
+                    className={cn('nav-item p-0 focus:outline-none', menuHover)}
                   >
                     <div className="flex items-center p-2 gap-3">
                       <AvatarDisplay publicId={user?.avatarId} size="sm" />
                       <div className="hidden sm:inline text-left">
                         {user?.name && (
-                          <p className={`font-medium max-w-60 wrap-break-word line-clamp-1 ${nameColor}`}>
+                          <p className={cn('font-medium max-w-60 wrap-break-word line-clamp-1', nameColor)}>
                             {user?.name}
                           </p>
                         )}
-                        <p className={`text-sm max-w-60 break-all line-clamp-1 ${usernameColor}`}>
+                        <p className={cn('text-sm max-w-60 break-all line-clamp-1', usernameColor)}>
                           {user?.username}
                         </p>
                       </div>
