@@ -27,7 +27,7 @@ const ProfilePanel = ({ editing, onEditClick }: ProfilePanelProps) => {
       await triggerEmail(user.email, "VERIFY", setSendingEmail);
       toast.success("Verification email sent");
     } catch {
-      toast.error("Failed to send verification email");
+      toast.error("There was a problem sending the verification email");
     }
   }
 

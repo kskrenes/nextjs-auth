@@ -57,7 +57,7 @@ export default function GoogleLoginButton({
         router.replace("/dashboard");
       }
     } catch (error: unknown) {
-      let message = 'Error logging in via Google';
+      let message = 'There was a problem signing in with your Google account';
       if (axios.isAxiosError(error) && error.response?.status !== 500) {
         message = getErrorMessage(error, message);
       }

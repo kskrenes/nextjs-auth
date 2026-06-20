@@ -26,7 +26,7 @@ const PasswordSettings = () => {
       await triggerEmail(user.email, "RESET", setSendingEmail);
       toast.success("A Reset password link has been sent to your email.");
     } catch {
-      toast.error("Failed to send reset password email");
+      toast.error("There was a problem sending the reset password email");
     }
   }
 

@@ -64,7 +64,7 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
       toast.success("Profile updated");
       onEditComplete();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to update profile"));
+      toast.error(getErrorMessage(error, "There was a problem updating your profile"));
     } finally {
       setPending(false);
     }

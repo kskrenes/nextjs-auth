@@ -13,8 +13,8 @@ import MFABackupCodesModal from "./mfa-backup-codes-modal";
 import MFADisableModal from "./mfa-disable-modal";
 import MFABackupCodes from "./mfa-backup-codes";
 
-const INIT_ERROR = "Failed to initialize Multi-Factor Authentication";
-const VERIFY_ERROR = "Could not verify authentication code";
+const INIT_ERROR = "There was a problem initializing Two-Factor Authentication";
+const VERIFY_ERROR = "Unable to verify your authentication code";
 
 interface MFAManagementProps {
   mfaEnabled: boolean;
@@ -70,7 +70,7 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
           const res = await axiosClient.get('/api/users/mfa/backup-codes');
           setCodeCount(res.data.count);
         } catch {
-          toast.error("Failed to retrieve backup code count");
+          toast.error("Unable to retrieve backup code count");
         } finally {
           setLoading(false);
         }

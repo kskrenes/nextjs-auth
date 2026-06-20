@@ -22,7 +22,7 @@ export default function AvatarUpload() {
               await updateUser({ avatarId: result.info?.public_id });
               toast.success('Avatar updated successfully');
             } catch {
-              toast.error('Failed to update avatar');
+              toast.error('There was a problem updating your avatar');
             }
           }
         }}

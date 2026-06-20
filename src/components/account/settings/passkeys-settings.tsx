@@ -36,11 +36,11 @@ const PasskeysSettings = () => {
   if (!user) return;
   
   // Passkey Management
-  const handlePasskeyError = (err?: unknown) => {
+  const handlePasskeyError = (fallbackMessage?: string, err?: unknown) => {
     const message =
     err instanceof Error
       ? err.message
-      : (usePasskeysError ?? 'Failed to manage passkey');
+      : (usePasskeysError ?? fallbackMessage ?? 'There was a problem managing your passkey');
     console.error('Passkey operation failed', err ?? usePasskeysError);
     toast.error(message);
   }
@@ -53,52 +53,53 @@ const PasskeysSettings = () => {
       return fetchedPasskeys;
     }
     catch (err) {
-      handlePasskeyError(err);
+      handlePasskeyError('There was a problem retrieving your passkeys', err);
       return [];
     }
   }
 
-  const handlePasskeySuccess = async (success: boolean) => {
+  const handlePasskeySuccess = async (success: boolean, errorMessage: string) => {
     if (success) {
       const refreshed = await getPasskeys();
       if (refreshed.length === 0) setPasskeysExpanded(false);
-    } else handlePasskeyError();
+    } else handlePasskeyError(errorMessage);
   }
 
   const handleAddPasskey = async () => {
     if (usePasskeysLoading || updatingUser) return;
+    const errMessage = 'There was a problem adding your passkey';
     try {
       const registered = await registerPasskey();
-      await handlePasskeySuccess(registered);
+      await handlePasskeySuccess(registered, errMessage);
     }
     catch (err) { 
-      handlePasskeyError(err); 
+      handlePasskeyError(errMessage, err); 
     }
   };
 
   const handleUpdatePasskeyClick = async (id: string, nickname: string): Promise<boolean> => {
     if (usePasskeysLoading) return false;
-
+    const errMessage = 'There was a problem updating your passkey';
     try {
       const updated = await updatePasskey(id, nickname);
-      await handlePasskeySuccess(updated);
+      await handlePasskeySuccess(updated, errMessage);
       return true;
     }
     catch (err) { 
-      handlePasskeyError(err);
+      handlePasskeyError(errMessage, err);
       return false;
     }
   };
 
   const handleDeletePasskeyConfirm = async () => {
     if (usePasskeysLoading || updatingUser || !deletePasskeyId) return;
-
+    const errMessage = 'There was a problem deleting your passkey';
     try {
       const deleted = await deletePasskey(deletePasskeyId);
-      await handlePasskeySuccess(deleted);
+      await handlePasskeySuccess(deleted, errMessage);
     }
     catch (err) { 
-      handlePasskeyError(err); 
+      handlePasskeyError(errMessage, err); 
     }
     finally {
       setDeletePasskeyId(null);
