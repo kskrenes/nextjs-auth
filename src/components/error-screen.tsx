@@ -1,12 +1,11 @@
 'use client';
 
 export interface ErrorProps {
-  error: Error & { digest?: string }
-  reset: () => void
+  reset?: () => void
 }
 
 interface ErrorScreenProps {
-  reset: () => void, 
+  reset?: () => void, 
   isCritical?: boolean,
 }
 
@@ -27,15 +26,17 @@ const ErrorScreen = ({ reset, isCritical = false }: ErrorScreenProps) => {
           }
         </p>
 
-        <button
-          onClick={() => reset()} // Tries to re-render the broken segment
-          className="button-extreme button-small mt-4"
-        >
-          {isCritical 
-            ? 'Critical Reset' 
-            : 'Try Again'
-          }
-        </button>
+        {reset && (
+          <button
+            onClick={() => reset()} // Tries to re-render the broken segment
+            className="button-extreme button-small mt-4"
+          >
+            {isCritical 
+              ? 'Critical Reset' 
+              : 'Try Again'
+            }
+          </button>
+        )}
       </div>
     </div>
   )
