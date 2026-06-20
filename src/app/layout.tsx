@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Roboto, Roboto_Mono } from "next/font/google";
-import "./../globals.css";
+import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Header from "@/components/header";
 import { AuthProvider } from "@/context-providers/auth-context-provider";

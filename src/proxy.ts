@@ -26,8 +26,10 @@ function requireAuth(path: string) {
     path.startsWith('/api/users/update') ||
     path.startsWith('/api/users/security-logs') ||
     path.startsWith('/api/users/mfa') ||
+    path.startsWith('/api/users/passkeys') ||
     path.startsWith('/api/auth/logout-all') ||
-    path.startsWith('/api/auth/sessions');
+    path.startsWith('/api/auth/sessions') ||
+    path.startsWith('/api/passkeys');
 
   return isProtectedPage || isProtectedApi;
 }
