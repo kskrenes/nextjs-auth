@@ -58,11 +58,17 @@ const PasskeysSettings = () => {
     }
   }
 
-  const handlePasskeySuccess = async (success: boolean, errorMessage: string) => {
+  const handlePasskeySuccess = async (
+    success: boolean, 
+    errorMessage: string, 
+    showFailureToast = true
+  ) => {
     if (success) {
       const refreshed = await getPasskeys();
       if (refreshed.length === 0) setPasskeysExpanded(false);
-    } else handlePasskeyError(errorMessage);
+    } else if (showFailureToast) {
+      handlePasskeyError(errorMessage);
+    }
   }
 
   const handleAddPasskey = async () => {
@@ -70,7 +76,7 @@ const PasskeysSettings = () => {
     const errMessage = 'There was a problem adding your passkey';
     try {
       const registered = await registerPasskey();
-      await handlePasskeySuccess(registered, errMessage);
+      await handlePasskeySuccess(registered, errMessage, false);
     }
     catch (err) { 
       handlePasskeyError(errMessage, err); 
@@ -96,7 +102,7 @@ const PasskeysSettings = () => {
     const errMessage = 'There was a problem deleting your passkey';
     try {
       const deleted = await deletePasskey(deletePasskeyId);
-      await handlePasskeySuccess(deleted, errMessage);
+      await handlePasskeySuccess(deleted, errMessage, false);
     }
     catch (err) { 
       handlePasskeyError(errMessage, err); 
