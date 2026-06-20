@@ -210,7 +210,7 @@ staging & polishing
 - [x] add friendly layouts for all potential "no data" states
 - [x] add logo presence on signed-out pages
 - [x] build helpful, branded 404 and 500 error pages with clear "Go Home" actions
-- [ ] ensure clear confirmation toast messaging after any pending action
+- [x] ensure clear confirmation toast messaging after any pending action
 - [ ] handle exceptionally long text everywhere dynamic text could display
 - [ ] strip console logging and debugging from code as necessary
 - [ ] implement SEO metadata/populate all page titles, meta descriptions, and Open Graph (OG) tags for social sharing

@@ -163,7 +163,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // fetch auth options
       const optionsRes = await axiosClient.post('/api/auth/passkey/options');
       const { success: optionsSuccess, options } = optionsRes.data;
-      if (!optionsSuccess) throw new Error('Failed to generate authentication options');
+      if (!optionsSuccess) throw new Error('There was a problem generating passkey authentication options');
 
       // trigger the browser's WebAuthn UI
       const assertionResponse = await startAuthentication({ optionsJSON: options });
@@ -171,7 +171,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // verify server-side
       const verifyRes = await axiosClient.post('/api/auth/passkey/verify', { assertionResponse });
       const { success: verifySuccess, user } = verifyRes.data;
-      if (!verifySuccess || !user) throw new Error('Failed to verify passkey authentication');
+      if (!verifySuccess || !user) throw new Error('There was a problem verifying the passkey authentication');
       setUser(user);
 
       // return the expected AuthLoginResponse shape
@@ -194,7 +194,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // user data is automatically cleared
       window.location.replace('/login');
     } catch (error: unknown) {
-      toast.error(getErrorMessage(error, "Logout failed"));
+      toast.error(getErrorMessage(error, "Unable to sign out. Please reload or try again."));
     } finally {
       setLoggingOut(false);
     }
@@ -288,19 +288,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Get options from server
       const optionsRes = await axiosClient.post('/api/passkeys/registration/options');
       const { success, options } = optionsRes.data;
-      if (!success) throw new Error('Failed to generate registration options');
+      if (!success) throw new Error('There was a problem generating passkey registration options');
 
       // Execute WebAuthn creation ceremony
       const attestationResponse = await startRegistration({ optionsJSON: options });
 
       // Send response to server for verification
       const verifyRes = await axiosClient.post('/api/passkeys/registration/verify', { attestationResponse });
-      if (!verifyRes.data.success) throw new Error('Failed to verify passkey registration');
+      if (!verifyRes.data.success) throw new Error('There was a problem verifying the passkey registration');
 
       setUser(verifyRes.data.user);
       return true;
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Passkey registration failed'));
+      toast.error(getErrorMessage(err, 'There was a problem registering your passkey'));
       return false;
     } finally {
       setUpdatingUser(false);
@@ -311,11 +311,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       setUpdatingUser(true);
       const res = await axiosClient.delete(`/api/users/passkeys/${id}`);
-      if (!res.data.success) throw new Error('Failed to delete passkey');
+      if (!res.data.success) throw new Error('There was a problem deleting your passkey');
       setUser(res.data.user);
       return true;
     } catch (err) {
-      toast.error(getErrorMessage(err, 'Passkey registration failed'));
+      toast.error(getErrorMessage(err, 'There was a problem deleting your passkey'));
       return false;
     } finally {
       setUpdatingUser(false);

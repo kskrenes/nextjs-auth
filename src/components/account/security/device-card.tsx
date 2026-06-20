@@ -52,7 +52,7 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
       }
     } catch (error) {
       console.error("Error deleting session:", error);
-      toast.error("Failed to sign out of device");
+      toast.error("There was a problem signing out of the selected device");
     } finally {
       setIsDeleting(false);
     }
