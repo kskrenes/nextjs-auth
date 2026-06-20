@@ -288,7 +288,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Get options from server
       const optionsRes = await axiosClient.post('/api/passkeys/registration/options');
       const { success, options } = optionsRes.data;
-      if (!success) throw new Error('There was a problem generationg passkey registration options');
+      if (!success) throw new Error('There was a problem generating passkey registration options');
 
       // Execute WebAuthn creation ceremony
       const attestationResponse = await startRegistration({ optionsJSON: options });
