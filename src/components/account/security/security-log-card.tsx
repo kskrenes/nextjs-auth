@@ -33,7 +33,7 @@ const SecurityLogCard = ({ securityLog }: SecurityLogCardProps) => {
     <div className="flex w-full gap-5 p-5 rounded-md bg-panel">
       <SecurityEventIcon type={expandedSecurityLog.action} />
       <div className="flex flex-col gap-1">
-        <h3 className="text-foreground-primary text-lg">
+        <h3 className="text-foreground-primary text-lg leading-snug">
           {securityEventConfig[expandedSecurityLog.action].label}
         </h3>
 

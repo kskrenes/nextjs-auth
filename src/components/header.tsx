@@ -28,8 +28,6 @@ const Header = () => {
   const menuHover = isLanding ? 'hover:bg-indigo-900/40' : 'hover:bg-panel-highlight';
   const nameColor = isLanding ? 'text-[#e5e6f2]' : 'text-foreground-primary';
   const usernameColor = isLanding ? 'text-[#9ca3af]' : 'text-foreground-secondary';
-  // const logo = isLanding ? 'bg-white-logo' : 'bg-logo';
-  // const logoText = isLanding ? 'text-landing' : '';
 
   return (
     <header className={cn('fixed top-0 left-0 right-0 z-20 backdrop-blur-xs', headerLeft, headerBG)}>
@@ -60,15 +58,15 @@ const Header = () => {
                     className={cn('nav-item p-0 focus:outline-none', menuHover)}
                   >
                     <div className="flex items-center p-2 gap-3">
-                      <AvatarDisplay publicId={user?.avatarId} size="sm" />
+                      <AvatarDisplay publicId={user.avatarId} size="sm" />
                       <div className="hidden sm:inline text-left">
-                        {user?.name && (
+                        {user.name && (
                           <p className={cn('font-medium max-w-60 wrap-break-word line-clamp-1', nameColor)}>
-                            {user?.name}
+                            {user.name}
                           </p>
                         )}
                         <p className={cn('text-sm max-w-60 break-all line-clamp-1', usernameColor)}>
-                          {user?.username}
+                          {user.username}
                         </p>
                       </div>
                       <ChevronDown className="w-4 h-4 hidden sm:inline" />

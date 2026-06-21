@@ -139,20 +139,6 @@ profile
 - [x] implement signed uploads to cloudinary
 - [x] implement Google account unlink
 
-defects & errors
-
-- [x] sign out all does not revoke remote session
-- [x] onboarding isn't calling api, form seems to be posting
-- [x] sign in leaves user on /login, cannot nav to protected pages
-- [x] sign in becomes active for some time between loading/disabled state and navigating to /dashboard
-- [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
-- [x] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
-- [x] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
-- [x] fix Google sign-in button layout in settings tab
-- [x] first sign in with Google/onboard -> add password -> unlink Google -> sign out: can't sign in with password
-- [x] throw error when linking a Google account that exists as a different user, currently switches to that user
-- [x] add awaitingRedirect state to onboarding page
-
 feature research
 
 - [x] research social sign-on
@@ -198,6 +184,22 @@ look & feel, flow
 - [x] add text-sm to small button size
 - [x] finalize the landing page and account for responsive behavior
 
+defects & errors
+
+- [x] sign out all does not revoke remote session
+- [x] onboarding isn't calling api, form seems to be posting
+- [x] sign in leaves user on /login, cannot nav to protected pages
+- [x] sign in becomes active for some time between loading/disabled state and navigating to /dashboard
+- [x] resolve [GSI_LOGGER] double instantiation warning caused by React Strict Mode
+- [x] address [GSI_LOGGER] double instantiation warning when navigating away and then back to login page
+- [x] resolve server console stack trace from Error [AuthTokenError]: Missing refresh token
+- [x] fix Google sign-in button layout in settings tab
+- [x] first sign in with Google/onboard -> add password -> unlink Google -> sign out: can't sign in with password
+- [x] throw error when linking a Google account that exists as a different user, currently switches to that user
+- [x] add awaitingRedirect state to onboarding page
+- [x] fix: passkey nickname shows tooltip after edit to non-truncated value
+- [ ] fix: "Current Session" badge breaks in half on small screens
+
 staging & polishing
 
 - [x] ensure consistent file naming (use "-" rather than camelcase)
@@ -211,7 +213,7 @@ staging & polishing
 - [x] add logo presence on signed-out pages
 - [x] build helpful, branded 404 and 500 error pages with clear "Go Home" actions
 - [x] ensure clear confirmation toast messaging after any pending action
-- [ ] handle exceptionally long text everywhere dynamic text could display
+- [x] handle exceptionally long text everywhere dynamic text could display
 - [ ] strip console logging and debugging from code as necessary
 - [ ] implement SEO metadata/populate all page titles, meta descriptions, and Open Graph (OG) tags for social sharing
 - [ ] organize GitHub repo - complete readme, etc.

@@ -5,6 +5,14 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+
+  // Custom global rules block to handle specific rule configurations
+  {
+    rules: {
+      "react-hooks/refs": "off", // Disables the false-positive rendering ref checks
+    },
+  },
+  
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

@@ -1,5 +1,6 @@
-import { Bold, Card, Flex, List, ListItem, Text } from '@tremor/react'
-import { CheckCircle2, Mail } from 'lucide-react'
+import { Card, List, Text } from '@tremor/react'
+import { Mail } from 'lucide-react'
+import AllowedDomainsListItem from './allowed-domains-list-item';
 
 // mock data
 const allowedDomains = [
@@ -24,16 +25,8 @@ const AllowedDomainsChart = () => {
       </div>
 
       <List className="mt-4">
-        {allowedDomains.map((domain, index) => (
-          <ListItem key={index} className="py-3 border-tremor-lat">
-            <Flex>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-foreground-excellent rounded-full" />
-                <Bold className="text-foreground-primary font-mono text-sm">@{domain}</Bold>
-              </div>
-              <CheckCircle2 className="w-4 h-4 text-foreground-excellent" />
-            </Flex>
-          </ListItem>
+        {allowedDomains.map((domain) => (
+          <AllowedDomainsListItem key={domain} domain={domain} />
         ))}
       </List>
 
