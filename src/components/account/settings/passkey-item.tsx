@@ -25,14 +25,21 @@ const PasskeyItem = ({ pk, onUpdate, onDelete }: PasskeyItemProps) => {
   };
 
   const saveEditPasskey = async () => {
+    if (submitting) return;
     setSubmitting(true);
-    const ok = await onUpdate(pk.id, editingNickname);
-    if (ok) setIsEditing(false);
-    setSubmitting(false);
+    try {
+      const ok = await onUpdate(pk.id, editingNickname);
+      if (ok) setIsEditing(false);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleNicknameKeydown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') saveEditPasskey();
+    if (e.key === 'Enter' && !submitting) {
+      e.preventDefault();
+      void saveEditPasskey();
+    }
   };
 
   const getLastUsed = (date: Date | null | undefined): string => {
@@ -58,6 +65,7 @@ const PasskeyItem = ({ pk, onUpdate, onDelete }: PasskeyItemProps) => {
             onClick={saveEditPasskey} 
             size="small"
             className="text-xs"
+            disabled={submitting}
           >
             Save
           </Button>
@@ -66,6 +74,7 @@ const PasskeyItem = ({ pk, onUpdate, onDelete }: PasskeyItemProps) => {
             size="small"
             variant="tertiary"
             className="text-xs"
+            disabled={submitting}
           >
             Cancel
           </Button>
