@@ -3,13 +3,14 @@
 import { useAuth } from "@/context-providers/auth-context-provider";
 import { SubmitEvent, useEffect, useState } from "react";
 import Badge from "@/components/badge";
-import { CompanyIcon, EmailIcon, LinkIcon } from "../../profile-icons";
-import IconLink from "../../icon-link";
+import { CompanyIcon, EmailIcon, LinkIcon } from "@/components/profile-icons";
+import IconLink from "@/components/icon-link";
 import toast from "react-hot-toast";
 import { getErrorMessage } from "@/helpers/util/error-utils";
 import { ShieldUser } from "lucide-react";
-import Button from "../../nae-button";
-import Input from "../../nae-input";
+import Button from "@/components/nae-button";
+import Input from "@/components/nae-input";
+import { useTruncation } from "@/hooks/use-truncation";
 
 interface ProfileTabProps {
   editing: boolean;
@@ -25,6 +26,9 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
   const [socialLinks, setSocialLinks] = useState(['', '', '', ''])
 
   const { user, updateUser } = useAuth();
+
+  const companyText = useTruncation();
+  const emailText = useTruncation();
 
   useEffect(() => {
     if (!user || !editing) return;
@@ -91,7 +95,13 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
               <label className="text-lg font-semibold">Company</label>
               <div className="flex items-center gap-2">
                 <CompanyIcon />
-                <span className="w-full wrap-break-word text-foreground-secondary line-clamp-1">{user?.company}</span>
+                <span 
+                  ref={companyText.setRef} 
+                  title={companyText.isTruncated ? user.company : undefined}
+                  className="w-full text-foreground-secondary wrap-break-word line-clamp-1"
+                >
+                  {user.company}
+                </span>
               </div>
             </div>
           )}
@@ -100,7 +110,7 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
             <div className="flex flex-col gap-1">
               <label className="text-lg font-semibold">Email</label>
               <div className="flex items-center gap-2">
-                {(user.isVerified || user.linkedProviders.includes('google')) ? (
+                {(user.isVerified || user.linkedProviders?.includes('google')) ? (
                   // verified email link
                   <IconLink url={`mailto:${user.email}`} />
                 ) : (
@@ -110,7 +120,13 @@ const ProfileTab = ({ editing, onEditComplete }: ProfileTabProps) => {
                       <EmailIcon />
                     </div>
                     <div className="flex relative">
-                      <span className="w-full break-all text-foreground-secondary line-clamp-1 pr-22">{user.email}</span>
+                      <span 
+                        ref={emailText.setRef}
+                        title={emailText.isTruncated ? user.email : undefined}
+                        className="w-full text-foreground-secondary break-all line-clamp-1 pr-22"
+                      >
+                        {user.email}
+                      </span>
                       <Badge label="Unverified" variant="red" className="absolute right-0" />
                     </div>
                   </>

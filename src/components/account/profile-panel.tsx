@@ -8,6 +8,7 @@ import { Pencil } from "lucide-react";
 import { useState } from "react";
 import { triggerEmail } from "@/helpers/util/email-trigger";
 import toast from "react-hot-toast";
+import { useTruncation } from "@/hooks/use-truncation";
 
 interface ProfilePanelProps {
   editing: boolean;
@@ -19,6 +20,9 @@ const ProfilePanel = ({ editing, onEditClick }: ProfilePanelProps) => {
   const [sendingEmail, setSendingEmail] = useState(false);
 
   const { user } = useAuth();
+
+  const nameElement = useTruncation();
+  const usernameElement = useTruncation();
 
   const handleVerifyClick = async () => {
     if (sendingEmail || !user) return;
@@ -50,13 +54,25 @@ const ProfilePanel = ({ editing, onEditClick }: ProfilePanelProps) => {
             {/* name */}
             {user.name && (
               <div className="flex justify-center items-center max-w-55 xs:max-w-80 gap-2 w-full">
-                <h1 className="text-2xl xs:text-3xl truncate font-semibold wrap-break-word line-clamp-1">{user.name}</h1>
+                <h1 
+                  ref={nameElement.setRef} 
+                  title={nameElement.isTruncated ? user.name : undefined}
+                  className="text-2xl xs:text-3xl font-semibold wrap-break-word line-clamp-1"
+                >
+                  {user.name}
+                </h1>
               </div>
             )}
 
             {/* username */}
             <div className="flex justify-center items-center max-w-55 xs:max-w-80 gap-2 w-full">
-              <p className="text-foreground-secondary text-lg xs:text-xl break-all line-clamp-1">{user.username}</p>
+              <p 
+                ref={usernameElement.setRef} 
+                title={usernameElement.isTruncated ? user.username : undefined}
+                className="text-foreground-secondary text-lg xs:text-xl break-all line-clamp-1"
+              >
+                {user.username}
+              </p>
             </div>
           </div>
 
