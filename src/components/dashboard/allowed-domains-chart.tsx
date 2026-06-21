@@ -25,8 +25,8 @@ const AllowedDomainsChart = () => {
       </div>
 
       <List className="mt-4">
-        {allowedDomains.map((domain, index) => (
-          <AllowedDomainsListItem key={index} domain={domain} />
+        {allowedDomains.map((domain) => (
+          <AllowedDomainsListItem key={domain} domain={domain} />
         ))}
       </List>
 
