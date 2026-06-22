@@ -11,7 +11,6 @@ import {
 } from '@/components/dialog';
 import { useAuth } from '@/context-providers/auth-context-provider';
 import { getValidPassword } from '@/helpers/util/form-validation-utils';
-import { getErrorMessage } from '@/helpers/util/error-utils';
 import PanelError from '@/components/panel-error';
 import SetPasswordInputs from '@/components/nae-set-password';
 import Button from '@/components/nae-button';
@@ -70,8 +69,7 @@ const PasswordLinkModal = ({ open, onOpenChange, onCancel, onSuccess }:ModalProp
       clear();
       onSuccess();
     } 
-    catch (error: unknown) {
-      console.error(getErrorMessage(error, "Unable to add password"));
+    catch {
       setError("There was a problem adding a password to your account");
     }
     finally {

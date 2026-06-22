@@ -83,8 +83,7 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
     setStep((prev) => prev + 1)
   }
 
-  const handleError = (message: string, error: unknown) => {
-    console.error(message, error);
+  const handleError = (message: string) => {
     toast.error(message);
   }
 
@@ -107,8 +106,8 @@ const MFAManagement = ({ mfaEnabled }: MFAManagementProps) => {
       await action();
       advance();
       return true;
-    } catch (error) {
-      handleError(errorMessage, error);
+    } catch {
+      handleError(errorMessage);
       return false;
     } finally {
       setLoading(false);

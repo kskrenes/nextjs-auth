@@ -92,9 +92,8 @@ const LoginPage = () => {
         router.push(res.data.user.hasCompletedProfile ? '/dashboard' : '/onboarding');
       }
     } 
-    catch (err) {
-      console.error(err)
-      setError('Could not sign in using passkey');
+    catch {
+      setError('There was a problem signing in with your passkey');
       setAwaitingRedirect(false);
     }
   }

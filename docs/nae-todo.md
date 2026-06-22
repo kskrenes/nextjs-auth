@@ -214,7 +214,7 @@ staging & polishing
 - [x] build helpful, branded 404 and 500 error pages with clear "Go Home" actions
 - [x] ensure clear confirmation toast messaging after any pending action
 - [x] handle exceptionally long text everywhere dynamic text could display
-- [ ] strip console logging and debugging from code as necessary
+- [x] strip console logging and debugging from code as necessary
 - [ ] switch to a free transactional email provider like Resend or MailerSend to send real emails
 - [ ] implement SEO metadata/populate all page titles, meta descriptions, and Open Graph (OG) tags for social sharing
 - [ ] organize GitHub repo - complete readme, etc.
