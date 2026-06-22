@@ -215,6 +215,7 @@ staging & polishing
 - [x] ensure clear confirmation toast messaging after any pending action
 - [x] handle exceptionally long text everywhere dynamic text could display
 - [ ] strip console logging and debugging from code as necessary
+- [ ] switch to a free transactional email provider like Resend or MailerSend to send real emails
 - [ ] implement SEO metadata/populate all page titles, meta descriptions, and Open Graph (OG) tags for social sharing
 - [ ] organize GitHub repo - complete readme, etc.
 
