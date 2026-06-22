@@ -43,6 +43,7 @@ const SecurityTab = () => {
       setError(getErrorMessage(err, "Failed to load security data"));
     }
     finally {
+      setPending(false);
       isFetchingRef.current = false;
     }
   }, [])
