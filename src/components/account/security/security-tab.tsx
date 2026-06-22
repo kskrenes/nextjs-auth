@@ -17,9 +17,8 @@ const SecurityTab = () => {
   const [sessionsList, setSessionsList] = useState<SessionDTO[] | null>(null);
   const [securityLogs, setSecurityLogs] = useState<SecurityLogDTO[] | null>(null);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
-  const [isLoadingSecurityData, setIsLoadingSecurityData] = useState(false);
-  const [isSecurityDataError, setIsSecurityDataError] = useState(false);
-  const [securityDataErrorMessage, setSecurityDataErrorMessage] = useState('');
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState('');
   const [showSignOutAllConfirmation, setShowSignOutAllConfirmation] = useState(false);
 
   const isFetchingRef = useRef(false);
@@ -28,8 +27,8 @@ const SecurityTab = () => {
     if (isFetchingRef.current) return;
     isFetchingRef.current = true;
 
-    setIsLoadingSecurityData(true);
-    setIsSecurityDataError(false);
+    setPending(true);
+    setError('');
     try {
       // fetch sessions and security logs
       const [sessionsResponse, logsResponse] = await Promise.all([
@@ -40,10 +39,8 @@ const SecurityTab = () => {
       setSessionsList(sessionsResponse.data.sessions);
       setSecurityLogs(logsResponse.data.securityLogs);
     }
-    catch (error) {
-      console.error("Failed to load security tab data", error);
-      setIsSecurityDataError(true);
-      setSecurityDataErrorMessage(getErrorMessage(error, "Failed to load security data"));
+    catch (err) {
+      setError(getErrorMessage(err, "Failed to load security data"));
     }
     finally {
       isFetchingRef.current = false;
@@ -58,7 +55,7 @@ const SecurityTab = () => {
 
   return (
     <>
-      {isLoadingSecurityData && !sessionsList && !securityLogs ? (
+      {pending && !sessionsList && !securityLogs ? (
         <div 
           className='flex items-center justify-center mt-20'
           role='status'
@@ -68,10 +65,10 @@ const SecurityTab = () => {
           <NaeLoader className='w-10 h-10' />
           <span className="sr-only">Loading security data...</span>
         </div>
-      ) : isSecurityDataError ? (
+      ) : error ? (
         <div role="alert" className="flex flex-col items-center gap-4 mt-4 px-4 text-red-500">
           <ShieldAlert className="w-10 h-10" />
-          <span className="text-center">{securityDataErrorMessage}</span>
+          <span className="text-center">{error}</span>
         </div>
       ) : (
         <div className="flex flex-col gap-8">
