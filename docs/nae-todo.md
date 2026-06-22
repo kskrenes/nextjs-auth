@@ -198,7 +198,7 @@ defects & errors
 - [x] throw error when linking a Google account that exists as a different user, currently switches to that user
 - [x] add awaitingRedirect state to onboarding page
 - [x] fix: passkey nickname shows tooltip after edit to non-truncated value
-- [ ] fix: "Current Session" badge breaks in half on small screens
+- [x] fix: "Current Session" badge breaks in half on small screens
 
 staging & polishing
 
