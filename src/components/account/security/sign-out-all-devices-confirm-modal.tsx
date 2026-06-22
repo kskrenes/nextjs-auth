@@ -46,9 +46,8 @@ const SignOutAllDevicesConfirmModal = ({ open, onOpenChange, onCancel, onSuccess
       toast.success(`Signed out of ${count} device${count !== 1 ? 's' : ''}`);
       clear();
       onSuccess();
-    } catch (error) {
-      console.error("Failed to sign out of all devices:", error);
-      setError("Failed to sign out of all devices");
+    } catch {
+      setError("There was a problem signing out of all devices");
     } finally {
       setPending(false);
     }

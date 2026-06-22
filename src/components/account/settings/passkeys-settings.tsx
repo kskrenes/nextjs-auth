@@ -35,13 +35,11 @@ const PasskeysSettings = () => {
 
   if (!user) return;
   
-  // Passkey Management
   const handlePasskeyError = (fallbackMessage?: string, err?: unknown) => {
     const message =
-    err instanceof Error
-      ? err.message
-      : (usePasskeysError ?? fallbackMessage ?? 'There was a problem managing your passkey');
-    console.error('Passkey operation failed', err ?? usePasskeysError);
+      err instanceof Error
+        ? err.message
+        : (usePasskeysError ?? fallbackMessage ?? 'There was a problem managing your passkey');
     toast.error(message);
   }
   

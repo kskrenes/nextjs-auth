@@ -18,7 +18,6 @@ export const triggerEmail = async (
   catch (error: unknown) {
     const typeMessage = type === 'VERIFY' ? 'verify' : 'reset password'
     const errorMessage = getErrorMessage(error, `Error sending ${typeMessage} email`);
-    console.error(errorMessage);
     throw new Error(errorMessage);
   }
   finally {
