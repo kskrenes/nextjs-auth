@@ -26,12 +26,12 @@ export async function POST(request: NextRequest) {
     }
 
     // log failures server-side but return generic success to prevent enumeration
-    if (!mailResponse || !mailResponse.response.includes("250")) {
-      const responseCode =
-        typeof mailResponse?.response === "string"
-          ? mailResponse.response.slice(0, 3)
-          : "no_response";
-      console.error("Mail send failed", { responseCode });
+    if (!mailResponse || !mailResponse.success) {
+      const errorMessage =
+        typeof mailResponse?.error === "string"
+          ? mailResponse.error
+          : "No response";
+      console.error(`Mail send failed: ${errorMessage}`);
     }
 
     // return success

@@ -1,8 +1,7 @@
 import User from "@/models/user-model";
-import nodemailer from "nodemailer";
-import SMTPTransport from "nodemailer/lib/smtp-transport";
 import { getRandomToken, hashToken } from "./token-utils";
 import { EmailType } from "@/lib/payload-schemas";
+import { Resend } from 'resend';
 
 // styles
 const OUTER_BG_COLOR = '#f4f4f4';
@@ -125,10 +124,7 @@ type ResetEmailData = {
 type EmailData = VerifyEmailData | ResetEmailData;
 
 // returns the appropriate route name and update data for each email type
-function getEmailData(
-  emailType: EmailType,
-  hashedToken: string
-): EmailData {
+function getEmailData(emailType: EmailType, hashedToken: string): EmailData {
   const expiry = Date.now() + 1000 * 60 * 60;
 
   switch (emailType) {
@@ -159,34 +155,21 @@ function getEmailData(
   }
 }
 
-export const sendEmail = async ({ 
-  email, 
-  emailType, 
-} : {
+interface SendEmailProps {
   email: string;
   emailType: EmailType;
-}): Promise<SMTPTransport.SentMessageInfo> => {
+}
+
+export const sendEmail = async ({ email, emailType }: SendEmailProps ) => {
   try {
-    // validate smtp env variables first to avoid orphaning tokens
-    const smtpHost = process.env.SMTP_HOST;
-    const smtpPort = Number(process.env.SMTP_PORT);
-    const smtpUser = process.env.MAILER_USER;
-    const smtpPass = process.env.MAILER_PASS;
-    const mailFrom = process.env.MAILER_FROM;
+    // validate Resend env variables first to avoid orphaning tokens
+    const apiKey = process.env.RESEND_API_KEY;
     const domain = process.env.APP_ORIGIN;
-    if (
-      !smtpHost ||
-      !Number.isInteger(smtpPort) ||
-      smtpPort < 1 ||
-      smtpPort > 65535 ||
-      !smtpUser ||
-      !smtpPass ||
-      !mailFrom ||
-      !domain
-    ) {
-      // throw if smtp env variables are not configured
+    const mailFrom = process.env.MAILER_FROM;
+    if (!apiKey || !domain || !mailFrom) {
+      // throw if Resend env variables are not configured
       throw new Error(
-        "Missing or invalid mail configuration (SMTP_HOST, SMTP_PORT, MAILER_USER, MAILER_PASS, MAILER_FROM, APP_ORIGIN)"
+        "Missing or invalid mail configuration (RESEND_API_KEY, APP_ORIGIN, MAILER_FROM)"
       );
     }
 
@@ -209,15 +192,8 @@ export const sendEmail = async ({
       throw new Error("No user found with that email");
     }
 
-    // configure transport
-    const transport = nodemailer.createTransport({
-      host: smtpHost,
-      port: smtpPort,
-      auth: {
-        user: smtpUser,
-        pass: smtpPass,
-      }
-    });
+    // initialize Resend with API key
+    const resend = new Resend(apiKey);
 
     // expose only the raw token in the url
     const username = updatedUser.username;
@@ -234,8 +210,13 @@ export const sendEmail = async ({
     };
 
     // send the email and return the transport response
-    const mailResponse:SMTPTransport.SentMessageInfo = await transport.sendMail(mailOptions);
-    return mailResponse;  
+    try {
+      const { data, error } = await resend.emails.send(mailOptions);
+      if (error) return { success: false, error: error.message };
+      return { success: true, data };
+    } catch {
+      return { success: false, error: 'Failed to send email' };
+    }
   } 
   catch (error: unknown) {
     const message = error instanceof Error ? error.message : "Error sending email";
