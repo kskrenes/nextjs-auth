@@ -70,7 +70,7 @@ const DeviceCard = ({ session, isCurrentSession, onSignOut }: DeviceCardProps) =
           <div className="flex flex-col">
             <p className="text-foreground-primary">
               {expandedSession.deviceInfo.os}
-              {isCurrentSession && <span className="ml-3"><Badge label="Current Session" variant="green" /></span>}
+              {isCurrentSession && <Badge label="Current Session" variant="green" className="ml-3" />}
             </p>
             <p className="text-foreground-secondary text-sm">{expandedSession.deviceInfo.browser}</p>
             <p className="text-foreground-secondary text-sm font-mono">{expandedSession.ipAddress}</p>
