@@ -186,6 +186,10 @@ export const sendEmail = async ({ email, emailType }: SendEmailProps ) => {
       );
     }
 
+    // validate/read branding asset before mutating user token state
+    const logoPath = path.join(process.cwd(), 'public', 'nAuth-logo-light.png');
+    const logoBuffer = fs.readFileSync(logoPath);
+
     const rawToken: string = getRandomToken();
     const hashedToken: string = hashToken(rawToken);
     const emailData: EmailData = getEmailData(emailType, hashedToken);
@@ -213,8 +217,6 @@ export const sendEmail = async ({ email, emailType }: SendEmailProps ) => {
     const linkUrl = `${domain}/${emailData.route}?token=${encodeURIComponent(rawToken)}`;
     const subject = getEmailSubject(username, emailType);
     const html = getEmailHtml(username, linkUrl, emailType);
-    const logoPath = path.join(process.cwd(), 'public', 'nAuth-logo-light.png');
-    const logoBuffer = fs.readFileSync(logoPath);
 
     // configure mail options
     const mailOptions = {
