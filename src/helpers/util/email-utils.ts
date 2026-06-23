@@ -55,7 +55,8 @@ const escapeHtml = (value: string): string =>
 const getEmailHtml = (
   username: string, 
   url: string, 
-  action: EmailType
+  action: EmailType,
+  hasLogo: boolean = true,
 ): string => {
   const safeUsername = escapeHtml(username);
   const safeUrl = escapeHtml(url);
@@ -85,7 +86,7 @@ const getEmailHtml = (
             <!-- Header with Embedded Logo -->
             <tr>
               <td valign="middle" style="vertical-align: middle; padding: 14px 20px; border-bottom: 1px solid ${HEADER_BORDER_COLOR};">
-                <img src="cid:logo" alt="Brand Logo" width="${LOGO_SIZE}" height="${LOGO_SIZE}" border="0" style="display: inline-block; vertical-align: middle; margin-right: 6px; border: none; outline: none; text-decoration: none;" />
+                ${hasLogo ? `<img src="cid:logo" alt="Brand Logo" width="${LOGO_SIZE}" height="${LOGO_SIZE}" border="0" style="display: inline-block; vertical-align: middle; margin-right: 6px; border: none; outline: none; text-decoration: none;" />` : ``}
                 <h2 style="display: inline-block; vertical-align: middle; font-size: ${LOGO_FONT_SIZE}; margin: 0">nAuth NextJS Auth Example</h2>
               </td>
             </tr>
@@ -221,7 +222,9 @@ export const sendEmail = async ({ email, emailType }: SendEmailProps ) => {
     const username = updatedUser.username;
     const linkUrl = `${domain}/${emailData.route}?token=${encodeURIComponent(rawToken)}`;
     const subject = getEmailSubject(username, emailType);
-    const html = getEmailHtml(username, linkUrl, emailType);
+    const hasLogo = Boolean(logoBuffer);
+    
+    const html = getEmailHtml(username, linkUrl, emailType, hasLogo);
 
     // configure mail options
     const mailOptions = {
