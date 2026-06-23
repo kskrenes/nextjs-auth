@@ -2,24 +2,29 @@ import User from "@/models/user-model";
 import { getRandomToken, hashToken } from "./token-utils";
 import { EmailType } from "@/lib/payload-schemas";
 import { Resend } from 'resend';
+import fs from 'fs';
+import path from 'path';
 
 // styles
-const OUTER_BG_COLOR = '#f4f4f4';
-const INNER_BG_COLOR = '#ffffff';
-const HEADER_TEXT_COLOR = '#642295';
-const BODY_TEXT_COLOR = '#666666';
-const URL_TEXT_COLOR = '#666666';
-const BUTTON_BG_COLOR = '#7013b5';
-const BUTTON_TEXT_COLOR = '#ffffff';
-const BUTTON_STYLE = 'border-radius: 4px;';
+const OUTER_BG_COLOR = '#e3eaef';
+const INNER_BG_COLOR = '#f3faff';
+const HEADER_TEXT_COLOR = '#6366f1';
+const HEADER_BORDER_COLOR = '#e6edff';
+const BODY_TEXT_COLOR = '#4b596d';
+const URL_TEXT_COLOR = '#353642';
+const BUTTON_BG_COLOR = '#6366f1';
+const BUTTON_TEXT_COLOR = '#e5e6f2';
+const BUTTON_STYLE = 'border-radius: 6px;';
 const BUTTON_FONT_SIZE = '16px';
 const HEADER_FONT_SIZE = '24px';
+const LOGO_FONT_SIZE = '20px';
 const BODY_FONT_SIZE = '16px';
 const URL_FONT_SIZE = '16px';
 const BODY_LINE_HEIGHT = '24px';
 const URL_LINE_HEIGHT = '24px';
 const COLLAPSE_MARGIN = 'border="0" cellSpacing="0" cellPadding="0"';
 const FONTS = 'Helvetica, Arial';
+const LOGO_SIZE = '30';
 
 // messaging
 const INTRO_VERIFY = 'Thank you for registering!';
@@ -50,7 +55,8 @@ const escapeHtml = (value: string): string =>
 const getEmailHtml = (
   username: string, 
   url: string, 
-  action: EmailType
+  action: EmailType,
+  hasLogo: boolean = true,
 ): string => {
   const safeUsername = escapeHtml(username);
   const safeUrl = escapeHtml(url);
@@ -77,14 +83,22 @@ const getEmailHtml = (
       <tr>
         <td align="center" style="padding: 20px 0;">
           <table width="600" ${COLLAPSE_MARGIN} bgcolor="${INNER_BG_COLOR}" style="border-collapse: collapse; font-family: ${FONTS}, sans-serif;">
+            <!-- Header with Embedded Logo -->
+            <tr>
+              <td valign="middle" style="vertical-align: middle; padding: 14px 20px; border-bottom: 1px solid ${HEADER_BORDER_COLOR};">
+                ${hasLogo ? `<img src="cid:logo" alt="Brand Logo" width="${LOGO_SIZE}" height="${LOGO_SIZE}" border="0" style="display: inline-block; vertical-align: middle; margin-right: 6px; border: none; outline: none; text-decoration: none;" />` : ``}
+                <h2 style="display: inline-block; vertical-align: middle; font-size: ${LOGO_FONT_SIZE}; margin: 0">nAuth NextJS Auth Example</h2>
+              </td>
+            </tr>
+            <!-- Content -->
             <tr>
               <td style="padding: 40px;">
                 <h1 style="color: ${HEADER_TEXT_COLOR}; font-size: ${HEADER_FONT_SIZE}; margin: 0 0 20px 0;">${headerText}</h1>
                 ${bodyPTag}${introText}</p>
                 <table ${COLLAPSE_MARGIN} style="margin: 0 auto 30px;">
                   <tr>
-                    <td bgcolor="${BUTTON_BG_COLOR}" style="${BUTTON_STYLE}">
-                      <a href="${safeUrl}" target="_blank" style="padding: 12px 24px; display: inline-block; color: ${BUTTON_TEXT_COLOR}; text-decoration: none; font-size: ${BUTTON_FONT_SIZE}; font-weight: bold;">${buttonLabel}</a>
+                    <td>
+                      <a href="${safeUrl}" target="_blank" style="${BUTTON_STYLE} background-color: ${BUTTON_BG_COLOR}; padding: 9px 20px; display: inline-block; color: ${BUTTON_TEXT_COLOR}; text-decoration: none; font-size: ${BUTTON_FONT_SIZE}; font-weight: 600;">${buttonLabel}</a>
                     </td>
                   </tr>
                 </table>
@@ -173,6 +187,15 @@ export const sendEmail = async ({ email, emailType }: SendEmailProps ) => {
       );
     }
 
+    // best-effort branding asset load; do not block auth email delivery
+    let logoBuffer: Buffer | undefined;
+    try {
+      const logoPath = path.join(process.cwd(), "public", "nAuth-logo-light.png");
+      logoBuffer = fs.readFileSync(logoPath);
+    } catch {
+      logoBuffer = undefined;
+    }
+
     const rawToken: string = getRandomToken();
     const hashedToken: string = hashToken(rawToken);
     const emailData: EmailData = getEmailData(emailType, hashedToken);
@@ -199,7 +222,9 @@ export const sendEmail = async ({ email, emailType }: SendEmailProps ) => {
     const username = updatedUser.username;
     const linkUrl = `${domain}/${emailData.route}?token=${encodeURIComponent(rawToken)}`;
     const subject = getEmailSubject(username, emailType);
-    const html = getEmailHtml(username, linkUrl, emailType);
+    const hasLogo = Boolean(logoBuffer);
+    
+    const html = getEmailHtml(username, linkUrl, emailType, hasLogo);
 
     // configure mail options
     const mailOptions = {
@@ -207,6 +232,18 @@ export const sendEmail = async ({ email, emailType }: SendEmailProps ) => {
       to: email,
       subject,
       html,
+      ...(logoBuffer
+        ? {
+            attachments: [
+              {
+                content: logoBuffer,
+                filename: "nAuth-logo-light.png",
+                contentId: "logo",
+              },
+            ],
+          }
+        : {}
+      ),
     };
 
     // send the email and return the transport response
