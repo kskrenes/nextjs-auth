@@ -19,8 +19,18 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "nAuth - NextJS Auth Example",
-  description: "Authentication system built with Next.js, NextAuth, and MongoDB.",
+  title: 'nAuth - NextJS Auth Example | Kevin Skrenes',
+  description: 'Authentication system built with Next.js, NextAuth, and MongoDB.',
+  openGraph: {
+    title: 'nAuth - NextJS Auth Example | Kevin Skrenes',
+    description: 'Authentication system built with Next.js, NextAuth, and MongoDB.',
+    images: ['/og-preview.png'],
+    type: 'website',
+  },
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({
