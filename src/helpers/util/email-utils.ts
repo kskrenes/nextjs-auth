@@ -186,9 +186,14 @@ export const sendEmail = async ({ email, emailType }: SendEmailProps ) => {
       );
     }
 
-    // validate/read branding asset before mutating user token state
-    const logoPath = path.join(process.cwd(), 'public', 'nAuth-logo-light.png');
-    const logoBuffer = fs.readFileSync(logoPath);
+    // best-effort branding asset load; do not block auth email delivery
+    let logoBuffer: Buffer | undefined;
+    try {
+      const logoPath = path.join(process.cwd(), "public", "nAuth-logo-light.png");
+      logoBuffer = fs.readFileSync(logoPath);
+    } catch {
+      logoBuffer = undefined;
+    }
 
     const rawToken: string = getRandomToken();
     const hashedToken: string = hashToken(rawToken);
@@ -224,13 +229,18 @@ export const sendEmail = async ({ email, emailType }: SendEmailProps ) => {
       to: email,
       subject,
       html,
-      attachments: [
-        {
-          content: logoBuffer,
-          filename: 'nAuth-logo-light.png',
-          contentId: 'logo',
-        },
-      ],
+      ...(logoBuffer
+        ? {
+            attachments: [
+              {
+                content: logoBuffer,
+                filename: "nAuth-logo-light.png",
+                contentId: "logo",
+              },
+            ],
+          }
+        : {}
+      ),
     };
 
     // send the email and return the transport response
