@@ -19,8 +19,20 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "nAuth - NextJS Auth Example",
-  description: "Authentication system built with Next.js, NextAuth, and MongoDB.",
+  title: 'nAuth - NextJS Auth Example | Kevin Skrenes',
+  description: 'Authentication system built with Next.js, NextAuth, and MongoDB.',
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
+  openGraph: {
+    title: 'nAuth - NextJS Auth Example | Kevin Skrenes',
+    description: 'Authentication system built with Next.js, NextAuth, and MongoDB.',
+    images: ['/og-preview.png'],
+    type: 'website',
+  },
+  // do not index this site in any environment, it is a demo for a portfolio site
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({
